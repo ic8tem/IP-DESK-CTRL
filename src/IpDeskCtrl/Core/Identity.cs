@@ -44,7 +44,7 @@ namespace IpDeskCtrl.Core
                     k.ImportPkcs8PrivateKey(pkcs8, out _);
                     return new Identity(k);
                 }
-                catch (Exception ex) { Program.LogError("Chiave di questo PC illeggibile, ne creo una nuova: " + ex.Message); }
+                catch (Exception ex) { ErrorLog.Write("Chiave di questo PC illeggibile, ne creo una nuova: " + ex.Message); }
             }
             var key = ECDsa.Create(ECCurve.NamedCurves.nistP256);
             KeyStore.Save(key.ExportPkcs8PrivateKey());

@@ -15,6 +15,9 @@ e collaboratori; le librerie native Skia e HarfBuzz sono distribuite con licenze
 BSD-3-Clause e MIT, vedi https://github.com/mono/SkiaSharp. SkiaSharp e' usato
 anche per comprimere e decomprimere le immagini dello schermo in JPEG.)
 
+Avalonia.Android e librerie AndroidX (Xamarin.AndroidX, licenza MIT; librerie Google
+AndroidX con licenza Apache 2.0, https://developer.android.com/jetpack/androidx) - solo nell'app Android.
+
 Inter (carattere) - SIL Open Font License 1.1 - Copyright (c) The Inter Project Authors
 https://github.com/rsms/inter
 

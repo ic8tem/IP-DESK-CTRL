@@ -27,6 +27,11 @@ namespace IpDeskCtrl.Core
         public event Action? FrameReady;          // dal thread di rete
         public event Action? CursorMoved;
         public event Action? NoteChanged;
+        /// <summary>File negli appunti del PC remoto (numero, byte, primo nome).</summary>
+        public event Action<int, long, string>? RemoteFilesChanged;
+        /// <summary>File arrivati dal PC remoto: cartella, elementi, già negli appunti.</summary>
+        public event Action<string, List<string>, bool>? FilesReceived;
+        public (int count, long bytes, string first) RemoteFiles { get; private set; }
 
         private IAudioPlayer? _player;
         private bool _audioOn;
@@ -67,6 +72,7 @@ namespace IpDeskCtrl.Core
                         var h = P.S.Touch(PeerNumber, true, Convert.ToHexString(Link.PeerKey), PeerOs);
                         Send(new MsgWriter(Msg.SetQuality).Str(P.S.Quality).Build());
                         SetAudio(P.S.PlayAudio);
+                        _ = Task.Run(ClipboardLoopAsync);
                     }
                     StateChanged?.Invoke();
                     break;
@@ -113,6 +119,10 @@ namespace IpDeskCtrl.Core
                     Note = r.Str();
                     if (Note.Contains("solo guardare")) InputAllowed = false;
                     NoteChanged?.Invoke();
+                    break;
+                case Msg.FilesAvailable:
+                    RemoteFiles = (r.I32(), r.I64(), r.Str());
+                    RemoteFilesChanged?.Invoke(RemoteFiles.count, RemoteFiles.bytes, RemoteFiles.first);
                     break;
                 case Msg.Audio:
                 {
@@ -180,6 +190,17 @@ namespace IpDeskCtrl.Core
         }
 
         public void ReleaseAll() => Send(new MsgWriter(Msg.ReleaseAll).Build());
+
+        /// <summary>Testo scritto con la tastiera del telefono: arriva come caratteri, qualunque sia la tastiera di là.</summary>
+        public void Text(string text) { if (text.Length > 0) Send(new MsgWriter(Msg.Text).Str(text).Build()); }
+
+        /// <summary>Chiede al PC remoto i file che ha negli appunti.</summary>
+        public void FetchRemoteFiles() => Send(new MsgWriter(Msg.FileFetch).Build());
+
+        protected override bool FilesAllowed => State == AcceptState.Accepted && InputAllowed;
+
+        protected override void OnFilesReceived(TransferPurpose purpose, string folder, List<string> topLevel, bool onClipboard) =>
+            FilesReceived?.Invoke(folder, topLevel, onClipboard);
 
         /// <summary>Combinazione di tasti premuti in ordine e rilasciati al contrario.</summary>
         public void Combo(params int[] keys)

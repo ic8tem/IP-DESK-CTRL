@@ -44,6 +44,7 @@ namespace IpDeskCtrl.Core
         {
             get
             {
+                if (Platform.DataFolder != null) { Directory.CreateDirectory(Platform.DataFolder); return Platform.DataFolder; }
                 string f = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData, Environment.SpecialFolderOption.Create), "IP-DESK-CTRL");
                 Directory.CreateDirectory(f);
                 return f;
@@ -105,6 +106,15 @@ namespace IpDeskCtrl.Core
             }
             Save();
             return h;
+        }
+    }
+
+    /// <summary>Registro degli errori (errori.log).</summary>
+    public static class ErrorLog
+    {
+        public static void Write(string? text)
+        {
+            try { File.AppendAllText(Path.Combine(AppSettings.Folder, "errori.log"), $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} {text}{Environment.NewLine}"); } catch { }
         }
     }
 

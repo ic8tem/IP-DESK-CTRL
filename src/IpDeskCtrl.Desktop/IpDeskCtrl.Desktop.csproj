@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Programma per Windows, macOS, Linux e Raspberry Pi. -->
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <RootNamespace>IpDeskCtrl.Desktop</RootNamespace>
+    <AssemblyName>IP-DESK-CTRL</AssemblyName>
+    <Product>IP-DESK-CTRL</Product>
+    <Version>0.2.0</Version>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+    <!-- niente dipendenza da ICU su Linux/Raspberry -->
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <ApplicationIcon>..\IpDeskCtrl\Assets\icon.ico</ApplicationIcon>
+    <NoWarn>$(NoWarn);NU1701;CA1416</NoWarn>
+  </PropertyGroup>
+
+  <!-- Eseguibile unico e autonomo (dotnet publish -r <rid>) -->
+  <PropertyGroup Condition="'$(RuntimeIdentifier)' != ''">
+    <SelfContained>true</SelfContained>
+    <PublishSingleFile>true</PublishSingleFile>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+    <DebugType>embedded</DebugType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia.Desktop" Version="11.2.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\IpDeskCtrl\IpDeskCtrl.csproj" />
+  </ItemGroup>
+
+</Project>

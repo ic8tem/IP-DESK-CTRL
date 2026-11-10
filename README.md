@@ -1,6 +1,6 @@
 # IP-DESK-CTRL
 
-Desktop remoto cifrato tra Windows (64 e 32 bit), macOS (Apple Silicon e Intel), Linux 64 bit e Raspberry Pi (64 e 32 bit). Un unico programma: ogni PC è insieme **host** (si fa vedere e comandare) e **visore** (vede e comanda gli altri), senza che l'utente scelga niente.
+Desktop remoto cifrato tra Windows (64 e 32 bit), macOS (Apple Silicon e Intel), Linux 64 bit, Raspberry Pi (64 e 32 bit) e **Android**. Un unico programma: ogni PC è insieme **host** (si fa vedere e comandare) e **visore** (vede e comanda gli altri), senza che l'utente scelga niente.
 
 Ogni PC ha un **numero fisso di 10 cifre** (es. `482 913 0675`) che non cambia mai: per collegarti a un PC scrivi il suo numero e premi **Collegati**. Sull'altro PC compare la richiesta da accettare.
 
@@ -13,7 +13,17 @@ Ogni PC ha un **numero fisso di 10 cifre** (es. `482 913 0675`) che non cambia m
 - **Audio del sistema** del PC comandato riprodotto sul visore (32 kHz stereo).
 - **Finestra adattabile**: zoom *Adatta* o in percentuale (25–200 %), schermo intero.
 - **Plancia di comando in alto al centro**: finestra ⇄ schermo intero, zoom, monitor, qualità, audio, tasti speciali (Ctrl+Alt+Canc, Alt+Tab, Win/Cmd, Alt+F4, Stamp), aggiorna, disconnetti. A schermo intero si riduce a una linguetta: ricompare portando il mouse sul bordo alto. **Ctrl+Alt+Invio** passa da finestra a schermo intero e viceversa.
+- **Copia e incolla**: il testo copiato su un PC si incolla sull'altro, nei due versi.
+- **File tra i PC**: trascina file o cartelle sulla finestra del PC remoto e vengono incollati lì dove li lasci; dalla plancia (**File ▾**) prendi qui i file copiati (Ctrl+C) sul PC remoto, mandi quelli copiati qui o scegli file da mandare. I file ricevuti finiscono in `Scaricati/IP-DESK-CTRL` e negli appunti, pronti per Ctrl+V.
 - Mentre il PC è comandato compare una piccola finestra sempre in primo piano con **Disconnetti** e l'interruttore di mouse e tastiera.
+
+## Android
+
+Lo stesso programma, per telefoni e tablet con Android 8.0 o successivo (`IP-DESK-CTRL-…-android.apk`).
+
+- **Visore**: il dito fa da touchpad (tocco = clic, dito fermo = clic destro, due tocchi e trascina = trascinamento, due dita su e giù = rotella); il pulsante **Tastiera** apre la tastiera del telefono, con una barra di tasti speciali (Ctrl, Alt, Win, Maiusc, Esc, Tab, frecce, Canc, Home, Fine). Il testo arriva così com'è, qualunque sia la tastiera del PC.
+- **Host**: il telefono si fa vedere e comandare. Ad ogni collegamento Android chiede il consenso alla cattura dello schermo; per tocchi e testo va attivato una volta il servizio in Impostazioni › Accessibilità › IP-DESK-CTRL. I clic diventano tocchi, il trascinamento diventa scorrimento, il tasto destro ed Esc sono «Indietro», il tasto Win è «Home». L'audio del telefono (Android 10+) arriva al PC.
+- Il telefono è raggiungibile col suo numero mentre l'app è aperta.
 
 ## Sicurezza
 

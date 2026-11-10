@@ -14,7 +14,7 @@ namespace IpDeskCtrl.Core
     /// (perforazione del NAT come in IP-TRX-CTRL: STUN, scambio dei candidati sul canale cifrato,
     /// «bussate» reciproche; si usa UDP solo quando entrambi confermano di ricevere).
     /// </summary>
-    public abstract class SessionBase
+    public abstract partial class SessionBase
     {
         protected readonly Peer P;
         public SecureLink Link { get; }
@@ -34,7 +34,7 @@ namespace IpDeskCtrl.Core
         public DateTime Started { get; } = DateTime.UtcNow;
         public double RttMs { get; private set; } = double.NaN;
         public bool UdpActive => _udpMine && _udpPeer && _udp?.Remote != null;
-        public string Path => UdpActive ? "UDP + TCP" : "TCP";
+        public string Route => UdpActive ? "UDP + TCP" : "TCP";
         public bool IsClosed => _closed != 0;
 
         public event Action<string>? Closed;
@@ -74,6 +74,13 @@ namespace IpDeskCtrl.Core
                         case Msg.Bye: reason = r.Str(); Cts.Cancel(); break;
                         case Msg.UdpOffer: { string c = r.Str(); int d = r.I32(); _ = Task.Run(() => OnUdpOfferAsync(c, d)); break; }
                         case Msg.UdpOn: _udpPeer = r.U8() == 1; UdpLog($"l'altro PC {(_udpPeer ? "riceve" : "non riceve")} su UDP"); break;
+                        case Msg.Clipboard: OnRemoteClipboard(r.Str()); break;
+                        case Msg.FileOffer:
+                        case Msg.FileChunk:
+                        case Msg.FileDone:
+                        case Msg.FileCancel:
+                            await OnFileMessageAsync(r);
+                            break;
                         default: Handle(r); break;
                     }
                 }
@@ -105,7 +112,8 @@ namespace IpDeskCtrl.Core
             }
             catch { }
             Cts.Cancel();
-            try { OnClosing(); } catch (Exception ex) { Program.LogError(ex.ToString()); }
+            AbortTransfers();
+            try { OnClosing(); } catch (Exception ex) { ErrorLog.Write(ex.ToString()); }
             Interlocked.Exchange(ref _udp, null)?.Dispose();
             Link.Dispose();
             SessionLog.Write($"SESSIONE fine con {Identity.Format(PeerNumber)}: {reason}");

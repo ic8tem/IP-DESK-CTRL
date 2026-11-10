@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- App Android: visore e host, stesso codice dei PC (progetto IpDeskCtrl). -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0-android</TargetFramework>
+    <SupportedOSPlatformVersion>26</SupportedOSPlatformVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <RootNamespace>IpDeskCtrl.Android</RootNamespace>
+    <AssemblyName>IpDeskCtrl.Android</AssemblyName>
+    <ApplicationId>it.ic8tem.ipdeskctrl</ApplicationId>
+    <ApplicationTitle>IP-DESK-CTRL</ApplicationTitle>
+    <ApplicationDisplayVersion>0.2.0</ApplicationDisplayVersion>
+    <ApplicationVersion>200</ApplicationVersion>
+    <AndroidPackageFormat>apk</AndroidPackageFormat>
+    <RuntimeIdentifiers>android-arm64;android-arm</RuntimeIdentifiers>
+    <AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
+    <NoWarn>$(NoWarn);NU1701;CA1416;CA1422;XA4218;CS0618</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <AndroidLinkMode>SdkOnly</AndroidLinkMode>
+    <DebugType>none</DebugType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia.Android" Version="11.2.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\IpDeskCtrl\IpDeskCtrl.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -7,7 +7,7 @@ namespace IpDeskCtrl.Core
     /// <summary>Versione del programma e del protocollo («P1 0.1.0»). PC con protocollo diverso non si parlano.</summary>
     public static class AppVersion
     {
-        public const int Protocol = 1;
+        public const int Protocol = 2;   // 2 = 0.2.x (segreto ECDH con SHA-256, testo, appunti e file)
 
         public static string Text
         {
@@ -35,6 +35,7 @@ namespace IpDeskCtrl.Core
                 string arch = RuntimeInformation.OSArchitecture.ToString().ToLowerInvariant();
                 if (OperatingSystem.IsWindows()) return $"Windows {(Environment.Is64BitOperatingSystem ? "64" : "32")} bit";
                 if (OperatingSystem.IsMacOS()) return $"macOS ({arch})";
+                if (OperatingSystem.IsAndroid()) return $"Android ({arch})";
                 bool pi = false;
                 try { pi = System.IO.File.Exists("/proc/device-tree/model") && System.IO.File.ReadAllText("/proc/device-tree/model").Contains("Raspberry"); } catch { }
                 return (pi ? "Raspberry Pi" : "Linux") + $" ({arch})";

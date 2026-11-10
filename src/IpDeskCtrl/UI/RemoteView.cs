@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using Avalonia;
 using Avalonia.Controls;
@@ -52,6 +53,9 @@ namespace IpDeskCtrl.UI
         }
 
         public bool ShowRemoteCursor { get; set; } = true;
+
+        /// <summary>Ctrl+Alt+Invio: passa da finestra a schermo intero (non va al PC remoto).</summary>
+        public event Action? FullScreenToggleRequested;
         public PixelSize ImageSize => new(_w, _h);
 
         /// <summary>Copia l'ultima immagine decodificata nella bitmap (thread dell'interfaccia).</summary>
@@ -124,7 +128,12 @@ namespace IpDeskCtrl.UI
 
             // puntatore del PC remoto (quando lo muove qualcuno di là, o il nostro è fuori dalla finestra)
             var s = _session;
-            if (ShowRemoteCursor && s != null && s.RemoteCursor.visible)
+            if (_touchMode)
+            {
+                double tsc = d.Width / Math.Max(1, _w);
+                DrawArrow(ctx, new Point(d.X + _cur.X * tsc, d.Y + _cur.Y * tsc));
+            }
+            else if (ShowRemoteCursor && s != null && s.RemoteCursor.visible)
             {
                 double sc = d.Width / Math.Max(1, _w);
                 var p = new Point(d.X + s.RemoteCursor.x * sc, d.Y + s.RemoteCursor.y * sc);
@@ -144,6 +153,8 @@ namespace IpDeskCtrl.UI
 
         // ------------------------------------------------------------------ mouse
 
+        public (int x, int y)? ImagePoint(Point local) => ToImage(local);
+
         private (int x, int y)? ToImage(Point local)
         {
             if (_w == 0) return null;
@@ -162,6 +173,7 @@ namespace IpDeskCtrl.UI
         protected override void OnPointerMoved(PointerEventArgs e)
         {
             base.OnPointerMoved(e);
+            if (e.Pointer.Type == PointerType.Touch) { if (CanInput) TouchMoved(e.Pointer.Id, e.GetPosition(this)); e.Handled = true; return; }
             _lastLocal = e.GetPosition(this);
             if (!CanInput) return;
             var p = ToImage(_lastLocal);
@@ -174,6 +186,7 @@ namespace IpDeskCtrl.UI
             Focus();
             if (!CanInput) return;
             e.Pointer.Capture(this);
+            if (e.Pointer.Type == PointerType.Touch) { TouchPressed(e.Pointer.Id, e.GetPosition(this)); e.Handled = true; return; }
             SendButton(e.GetCurrentPoint(this).Properties.PointerUpdateKind, e.GetPosition(this));
             e.Handled = true;
         }
@@ -182,6 +195,7 @@ namespace IpDeskCtrl.UI
         {
             base.OnPointerReleased(e);
             if (!CanInput) return;
+            if (e.Pointer.Type == PointerType.Touch) { TouchReleased(e.Pointer.Id); e.Handled = true; return; }
             SendButton(e.GetCurrentPoint(this).Properties.PointerUpdateKind, e.GetPosition(this));
             e.Handled = true;
         }
@@ -216,10 +230,136 @@ namespace IpDeskCtrl.UI
             e.Handled = true;
         }
 
+        // ------------------------------------------------------------------ tocco (telefono, tablet, schermi touch)
+        //
+        // Il dito fa da touchpad: muove il puntatore del PC remoto di quanto si sposta (non lo «teletrasporta»),
+        // così si può puntare con precisione anche con lo schermo rimpicciolito.
+        //   tocco                      clic sinistro
+        //   due tocchi, il secondo tenuto e trascinato    trascinamento (tasto sinistro tenuto)
+        //   dito fermo più di 0,6 s    clic destro
+        //   tocco con due dita         clic destro
+        //   due dita in su o in giù    rotella
+
+        private readonly Dictionary<long, Point> _touches = new();
+        private bool _touchMode, _dragging, _moved;
+        private Point _cur, _downPos;
+        private long _downAt, _lastTapAt;
+        private int _maxTouches;
+        private double _scrollAcc;
+        private Point _lastMid;
+
+        private double ViewScale => Dest().Width / Math.Max(1, _w);
+
+        private void TouchPressed(long id, Point p)
+        {
+            if (_w == 0) return;
+            if (!_touchMode)
+            {
+                _touchMode = true;
+                var rc = _session?.RemoteCursor;
+                _cur = rc != null && rc.Value.visible ? new Point(rc.Value.x, rc.Value.y) : new Point(_w / 2.0, _h / 2.0);
+            }
+            _touches[id] = p;
+            long now = Environment.TickCount64;
+            if (_touches.Count == 1)
+            {
+                _downAt = now; _downPos = p; _moved = false; _maxTouches = 1;
+                if (now - _lastTapAt < 300)
+                {
+                    _dragging = true;
+                    _session!.MouseButton(MouseBtn.Left, true, (int)_cur.X, (int)_cur.Y);
+                }
+            }
+            else
+            {
+                _maxTouches = Math.Max(_maxTouches, _touches.Count);
+                _lastMid = Mid();
+                _scrollAcc = 0;
+            }
+        }
+
+        private Point Mid()
+        {
+            double x = 0, y = 0;
+            foreach (var t in _touches.Values) { x += t.X; y += t.Y; }
+            return new Point(x / _touches.Count, y / _touches.Count);
+        }
+
+        private void TouchMoved(long id, Point p)
+        {
+            if (!_touches.TryGetValue(id, out var last)) return;
+            _touches[id] = p;
+            if (_touches.Count == 1)
+            {
+                if (Distance(p, _downPos) > 10) _moved = true;
+                if (!_moved) return;
+                double k = 1.4 / Math.Max(0.05, ViewScale);       // un po' più veloce del dito
+                _cur = new Point(Math.Clamp(_cur.X + (p.X - last.X) * k, 0, _w - 1), Math.Clamp(_cur.Y + (p.Y - last.Y) * k, 0, _h - 1));
+                _session!.MouseMove((int)_cur.X, (int)_cur.Y);
+                FollowCursor();
+                InvalidateVisual();
+            }
+            else
+            {
+                var m = Mid();
+                _scrollAcc += m.Y - _lastMid.Y;
+                if (Distance(m, _lastMid) > 0.5) _moved = true;
+                _lastMid = m;
+                while (Math.Abs(_scrollAcc) >= 24)
+                {
+                    int dir = Math.Sign(_scrollAcc);
+                    _session!.Wheel(0, dir * 120);       // dita in giù = si risale nel documento, come sul telefono
+                    _scrollAcc -= dir * 24;
+                }
+            }
+        }
+
+        private void TouchReleased(long id)
+        {
+            _touches.Remove(id);
+            if (_touches.Count > 0) return;
+            long now = Environment.TickCount64;
+            int x = (int)_cur.X, y = (int)_cur.Y;
+            if (_dragging)
+            {
+                _dragging = false;
+                _session!.MouseButton(MouseBtn.Left, false, x, y);
+                _lastTapAt = 0;
+            }
+            else if (_maxTouches == 1 && !_moved && now - _downAt < 350)
+            {
+                _session!.MouseButton(MouseBtn.Left, true, x, y);
+                _session.MouseButton(MouseBtn.Left, false, x, y);
+                _lastTapAt = now;
+            }
+            else if (!_moved && (_maxTouches == 2 || (_maxTouches == 1 && now - _downAt >= 600)))
+            {
+                _session!.MouseButton(MouseBtn.Right, true, x, y);
+                _session.MouseButton(MouseBtn.Right, false, x, y);
+            }
+            InvalidateVisual();
+        }
+
+        /// <summary>Con lo zoom, la finestra scorre per tenere il puntatore in vista.</summary>
+        private void FollowCursor()
+        {
+            if (_zoom == 0) return;
+            var d = Dest();
+            double sc = ViewScale;
+            this.BringIntoView(new Rect(d.X + _cur.X * sc - 60, d.Y + _cur.Y * sc - 60, 120, 120));
+        }
+
         // ------------------------------------------------------------------ tastiera
 
         protected override void OnKeyDown(KeyEventArgs e)
         {
+            if (e.Key == Key.Enter && e.KeyModifiers.HasFlag(KeyModifiers.Control) && e.KeyModifiers.HasFlag(KeyModifiers.Alt))
+            {
+                FullScreenToggleRequested?.Invoke();
+                _session?.ReleaseAll();
+                e.Handled = true;
+                return;
+            }
             if (!CanInput) { base.OnKeyDown(e); return; }
             int k = KeyMap.ToEvdev(e.PhysicalKey.ToString(), e.Key.ToString());
             if (k > 0) { _session!.Key(k, true); e.Handled = true; }

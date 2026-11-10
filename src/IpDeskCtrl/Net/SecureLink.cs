@@ -134,7 +134,7 @@ namespace IpDeskCtrl.Net
 
                 using var other = ECDiffieHellman.Create();
                 other.ImportSubjectPublicKeyInfo(peerEph, out _);
-                byte[] shared = eph.DeriveRawSecretAgreement(other.PublicKey);
+                byte[] shared = eph.DeriveKeyFromHash(other.PublicKey, HashAlgorithmName.SHA256);   // disponibile su tutti i sistemi, Android compreso
                 byte[] v2h = Crypto.Hkdf(shared, transcript, "IPDK1 visore->host");
                 byte[] h2v = Crypto.Hkdf(shared, transcript, "IPDK1 host->visore");
                 byte[] udp = Crypto.Hkdf(shared, transcript, "IPDK1 udp");

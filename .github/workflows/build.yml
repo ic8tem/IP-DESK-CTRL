@@ -41,7 +41,7 @@ jobs:
 
       - name: Compila ${{ matrix.rid }}
         shell: bash
-        run: dotnet publish src/IpDeskCtrl/IpDeskCtrl.csproj -c Release -r ${{ matrix.rid }} -p:Version=$VERSION -o dist/${{ matrix.rid }}
+        run: dotnet publish src/IpDeskCtrl.Desktop/IpDeskCtrl.Desktop.csproj -c Release -r ${{ matrix.rid }} -p:Version=$VERSION -o dist/${{ matrix.rid }}
 
       # ---------------------------------------------------------------- Windows: Setup.exe + zip portatile
       - name: Installatore Windows
@@ -87,10 +87,66 @@ jobs:
           name: IP-DESK-CTRL-${{ matrix.rid }}
           path: out/*
 
+  # ---------------------------------------------------------------- Android: APK firmato
+  android:
+    name: android
+    runs-on: ubuntu-latest
+    env:
+      # chiave di firma fissa, nei segreti del repository (Settings › Secrets and variables › Actions):
+      # con la stessa chiave gli aggiornamenti si installano sopra la versione precedente.
+      KS_B64: ${{ secrets.ANDROID_KEYSTORE_B64 }}
+      KS_PASS: ${{ secrets.ANDROID_KEYSTORE_PASS }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'microsoft'
+          java-version: '17'
+
+      - name: Carico di lavoro Android
+        run: dotnet workload install android
+
+      - name: Versione e chiave
+        shell: bash
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then V="${GITHUB_REF#refs/tags/v}"; else V="$(tr -d '[:space:]' < VERSION)"; fi
+          IFS=. read -r A B C <<< "$V"
+          echo "VERSION=$V" >> "$GITHUB_ENV"
+          echo "VCODE=$((A * 10000 + B * 100 + C))" >> "$GITHUB_ENV"
+          if [ -z "$KS_B64" ] || [ -z "$KS_PASS" ]; then
+            echo "::error::Mancano i segreti ANDROID_KEYSTORE_B64 e ANDROID_KEYSTORE_PASS (Settings > Secrets and variables > Actions)"
+            exit 1
+          fi
+          echo "$KS_B64" | base64 -d > "$RUNNER_TEMP/firma.keystore"
+          echo "KS_FILE=$RUNNER_TEMP/firma.keystore" >> "$GITHUB_ENV"
+
+      - name: Compila APK
+        shell: bash
+        run: |
+          dotnet publish src/IpDeskCtrl.Android/IpDeskCtrl.Android.csproj -c Release -f net8.0-android \
+            -p:Version=$VERSION -p:ApplicationDisplayVersion=$VERSION -p:ApplicationVersion=$VCODE \
+            -p:AndroidKeyStore=true -p:AndroidSigningKeyStore="$KS_FILE" -p:AndroidSigningKeyAlias=ipdesk \
+            -p:AndroidSigningKeyPass="$KS_PASS" -p:AndroidSigningStorePass="$KS_PASS" \
+            -o dist/android
+          mkdir -p out
+          APK=$(ls dist/android/*-Signed.apk | head -1)
+          cp "$APK" "out/IP-DESK-CTRL-$VERSION-android.apk"
+          ls -l out
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: IP-DESK-CTRL-android
+          path: out/*
+
   # Pubblica (o aggiorna) la release della versione scritta nel file VERSION a ogni push su main.
   release:
     if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v'))
-    needs: build
+    needs: [build, android]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -115,7 +171,10 @@ jobs:
             **Linux 64 bit**: `ip-desk-ctrl_…_amd64.deb`
             **Raspberry Pi**: `ip-desk-ctrl_…_arm64.deb` (Raspberry Pi OS 64 bit) · `ip-desk-ctrl_…_armhf.deb` (32 bit)
             **macOS**: `IP-DESK-CTRL-…-osx-arm64.dmg` (Apple Silicon) · `…-osx-x64.dmg` (Intel); al primo avvio clic destro › Apri
+            **Android** (8.0 e successivi): `IP-DESK-CTRL-…-android.apk`; consenti l'installazione da origini sconosciute. Per farti comandare dal PC attiva il servizio in Impostazioni › Accessibilità › IP-DESK-CTRL.
 
             Linux e Raspberry: `sudo apt install ./ip-desk-ctrl_…deb` (con la sessione Wayland riavvia dopo l'installazione: serve la regola per mouse e tastiera).
             macOS: concedi «Registrazione schermo» e «Accessibilità» in Impostazioni di Sistema › Privacy e sicurezza; per l'audio installa BlackHole 2ch.
             Le versioni *portatile* non richiedono installazione.
+
+            **Compatibilità**: tutti i dispositivi devono avere la 0.2.x (protocollo 2); la 0.1.0 non si collega con la 0.2.

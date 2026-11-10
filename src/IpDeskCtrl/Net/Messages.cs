@@ -41,8 +41,17 @@ namespace IpDeskCtrl.Net
         public const byte UdpOffer = 0x50;       // str candidati "ip:porta;…" | i32 passo NAT simmetrico
         public const byte UdpOn = 0x51;          // u8 1 = ricevo su UDP
 
-        // ---- appunti
-        public const byte Clipboard = 0x60;      // str testo
+        // ---- testo digitato (tastiera del telefono): caratteri Unicode, non tasti
+        public const byte Text = 0x36;           // str testo
+
+        // ---- appunti e file (nei due versi)
+        public const byte Clipboard = 0x60;      // str testo degli appunti
+        public const byte FileOffer = 0x61;      // i32 id | u8 scopo | i32 n | n × (str percorso relativo | i64 byte)
+        public const byte FileChunk = 0x62;      // i32 id | i32 indice | i32 n | n byte
+        public const byte FileDone = 0x63;       // i32 id
+        public const byte FileFetch = 0x64;      // chiede all'altro PC i file che ha negli appunti
+        public const byte FilesAvailable = 0x65; // i32 numero | i64 byte | str primo nome (file negli appunti dell'altro PC)
+        public const byte FileCancel = 0x66;     // i32 id | str motivo
     }
 
     public enum AcceptState : byte { Waiting = 0, Accepted = 1, Rejected = 2, Busy = 3, Disabled = 4 }

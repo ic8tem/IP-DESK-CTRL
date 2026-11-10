@@ -1,24 +1,23 @@
 using System;
-using System.IO;
 using Avalonia;
 using IpDeskCtrl.Core;
 
-namespace IpDeskCtrl
+namespace IpDeskCtrl.Desktop
 {
     internal static class Program
     {
         [STAThread]
         public static void Main(string[] args)
         {
-            AppDomain.CurrentDomain.UnhandledException += (_, e) => LogError(e.ExceptionObject?.ToString());
+            AppDomain.CurrentDomain.UnhandledException += (_, e) => ErrorLog.Write(e.ExceptionObject?.ToString());
             try
             {
-                if (OperatingSystem.IsLinux()) Screen.X11.InitThreads();
+                if (OperatingSystem.IsLinux()) Screen.ScreenSources.InitLinux();
                 BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
             }
             catch (Exception ex)
             {
-                LogError(ex.ToString());
+                ErrorLog.Write(ex.ToString());
                 throw;
             }
         }
@@ -28,10 +27,5 @@ namespace IpDeskCtrl
                 .UsePlatformDetect()
                 .WithInterFont()
                 .LogToTrace();
-
-        public static void LogError(string? text)
-        {
-            try { File.AppendAllText(Path.Combine(AppSettings.Folder, "errori.log"), $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} {text}{Environment.NewLine}"); } catch { }
-        }
     }
 }

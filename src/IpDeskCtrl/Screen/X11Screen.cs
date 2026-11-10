@@ -22,6 +22,10 @@ namespace IpDeskCtrl.Screen
         [DllImport(Lib)] public static extern IntPtr XGetAtomName(IntPtr d, nuint atom);
         [DllImport(Lib)] public static extern int XQueryPointer(IntPtr d, nuint w, out nuint root, out nuint child, out int rx, out int ry, out int wx, out int wy, out uint mask);
         [DllImport(Lib)] public static extern int XSetErrorHandler(IntPtr handler);
+        [DllImport(Lib)] public static extern int XSync(IntPtr d, int discard);
+        [DllImport(Lib)] public static extern int XDisplayKeycodes(IntPtr d, out int min, out int max);
+        [DllImport(Lib)] public static extern IntPtr XGetKeyboardMapping(IntPtr d, byte first, int count, out int keysymsPerKeycode);
+        [DllImport(Lib)] public static extern int XChangeKeyboardMapping(IntPtr d, int first, int keysymsPerCode, nuint[] keysyms, int numCodes);
 
         [DllImport(Tst)] public static extern int XTestFakeMotionEvent(IntPtr d, int screen, int x, int y, nuint delay);
         [DllImport(Tst)] public static extern int XTestFakeButtonEvent(IntPtr d, uint button, int press, nuint delay);

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="app_name">IP-DESK-CTRL</string>
+  <string name="accessibility_description">Permette al PC collegato con IP-DESK-CTRL di toccare e scorrere lo schermo di questo telefono e di scrivere nei campi di testo. Si attiva solo durante un collegamento che hai accettato.</string>
+</resources>

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -97,6 +98,11 @@ namespace IpDeskCtrl.Core
                 await SendAsync(new MsgWriter(Msg.Accept).U8((byte)AcceptState.Accepted).Str(_allowInput ? "" : "solo visione").Build());
                 Activated?.Invoke();
 
+                if (Platform.PrepareHost != null)
+                {
+                    string why = await Platform.PrepareHost();
+                    if (why.Length > 0) Note(why);
+                }
                 _screen = ScreenSources.Create();
                 if (_allowInput) _input = InputSinks.Create();
                 SendMonitors();
@@ -104,12 +110,14 @@ namespace IpDeskCtrl.Core
                 capture.Start();
                 _ = Task.Run(PingLoopAsync);
                 _ = Task.Run(MaintenanceLoopAsync);
+                _ = Task.Run(ClipboardLoopAsync);
+                _ = Task.Run(ClipboardFilesLoopAsync);
                 var ext = P.PublicIp != null && P.ExternalPort > 0 ? new IPEndPoint(P.PublicIp, P.ExternalPort) : null;
                 await OfferUdpAsync(P.LocalPort, ext);
             }
             catch (Exception ex) when (!IsClosed)
             {
-                Program.LogError(ex.ToString());
+                ErrorLog.Write(ex.ToString());
                 Close("errore sul PC comandato: " + ex.Message);
             }
             catch { }
@@ -153,6 +161,7 @@ namespace IpDeskCtrl.Core
                 case Msg.SetQuality: _quality = r.Str(); _fullNext = true; break;
                 case Msg.SetAudio: SetAudio(r.Bool()); break;
                 case Msg.Refresh: _fullNext = true; break;
+                case Msg.FileFetch: _ = Task.Run(SendClipboardFilesAsync); break;
                 case Msg.FrameAck:
                 {
                     int id = r.I32();
@@ -190,10 +199,70 @@ namespace IpDeskCtrl.Core
                     case Msg.Wheel: sink.Wheel(r.I32(), r.I32()); break;
                     case Msg.Key: { int k = r.U16(); bool down = r.Bool(); sink.Key(k, down); _pressed.Key(k, down); break; }
                     case Msg.ReleaseAll: _pressed.ReleaseAll(sink); break;
+                    case Msg.Text: sink.Text(r.Str()); break;
                 }
                 if (sink.Note.Length > 0) Note(sink.Note);
             }
             catch (Exception ex) { Note("Mouse e tastiera non disponibili: " + ex.Message); }
+        }
+
+        protected override bool FilesAllowed => _accepted && _allowInput;
+
+        /// <summary>
+        /// File trascinati sulla finestra del visore: sono negli appunti di questo PC; si incollano dove sono
+        /// stati lasciati (clic nel punto e Ctrl+V, Cmd+V su macOS), come un trascinamento vero.
+        /// </summary>
+        protected override void OnFilesReceived(TransferPurpose purpose, string folder, List<string> topLevel, bool onClipboard)
+        {
+            string what = topLevel.Count == 1 ? "1 elemento" : $"{topLevel.Count} elementi";
+            if (purpose == TransferPurpose.Drop && onClipboard && _input != null && _allowInput && !Platform.IsMobile)
+            {
+                try
+                {
+                    _input.Button(Input.MouseBtn.Left, true);
+                    _input.Button(Input.MouseBtn.Left, false);
+                    Thread.Sleep(150);
+                    int mod = OperatingSystem.IsMacOS() ? Input.KeyMap.LeftMeta : Input.KeyMap.LeftCtrl;
+                    _input.Key(mod, true); _input.Key(47, true); _input.Key(47, false); _input.Key(mod, false);
+                    Note($"{what} copiati sul PC remoto (in {folder}) e incollati dove li hai lasciati.");
+                    return;
+                }
+                catch { }
+            }
+            Note($"{what} copiati sul PC remoto in {folder}" + (onClipboard ? ": sono negli appunti, incollali con Ctrl+V dove vuoi." : "."));
+        }
+
+        private List<string> _clipFiles = new();
+
+        /// <summary>Ogni 2 secondi: se negli appunti di questo PC ci sono file, lo dice al visore (che può prenderli).</summary>
+        private async Task ClipboardFilesLoopAsync()
+        {
+            var clip = Platform.Clipboard;
+            if (clip == null) return;
+            while (!Cts.IsCancellationRequested)
+            {
+                try { await Task.Delay(2000, Cts.Token); } catch { break; }
+                if (!FilesAllowed) continue;
+                try
+                {
+                    var files = await clip.GetFilesAsync();
+                    if (files.SequenceEqual(_clipFiles)) continue;
+                    _clipFiles = files;
+                    var items = files.Count > 0 ? FromPaths(files) : new List<TransferItem>();
+                    string first = files.Count > 0 ? System.IO.Path.GetFileName(files[0].TrimEnd('/', '\\')) : "";
+                    await SendAsync(new MsgWriter(Msg.FilesAvailable).I32(files.Count).I64(items.Sum(i => i.Size)).Str(first).Build());
+                }
+                catch { }
+            }
+        }
+
+        private async Task SendClipboardFilesAsync()
+        {
+            if (!FilesAllowed) return;
+            var clip = Platform.Clipboard;
+            var files = clip == null ? new List<string>() : await clip.GetFilesAsync();
+            if (files.Count == 0) { Note("Negli appunti del PC remoto non ci sono più file."); return; }
+            await SendFilesAsync(FromPaths(files), TransferPurpose.Fetch);
         }
 
         protected override void OnDatagram(byte[] m)
@@ -302,7 +371,7 @@ namespace IpDeskCtrl.Core
                 catch (AggregateException) when (Cts.IsCancellationRequested) { break; }
                 catch (Exception ex)
                 {
-                    Program.LogError("Cattura: " + ex);
+                    ErrorLog.Write("Cattura: " + ex);
                     Thread.Sleep(500);
                 }
                 // circa 25 fotogrammi al secondo al massimo (meno se cattura e codifica sono lente)
@@ -362,6 +431,7 @@ namespace IpDeskCtrl.Core
             if (_input != null) { _pressed.ReleaseAll(_input); _input.Dispose(); }
             _audio?.Dispose();
             _screen?.Dispose();
+            try { Platform.HostEnded?.Invoke(); } catch { }
             var h = P.S.Find(PeerNumber);
             if (h != null) { h.LastSeconds = Duration(DateTime.UtcNow - Started); P.S.Save(); }
         }

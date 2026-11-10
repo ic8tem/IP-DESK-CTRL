@@ -15,13 +15,45 @@ namespace IpDeskCtrl.Input
         void Button(int button, bool down);
         void Wheel(int dx, int dy);              // 120 = uno scatto
         void Key(int evdev, bool down);
+        /// <summary>Scrive testo Unicode così com'è (tastiera del telefono), indipendente dalla disposizione dei tasti.</summary>
+        void Text(string text);
         string Note { get; }
+    }
+
+    /// <summary>Per i sistemi che non sanno scrivere Unicode: lettere, cifre e pochi segni sulla posizione dei tasti.</summary>
+    public static class AsciiKeys
+    {
+        public static void Type(IInputSink sink, string text)
+        {
+            foreach (char ch in text)
+            {
+                int k; bool shift = false;
+                if (ch >= 'a' && ch <= 'z') k = Letter(ch);
+                else if (ch >= 'A' && ch <= 'Z') { k = Letter(char.ToLowerInvariant(ch)); shift = true; }
+                else if (ch >= '1' && ch <= '9') k = 2 + (ch - '1');
+                else if (ch == '0') k = 11;
+                else if (ch == ' ') k = 57;
+                else if (ch == '\n' || ch == '\r') k = 28;
+                else if (ch == '\t') k = 15;
+                else if (ch == '.') k = 52;
+                else if (ch == ',') k = 51;
+                else continue;
+                if (shift) sink.Key(KeyMap.LeftShift, true);
+                sink.Key(k, true); sink.Key(k, false);
+                if (shift) sink.Key(KeyMap.LeftShift, false);
+            }
+        }
+
+        private static int Letter(char c) => "qwertyuiop".IndexOf(c) is int a and >= 0 ? 16 + a
+            : "asdfghjkl".IndexOf(c) is int b and >= 0 ? 30 + b
+            : 44 + "zxcvbnm".IndexOf(c);
     }
 
     public static class InputSinks
     {
         public static IInputSink Create()
         {
+            if (Core.Platform.Input != null) return Core.Platform.Input();
             if (OperatingSystem.IsWindows()) return new WindowsInput();
             if (OperatingSystem.IsMacOS()) return new MacInput();
             if (LinuxSession.IsWayland && !LinuxSession.ForceX11) return new UinputInput();
@@ -124,6 +156,18 @@ namespace IpDeskCtrl.Input
             Send(new INPUT { type = 1, u = new InputUnion { ki = new KEYBDINPUT { wScan = (ushort)(sc & 0xFF), dwFlags = flags } } });
         }
 
+        private const uint KEY_UNICODE = 0x0004;
+
+        public void Text(string text)
+        {
+            foreach (char c in text)
+            {
+                if (c == '\n' || c == '\r') { Key(28, true); Key(28, false); continue; }
+                Send(new INPUT { type = 1, u = new InputUnion { ki = new KEYBDINPUT { wScan = c, dwFlags = KEY_UNICODE } } },
+                     new INPUT { type = 1, u = new InputUnion { ki = new KEYBDINPUT { wScan = c, dwFlags = KEY_UNICODE | KEY_UP } } });
+            }
+        }
+
         public void Dispose() { }
     }
 
@@ -184,6 +228,70 @@ namespace IpDeskCtrl.Input
 
         // con XKB i codici dei tasti X sono quelli evdev + 8
         public void Key(int evdev, bool down) { if (evdev > 0) Do(() => X11.XTestFakeKeyEvent(_d, (uint)(evdev + 8), down ? 1 : 0, 0)); }
+
+        private int _scratch = -1;
+
+        /// <summary>
+        /// Testo Unicode: come xdotool, si assegna per un attimo il carattere a un tasto libero della mappa
+        /// della tastiera, lo si preme e poi si toglie.
+        /// </summary>
+        public void Text(string text)
+        {
+            if (_d == IntPtr.Zero) return;
+            lock (_lock)
+            {
+                try
+                {
+                    if (_scratch < 0) _scratch = FindScratch();
+                    if (_scratch <= 0) { Note = "Nessun tasto libero per scrivere il testo"; return; }
+                    foreach (int cp in Codepoints(text))
+                    {
+                        if (cp == '\n' || cp == '\r') { X11.XTestFakeKeyEvent(_d, 36, 1, 0); X11.XTestFakeKeyEvent(_d, 36, 0, 0); X11.XSync(_d, 0); continue; }
+                        nuint ks = cp >= 0x20 && cp <= 0xFF ? (nuint)cp : (nuint)(0x01000000 | cp);
+                        X11.XChangeKeyboardMapping(_d, _scratch, 1, new[] { ks }, 1);
+                        X11.XSync(_d, 0);
+                        System.Threading.Thread.Sleep(8);
+                        X11.XTestFakeKeyEvent(_d, (uint)_scratch, 1, 0);
+                        X11.XTestFakeKeyEvent(_d, (uint)_scratch, 0, 0);
+                        X11.XSync(_d, 0);
+                        System.Threading.Thread.Sleep(8);
+                    }
+                    X11.XChangeKeyboardMapping(_d, _scratch, 1, new nuint[] { 0 }, 1);
+                    X11.XFlush(_d);
+                }
+                catch (Exception ex) { Note = "Testo non scrivibile: " + ex.Message; }
+            }
+        }
+
+        private int FindScratch()
+        {
+            X11.XDisplayKeycodes(_d, out int min, out int max);
+            IntPtr map = X11.XGetKeyboardMapping(_d, (byte)min, max - min + 1, out int per);
+            if (map == IntPtr.Zero) return 0;
+            try
+            {
+                int size = IntPtr.Size;
+                for (int kc = max; kc >= min; kc--)
+                {
+                    bool empty = true;
+                    for (int j = 0; j < per && empty; j++)
+                        if (Marshal.ReadIntPtr(map, ((kc - min) * per + j) * size) != IntPtr.Zero) empty = false;
+                    if (empty) return kc;
+                }
+                return 0;
+            }
+            finally { X11.XFree(map); }
+        }
+
+        private static IEnumerable<int> Codepoints(string s)
+        {
+            for (int i = 0; i < s.Length; i++)
+            {
+                int cp = char.ConvertToUtf32(s, i);
+                if (char.IsHighSurrogate(s[i])) i++;
+                yield return cp;
+            }
+        }
 
         public void Dispose() { lock (_lock) { if (_d != IntPtr.Zero) X11.XCloseDisplay(_d); } }
     }
@@ -299,6 +407,8 @@ namespace IpDeskCtrl.Input
             lock (_lock) { Emit(EV_KEY, evdev, down ? 1 : 0); Sync(); }
         }
 
+        public void Text(string text) => AsciiKeys.Type(this, text);
+
         public void Dispose()
         {
             if (_fd < 0) return;
@@ -318,6 +428,7 @@ namespace IpDeskCtrl.Input
         [DllImport(Mac.CG)] private static extern void CGEventSetFlags(IntPtr ev, ulong flags);
         [DllImport(Mac.CG)] private static extern void CGEventSetIntegerValueField(IntPtr ev, uint field, long value);
         [DllImport(Mac.AS)] [return: MarshalAs(UnmanagedType.I1)] private static extern bool AXIsProcessTrusted();
+        [DllImport(Mac.CG)] private static extern void CGEventKeyboardSetUnicodeString(IntPtr ev, nuint len, ushort[] chars);
 
         private const uint LeftDown = 1, LeftUp = 2, RightDown = 3, RightUp = 4, Moved = 5, LeftDrag = 6, RightDrag = 7,
                            OtherDown = 25, OtherUp = 26, OtherDrag = 27;
@@ -417,6 +528,22 @@ namespace IpDeskCtrl.Input
             if (ev == IntPtr.Zero) return;
             CGEventSetFlags(ev, _flags);
             Post(ev);
+        }
+
+        public void Text(string text)
+        {
+            Check();
+            foreach (char c in text)
+            {
+                if (c == '\n' || c == '\r') { Key(28, true); Key(28, false); continue; }
+                foreach (bool down in new[] { true, false })
+                {
+                    IntPtr ev = CGEventCreateKeyboardEvent(IntPtr.Zero, 0, down);
+                    if (ev == IntPtr.Zero) continue;
+                    CGEventKeyboardSetUnicodeString(ev, 1, new[] { (ushort)c });
+                    Post(ev);
+                }
+            }
         }
 
         public void Dispose() { }

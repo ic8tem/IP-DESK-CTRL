@@ -28,6 +28,7 @@ namespace IpDeskCtrl.Audio
     {
         public static ISystemAudioCapture CreateCapture()
         {
+            if (Core.Platform.AudioCapture != null) return Core.Platform.AudioCapture();
             if (OperatingSystem.IsWindows()) return new WasapiLoopback();
             if (OperatingSystem.IsMacOS()) return new MacAudio.Capture();
             return new PulseCapture();
@@ -35,6 +36,7 @@ namespace IpDeskCtrl.Audio
 
         public static IAudioPlayer CreatePlayer()
         {
+            if (Core.Platform.AudioPlayer != null) return Core.Platform.AudioPlayer();
             if (OperatingSystem.IsWindows()) return new WaveOutPlayer();
             if (OperatingSystem.IsMacOS()) return new MacAudio.Player();
             return new PulsePlayer();

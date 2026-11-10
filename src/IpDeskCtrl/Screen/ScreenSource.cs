@@ -54,8 +54,12 @@ namespace IpDeskCtrl.Screen
 
     public static class ScreenSources
     {
+        /// <summary>Da chiamare prima di Avalonia su Linux (X11 da più thread).</summary>
+        public static void InitLinux() => X11.InitThreads();
+
         public static IScreenSource Create()
         {
+            if (Core.Platform.Screen != null) return Core.Platform.Screen();
             if (OperatingSystem.IsWindows()) return new WindowsScreen();
             if (OperatingSystem.IsMacOS()) return new MacScreen();
             if (LinuxSession.IsWayland && !LinuxSession.ForceX11) return new WaylandScreen();

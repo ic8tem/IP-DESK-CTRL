@@ -111,7 +111,7 @@ namespace IpDeskCtrl.Core
             catch (OperationCanceledException) { }
             catch (Exception ex)
             {
-                Program.LogError(ex.ToString());
+                ErrorLog.Write(ex.ToString());
                 SetStatus("Errore di rete: " + ex.Message);
             }
         }
