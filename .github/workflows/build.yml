@@ -119,24 +119,26 @@ jobs:
           echo "VERSION=$V" >> "$GITHUB_ENV"
           echo "VCODE=$((A * 10000 + B * 100 + C))" >> "$GITHUB_ENV"
           if [ -z "$KS_B64" ] || [ -z "$KS_PASS" ]; then
-            echo "::error::Mancano i segreti ANDROID_KEYSTORE_B64 e ANDROID_KEYSTORE_PASS (Settings > Secrets and variables > Actions)"
-            exit 1
+            # senza segreti si compila lo stesso (per vedere gli errori), ma l'APK non viene pubblicato
+            echo "::warning::Mancano i segreti ANDROID_KEYSTORE_B64 e ANDROID_KEYSTORE_PASS: compilo senza firma e non pubblico"
+            echo "SIGN=-p:AndroidKeyStore=false" >> "$GITHUB_ENV"
+            echo "UNSIGNED=1" >> "$GITHUB_ENV"
+          else
+            echo "$KS_B64" | base64 -d > "$RUNNER_TEMP/firma.keystore"
+            echo "SIGN=-p:AndroidKeyStore=true -p:AndroidSigningKeyStore=$RUNNER_TEMP/firma.keystore -p:AndroidSigningKeyAlias=ipdesk -p:AndroidSigningKeyPass=env:KS_PASS -p:AndroidSigningStorePass=env:KS_PASS" >> "$GITHUB_ENV"
           fi
-          echo "$KS_B64" | base64 -d > "$RUNNER_TEMP/firma.keystore"
-          echo "KS_FILE=$RUNNER_TEMP/firma.keystore" >> "$GITHUB_ENV"
 
       - name: Compila APK
         shell: bash
         run: |
           dotnet publish src/IpDeskCtrl.Android/IpDeskCtrl.Android.csproj -c Release -f net8.0-android \
             -p:Version=$VERSION -p:ApplicationDisplayVersion=$VERSION -p:ApplicationVersion=$VCODE \
-            -p:AndroidKeyStore=true -p:AndroidSigningKeyStore="$KS_FILE" -p:AndroidSigningKeyAlias=ipdesk \
-            -p:AndroidSigningKeyPass="$KS_PASS" -p:AndroidSigningStorePass="$KS_PASS" \
-            -o dist/android
+            $SIGN -o dist/android
           mkdir -p out
           APK=$(ls dist/android/*-Signed.apk | head -1)
           cp "$APK" "out/IP-DESK-CTRL-$VERSION-android.apk"
           ls -l out
+          if [ "$UNSIGNED" = "1" ]; then echo "::error::APK compilato ma non firmato con la chiave del progetto: aggiungi i segreti e rilancia"; exit 1; fi
 
       - uses: actions/upload-artifact@v4
         with:
