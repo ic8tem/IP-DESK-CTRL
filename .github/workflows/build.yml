@@ -1,0 +1,121 @@
+name: Compilazione
+
+on:
+  push:
+    branches: [ main ]
+    tags: [ 'v*' ]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: ${{ matrix.rid }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: windows-latest, rid: win-x64, arch: x64 }
+          - { os: windows-latest, rid: win-x86, arch: x86 }
+          - { os: ubuntu-latest,  rid: linux-x64 }
+          - { os: ubuntu-latest,  rid: linux-arm64 }
+          - { os: ubuntu-latest,  rid: linux-arm }
+          - { os: macos-latest,   rid: osx-arm64 }
+          - { os: macos-latest,   rid: osx-x64 }
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Versione
+        shell: bash
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then V="${GITHUB_REF#refs/tags/v}"; else V="$(tr -d '[:space:]' < VERSION)"; fi
+          echo "VERSION=$V" >> "$GITHUB_ENV"
+
+      - name: Compila ${{ matrix.rid }}
+        shell: bash
+        run: dotnet publish src/IpDeskCtrl/IpDeskCtrl.csproj -c Release -r ${{ matrix.rid }} -p:Version=$VERSION -o dist/${{ matrix.rid }}
+
+      # ---------------------------------------------------------------- Windows: Setup.exe + zip portatile
+      - name: Installatore Windows
+        if: startsWith(matrix.rid, 'win')
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force out | Out-Null
+          $iscc = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
+          if (-not (Test-Path $iscc)) { choco install innosetup -y --no-progress | Out-Null }
+          if (-not (Test-Path $iscc)) { $iscc = (Get-Command iscc -ErrorAction Stop).Source }
+          $src = (Resolve-Path dist/${{ matrix.rid }}).Path
+          $out = (Resolve-Path out).Path
+          & $iscc "/DAppVersion=$env:VERSION" "/DArch=${{ matrix.arch }}" "/DSourceDir=$src" "/DOutDir=$out" packaging/windows/IP-DESK-CTRL.iss
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          Copy-Item THIRD-PARTY-NOTICES.txt dist/${{ matrix.rid }}/
+          Copy-Item LICENSE dist/${{ matrix.rid }}/LICENSE.txt
+          Compress-Archive -Path dist/${{ matrix.rid }}/IP-DESK-CTRL.exe, dist/${{ matrix.rid }}/THIRD-PARTY-NOTICES.txt, dist/${{ matrix.rid }}/LICENSE.txt -DestinationPath "out/IP-DESK-CTRL-$env:VERSION-${{ matrix.rid }}-portatile.zip"
+
+      # ---------------------------------------------------------------- Linux e Raspberry: .deb + tar.gz portatile
+      - name: Pacchetti Linux
+        if: startsWith(matrix.rid, 'linux')
+        shell: bash
+        run: |
+          chmod +x packaging/linux/make-deb.sh
+          packaging/linux/make-deb.sh ${{ matrix.rid }} "$VERSION" dist/${{ matrix.rid }} out
+          mkdir -p pkg/IP-DESK-CTRL
+          cp dist/${{ matrix.rid }}/IP-DESK-CTRL pkg/IP-DESK-CTRL/
+          chmod +x pkg/IP-DESK-CTRL/IP-DESK-CTRL
+          cp THIRD-PARTY-NOTICES.txt LICENSE src/IpDeskCtrl/Assets/icon.png pkg/IP-DESK-CTRL/
+          tar -czf "out/IP-DESK-CTRL-$VERSION-${{ matrix.rid }}-portatile.tar.gz" -C pkg IP-DESK-CTRL
+          dpkg-deb --info out/*.deb | head -20
+
+      # ---------------------------------------------------------------- macOS: .dmg + .app zip
+      - name: Pacchetti macOS
+        if: startsWith(matrix.rid, 'osx')
+        shell: bash
+        run: |
+          chmod +x packaging/macos/make-dmg.sh
+          packaging/macos/make-dmg.sh ${{ matrix.rid }} "$VERSION" dist/${{ matrix.rid }} out
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: IP-DESK-CTRL-${{ matrix.rid }}
+          path: out/*
+
+  # Pubblica (o aggiorna) la release della versione scritta nel file VERSION a ogni push su main.
+  release:
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v'))
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Versione
+        shell: bash
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then V="${GITHUB_REF#refs/tags/v}"; else V="$(tr -d '[:space:]' < VERSION)"; fi
+          echo "VERSION=$V" >> "$GITHUB_ENV"
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          merge-multiple: true
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ env.VERSION }}
+          target_commitish: ${{ github.sha }}
+          name: IP-DESK-CTRL ${{ env.VERSION }}
+          overwrite_files: true
+          files: artifacts/*
+          body: |
+            **Windows 64 bit**: `IP-DESK-CTRL-…-win-x64-setup.exe` · **Windows 32 bit**: `…-win-x86-setup.exe`
+            **Linux 64 bit**: `ip-desk-ctrl_…_amd64.deb`
+            **Raspberry Pi**: `ip-desk-ctrl_…_arm64.deb` (Raspberry Pi OS 64 bit) · `ip-desk-ctrl_…_armhf.deb` (32 bit)
+            **macOS**: `IP-DESK-CTRL-…-osx-arm64.dmg` (Apple Silicon) · `…-osx-x64.dmg` (Intel); al primo avvio clic destro › Apri
+
+            Linux e Raspberry: `sudo apt install ./ip-desk-ctrl_…deb` (con la sessione Wayland riavvia dopo l'installazione: serve la regola per mouse e tastiera).
+            macOS: concedi «Registrazione schermo» e «Accessibilità» in Impostazioni di Sistema › Privacy e sicurezza; per l'audio installa BlackHole 2ch.
+            Le versioni *portatile* non richiedono installazione.

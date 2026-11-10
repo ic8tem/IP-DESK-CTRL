@@ -1,0 +1,10 @@
+bin/
+obj/
+dist/
+out/
+pkg/
+*.user
+.vs/
+.vscode/
+.idea/
+*.zip

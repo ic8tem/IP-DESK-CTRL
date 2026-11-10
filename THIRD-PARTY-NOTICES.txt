@@ -1,0 +1,80 @@
+IP-DESK-CTRL - NOTE DI TERZE PARTI
+==================================
+
+IP-DESK-CTRL: Copyright (C) 2026 Costantino IC8TEM - GNU GPL 3.0 o successiva (file LICENSE).
+
+Questo programma include o usa i componenti di terze parti elencati qui sotto.
+Prima di distribuire gli eseguibili, verifica che titolari e testi corrispondano
+ai file di licenza presenti nei pacchetti effettivamente usati per la compilazione.
+
+---------------------------------------------------------
+Avalonia - licenza MIT - Copyright (c) AvaloniaUI OU e collaboratori
+https://github.com/AvaloniaUI/Avalonia
+(include SkiaSharp e HarfBuzzSharp - licenza MIT - Copyright (c) .NET Foundation
+e collaboratori; le librerie native Skia e HarfBuzz sono distribuite con licenze
+BSD-3-Clause e MIT, vedi https://github.com/mono/SkiaSharp. SkiaSharp e' usato
+anche per comprimere e decomprimere le immagini dello schermo in JPEG.)
+
+Inter (carattere) - SIL Open Font License 1.1 - Copyright (c) The Inter Project Authors
+https://github.com/rsms/inter
+
+MQTTnet - licenza MIT - Copyright (c) .NET Foundation e collaboratori
+https://github.com/dotnet/MQTTnet
+
+Open.NAT - licenza MIT - Copyright (c) Lucas Ontivero e collaboratori
+https://github.com/lontivero/Open.NAT
+
+NAudio (NAudio.Core, NAudio.Wasapi, NAudio.WinMM) - licenza MIT - Copyright (c) Mark Heath e collaboratori
+https://github.com/naudio/NAudio
+
+.NET Runtime, System.Security.Cryptography.ProtectedData
+licenza MIT - Copyright (c) .NET Foundation e collaboratori
+https://github.com/dotnet/runtime
+
+---------------------------------------------------------
+Componenti del sistema operativo usati senza essere inclusi:
+Windows GDI, user32 e Core Audio (WASAPI); libX11, libXtst, libXrandr (licenza MIT/X11);
+il modulo uinput del kernel Linux; i programmi grim (MIT), wlr-randr (MIT),
+parec/pacat (PulseAudio, LGPL 2.1) e aplay (alsa-utils, GPL 2) quando presenti;
+macOS CoreGraphics, CoreAudio, AudioToolbox, ApplicationServices.
+Su macOS l'audio del sistema si cattura tramite un dispositivo virtuale installato
+dall'utente (per esempio BlackHole), che non e' incluso.
+
+Servizi esterni interrogati: broker MQTT pubblici (broker.hivemq.com, test.mosquitto.org,
+broker.emqx.io), server STUN (Google, Cloudflare), ifconfig.co e portchecker.io (verifica
+delle porte), portquiz.net (porte in uscita), api.ipify.org, icanhazip.com e
+checkip.amazonaws.com (IP pubblico). Nessuno di loro vede il contenuto dei collegamenti.
+
+Il ritrovo MQTT, la gestione delle porte (UPnP, verifica esterna, collegamento inverso,
+porte in uscita) e il collegamento UDP derivano da IP-TRX-CTRL, dello stesso autore.
+La cattura dello schermo, la codifica a riquadri, mouse e tastiera e il resto del
+programma sono scritti da zero.
+
+---------------------------------------------------------
+Testo della licenza MIT (vale per tutti i componenti MIT elencati sopra)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+---------------------------------------------------------
+COMPONENTI ESTERNI NON INCLUSI (installati a parte, solo se l'utente li sceglie)
+
+BlackHole (macOS) - Existential Audio Inc. - open source
+https://github.com/ExistentialAudio/BlackHole
+Non incluso: si installa a parte (brew install blackhole-2ch) solo per mandare
+l'audio di un Mac all'altro PC.
