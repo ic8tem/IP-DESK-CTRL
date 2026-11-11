@@ -293,6 +293,7 @@ namespace IpDeskCtrl.UI
                 _peer.Start();
                 _ = PresenceLoopAsync();
                 _ = UpdateCheck.LoopAsync(r => Dispatcher.UIThread.Post(() => ShowUpdate(r)), _life.Token);
+                ResumeAfterUpdate();
             }
             catch (Exception ex)
             {
@@ -546,8 +547,95 @@ namespace IpDeskCtrl.UI
 
         // =================================================================== nuova versione
 
+        // =================================================================== aggiornamento dal programma aperto
+
+        private IDialogHandle? _updateDialog;
+        private CancellationTokenSource? _updateCts;
+
+        /// <summary>Riapre i collegamenti che erano aperti prima dell'aggiornamento di questo PC.</summary>
+        private void ResumeAfterUpdate()
+        {
+            if (_s.ResumeUntil < DateTime.UtcNow.Ticks || _s.ResumeViewers.Count == 0) { if (_s.ResumeViewers.Count > 0) { _s.ResumeViewers.Clear(); _s.Save(); } return; }
+            var list = _s.ResumeViewers.ToList();
+            _s.ResumeViewers.Clear();
+            _s.ResumeUntil = 0;
+            _s.Save();
+            SessionLog.Write($"AGGIORNAMENTI riprendo {list.Count} collegamenti dopo l'aggiornamento a {AppVersion.Text}");
+            // si lascia il tempo di pubblicarsi sui broker
+            DispatcherTimer.RunOnce(() => { foreach (var n in list) ConnectTo(n); }, TimeSpan.FromSeconds(4));
+        }
+
+        /// <summary>
+        /// Popup della nuova versione con il programma aperto: scarica, controlla e installa da solo; prima avvisa
+        /// gli altri PC collegati, così i collegamenti riprendono dopo il riavvio del programma.
+        /// </summary>
+        private void ShowUpdatePopup(ReleaseInfo r)
+        {
+            if (_updateDialog != null) return;
+            var kind = Updater.Detect();
+            var asset = Updater.FindAsset(r);
+            bool service = kind == Updater.Kind.WindowsSetup && _svc != null;
+            if (kind == Updater.Kind.None || asset == null) return;
+
+            var bar = new ProgressBar { Minimum = 0, Maximum = 1, Height = 8, IsVisible = false };
+            var status = Ui.Sub("", 12);
+            int sessions = _viewers.Count + (_peer?.CurrentHost?.IsActive == true ? 1 : 0);
+            var go = Ui.Btn(kind == Updater.Kind.Android ? "Scarica l'APK" : "Aggiorna ora", true);
+            var later = Ui.Btn("Più tardi");
+            var notes = Ui.Btn("Novità");
+            var content = Ui.Col(10,
+                Ui.H1($"È uscita IP-DESK-CTRL {r.Version}"),
+                Ui.Sub($"Ora hai la {AppVersion.Text}. " + (kind == Updater.Kind.Android
+                    ? "Si apre il browser per scaricare l'APK."
+                    : "La scarico e la installo da solo: il programma si chiude e si riapre." +
+                      (sessions > 0 ? $" I collegamenti aperti ({sessions}) riprendono da soli entro qualche decina di secondi." : ""))),
+                Ui.Sub(Updater.HowItGoes(kind, service), 12),
+                bar, status,
+                Ui.Row(10, go, later, notes));
+            _updateDialog = Shell.Current.ShowDialog("IP-DESK-CTRL · aggiornamento", content, 480, false);
+            _updateDialog.Closed += () => _updateDialog = null;
+            notes.Click += (_, _) => OpenPath(r.PageUrl);
+            later.Click += (_, _) => { _updateCts?.Cancel(); _updateDialog?.Close(); _updateDialog = null; };
+            go.Click += async (_, _) =>
+            {
+                if (kind == Updater.Kind.Android) { OpenPath(asset.Url); _updateDialog?.Close(); _updateDialog = null; return; }
+                go.IsEnabled = false;
+                bar.IsVisible = true;
+                _updateCts = new CancellationTokenSource();
+                var (path, sha, err) = await Updater.DownloadAsync(asset,
+                    (f, t) => Dispatcher.UIThread.Post(() => { bar.Value = f; status.Text = "Scarico… " + t; }), _updateCts.Token);
+                if (err.Length > 0) { status.Text = "Aggiornamento non riuscito: " + err; go.IsEnabled = true; return; }
+                status.Text = "Avviso i PC collegati e installo…";
+                // chi è collegato lo sa prima: il PC comandato lascerà rientrare, il visore si ricollegherà
+                try
+                {
+                    _peer?.CurrentHost?.PrepareUpdate();
+                    var open = _viewers.Keys.ToList();
+                    foreach (var v in _viewers.Values) v.PrepareUpdate();
+                    _s.ResumeViewers = open;
+                    _s.ResumeUntil = DateTime.UtcNow.Add(ResumeState.Window).Ticks;
+                    _s.Save();
+                }
+                catch (Exception ex) { ErrorLog.Write("Aggiornamento, avviso ai collegati: " + ex.Message); }
+                await Task.Delay(600);           // i messaggi partono prima di chiudere
+                string why = await Task.Run(() => Updater.Install(kind, path, sha, service));
+                if (why.Length > 0)
+                {
+                    status.Text = "Aggiornamento non riuscito: " + why;
+                    _s.ResumeViewers.Clear(); _s.ResumeUntil = 0; _s.Save();
+                    go.IsEnabled = true;
+                    return;
+                }
+                SessionLog.Write($"AGGIORNAMENTI installo la {r.Version}: il programma si chiude e si riapre");
+                status.Text = "Installo: il programma si chiude e si riapre da solo…";
+                await Task.Delay(400);
+                if (Quit != null) Quit(); else Environment.Exit(0);
+            };
+        }
+
         private void ShowUpdate(ReleaseInfo r)
         {
+            ShowUpdatePopup(r);
             bool apk = Platform.IsMobile && r.ApkUrl.Length > 0;
             var open = Ui.Btn(apk ? "Scarica l'APK" : "Vai allo scaricamento", true);
             open.Click += (_, _) => OpenPath(apk ? r.ApkUrl : r.PageUrl);

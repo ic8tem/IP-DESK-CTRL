@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Text.Json;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 namespace IpDeskCtrl.Core
 {
     /// <summary>Ultima versione pubblicata su GitHub.</summary>
-    public sealed record ReleaseInfo(string Version, string PageUrl, string ApkUrl);
+    public sealed record ReleaseInfo(string Version, string PageUrl, string ApkUrl, List<ReleaseAsset> Assets);
 
     /// <summary>
     /// Controllo delle nuove versioni: all'avvio e poi ogni 12 ore chiede a GitHub l'ultima release
@@ -31,13 +32,16 @@ namespace IpDeskCtrl.Core
                 var root = doc.RootElement;
                 string tag = root.TryGetProperty("tag_name", out var t) ? t.GetString() ?? "" : "";
                 string page = root.TryGetProperty("html_url", out var h) ? h.GetString() ?? ReleasesPage : ReleasesPage;
-                string apk = "";
+                var list = new List<ReleaseAsset>();
                 if (root.TryGetProperty("assets", out var assets) && assets.ValueKind == JsonValueKind.Array)
-                    apk = assets.EnumerateArray()
-                        .Select(a => a.TryGetProperty("browser_download_url", out var u) ? u.GetString() ?? "" : "")
-                        .FirstOrDefault(u => u.EndsWith(".apk", StringComparison.OrdinalIgnoreCase)) ?? "";
+                    foreach (var a in assets.EnumerateArray())
+                        list.Add(new ReleaseAsset(
+                            a.TryGetProperty("name", out var n) ? n.GetString() ?? "" : "",
+                            a.TryGetProperty("browser_download_url", out var u) ? u.GetString() ?? "" : "",
+                            a.TryGetProperty("digest", out var d) && d.ValueKind == JsonValueKind.String ? d.GetString() ?? "" : ""));
+                string apk = list.FirstOrDefault(x => x.Url.EndsWith(".apk", StringComparison.OrdinalIgnoreCase))?.Url ?? "";
                 string v = tag.TrimStart('v', 'V').Trim();
-                return v.Length == 0 ? null : new ReleaseInfo(v, page, apk);
+                return v.Length == 0 ? null : new ReleaseInfo(v, page, apk, list);
             }
             catch (OperationCanceledException) { return null; }
             catch (Exception ex)

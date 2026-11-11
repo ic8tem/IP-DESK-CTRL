@@ -8,6 +8,7 @@
 | «Nessuno al PC per accettare» | Il PC è acceso ma nessuno ha fatto l'accesso. Entrano solo i numeri con [accesso senza conferma](Accesso-senza-conferma). |
 | «Uscita audio non disponibile» / BadDeviceId | Sul tuo PC non c'è un'uscita audio attiva (casse o cuffie scollegate o disattivate). L'audio riparte da solo appena ne colleghi una. |
 | ⚠ nello storico: «L'altro dispositivo ha la …» | Versioni diverse ma compatibili: si collegano, ma le funzioni nuove ci sono solo aggiornando il più vecchio. |
+| Riducendo a icona la finestra del visore la qualità scendeva | Dalla 0.5.1 il PC remoto va in pausa (un fotogramma al secondo) e la qualità resta quella di prima. |
 | Il video resta a riquadri | Serve ffmpeg su tutti e due i PC (vedi [Video compresso](Video)); nel `sessioni.log` la riga VIDEO dice quali codificatori ha trovato. |
 | Tunnel: «la porta … è occupata» | Un altro programma usa già quella porta qui: scegli un'altra porta di qui. |
 | «L'altro PC usa la versione … (protocollo …): aggiorna tutti e due» | I due dispositivi hanno protocolli diversi: aggiorna entrambi all'ultima versione. |

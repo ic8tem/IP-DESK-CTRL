@@ -44,7 +44,10 @@ namespace IpDeskCtrl.Core
         public string MicOutput { get; set; } = "";        // uscita per quel microfono ("" = cavo virtuale se c'è, altrimenti predefinita)
         public bool AllowResize { get; set; } = true;      // chi si collega può adattare la risoluzione alla sua finestra
         public bool AllowDrive { get; set; } = true;       // chi si collega può montare qui una sua cartella come disco
-        public bool AllowTunnel { get; set; } = true;      // chi si collega può aprire tunnel di porte attraverso questo PC
+        public bool AllowTunnel { get; set; } = true;
+        public List<string> ResumeGrants { get; set; } = new();   // numero|input|scadenza: rientrano senza conferma dopo un aggiornamento
+        public List<string> ResumeViewers { get; set; } = new();  // collegamenti da riaprire dopo l'aggiornamento di questo PC
+        public long ResumeUntil { get; set; }                      // fino a quando (ticks UTC)      // chi si collega può aprire tunnel di porte attraverso questo PC
 
         // ---------------- visore
         public int ZoomPercent { get; set; } = 0;          // 0 = adatta alla finestra

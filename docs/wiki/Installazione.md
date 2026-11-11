@@ -58,4 +58,21 @@ File `IP-DESK-CTRL-…-android.apk`, per Android 8.0 o successivo. Consenti l'in
 
 ## Aggiornamenti
 
-Quando esce una nuova versione, la schermata principale mostra un avviso con il link per scaricarla (il controllo avviene all'avvio e ogni 12 ore). Per aggiornare basta installare sopra la versione precedente: numero, storico e impostazioni restano.
+Il programma controlla all'avvio e ogni 12 ore se c'è una versione nuova. Se c'è, compare un riquadro con **Aggiorna ora**:
+
+1. scarica il file giusto per il tuo sistema e controlla che sia identico a quello pubblicato (impronta SHA-256 di GitHub);
+2. avvisa gli altri PC collegati;
+3. lo installa, si chiude e **si riapre da solo**;
+4. i **collegamenti aperti riprendono**: il PC comandato lascia rientrare senza conferma, per 5 minuti, chi era collegato; il visore si ricollega appena l'altro torna.
+
+| Sistema | Cosa succede |
+|---|---|
+| Windows con il servizio | Installazione senza domande, anche se il PC è comandato da remoto |
+| Windows senza servizio | Windows chiede il permesso di amministratore (UAC): risponde chi è al PC |
+| Windows portatile | Sostituisce i file nella cartella del programma |
+| Linux (.deb) | Chiede la password di amministratore |
+| Linux portatile | Sostituisce i file nella cartella del programma |
+| macOS | Sostituisce l'app (se serve, chiede la password) |
+| Android | Apre il browser per scaricare l'APK, da installare sopra |
+
+Si può sempre aggiornare anche a mano installando sopra la versione precedente: numero, storico e impostazioni restano.

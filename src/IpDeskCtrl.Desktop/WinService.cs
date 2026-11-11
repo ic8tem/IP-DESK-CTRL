@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Pipes;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using System.Security.AccessControl;
@@ -50,6 +51,60 @@ namespace IpDeskCtrl.Desktop
                 catch (Exception ex) { ErrorLog.Write("Servizio, avvio della rete: " + ex); }
             });
             new Thread(() => Loop(_cts.Token)) { IsBackground = true, Name = "pipe del servizio" }.Start();
+            _ = Task.Run(AfterUpdate);
+        }
+
+        private static string MarkerPath => Path.Combine(Platform.DataFolder ?? AppSettings.Folder, "aggiornamento.marker");
+
+        /// <summary>
+        /// Aggiornamento fatto dal servizio: il nuovo servizio riapre IP-DESK-CTRL nella sessione dell'utente che
+        /// l'aveva chiesto (con --dopo-aggiornamento, così riprende i collegamenti).
+        /// </summary>
+        private void AfterUpdate()
+        {
+            try
+            {
+                if (!File.Exists(MarkerPath)) return;
+                var p = File.ReadAllText(MarkerPath).Split('|');
+                File.Delete(MarkerPath);
+                if (p.Length < 2 || !uint.TryParse(p[0], out uint session) || !long.TryParse(p[1], out long ticks)) return;
+                if (DateTime.UtcNow.Ticks - ticks > TimeSpan.FromMinutes(15).Ticks) return;
+                Thread.Sleep(3000);
+                string exe = Environment.ProcessPath!;
+                Launch.AsUserInSession(session, $"\"{exe}\" {Updater.AfterUpdateArg}");
+                SessionLog.Write($"SERVIZIO aggiornato a {AppVersion.Text}: IP-DESK-CTRL riaperto nella sessione {session}");
+            }
+            catch (Exception ex) { ErrorLog.Write("Servizio, riapertura dopo l'aggiornamento: " + ex.Message); }
+        }
+
+        /// <summary>
+        /// Installa un aggiornamento chiesto dal programma. Il file si copia nella cartella del servizio e si accetta
+        /// solo se è un installatore della release di GitHub con la stessa impronta SHA-256 dichiarata da GitHub.
+        /// </summary>
+        private static string Update(string args, int pid)
+        {
+            int sp = args.IndexOf(' ');
+            if (sp <= 0) return "ERR richiesta non valida";
+            string sha = args[..sp].Trim().ToLowerInvariant(), file = args[(sp + 1)..].Trim();
+            string name = Path.GetFileName(file);
+            if (!name.StartsWith("IP-DESK-CTRL-", StringComparison.OrdinalIgnoreCase) || !name.EndsWith("-setup.exe", StringComparison.OrdinalIgnoreCase) || !File.Exists(file))
+                return "ERR file non valido";
+            string dir = Path.Combine(Platform.DataFolder ?? AppSettings.Folder, "aggiornamento");
+            Directory.CreateDirectory(dir);
+            string copy = Path.Combine(dir, name);
+            File.Copy(file, copy, true);
+            string hex;
+            using (var f = File.OpenRead(copy)) hex = Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(f)).ToLowerInvariant();
+            if (hex != sha) return "ERR impronta diversa";
+            var rel = UpdateCheck.LatestAsync(CancellationToken.None).GetAwaiter().GetResult();
+            var asset = rel?.Assets.FirstOrDefault(a => a.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+            if (asset == null || !asset.Digest.Equals("sha256:" + hex, StringComparison.OrdinalIgnoreCase))
+                return "ERR il file non è l'installatore pubblicato su GitHub";
+            File.WriteAllText(MarkerPath, $"{SessionOf(pid)}|{DateTime.UtcNow.Ticks}");
+            try { ServiceNet.PrepareUpdate(); Thread.Sleep(300); } catch { }
+            Process.Start(new ProcessStartInfo(copy, "/VERYSILENT /SUPPRESSMSGBOXES /NORESTART /AGGIORNA-SERVIZIO") { UseShellExecute = false, WorkingDirectory = dir });
+            SessionLog.Write($"SERVIZIO aggiornamento a {rel!.Version} avviato ({name})");
+            return "OK";
         }
 
         protected override void OnStop()
@@ -137,6 +192,9 @@ namespace IpDeskCtrl.Desktop
                             else w.WriteLine("OK " + Convert.ToHexString(me.Sign(data)));
                             break;
                         }
+                        case var u when u.StartsWith("UPDATE "):
+                            w.WriteLine(Update(u[7..], pid));
+                            break;
                         case var k when k.StartsWith("SETKEY "):
                             w.WriteLine(ServiceNet.SetKey(k[7..].Trim()));
                             break;
@@ -227,6 +285,34 @@ namespace IpDeskCtrl.Desktop
             uint flags, IntPtr env, string? dir, ref STARTUPINFO si, out PROCESS_INFORMATION pi);
         [DllImport("kernel32.dll")] private static extern IntPtr GetCurrentProcess();
         [DllImport("kernel32.dll")] private static extern bool CloseHandle(IntPtr h);
+        [DllImport("wtsapi32.dll", SetLastError = true)] private static extern bool WTSQueryUserToken(uint session, out IntPtr token);
+        [DllImport("userenv.dll", SetLastError = true)] private static extern bool CreateEnvironmentBlock(out IntPtr env, IntPtr token, bool inherit);
+        [DllImport("userenv.dll", SetLastError = true)] private static extern bool DestroyEnvironmentBlock(IntPtr env);
+
+        /// <summary>Avvia un programma come l'utente collegato a quella sessione (non come SYSTEM).</summary>
+        public static void AsUserInSession(uint session, string commandLine)
+        {
+            IntPtr tok = IntPtr.Zero, env = IntPtr.Zero;
+            // dopo l'aggiornamento l'utente potrebbe non essere ancora pronto: si riprova per un minuto
+            for (int i = 0; i < 30 && !WTSQueryUserToken(session, out tok); i++) Thread.Sleep(2000);
+            if (tok == IntPtr.Zero) throw new Win32Exception();
+            try
+            {
+                CreateEnvironmentBlock(out env, tok, false);
+                var si = new STARTUPINFO { cb = Marshal.SizeOf<STARTUPINFO>(), lpDesktop = @"winsta0\default" };
+                var cmd = new StringBuilder(commandLine);
+                if (!CreateProcessAsUser(tok, null, cmd, IntPtr.Zero, IntPtr.Zero, false, 0x00000400 /* UNICODE_ENVIRONMENT */,
+                        env, Path.GetDirectoryName(Environment.ProcessPath), ref si, out var pi))
+                    throw new Win32Exception();
+                CloseHandle(pi.hThread);
+                CloseHandle(pi.hProcess);
+            }
+            finally
+            {
+                if (env != IntPtr.Zero) DestroyEnvironmentBlock(env);
+                CloseHandle(tok);
+            }
+        }
 
         public static void AsSystemInSession(uint session, string commandLine)
         {

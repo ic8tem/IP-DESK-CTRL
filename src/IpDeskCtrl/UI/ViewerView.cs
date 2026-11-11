@@ -67,6 +67,7 @@ namespace IpDeskCtrl.UI
         private readonly Button _tunnelBtn = new() { Content = "Tunnel ▾" };
         private readonly ToggleButton _fitRes = new() { Content = "Risoluzione adatta" };
         private readonly DispatcherTimer _resizeTimer = new() { Interval = TimeSpan.FromSeconds(1.2) };
+        private readonly DispatcherTimer _visibleTimer = new() { Interval = TimeSpan.FromSeconds(1) };
         private (int w, int h) _lastResize;
 
         // pannello scorciatoie (pressione lunga o tocco)
@@ -110,6 +111,13 @@ namespace IpDeskCtrl.UI
             _view.PanelHoldMoved += PanelMove;
             _view.PanelHoldEnded += PanelRelease;
             _resizeTimer.Tick += (_, _) => { _resizeTimer.Stop(); SendResize(); };
+            // finestra ridotta a icona o nascosta: il PC remoto va in pausa (un fotogramma al secondo)
+            _visibleTimer.Tick += (_, _) =>
+            {
+                bool vis = TopLevel.GetTopLevel(this) is not Window w || (w.IsVisible && w.WindowState != WindowState.Minimized);
+                _session?.SetVisible(vis);
+            };
+            _visibleTimer.Start();
             _viewHost.SizeChanged += (_, _) => { if (_fitRes.IsChecked == true) { _resizeTimer.Stop(); _resizeTimer.Start(); } };
             Content = Build();
             SetZoom(peer.S.ZoomPercent);
@@ -128,8 +136,12 @@ namespace IpDeskCtrl.UI
         }
 
         /// <summary>Chiusura dall'utente (pulsante Disconnetti, tasto Indietro): chiude il collegamento e la vista.</summary>
+        /// <summary>Questo dispositivo si aggiorna: il PC remoto lo lascerà rientrare senza conferma.</summary>
+        public void PrepareUpdate() => _session?.PrepareUpdate();
+
         public void Disconnect()
         {
+            _visibleTimer.Stop();
             _rebootCts?.Cancel();
             _cts.Cancel();
             _session?.Close("chiuso dall'altro PC");
@@ -142,6 +154,7 @@ namespace IpDeskCtrl.UI
             if (_ended) return;
             _ended = true;
             _timer.Stop();
+            _visibleTimer.Stop();
             _rebootCts?.Cancel();
             _cts.Cancel();
             _session?.Close("finestra chiusa sull'altro PC");
@@ -1064,14 +1077,16 @@ namespace IpDeskCtrl.UI
         }
 
         /// <summary>Dopo il riavvio: controlla sui broker ogni 15 s (per 10 minuti) e si ricollega appena il PC ripubblica l'indirizzo.</summary>
-        private async Task WaitRebootAsync()
+        private async Task WaitRebootAsync(bool update = false)
         {
+            string title = update ? "Il PC remoto si aggiorna" : "Riavvio in corso";
+            string text = update ? "Il PC remoto installa la nuova versione: mi ricollego appena torna" : "Riavvio in corso, mi ricollego appena torna";
             _rebootCts?.Cancel();
             var cts = new CancellationTokenSource();
             _rebootCts = cts;
             var ct = cts.Token;
-            var until = DateTime.UtcNow.AddMinutes(10);
-            Overlay("Riavvio in corso", "Riavvio in corso, mi ricollego appena torna…", ("Annulla", false, Disconnect));
+            var until = DateTime.UtcNow.AddMinutes(update ? 5 : 10);
+            Overlay(title, text + "…", ("Annulla", false, Disconnect));
             try
             {
                 // indirizzo di prima del riavvio (o nessuno, se il PC l'ha già tolto chiudendosi)
@@ -1080,21 +1095,21 @@ namespace IpDeskCtrl.UI
                 int attempt = 0;
                 while (DateTime.UtcNow < until)
                 {
-                    await Task.Delay(TimeSpan.FromSeconds(15), ct);
+                    await Task.Delay(TimeSpan.FromSeconds(update ? 5 : 15), ct);
                     attempt++;
                     int left = Math.Max(0, (int)Math.Ceiling((until - DateTime.UtcNow).TotalMinutes));
-                    _overlayText.Text = $"Riavvio in corso, mi ricollego appena torna (controllo n. {attempt}, ancora {left} min)…";
+                    _overlayText.Text = $"{text} (controllo n. {attempt}, ancora {left} min)…";
                     var a = await ViewerRendezvous.LookupAsync(_number, _peer.S.MqttBrokers, null, ct);
                     if (a == null || a.Ticks <= beforeTicks || a.Age > TimeSpan.FromMinutes(5)) continue;
                     if (await ConnectAsync(true)) { _rebootCts = null; return; }
                     if (ct.IsCancellationRequested) return;
-                    _overlayTitle.Text = "Riavvio in corso";
+                    _overlayTitle.Text = title;
                 }
             }
             catch (OperationCanceledException) { return; }
             catch (Exception ex) { ErrorLog.Write(ex.ToString()); }
             if (ct.IsCancellationRequested || _ended) return;
-            Overlay("Il PC remoto non è tornato", "Dopo 10 minuti il PC remoto non risulta ancora in linea.",
+            Overlay("Il PC remoto non è tornato", $"Dopo {(update ? 5 : 10)} minuti il PC remoto non risulta ancora in linea.",
                 ("Riprova", true, () => _ = ConnectAsync()), ("Chiudi", false, Disconnect));
         }
 
@@ -1162,6 +1177,7 @@ namespace IpDeskCtrl.UI
             HistoryChanged?.Invoke();
             if (_ended) return;
             if (s.RebootRequested) { _ = WaitRebootAsync(); return; }
+            if (s.UpdateRequested) { _ = WaitRebootAsync(true); return; }
             if (s.State == AcceptState.Accepted || s.State == AcceptState.Waiting)
                 Overlay("Collegamento terminato", reason, ("Ricollegati", true, () => _ = ConnectAsync()), ("Chiudi", false, Disconnect));
         }

@@ -62,12 +62,23 @@ Filename: "{sys}\sc.exe"; Parameters: "create IPDeskCtrl binPath= ""\""{app}\IP-
 Filename: "{sys}\sc.exe"; Parameters: "description IPDeskCtrl ""Permette a IP-DESK-CTRL di mostrare e comandare le richieste UAC, la schermata di blocco e i programmi da amministratore durante i collegamenti accettati."""; Flags: runhidden; Tasks: servizio
 Filename: "{sys}\sc.exe"; Parameters: "start IPDeskCtrl"; Flags: runhidden; Tasks: servizio
 Filename: "{app}\IP-DESK-CTRL.exe"; Description: "{cm:LaunchProgram,IP-DESK-CTRL}"; Flags: nowait postinstall skipifsilent
+; aggiornamento dal programma (/AGGIORNA): lo si riapre da solo, come l'utente di prima, per riprendere i collegamenti
+Filename: "{app}\IP-DESK-CTRL.exe"; Parameters: "--dopo-aggiornamento"; Flags: nowait runasoriginaluser; Check: IsAutoUpdate
 
 [UninstallRun]
 Filename: "{sys}\sc.exe"; Parameters: "stop IPDeskCtrl"; Flags: runhidden; RunOnceId: "FermaServizio"
 Filename: "{sys}\sc.exe"; Parameters: "delete IPDeskCtrl"; Flags: runhidden; RunOnceId: "TogliServizio"
 
 [Code]
+function IsAutoUpdate: Boolean;
+var
+  I: Integer;
+begin
+  Result := False;
+  for I := 1 to ParamCount do
+    if CompareText(ParamStr(I), '/AGGIORNA') = 0 then Result := True;
+end;
+
 // aggiornamento: il servizio usa l'eseguibile, va fermato (e tolto: lo ricrea il setup se richiesto)
 function PrepareToInstall(var NeedsRestart: Boolean): String;
 var

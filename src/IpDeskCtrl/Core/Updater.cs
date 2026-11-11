@@ -1,0 +1,261 @@
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Net.Http;
+using System.Runtime.InteropServices;
+using System.Security.Cryptography;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace IpDeskCtrl.Core
+{
+    /// <summary>File di una release su GitHub (digest = «sha256:…» calcolato da GitHub).</summary>
+    public sealed record ReleaseAsset(string Name, string Url, string Digest);
+
+    /// <summary>
+    /// Aggiornamento dal programma aperto: scarica il file giusto per questo sistema dalla release di GitHub,
+    /// controlla l'impronta SHA-256 pubblicata da GitHub e lo installa da solo; poi il programma si chiude e si
+    /// riapre con --dopo-aggiornamento (i collegamenti aperti si riprendono, vedi <see cref="ResumeState"/>).
+    ///   Windows installato: setup silenzioso (dal servizio, se c'è: niente richiesta UAC, va bene anche da remoto);
+    ///   Windows portatile: lo zip sopra la cartella;  Linux .deb: pkexec apt-get;  Linux portatile: tar sopra la cartella;
+    ///   macOS: .app dal .dmg al posto di quella vecchia;  Android: l'APK si apre nel browser.
+    /// </summary>
+    public static class Updater
+    {
+        public enum Kind { None, WindowsSetup, WindowsPortable, LinuxDeb, LinuxPortable, MacApp, Android }
+
+        public const string AfterUpdateArg = "--dopo-aggiornamento";
+
+        public static Kind Detect()
+        {
+            if (Platform.IsMobile) return Kind.Android;
+            string exe = Environment.ProcessPath ?? "";
+            string dir = AppContext.BaseDirectory;
+            if (OperatingSystem.IsWindows()) return File.Exists(Path.Combine(dir, "unins000.exe")) ? Kind.WindowsSetup : Kind.WindowsPortable;
+            if (OperatingSystem.IsMacOS()) return exe.Contains(".app/Contents/MacOS/") ? Kind.MacApp : Kind.None;
+            if (OperatingSystem.IsLinux()) return exe.StartsWith("/opt/ip-desk-ctrl/") ? Kind.LinuxDeb : Kind.LinuxPortable;
+            return Kind.None;
+        }
+
+        private static string Rid() => RuntimeInformation.ProcessArchitecture switch
+        {
+            Architecture.X86 => "x86",
+            Architecture.Arm64 => "arm64",
+            Architecture.Arm => "arm",
+            _ => "x64",
+        };
+
+        /// <summary>Nome del file della release per questo sistema.</summary>
+        public static string AssetName(string ver, Kind k)
+        {
+            string rid = Rid();
+            return k switch
+            {
+                Kind.WindowsSetup => $"IP-DESK-CTRL-{ver}-win-{(rid == "x86" ? "x86" : "x64")}-setup.exe",
+                Kind.WindowsPortable => $"IP-DESK-CTRL-{ver}-win-{(rid == "x86" ? "x86" : "x64")}-portatile.zip",
+                Kind.LinuxDeb => $"ip-desk-ctrl_{ver}_{(rid == "arm64" ? "arm64" : rid == "arm" ? "armhf" : "amd64")}.deb",
+                Kind.LinuxPortable => $"IP-DESK-CTRL-{ver}-linux-{rid}-portatile.tar.gz",
+                Kind.MacApp => $"IP-DESK-CTRL-{ver}-osx-{(rid == "arm64" ? "arm64" : "x64")}.dmg",
+                Kind.Android => $"IP-DESK-CTRL-{ver}-android.apk",
+                _ => "",
+            };
+        }
+
+        public static ReleaseAsset? FindAsset(ReleaseInfo r) =>
+            r.Assets.FirstOrDefault(a => a.Name.Equals(AssetName(r.Version, Detect()), StringComparison.OrdinalIgnoreCase));
+
+        /// <summary>Cosa vedrà l'utente durante l'installazione (detto prima di cominciare).</summary>
+        public static string HowItGoes(Kind k, bool service) => k switch
+        {
+            Kind.WindowsSetup => service
+                ? "Il servizio di IP-DESK-CTRL installa la nuova versione senza chiedere nulla, anche se il PC è comandato da remoto."
+                : "Windows chiederà il permesso di amministratore (UAC): chi è al PC deve rispondere sì.",
+            Kind.LinuxDeb => "Il sistema chiederà la password di amministratore per installare il pacchetto.",
+            Kind.MacApp => "Se l'app è in Applicazioni e serve, macOS chiederà la password.",
+            Kind.Android => "Si apre il browser per scaricare l'APK: poi toccalo per installarlo sopra questa versione.",
+            _ => "",
+        };
+
+        // ------------------------------------------------------------------ scaricamento con controllo SHA-256
+
+        public static string DownloadFolder => Path.Combine(Path.GetTempPath(), "ip-desk-ctrl-aggiornamento");
+
+        /// <summary>Scarica il file e controlla l'impronta. (percorso, sha256 esadecimale, errore).</summary>
+        public static async Task<(string path, string sha, string error)> DownloadAsync(ReleaseAsset a, Action<double, string> progress, CancellationToken ct)
+        {
+            try
+            {
+                Directory.CreateDirectory(DownloadFolder);
+                string path = Path.Combine(DownloadFolder, a.Name);
+                using var http = new HttpClient { Timeout = TimeSpan.FromMinutes(30) };
+                http.DefaultRequestHeaders.UserAgent.ParseAdd("IP-DESK-CTRL/" + AppVersion.Text);
+                using var resp = await http.GetAsync(a.Url, HttpCompletionOption.ResponseHeadersRead, ct);
+                resp.EnsureSuccessStatusCode();
+                long total = resp.Content.Headers.ContentLength ?? 0;
+                using var sha = SHA256.Create();
+                await using (var src = await resp.Content.ReadAsStreamAsync(ct))
+                await using (var dst = File.Create(path))
+                {
+                    var buf = new byte[1 << 16];
+                    long done = 0;
+                    int n;
+                    while ((n = await src.ReadAsync(buf, ct)) > 0)
+                    {
+                        await dst.WriteAsync(buf.AsMemory(0, n), ct);
+                        sha.TransformBlock(buf, 0, n, null, 0);
+                        done += n;
+                        progress(total > 0 ? (double)done / total : 0, $"{done >> 20} / {total >> 20} MB");
+                    }
+                }
+                sha.TransformFinalBlock(Array.Empty<byte>(), 0, 0);
+                string hex = Convert.ToHexString(sha.Hash!).ToLowerInvariant();
+                if (a.Digest.StartsWith("sha256:", StringComparison.OrdinalIgnoreCase) && !a.Digest[7..].Equals(hex, StringComparison.OrdinalIgnoreCase))
+                {
+                    File.Delete(path);
+                    return ("", "", "il file scaricato non corrisponde a quello pubblicato (impronta SHA-256 diversa): riprova più tardi");
+                }
+                SessionLog.Write($"AGGIORNAMENTI scaricato {a.Name} (sha256 {hex}" + (a.Digest.Length > 0 ? ", uguale a quella di GitHub)" : ")"));
+                return (path, hex, "");
+            }
+            catch (OperationCanceledException) { return ("", "", "scaricamento annullato"); }
+            catch (Exception ex) { return ("", "", "scaricamento non riuscito: " + ex.Message); }
+        }
+
+        // ------------------------------------------------------------------ installazione
+
+        /// <summary>
+        /// Avvia l'installazione. "" = avviata: il programma deve chiudersi subito (chi installa aspetta che esca).
+        /// </summary>
+        public static string Install(Kind k, string file, string sha, bool viaService)
+        {
+            try
+            {
+                int pid = Environment.ProcessId;
+                string exe = Environment.ProcessPath ?? "";
+                string dir = AppContext.BaseDirectory.TrimEnd(Path.DirectorySeparatorChar);
+                switch (k)
+                {
+                    case Kind.WindowsSetup:
+                        if (viaService)
+                        {
+                            string r = Screen.WinHelper.AskService($"UPDATE {sha} {file}", 5000);
+                            return r.StartsWith("OK") ? "" : "il servizio non ha installato l'aggiornamento: " + r;
+                        }
+                        try
+                        {
+                            Process.Start(new ProcessStartInfo(file, "/VERYSILENT /SUPPRESSMSGBOXES /NORESTART /AGGIORNA") { UseShellExecute = true, Verb = "runas" });
+                            return "";
+                        }
+                        catch (System.ComponentModel.Win32Exception) { return "permesso di amministratore non concesso: aggiornamento annullato"; }
+                    case Kind.WindowsPortable:
+                    {
+                        string ps = Path.Combine(DownloadFolder, "aggiorna.ps1");
+                        File.WriteAllText(ps, $@"
+$ErrorActionPreference = 'SilentlyContinue'
+while (Get-Process -Id {pid}) {{ Start-Sleep -Milliseconds 300 }}
+$tmp = Join-Path $env:TEMP 'ip-desk-ctrl-nuovo'
+Remove-Item $tmp -Recurse -Force
+Expand-Archive -Path '{Q(file)}' -DestinationPath $tmp -Force
+$src = (Get-ChildItem $tmp -Recurse -Filter 'IP-DESK-CTRL.exe' | Select-Object -First 1).DirectoryName
+Copy-Item -Path (Join-Path $src '*') -Destination '{Q(dir)}' -Recurse -Force
+Start-Process -FilePath '{Q(exe)}' -ArgumentList '{AfterUpdateArg}'
+", new UTF8Encoding(true));
+                        Process.Start(new ProcessStartInfo("powershell.exe", $"-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File \"{ps}\"") { UseShellExecute = false, CreateNoWindow = true });
+                        return "";
+                    }
+                    case Kind.LinuxDeb:
+                        return RunScript($@"
+while kill -0 {pid} 2>/dev/null; do sleep 0.3; done
+pkexec apt-get install -y --allow-downgrades '{S(file)}' || pkexec dpkg -i '{S(file)}'
+nohup /opt/ip-desk-ctrl/IP-DESK-CTRL {AfterUpdateArg} >/dev/null 2>&1 &
+");
+                    case Kind.LinuxPortable:
+                        return RunScript($@"
+while kill -0 {pid} 2>/dev/null; do sleep 0.3; done
+tmp=$(mktemp -d)
+tar -xzf '{S(file)}' -C ""$tmp""
+src=$(dirname ""$(find ""$tmp"" -name IP-DESK-CTRL -type f | head -n 1)"")
+cp -rf ""$src""/. '{S(dir)}'/
+chmod +x '{S(exe)}'
+rm -rf ""$tmp""
+nohup '{S(exe)}' {AfterUpdateArg} >/dev/null 2>&1 &
+");
+                    case Kind.MacApp:
+                    {
+                        int i = exe.IndexOf(".app/Contents/MacOS/", StringComparison.Ordinal);
+                        string bundle = exe[..(i + 4)];
+                        return RunScript($@"
+while kill -0 {pid} 2>/dev/null; do sleep 0.3; done
+mnt=$(mktemp -d)
+hdiutil attach -nobrowse -quiet -mountpoint ""$mnt"" '{S(file)}'
+app=$(find ""$mnt"" -maxdepth 1 -name '*.app' | head -n 1)
+if rm -rf '{S(bundle)}' 2>/dev/null && ditto ""$app"" '{S(bundle)}'; then :; else
+  osascript -e ""do shell script \""rm -rf '{S(bundle)}' && ditto '$app' '{S(bundle)}'\"" with administrator privileges""
+fi
+hdiutil detach -quiet ""$mnt""
+open '{S(bundle)}' --args {AfterUpdateArg}
+");
+                    }
+                }
+                return "aggiornamento automatico non disponibile per questa installazione";
+            }
+            catch (Exception ex) { return "installazione non avviata: " + ex.Message; }
+        }
+
+        private static string Q(string s) => s.Replace("'", "''");                 // PowerShell
+        private static string S(string s) => s.Replace("'", "'\\''");              // sh
+
+        private static string RunScript(string body)
+        {
+            string sh = Path.Combine(DownloadFolder, "aggiorna.sh");
+            File.WriteAllText(sh, "#!/bin/sh\n" + body.Replace("\r", ""));
+            Process.Start(new ProcessStartInfo("/bin/sh", $"\"{sh}\"") { UseShellExecute = false });
+            return "";
+        }
+    }
+
+    /// <summary>
+    /// Collegamenti da riprendere dopo l'aggiornamento (o dopo che l'altra parte si è aggiornata).
+    /// Chi si aggiorna lo dice prima all'altro (<see cref="Net.Msg.Resume"/>): se l'altro è il PC comandato, lascerà
+    /// rientrare senza conferma quel numero per 5 minuti; se è il visore, aspetta e si ricollega da solo.
+    /// </summary>
+    public static class ResumeState
+    {
+        public static readonly TimeSpan Window = TimeSpan.FromMinutes(5);
+
+        /// <summary>Questo PC (comandato) lascia rientrare il numero per qualche minuto, con il permesso di prima.</summary>
+        public static void Grant(AppSettings s, string number, bool input)
+        {
+            lock (s)
+            {
+                s.ResumeGrants.RemoveAll(g => g.StartsWith(number + "|") || Expired(g));
+                s.ResumeGrants.Add($"{number}|{(input ? 1 : 0)}|{DateTime.UtcNow.Add(Window).Ticks}");
+            }
+            s.Save();
+        }
+
+        /// <summary>Il numero può rientrare senza conferma? (una volta sola)</summary>
+        public static bool Take(AppSettings s, string number, out bool input)
+        {
+            input = false;
+            lock (s)
+            {
+                var g = s.ResumeGrants.FirstOrDefault(x => x.StartsWith(number + "|") && !Expired(x));
+                s.ResumeGrants.RemoveAll(x => x.StartsWith(number + "|") || Expired(x));
+                if (g == null) return false;
+                input = g.Split('|')[1] == "1";
+            }
+            s.Save();
+            return true;
+        }
+
+        private static bool Expired(string g)
+        {
+            var p = g.Split('|');
+            return p.Length < 3 || !long.TryParse(p[2], out long t) || DateTime.UtcNow.Ticks > t;
+        }
+    }
+}

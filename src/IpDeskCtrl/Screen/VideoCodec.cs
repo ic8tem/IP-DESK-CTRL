@@ -219,11 +219,13 @@ namespace IpDeskCtrl.Screen
         {
             try
             {
-                return Process.Start(new ProcessStartInfo(exe, args)
+                var p = Process.Start(new ProcessStartInfo(exe, args)
                 {
                     UseShellExecute = false, CreateNoWindow = true,
                     RedirectStandardInput = pipes, RedirectStandardOutput = pipes, RedirectStandardError = true
                 });
+                if (p != null && pipes) PowerThrottle.Disable(p);      // ffmpeg non va rallentato con la finestra ridotta a icona
+                return p;
             }
             catch { return null; }
         }

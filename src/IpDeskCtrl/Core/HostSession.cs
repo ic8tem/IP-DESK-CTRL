@@ -65,6 +65,20 @@ namespace IpDeskCtrl.Core
         private volatile bool _videoRestart = true;
         private long _videoBlockedSince;
         private bool _videoOff;          // ffmpeg fallito: riquadri fino a nuova scelta
+        private volatile bool _viewerHidden;     // finestra del visore ridotta a icona: un fotogramma al secondo, qualità ferma
+        private long _lastHiddenFrame;
+
+        /// <summary>
+        /// Questo PC sta per aggiornarsi: il visore lo sa e si ricollega da solo; il suo numero rientra senza conferma
+        /// (con lo stesso permesso) per 5 minuti.
+        /// </summary>
+        public void PrepareUpdate()
+        {
+            if (!_accepted) return;
+            ResumeState.Grant(P.S, PeerNumber, _allowInput);
+            if (AppVersion.Has(PeerCaps, "resume")) Send(new MsgWriter(Msg.Resume).U8(0).I32((int)ResumeState.Window.TotalSeconds).Build());
+            SessionLog.Write($"AGGIORNAMENTI {Identity.Format(PeerNumber)} potrà rientrare senza conferma per 5 minuti");
+        }
 
         public bool IsActive => _accepted && !IsClosed;
         public bool InputAllowed => _allowInput;
@@ -94,7 +108,12 @@ namespace IpDeskCtrl.Core
                 string keyHex = Convert.ToHexString(Link.PeerKey);
                 bool known = h != null && h.PeerKey == keyHex;
                 IncomingDecision? d = null;
-                if (known && h!.AllowUnattended)
+                if (known && ResumeState.Take(P.S, PeerNumber, out bool resumeInput))
+                {
+                    d = new IncomingDecision(true, resumeInput, false);
+                    SessionLog.Write($"SESSIONE {Identity.Format(PeerNumber)} rientra senza conferma dopo un aggiornamento");
+                }
+                else if (known && h!.AllowUnattended)
                 {
                     var pw = P.S.PasswordHash.Length > 0 ? await CheckPasswordAsync() : PwResult.Ok;
                     if (IsClosed) return;
@@ -256,6 +275,24 @@ namespace IpDeskCtrl.Core
                 }
                 case Msg.DriveClose: _ = Task.Run(() => CloseDrive("tolta dal visore")); break;
                 case Msg.DriveResp: _drive?.OnResponse(r); break;
+                case Msg.Resume:
+                {
+                    int who = r.U8();
+                    if (who == 1 && _accepted)
+                    {
+                        // il visore si aggiorna: quando torna, rientra senza conferma con lo stesso permesso
+                        ResumeState.Grant(P.S, PeerNumber, _allowInput);
+                        SessionLog.Write($"SESSIONE {Identity.Format(PeerNumber)} si aggiorna: potrà rientrare senza conferma per 5 minuti");
+                    }
+                    break;
+                }
+                case Msg.Visible:
+                {
+                    bool v = r.Bool();
+                    if (v && _viewerHidden) { _fullNext = true; _videoRestart = true; }
+                    _viewerHidden = !v;
+                    break;
+                }
                 case Msg.SetCodec: _codecWanted = r.Str(); _videoOff = false; _videoRestart = true; _fullNext = true; break;
                 case Msg.VideoAck:
                 {
@@ -462,6 +499,10 @@ namespace IpDeskCtrl.Core
                     }
                     blockedSince = 0;
 
+                    // finestra del visore ridotta a icona: un fotogramma al secondo (banda e processore a riposo)
+                    if (_viewerHidden && t0 - _lastHiddenFrame < 1000) { Thread.Sleep(50); continue; }
+                    _lastHiddenFrame = t0;
+
                     var area = _area;
                     if (area == null || _screen == null) { Thread.Sleep(50); continue; }
                     if (!_screen.Capture(area, raw))
@@ -476,11 +517,13 @@ namespace IpDeskCtrl.Core
                     _lastCaptureNote = _screen.Note;
 
                     // qualità automatica: si guarda quanto ci mette un fotogramma ad arrivare
-                    if (_quality == "auto")
+                    // (ferma mentre la finestra del visore non si vede: Windows rallenta i programmi ridotti a icona e
+                    //  le conferme arrivano tardi anche se la linea è buona)
+                    if (_quality == "auto" && !_viewerHidden)
                     {
                         long now = sw.ElapsedMilliseconds;
                         if (_ackMs > 450 && _autoLevel < 3 && now - lastAutoChange > 3000) { _autoLevel++; lastAutoChange = now; _fullNext = true; goodSince = now; }
-                        else if (_ackMs < 150) { if (goodSince == 0) goodSince = now; if (_autoLevel > 0 && now - goodSince > 8000 && now - lastAutoChange > 8000) { _autoLevel--; lastAutoChange = now; goodSince = now; } }
+                        else if (_ackMs < 150) { if (goodSince == 0) goodSince = now; if (_autoLevel > 0 && now - goodSince > 4000 && now - lastAutoChange > 4000) { _autoLevel--; lastAutoChange = now; goodSince = now; } }
                         else goodSince = 0;
                     }
                     var (q, scale) = Quality.Of(_quality, _autoLevel);

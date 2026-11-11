@@ -81,6 +81,9 @@ namespace IpDeskCtrl.Core
                     });
                     break;
                 }
+                case Msg.Resume:
+                    if (r.U8() == 0) { UpdateRequested = true; SessionLog.Write($"SESSIONE {Identity.Format(PeerNumber)} si aggiorna: mi ricollego appena torna"); }
+                    break;
                 case Msg.VideoStart:
                 {
                     int gen = r.I32(); string codec = r.Str(); int w = r.I32(), h = r.I32(); string enc = r.AtEnd ? "" : r.Str();
@@ -127,6 +130,7 @@ namespace IpDeskCtrl.Core
                         if (PeerHas("tunnel") || AppVersion.Value(PeerCaps, "vdec").Length > 0 || PeerHas("mic")) Send(new MsgWriter(Msg.SetCodec).Str(P.S.VideoCodec).Build());
                         SetAudio(P.S.PlayAudio);
                         _ = Task.Run(ClipboardLoopAsync);
+                        if (!_throttleOff) { _throttleOff = true; PowerThrottle.SessionStarted(); }
                     }
                     StateChanged?.Invoke();
                     break;
@@ -468,6 +472,24 @@ namespace IpDeskCtrl.Core
 
         /// <summary>true dopo «Riavvia il PC remoto»: alla chiusura la plancia aspetta il PC e si ricollega.</summary>
         public bool RebootRequested { get; private set; }
+        /// <summary>Il PC remoto ha detto che si aggiorna: il collegamento si riprende da solo.</summary>
+        public bool UpdateRequested { get; private set; }
+        private bool _throttleOff;
+
+        /// <summary>Questo dispositivo sta per aggiornarsi: il PC remoto lo lascerà rientrare senza conferma.</summary>
+        public void PrepareUpdate()
+        {
+            if (State == AcceptState.Accepted && PeerHas("resume")) Send(new MsgWriter(Msg.Resume).U8(1).I32(300).Build());
+        }
+
+        private bool _visible = true;
+        /// <summary>Finestra ridotta a icona o nascosta: il PC remoto manda un fotogramma al secondo e ferma la qualità.</summary>
+        public void SetVisible(bool visible)
+        {
+            if (visible == _visible) return;
+            _visible = visible;
+            if (PeerHas("visible")) Send(new MsgWriter(Msg.Visible).Bool(visible).Build());
+        }
         /// <summary>Sul PC remoto è installato IP-TRX-CTRL.</summary>
         public bool PeerHasTrx { get; private set; }
 
@@ -511,6 +533,7 @@ namespace IpDeskCtrl.Core
             _share = null;
             _vdec?.Dispose();
             _vdec = null;
+            if (_throttleOff) { _throttleOff = false; PowerThrottle.SessionEnded(); }
             lock (_listeners) { foreach (var l in _listeners) l.Dispose(); _listeners.Clear(); }
             _tunnelHub.CloseAll();
             var h = P.S.Find(PeerNumber);

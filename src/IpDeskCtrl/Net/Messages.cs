@@ -65,6 +65,8 @@ namespace IpDeskCtrl.Net
         // ---- comandi del PC (visore -> host)
         public const byte Reboot = 0x70;         // riavvia il PC remoto (serve il permesso di comandarlo)
         public const byte StartTrx = 0x71;       // avvia IP-TRX-CTRL sul PC remoto
+        public const byte Resume = 0x73;         // u8 0 = l'host si aggiorna, 1 = il visore si aggiorna | i32 secondi: il collegamento riprende da solo (0.5.1+)
+        public const byte Visible = 0x18;        // visore -> host: bool finestra visibile (ridotta a icona o nascosta = pausa) (0.5.1+)
         public const byte Volume = 0x72;         // u8 0 = giù, 1 = su, 2 = muto sì/no (0.5+)
 
         // ---- tunnel di porte: una porta di qui porta a un indirizzo raggiungibile dal PC remoto (0.5+)

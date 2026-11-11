@@ -32,6 +32,9 @@ namespace IpDeskCtrl.Desktop
     {
         private static readonly object Lock = new();
         private static Peer? _peer;
+
+        /// <summary>Aggiornamento dal servizio: il visore collegato (se c'è) viene avvisato e potrà rientrare.</summary>
+        public static void PrepareUpdate() => _peer?.CurrentHost?.PrepareUpdate();
         private static AppSettings? _s;
         private static CancellationToken _life;
         private static readonly List<Attached> Users = new();

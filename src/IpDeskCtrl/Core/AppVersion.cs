@@ -16,7 +16,7 @@ namespace IpDeskCtrl.Core
         ///   mic = microfono del visore riprodotto sull'host · res = risoluzione adattata alla finestra del visore ·
         ///   vol = volume dell'host · drive = cartella del visore come disco dell'host
         /// </summary>
-        public const string Caps = "mic res vol drive tunnel";
+        public const string Caps = "mic res vol drive tunnel resume visible";
 
         /// <summary>Funzioni di questo PC da annunciare, con i codec video che sa decodificare (vdec=h264,hevc,av1).</summary>
         public static string CapsNow()
