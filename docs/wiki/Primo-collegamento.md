@@ -15,6 +15,14 @@ Accanto al numero c'è il pulsante **QR**: mostra il numero come codice QR, che 
 
 Mentre un PC è comandato, su di esso compare una piccola finestra sempre in primo piano con **Disconnetti** e l'interruttore di mouse e tastiera: chi è al PC può riprendere il controllo in ogni momento.
 
+## Più persone collegate insieme
+
+Un PC si fa **comandare da uno alla volta**. Mentre qualcuno lo comanda, fino a **4 altri** possono collegarsi per **guardare** soltanto (niente mouse, tastiera, file, tunnel o microfono): sul PC compare la richiesta «vuole guardare … mentre lo comanda …», da accettare come le altre. I numeri con accesso senza conferma entrano a guardare da soli.
+
+La finestrella «Questo PC è comandato da…» dice quanti stanno guardando; **Disconnetti** chiude tutti. In Impostazioni si può togliere *Mentre uno comanda, altri possono chiedere di guardare*.
+
+Chi guarda vede lo schermo scelto da lui (può cambiare monitor e qualità per sé) e sente l'audio, se acceso.
+
 ## Storico e alias
 
 La schermata principale mostra lo **storico dei collegamenti**, sia quelli fatti da te sia quelli ricevuti, con data, durata e sistema operativo. Il **pallino verde** indica che il PC è in linea in questo momento.

@@ -17,7 +17,12 @@ namespace IpDeskCtrl.Core
     public sealed class PeerException : Exception { public PeerException(string m) : base(m) { } }
 
     /// <summary>Richiesta in arrivo, da far accettare all'utente.</summary>
-    public sealed record IncomingInfo(string Number, string Alias, string Os, string PcName, string Version, string Fingerprint, bool Known);
+    public sealed record IncomingInfo(string Number, string Alias, string Os, string PcName, string Version, string Fingerprint, bool Known)
+    {
+        /// <summary>Il PC è già comandato da un altro: questo può solo guardare (0.5.1+). Controller = chi comanda.</summary>
+        public bool Observer { get; init; }
+        public string Controller { get; init; } = "";
+    }
     /// <summary>Why: motivo del rifiuto da mostrare all'altro PC ("" = «richiesta rifiutata»).</summary>
     public sealed record IncomingDecision(bool Accept, bool AllowInput, bool AlwaysAllow, string Why = "");
 
@@ -312,12 +317,37 @@ namespace IpDeskCtrl.Core
             }
         }
 
+        /// <summary>Chi guarda soltanto mentre un altro comanda (0.5.1+).</summary>
+        private readonly List<HostSession> _observers = new();
+        public const int MaxObservers = 4;
+        public IReadOnlyList<HostSession> Observers { get { lock (_hostLock) return _observers.Where(o => o.IsActive).ToList(); } }
+        /// <summary>Qualcuno ha cominciato o smesso di guardare.</summary>
+        public event Action? ObserversChanged;
+
+        /// <summary>Chiude tutti i collegamenti in arrivo (chi comanda e chi guarda).</summary>
+        public void CloseIncoming(string why)
+        {
+            List<HostSession> all;
+            lock (_hostLock) { all = _observers.ToList(); if (_host != null) all.Add(_host); }
+            foreach (var h in all) h.Close(why);
+        }
+
         private void StartHost(SecureLink link)
         {
             HostSession? busy;
-            lock (_hostLock) busy = _host;
-            var hs = new HostSession(this, link, busy != null && busy.IsActive);
-            if (busy == null || !busy.IsActive)
+            int watching;
+            lock (_hostLock) { busy = _host; watching = _observers.Count; }
+            bool controlled = busy != null && busy.IsActive;
+            // PC già comandato: si può entrare a guardare (solo visione), se le impostazioni lo permettono
+            bool observer = controlled && S.AllowObservers && !Platform.IsMobile && watching < MaxObservers;
+            var hs = new HostSession(this, link, controlled && !observer) { Observer = observer, ControllerNumber = observer ? busy!.PeerNumber : "" };
+            if (observer)
+            {
+                lock (_hostLock) _observers.Add(hs);
+                hs.Activated += () => ObserversChanged?.Invoke();
+                hs.Closed += _ => { lock (_hostLock) _observers.Remove(hs); ObserversChanged?.Invoke(); };
+            }
+            else if (!controlled)
             {
                 lock (_hostLock) _host = hs;
                 hs.Activated += () => HostStarted?.Invoke(hs);

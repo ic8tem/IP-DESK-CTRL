@@ -17,7 +17,7 @@ namespace IpDeskCtrl.UI
         public static IDialogHandle Incoming(IncomingInfo info, bool allowInputDefault, Action<IncomingDecision> decided)
         {
             string who = (info.Alias.Length > 0 ? info.Alias + " · " : "") + Identity.Format(info.Number);
-            var input = new CheckBox { Content = "Consenti mouse, tastiera, appunti e file", IsChecked = allowInputDefault };
+            var input = new CheckBox { Content = "Consenti mouse, tastiera, appunti e file", IsChecked = allowInputDefault && !info.Observer, IsVisible = !info.Observer };
             var always = new CheckBox { Content = "Non chiedere più per questo numero (accesso senza conferma)" };
             var countdown = Ui.Sub("", 12);
             var accept = Ui.Btn("Accetta", true);
@@ -27,7 +27,13 @@ namespace IpDeskCtrl.UI
                              $"Impronta della chiave: {info.Fingerprint}" + (info.Known ? " (già vista in passato)" : " (prima volta)");
             var content = Ui.Col(12,
                 Ui.H1("Richiesta di collegamento"),
-                new TextBlock { Text = $"{who} vuole vedere lo schermo di questo {(Platform.IsMobile ? "dispositivo" : "PC")}.", TextWrapping = TextWrapping.Wrap, FontSize = 15 },
+                new TextBlock
+                {
+                    Text = info.Observer
+                        ? $"{who} vuole guardare lo schermo di questo PC (solo visione) mentre lo comanda {Identity.Format(info.Controller)}."
+                        : $"{who} vuole vedere lo schermo di questo {(Platform.IsMobile ? "dispositivo" : "PC")}.",
+                    TextWrapping = TextWrapping.Wrap, FontSize = 15
+                },
                 Ui.Sub(details, 12),
                 input, always,
                 Ui.Row(10, reject, accept),
@@ -64,13 +70,14 @@ namespace IpDeskCtrl.UI
             var input = new CheckBox { Content = "Mouse e tastiera", IsChecked = hs.InputAllowed };
             input.IsCheckedChanged += (_, _) => hs.SetInputAllowed(input.IsChecked == true);
             var stop = Ui.Btn("Disconnetti", true);
-            stop.Click += (_, _) => hs.Close("chiuso dall'utente dell'altro PC");
+            stop.Click += (_, _) => { foreach (var o in hs.Node.Observers) o.Close("chiuso dall'utente dell'altro PC"); hs.Close("chiuso dall'utente dell'altro PC"); };
             var time = Ui.Sub("", 12);
             var timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
             timer.Tick += (_, _) =>
             {
                 if (hs.IsClosed) { timer.Stop(); return; }
-                time.Text = "da " + HostSession.Duration(DateTime.UtcNow - hs.Started) + " · " + hs.Route;
+                int obs = hs.Node.Observers.Count;
+                time.Text = "da " + HostSession.Duration(DateTime.UtcNow - hs.Started) + " · " + hs.Route + (obs > 0 ? $" · {obs} guardano" : "");
             };
             timer.Start();
             return new Border

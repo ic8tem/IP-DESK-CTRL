@@ -208,6 +208,7 @@ namespace IpDeskCtrl.UI
                 Chk("Chi si collega può adattare la risoluzione di questo PC alla sua finestra", _s.AllowResize, v => _s.AllowResize = v),
                 Chk("Chi si collega può montare qui una sua cartella come disco", _s.AllowDrive, v => _s.AllowDrive = v),
                 Chk("Chi si collega può aprire tunnel di porte attraverso questo PC (rigctld, flrig, web della radio…)", _s.AllowTunnel, v => _s.AllowTunnel = v),
+                Chk("Mentre uno comanda, altri possono chiedere di guardare (solo visione, al massimo 4)", _s.AllowObservers, v => _s.AllowObservers = v),
                 VideoRow(),
                 Ui.Row(10, new TextBlock { Text = "Tema", VerticalAlignment = VerticalAlignment.Center }, theme),
                 Ui.Sub("File ricevuti dagli altri PC: " + Platform.Received, 12),

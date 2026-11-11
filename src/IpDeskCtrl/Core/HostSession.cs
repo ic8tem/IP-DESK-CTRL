@@ -86,6 +86,16 @@ namespace IpDeskCtrl.Core
 
         public HostSession(Peer p, SecureLink link, bool busy) : base(p, link) { _busy = busy; }
 
+        /// <summary>Guarda soltanto mentre un altro comanda: niente mouse, tastiera, file, tunnel, microfono…</summary>
+        public bool Observer { get; init; }
+        public string ControllerNumber { get; init; } = "";
+        /// <summary>Il nodo di questo PC (per sapere chi altro è collegato).</summary>
+        public Peer Node => P;
+
+        // il processo di supporto di Windows (UAC, schermata di blocco) serve finché c'è almeno un collegamento
+        private static int _prepared;
+        private bool _didPrepare;
+
         public void Run(CancellationToken life)
         {
             life.Register(() => Close("programma chiuso sull'altro PC"));
@@ -108,7 +118,16 @@ namespace IpDeskCtrl.Core
                 string keyHex = Convert.ToHexString(Link.PeerKey);
                 bool known = h != null && h.PeerKey == keyHex;
                 IncomingDecision? d = null;
-                if (known && ResumeState.Take(P.S, PeerNumber, out bool resumeInput))
+                if (Observer)
+                {
+                    // il PC è già comandato da un altro: si entra solo a guardare
+                    if (known && (h!.AllowUnattended || ResumeState.Take(P.S, PeerNumber, out _)))
+                    {
+                        d = new IncomingDecision(true, false, false);
+                        SessionLog.Write($"SESSIONE {Identity.Format(PeerNumber)} guarda senza conferma (solo visione, comanda {Identity.Format(ControllerNumber)})");
+                    }
+                }
+                else if (known && ResumeState.Take(P.S, PeerNumber, out bool resumeInput))
                 {
                     d = new IncomingDecision(true, resumeInput, false);
                     SessionLog.Write($"SESSIONE {Identity.Format(PeerNumber)} rientra senza conferma dopo un aggiornamento");
@@ -138,22 +157,24 @@ namespace IpDeskCtrl.Core
                     try
                     {
                         d = await P.AskAsync(new IncomingInfo(PeerNumber, h?.Alias ?? "", PeerOs, PeerName, PeerVersion,
-                            Crypto.Fingerprint(Link.PeerKey), known), t.Token);
+                            Crypto.Fingerprint(Link.PeerKey), known) { Observer = Observer, Controller = ControllerNumber }, t.Token);
                     }
                     catch (OperationCanceledException) { d = new IncomingDecision(false, false, false); }
                 }
                 if (IsClosed || d == null) return;
                 if (!d.Accept) { await Refuse(AcceptState.Rejected, d.Why.Length > 0 ? d.Why : "richiesta rifiutata"); return; }
 
-                _allowInput = d.AllowInput;
+                _allowInput = d.AllowInput && !Observer;
                 var entry = P.S.Touch(PeerNumber, false, keyHex, PeerOs);
                 entry.Version = PeerVersion;
                 if (d.AlwaysAllow && !entry.AllowUnattended) { entry.AllowUnattended = true; P.S.Save(); }
                 _accepted = true;
                 await SendAsync(new MsgWriter(Msg.Accept).U8((byte)AcceptState.Accepted).Str(_allowInput ? "" : "solo visione").Build());
                 Activated?.Invoke();
+                if (Observer) Note($"Guardi soltanto: questo PC lo sta comandando {Identity.Format(ControllerNumber)}.");
 
-                if (Platform.PrepareHost != null)
+                _didPrepare = true;
+                if (Interlocked.Increment(ref _prepared) == 1 && Platform.PrepareHost != null)
                 {
                     string why = await Platform.PrepareHost();
                     if (why.Length > 0) Note(why);
@@ -651,7 +672,7 @@ namespace IpDeskCtrl.Core
             _video?.Dispose();
             _video = null;
             _screen?.Dispose();
-            try { Platform.HostEnded?.Invoke(); } catch { }
+            if (_didPrepare && Interlocked.Decrement(ref _prepared) == 0) { try { Platform.HostEnded?.Invoke(); } catch { } }
             var h = P.S.Find(PeerNumber);
             if (h != null) { h.LastSeconds = Duration(DateTime.UtcNow - Started); P.S.Save(); }
         }
