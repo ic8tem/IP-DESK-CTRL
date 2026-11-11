@@ -573,8 +573,8 @@ namespace IpDeskCtrl.UI
             {
                 var s = _session;
                 if (s == null) return;
-                if (e.Key == Key.Enter) { Tap(28); e.Handled = true; }
-                else if (e.Key == Key.Back && (_kbd.Text ?? "").Length <= Sentinel.Length) { Tap(14); e.Handled = true; }
+                if (e.Key == Key.Enter) { WithMods(() => s.Combo(28)); e.Handled = true; }
+                else if (e.Key == Key.Back && (_kbd.Text ?? "").Length <= Sentinel.Length) { WithMods(() => s.Combo(14)); e.Handled = true; }
             };
         }
 
