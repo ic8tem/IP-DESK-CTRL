@@ -83,10 +83,14 @@ namespace IpDeskCtrl.UI
             var copy = Ui.Btn("Copia");
             copy.Click += async (_, _) => { var c = TopLevel.GetTopLevel(this)?.Clipboard; if (_me != null && c != null) await c.SetTextAsync(Identity.Format(_me.Number)); };
             _number.Classes.Add("mono");
+            var qr = Ui.Btn("QR");
+            ToolTip.SetTip(qr, "Mostra il numero come codice QR, da inquadrare con IP-DESK-CTRL sul telefono");
+            qr.Click += (_, _) => ShowQr();
+            var numButtons = Ui.Row(8, qr, copy);
             var numRow = new DockPanel();
-            DockPanel.SetDock(copy, Dock.Right);
-            copy.VerticalAlignment = VerticalAlignment.Center;
-            numRow.Children.Add(copy);
+            DockPanel.SetDock(numButtons, Dock.Right);
+            numButtons.VerticalAlignment = VerticalAlignment.Center;
+            numRow.Children.Add(numButtons);
             numRow.Children.Add(_number);
             _incomingInput.IsCheckedChanged += (_, _) =>
             {
@@ -118,6 +122,14 @@ namespace IpDeskCtrl.UI
             DockPanel.SetDock(go, Dock.Right);
             go.Margin = new Thickness(10, 0, 0, 0);
             tRow.Children.Add(go);
+            if (Platform.ScanQr != null)
+            {
+                var scan = Ui.Btn("Inquadra QR");
+                DockPanel.SetDock(scan, Dock.Right);
+                scan.Margin = new Thickness(10, 0, 0, 0);
+                scan.Click += async (_, _) => await ScanAsync();
+                tRow.Children.Add(scan);
+            }
             tRow.Children.Add(_target);
             col.Children.Add(Ui.Panel(Ui.Col(8, Ui.H2("COLLEGATI A UN ALTRO PC"), tRow, _connectInfo)));
 
@@ -403,6 +415,38 @@ namespace IpDeskCtrl.UI
                 edit.AttachedToVisualTree += (_, _) => { edit.Focus(); edit.SelectAll(); };
             };
             return box;
+        }
+
+        // =================================================================== QR del numero
+
+        private void ShowQr()
+        {
+            if (_me == null) return;
+            var close = Ui.Btn("Chiudi");
+            var content = Ui.Col(12,
+                Ui.H1("Numero di questo PC"),
+                new Border { Width = 280, Height = 280, HorizontalAlignment = HorizontalAlignment.Center, Child = new QrView(QrCode.ForNumber(_me.Number)) },
+                new TextBlock { Text = Identity.Format(_me.Number), FontSize = 28, FontWeight = FontWeight.Bold, HorizontalAlignment = HorizontalAlignment.Center },
+                Ui.Sub("Inquadralo con «Inquadra QR» di IP-DESK-CTRL sul telefono per collegarti a questo PC.", 12),
+                close);
+            var h = Shell.Current.ShowDialog("IP-DESK-CTRL · QR del numero", content, 360, false);
+            close.Click += (_, _) => h.Close();
+        }
+
+        private async Task ScanAsync()
+        {
+            var f = Platform.ScanQr;
+            if (f == null) return;
+            string? text = await f();
+            if (text == null)
+            {
+                _connectInfo.Text = "Nessuna app per leggere i QR (o lettura annullata): scrivi il numero a mano.";
+                return;
+            }
+            string? n = QrCode.NumberFrom(text);
+            if (n == null) { _connectInfo.Text = "Il QR letto non contiene un numero di IP-DESK-CTRL."; return; }
+            _target.Text = n;
+            ConnectTo(n);
         }
 
         // =================================================================== nuova versione

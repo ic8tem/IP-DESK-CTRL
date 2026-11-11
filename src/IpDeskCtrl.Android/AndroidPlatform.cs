@@ -44,6 +44,7 @@ namespace IpDeskCtrl.Android
                 act.KeepAwake(false);
             };
             Platform.FullScreen = on => MainActivity.Current?.SetImmersive(on);
+            Platform.ScanQr = () => MainActivity.Current?.ScanQrAsync() ?? Task.FromResult<string?>(null);
             Platform.Open = path =>
             {
                 var act = MainActivity.Current;

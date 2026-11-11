@@ -25,7 +25,8 @@ namespace IpDeskCtrl.Android
     {
         public static MainActivity? Current { get; private set; }
 
-        private const int RequestCapture = 4711, RequestPerms = 4712;
+        private const int RequestCapture = 4711, RequestPerms = 4712, RequestScan = 4713;
+        private TaskCompletionSource<string?>? _scan;
         private TaskCompletionSource<(Result code, Intent? data)>? _capture;
         private TaskCompletionSource<bool>? _perms;
         private WifiManager.MulticastLock? _multicast;
@@ -139,10 +140,41 @@ namespace IpDeskCtrl.Android
             return _capture.Task;
         }
 
+        /// <summary>
+        /// Lettura di un QR con un'app esterna (lettore compatibile ZXing, «com.google.zxing.client.android.SCAN»).
+        /// null = nessuna app installata o lettura annullata: si scrive il numero a mano.
+        /// </summary>
+        public Task<string?> ScanQrAsync()
+        {
+            var tcs = new TaskCompletionSource<string?>(TaskCreationOptions.RunContinuationsAsynchronously);
+            _scan = tcs;
+            RunOnUiThread(() =>
+            {
+                try
+                {
+                    var intent = new Intent("com.google.zxing.client.android.SCAN");
+                    intent.PutExtra("SCAN_MODE", "QR_CODE_MODE");
+                    intent.PutExtra("PROMPT_MESSAGE", "Inquadra il QR del numero di IP-DESK-CTRL");
+                    StartActivityForResult(intent, RequestScan);
+                }
+                catch (ActivityNotFoundException)
+                {
+                    tcs.TrySetResult(null);
+                }
+                catch (Exception ex)
+                {
+                    ErrorLog.Write("Lettura QR: " + ex.Message);
+                    tcs.TrySetResult(null);
+                }
+            });
+            return tcs.Task;
+        }
+
         protected override void OnActivityResult(int requestCode, Result resultCode, Intent? data)
         {
             base.OnActivityResult(requestCode, resultCode, data);
             if (requestCode == RequestCapture) _capture?.TrySetResult((resultCode, data));
+            if (requestCode == RequestScan) _scan?.TrySetResult(resultCode == Result.Ok ? data?.GetStringExtra("SCAN_RESULT") : null);
         }
     }
 }
