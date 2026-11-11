@@ -7,6 +7,9 @@
 | Schermo **nero** e «Windows ha bloccato mouse e tastiera» | Il PC remoto è bloccato, su una finestra UAC o su un programma da amministratore. Installa sul PC remoto il [servizio di Windows](Servizio-di-Windows) (opzione **Accesso completo**). |
 | «Nessuno al PC per accettare» | Il PC è acceso ma nessuno ha fatto l'accesso. Entrano solo i numeri con [accesso senza conferma](Accesso-senza-conferma). |
 | «Uscita audio non disponibile» / BadDeviceId | Sul tuo PC non c'è un'uscita audio attiva (casse o cuffie scollegate o disattivate). L'audio riparte da solo appena ne colleghi una. |
+| ⚠ nello storico: «L'altro dispositivo ha la …» | Versioni diverse ma compatibili: si collegano, ma le funzioni nuove ci sono solo aggiornando il più vecchio. |
+| Il video resta a riquadri | Serve ffmpeg su tutti e due i PC (vedi [Video compresso](Video)); nel `sessioni.log` la riga VIDEO dice quali codificatori ha trovato. |
+| Tunnel: «la porta … è occupata» | Un altro programma usa già quella porta qui: scegli un'altra porta di qui. |
 | «L'altro PC usa la versione … (protocollo …): aggiorna tutti e due» | I due dispositivi hanno protocolli diversi: aggiorna entrambi all'ultima versione. |
 | Il collegamento non parte mai | Controlla che il PC remoto sia acceso con il programma aperto (o col servizio). Con NAT simmetrico/CGNAT su entrambi i lati può non esserci strada: attiva l'UPnP su almeno un router. |
 | Mac: schermo nero o mouse fermo | Concedi **Registrazione schermo** e **Accessibilità** e riavvia il programma. |

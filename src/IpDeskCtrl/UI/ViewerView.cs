@@ -61,6 +61,10 @@ namespace IpDeskCtrl.UI
         private readonly ComboBox _quality = new() { MinWidth = 120 };
         private readonly ToggleButton _audio = new() { Content = "Audio" };
         private readonly ToggleButton _mic = new() { Content = "Microfono" };
+        private readonly ComboBox _codec = new() { MinWidth = 120 };
+        private static readonly string[] CodecKeys = { "auto", "h264", "hevc", "av1", "jpeg" };
+        private static readonly string[] CodecLabels = { "Video automatico", "H.264", "H.265", "AV1", "Riquadri JPEG" };
+        private readonly Button _tunnelBtn = new() { Content = "Tunnel ▾" };
         private readonly ToggleButton _fitRes = new() { Content = "Risoluzione adatta" };
         private readonly DispatcherTimer _resizeTimer = new() { Interval = TimeSpan.FromSeconds(1.2) };
         private (int w, int h) _lastResize;
@@ -211,6 +215,22 @@ namespace IpDeskCtrl.UI
             };
             ToolTip.SetTip(_fitRes, "Il PC remoto passa alla risoluzione più adatta a questa finestra (a fine collegamento torna com'era)");
 
+            _codec.ItemsSource = CodecLabels;
+            _codec.SelectedIndex = Math.Max(0, Array.IndexOf(CodecKeys, _peer.S.VideoCodec));
+            _codec.IsVisible = false;
+            _codec.SelectionChanged += (_, _) =>
+            {
+                if (_codec.SelectedIndex < 0) return;
+                _peer.S.VideoCodec = CodecKeys[_codec.SelectedIndex];
+                _peer.S.Save();
+                _session?.SetCodec(_peer.S.VideoCodec);
+            };
+            ToolTip.SetTip(_codec, "Video compresso (H.264, H.265, AV1 con ffmpeg, meglio se con la scheda video) oppure riquadri JPEG. Automatico: il migliore che hanno tutti e due i PC.");
+
+            _tunnelBtn.IsVisible = false;
+            _tunnelBtn.Click += (_, _) => ShowTunnels();
+            ToolTip.SetTip(_tunnelBtn, "Tunnel di porte: rigctld, flrig, l'interfaccia web della radio… del PC remoto raggiungibili da qui");
+
             var gestures = Small("✋", "Tocco e gesti");
             gestures.IsVisible = Platform.IsMobile;
             gestures.Click += (_, _) => TouchDialog.Show(_peer.S, RebuildKeysBar);
@@ -282,7 +302,7 @@ namespace IpDeskCtrl.UI
             hide.Click += (_, _) => { _toolbarPinned = false; ShowToolbar(false); };
 
             var bar = new WrapPanel { HorizontalAlignment = HorizontalAlignment.Center };
-            foreach (var c in new Control[] { _fullBtn, minus, _zoom, plus, _monitor, _quality, _fitRes, _audio, _mic, keyboard, gestures, keys, _files, _radio, refresh, _stats, close, hide })
+            foreach (var c in new Control[] { _fullBtn, minus, _zoom, plus, _monitor, _quality, _codec, _fitRes, _audio, _mic, keyboard, gestures, keys, _files, _tunnelBtn, _radio, refresh, _stats, close, hide })
             {
                 c.VerticalAlignment = VerticalAlignment.Center;
                 c.Margin = new Thickness(3);
@@ -439,7 +459,9 @@ namespace IpDeskCtrl.UI
             {
                 string rtt = double.IsNaN(s.RttMs) ? "—" : $"{s.RttMs:F0} ms";
                 var img = _view.ImageSize;
-                _stats.Text = $"{s.Fps:F0} fps · {s.KbitPerSecond / 1000:F1} Mbit/s · {rtt} · {s.Route}\n{img.Width}×{img.Height}" + (s.InputAllowed ? "" : " · solo visione");
+                _stats.Text = $"{s.Fps:F0} fps · {s.KbitPerSecond / 1000:F1} Mbit/s · {rtt} · {s.Route}\n{img.Width}×{img.Height} · {(s.VideoInfo.Length > 0 ? s.VideoInfo : "riquadri")}" + (s.InputAllowed ? "" : " · solo visione");
+                int tc = s.ActiveTunnels.Count;
+                _tunnelBtn.Content = tc > 0 ? $"Tunnel ▾ ({tc})" : "Tunnel ▾";
                 var rf = s.RemoteFiles;
                 _files.Content = rf.count > 0 ? $"File ▾ ({rf.count})" : "File ▾";
             }
@@ -721,6 +743,120 @@ namespace IpDeskCtrl.UI
             s.RequestResize(w, h);
         }
 
+        // =================================================================== tunnel di porte
+
+        private HistoryEntry? Entry => _peer.S.Find(_number);
+
+        private List<TunnelSpec> SavedTunnels() =>
+            (Entry?.Tunnels ?? new List<string>()).Select(TunnelSpec.Parse).Where(t => t != null).Cast<TunnelSpec>().ToList();
+
+        private void SaveTunnels(List<TunnelSpec> list)
+        {
+            var e = Entry;
+            if (e == null) return;
+            e.Tunnels = list.Select(t => t.ToString()).ToList();
+            _peer.S.Save();
+        }
+
+        private void StartSavedTunnels(ViewerSession s)
+        {
+            var e = Entry;
+            if (e == null || !e.TunnelsAuto) return;
+            var errors = new List<string>();
+            foreach (var t in SavedTunnels())
+            {
+                string err = s.StartTunnel(t);
+                if (err.Length > 0) errors.Add(err);
+            }
+            if (errors.Count > 0) ShowNote(string.Join("\n", errors));
+        }
+
+        private void ShowTunnels()
+        {
+            var s = _session;
+            if (s == null) return;
+            var list = new StackPanel { Spacing = 6 };
+            void Refresh()
+            {
+                list.Children.Clear();
+                var saved = SavedTunnels();
+                var active = s.ActiveTunnels;
+                if (saved.Count == 0) list.Children.Add(Ui.Sub("Nessun tunnel. Aggiungine uno qui sotto: un programma di qui che si collega a 127.0.0.1:porta locale raggiunge l'indirizzo indicato, visto dal PC remoto."));
+                foreach (var t in saved)
+                {
+                    bool on = active.Any(a => a.LocalPort == t.LocalPort);
+                    var onOff = Ui.Btn(on ? "Ferma" : "Avvia");
+                    var spec = t;
+                    onOff.Click += (_, _) =>
+                    {
+                        if (s.ActiveTunnels.Any(a => a.LocalPort == spec.LocalPort)) s.StopTunnel(spec.LocalPort);
+                        else { string err = s.StartTunnel(spec); if (err.Length > 0) ShowNote(err); }
+                        Refresh();
+                    };
+                    var del = Ui.Btn("Togli");
+                    del.Click += (_, _) =>
+                    {
+                        s.StopTunnel(spec.LocalPort);
+                        SaveTunnels(SavedTunnels().Where(x => x.LocalPort != spec.LocalPort).ToList());
+                        Refresh();
+                    };
+                    var btns = Ui.Row(6, onOff, del);
+                    DockPanel.SetDock(btns, Dock.Right);
+                    var label = new TextBlock
+                    {
+                        Text = (on ? "● " : "○ ") + $"127.0.0.1:{t.LocalPort} → {t.Host}:{t.Port}" + (t.Name.Length > 0 ? $"  ({t.Name})" : ""),
+                        VerticalAlignment = VerticalAlignment.Center, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 0, 10, 0)
+                    };
+                    list.Children.Add(new DockPanel { Children = { btns, label } });
+                }
+            }
+            Refresh();
+
+            var preset = new ComboBox { ItemsSource = new[] { "Scegli un modello…" }.Concat(TunnelSpec.Presets.Select(p => $"{p.Name}: {p.Host}:{p.Port}")).ToList(), SelectedIndex = 0, MinWidth = 260 };
+            var local = new TextBox { Watermark = "Porta di qui", Width = 110 };
+            var host = new TextBox { Watermark = "Indirizzo dal PC remoto", Text = "127.0.0.1", Width = 190 };
+            var port = new TextBox { Watermark = "Porta", Width = 90 };
+            var name = new TextBox { Watermark = "Nome (facoltativo)", Width = 190 };
+            preset.SelectionChanged += (_, _) =>
+            {
+                if (preset.SelectedIndex <= 0) return;
+                var p = TunnelSpec.Presets[preset.SelectedIndex - 1];
+                local.Text = p.LocalPort.ToString(); host.Text = p.Host; port.Text = p.Port.ToString(); name.Text = p.Name;
+            };
+            var add = Ui.Btn("Aggiungi e avvia", true);
+            add.Click += (_, _) =>
+            {
+                if (!int.TryParse(local.Text, out int lp) || lp is <= 0 or > 65535 || !int.TryParse(port.Text, out int rp) || rp is <= 0 or > 65535 || string.IsNullOrWhiteSpace(host.Text))
+                { ShowNote("Scrivi la porta di qui, l'indirizzo e la porta (1–65535)."); return; }
+                var spec = new TunnelSpec(lp, host.Text!.Trim(), rp, (name.Text ?? "").Trim().Replace("|", " "));
+                var saved = SavedTunnels().Where(x => x.LocalPort != lp).ToList();
+                saved.Add(spec);
+                SaveTunnels(saved);
+                string err = s.StartTunnel(spec);
+                if (err.Length > 0) ShowNote(err);
+                Refresh();
+            };
+            var auto = new CheckBox { Content = "Avvia questi tunnel da soli a ogni collegamento con questo PC", IsChecked = Entry?.TunnelsAuto ?? true };
+            auto.IsCheckedChanged += (_, _) => { var e = Entry; if (e != null) { e.TunnelsAuto = auto.IsChecked == true; _peer.S.Save(); } };
+            var close = Ui.Btn("Chiudi");
+            var content = new ScrollViewer
+            {
+                MaxHeight = 620,
+                Content = Ui.Col(10,
+                    Ui.H1("Tunnel di porte"),
+                    Ui.Sub("Per la radio: un programma di qui (WSJT-X, log, rotore…) si collega a 127.0.0.1:porta e arriva a rigctld, flrig o all'interfaccia web della radio del PC remoto. Tutto passa nel collegamento cifrato.", 12),
+                    list,
+                    Ui.Lbl("NUOVO TUNNEL"),
+                    preset,
+                    new WrapPanel { Children = { local, new TextBlock { Text = " → ", VerticalAlignment = VerticalAlignment.Center }, host, new TextBlock { Text = " : ", VerticalAlignment = VerticalAlignment.Center }, port } },
+                    name,
+                    auto,
+                    Ui.Row(10, add, close))
+            };
+            var h = Shell.Current.ShowDialog("IP-DESK-CTRL · tunnel di porte", content, 620, false);
+            close.Click += (_, _) => h.Close();
+        }
+
         private async Task ShareFolderAsync(bool readOnly)
         {
             var s = _session;
@@ -866,6 +1002,7 @@ namespace IpDeskCtrl.UI
                 s.FilesReceived += (folder, items, onClip) => Dispatcher.UIThread.Post(() =>
                     ShowNote((items.Count == 1 ? "1 elemento ricevuto" : $"{items.Count} elementi ricevuti") + $" in {folder}" +
                              (onClip ? (Platform.IsMobile ? "." : ": sono negli appunti, incollali con Ctrl+V dove vuoi.") : "."), true));
+                s.TunnelMessage += m => Dispatcher.UIThread.Post(() => ShowNote(m));
                 s.DriveChanged += (on, where) => Dispatcher.UIThread.Post(() =>
                     ShowNote(on ? $"Cartella condivisa: sul PC remoto è il disco {where}."
                         : where.Length > 0 ? "Cartella non montata sul PC remoto: " + where + "." : "Cartella condivisa tolta."));
@@ -977,6 +1114,9 @@ namespace IpDeskCtrl.UI
                     _radio.IsVisible = s.PeerHasTrx && s.InputAllowed;
                     _audio.IsChecked = s.AudioOn;
                     _mic.IsVisible = s.PeerHas("mic");
+                    _codec.IsVisible = !Platform.IsMobile && Ffmpeg.Path != null && s.PeerCaps.Length > 0;
+                    _tunnelBtn.IsVisible = s.PeerHas("tunnel") && s.InputAllowed;
+                    if (_tunnelBtn.IsVisible) StartSavedTunnels(s);
                     _fitRes.IsVisible = s.PeerHas("res") && s.InputAllowed;
                     if (_mic.IsVisible && _peer.S.SendMic && !s.MicOn) _mic.IsChecked = true;
                     if (_fitRes.IsVisible && _peer.S.FitResolution)
@@ -987,7 +1127,9 @@ namespace IpDeskCtrl.UI
                     HistoryChanged?.Invoke();
                     RefreshTitle();
                     _view.Focus();
+                    string verWarn = AppVersion.Compare(s.PeerVersion);
                     if (!s.InputAllowed) ShowNote("L'altro PC ha concesso solo la visione: mouse, tastiera e file non arrivano.");
+                    else if (verWarn.Length > 0) ShowNote(verWarn);
                     else if (Platform.IsMobile) ShowNote(_peer.S.Touch.Mode == "diretto"
                         ? "Tocco diretto: si clicca dove tocchi. Due dita: rotella; allargale per ingrandire. Gesti e tasti: pulsante ✋."
                         : "Il dito fa da touchpad. Gesti, tempi e velocità si cambiano col pulsante ✋; due dita allargate = zoom.");

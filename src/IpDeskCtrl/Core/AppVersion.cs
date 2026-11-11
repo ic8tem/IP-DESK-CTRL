@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 
@@ -15,9 +16,35 @@ namespace IpDeskCtrl.Core
         ///   mic = microfono del visore riprodotto sull'host · res = risoluzione adattata alla finestra del visore ·
         ///   vol = volume dell'host · drive = cartella del visore come disco dell'host
         /// </summary>
-        public const string Caps = "mic res vol drive";
+        public const string Caps = "mic res vol drive tunnel";
+
+        /// <summary>Funzioni di questo PC da annunciare, con i codec video che sa decodificare (vdec=h264,hevc,av1).</summary>
+        public static string CapsNow()
+        {
+            var dec = Screen.Ffmpeg.Decoders();
+            return dec.Length > 0 ? Caps + " vdec=" + string.Join(",", dec) : Caps;
+        }
 
         public static bool Has(string caps, string what) => (" " + caps + " ").Contains(" " + what + " ");
+
+        /// <summary>Valore di una funzione «nome=valore» (es. vdec); "" se assente.</summary>
+        public static string Value(string caps, string name) =>
+            caps.Split(' ', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault(t => t.StartsWith(name + "="))?[(name.Length + 1)..] ?? "";
+
+        /// <summary>
+        /// Controllo preliminare: confronta la versione dell'altro dispositivo con questa.
+        /// "" = uguali; altrimenti un avviso (le versioni dello stesso protocollo si collegano, ma con meno funzioni).
+        /// </summary>
+        public static string Compare(string peerTag)
+        {
+            var (proto, ver) = Parse(peerTag);
+            if (proto == 0) return "";
+            if (proto != Protocol) return $"Versione non compatibile: l'altro dispositivo ha la {ver} (protocollo {proto}), questo la {Text} (protocollo {Protocol}). Aggiorna tutti e due.";
+            if (!System.Version.TryParse(ver, out var other) || !System.Version.TryParse(Text, out var mine) || other == mine) return "";
+            return other < mine
+                ? $"L'altro dispositivo ha la {ver}, questo la {Text}: si collegano, ma le funzioni nuove ci sono solo aggiornando anche quello."
+                : $"L'altro dispositivo ha la {ver}, più nuova di questa ({Text}): si collegano, ma conviene aggiornare questo.";
+        }
 
         public static string Text
         {

@@ -167,6 +167,16 @@ namespace IpDeskCtrl.Screen
             }
         }
 
+        /// <summary>Fotogramma intero decodificato dal video (BGRA, righe contigue).</summary>
+        public void SetFrame(byte[] bgra, int w, int h)
+        {
+            lock (Lock)
+            {
+                if (Image.Width != w || Image.Height != h) { Image.Ensure(w, h); Version++; }
+                Buffer.BlockCopy(bgra, 0, Image.Data, 0, Math.Min(bgra.Length, Image.Data.Length));
+            }
+        }
+
         public unsafe bool Apply(int x, int y, int w, int h, byte format, byte[] data)
         {
             if (format != TileEncoder.FormatJpeg) return false;

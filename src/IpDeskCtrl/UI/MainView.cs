@@ -207,9 +207,40 @@ namespace IpDeskCtrl.UI
                 MicOutputRow(),
                 Chk("Chi si collega può adattare la risoluzione di questo PC alla sua finestra", _s.AllowResize, v => _s.AllowResize = v),
                 Chk("Chi si collega può montare qui una sua cartella come disco", _s.AllowDrive, v => _s.AllowDrive = v),
+                Chk("Chi si collega può aprire tunnel di porte attraverso questo PC (rigctld, flrig, web della radio…)", _s.AllowTunnel, v => _s.AllowTunnel = v),
+                VideoRow(),
                 Ui.Row(10, new TextBlock { Text = "Tema", VerticalAlignment = VerticalAlignment.Center }, theme),
                 Ui.Sub("File ricevuti dagli altri PC: " + Platform.Received, 12),
                 Wrap(password, touch, folder, received, about, support, quit));
+        }
+
+        /// <summary>Video compresso: stato di ffmpeg e, su Windows 64 bit, scaricamento con un clic.</summary>
+        private Control VideoRow()
+        {
+            if (Platform.IsMobile) return new Panel();
+            var text = Ui.Sub("", 12);
+            var get = Ui.Btn("Scarica ffmpeg (circa 150 MB)");
+            void Show()
+            {
+                string? p = Screen.Ffmpeg.Path;
+                get.IsVisible = p == null && Screen.Ffmpeg.CanDownload;
+                text.Text = p != null
+                    ? "Video compresso H.264 / H.265 / AV1 attivo (ffmpeg: " + p + "). Si usa quando anche l'altro PC ha ffmpeg; i codificatori della scheda video si provano da soli."
+                    : OperatingSystem.IsWindows() ? "Video compresso (H.264, H.265, AV1): serve ffmpeg, che si scarica qui sotto una volta sola. Senza, lo schermo viaggia a riquadri JPEG come prima."
+                    : OperatingSystem.IsMacOS() ? "Video compresso (H.264, H.265, AV1): installa ffmpeg con «brew install ffmpeg». Senza, lo schermo viaggia a riquadri JPEG."
+                    : "Video compresso (H.264, H.265, AV1): installa ffmpeg con «sudo apt install ffmpeg». Senza, lo schermo viaggia a riquadri JPEG.";
+            }
+            get.Click += async (_, _) =>
+            {
+                get.IsEnabled = false;
+                string err = await Screen.Ffmpeg.DownloadAsync(m => Dispatcher.UIThread.Post(() => text.Text = m), _life.Token);
+                get.IsEnabled = true;
+                Show();
+                if (err.Length > 0) text.Text = err;
+                else _ = Screen.Ffmpeg.EncodersAsync();
+            };
+            Show();
+            return Ui.Col(4, text, get);
         }
 
         /// <summary>Uscita dove suonare il microfono di chi si collega (Windows: elenco delle uscite; altrove automatica).</summary>
@@ -401,6 +432,16 @@ namespace IpDeskCtrl.UI
                               + (h.Os.Length > 0 ? $" · {h.Os}" : "")
                               + (h.AllowUnattended ? " · entra senza conferma" : ""), 12);
             var texts = new StackPanel { Spacing = 2, VerticalAlignment = VerticalAlignment.Center, Children = { name, info } };
+            // controllo preliminare delle versioni (ultima vista sui broker, altrimenti quella dell'ultimo collegamento)
+            string ver = ViewerRendezvous.Versions.TryGetValue(h.Number, out var seenVer) ? seenVer : h.Version;
+            if (ver.Length > 0)
+            {
+                var (_, verText) = AppVersion.Parse(ver);
+                string warn = AppVersion.Compare(ver);
+                info.Text += " · versione " + verText;
+                if (warn.Length > 0)
+                    texts.Children.Add(new TextBlock { Text = "⚠ " + warn, FontSize = 12, TextWrapping = TextWrapping.Wrap, Foreground = Brushes.DarkOrange });
+            }
 
             var connect = Ui.Btn("Collegati", true);
             connect.Click += (_, _) => ConnectTo(h.Number);

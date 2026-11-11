@@ -471,6 +471,9 @@ namespace IpDeskCtrl.Net
         }
 
         /// <summary>Per lo storico: da quanto tempo ogni numero ha aggiornato il suo indirizzo (null = mai / spento).</summary>
+        /// <summary>Versione annunciata da ogni numero visto sui broker («P3 0.5.0»), per il controllo preliminare.</summary>
+        public static readonly ConcurrentDictionary<string, string> Versions = new();
+
         public static async Task<Dictionary<string, TimeSpan?>> PresenceAsync(IReadOnlyList<string> numbers, IReadOnlyList<string> brokers, CancellationToken ct)
         {
             var result = numbers.ToDictionary(n => n, n => (TimeSpan?)null);
@@ -489,6 +492,7 @@ namespace IpDeskCtrl.Net
                         if (raw.Length == 0) { seen[n] = null; return Task.CompletedTask; }
                         var a = Announce.Decode(Crypto.Open(Mqtt.Key(n), raw), n);
                         seen[n] = a?.Age;
+                        if (a != null) Versions[n] = a.Version;
                     }
                     catch { }
                     return Task.CompletedTask;

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
+using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
@@ -55,6 +56,15 @@ namespace IpDeskCtrl.Core
         private DriveClient? _drive;
         private DavServer? _dav;
         private string _davWhere = "";
+        private TunnelHub? _tunnels;
+
+        // video compresso
+        private volatile string _codecWanted = "auto";
+        private VideoEncoder? _video;
+        private int _videoGen, _videoWritten, _videoAcked, _videoGenAcked;
+        private volatile bool _videoRestart = true;
+        private long _videoBlockedSince;
+        private bool _videoOff;          // ffmpeg fallito: riquadri fino a nuova scelta
 
         public bool IsActive => _accepted && !IsClosed;
         public bool InputAllowed => _allowInput;
@@ -73,7 +83,7 @@ namespace IpDeskCtrl.Core
         {
             try
             {
-                await SendAsync(new MsgWriter(Msg.Hello).Str(AppVersion.Tag).Str(AppVersion.Os).Str(Environment.MachineName).Bool(TrxCtrl.Installed).Str(AppVersion.Caps).Build());
+                await SendAsync(new MsgWriter(Msg.Hello).Str(AppVersion.Tag).Str(AppVersion.Os).Str(Environment.MachineName).Bool(TrxCtrl.Installed).Str(AppVersion.CapsNow()).Build());
                 if (await Task.WhenAny(_helloSeen.Task, Task.Delay(15000, Cts.Token)) != _helloSeen.Task) { Close("l'altro PC non si è presentato"); return; }
                 var (proto, _) = AppVersion.Parse(PeerVersion);
                 if (proto != AppVersion.Protocol) { await Refuse(AcceptState.Rejected, $"versioni non compatibili ({PeerVersion} / {AppVersion.Tag})"); return; }
@@ -118,6 +128,7 @@ namespace IpDeskCtrl.Core
 
                 _allowInput = d.AllowInput;
                 var entry = P.S.Touch(PeerNumber, false, keyHex, PeerOs);
+                entry.Version = PeerVersion;
                 if (d.AlwaysAllow && !entry.AllowUnattended) { entry.AllowUnattended = true; P.S.Save(); }
                 _accepted = true;
                 await SendAsync(new MsgWriter(Msg.Accept).U8((byte)AcceptState.Accepted).Str(_allowInput ? "" : "solo visione").Build());
@@ -134,6 +145,7 @@ namespace IpDeskCtrl.Core
                 var capture = new Thread(CaptureLoop) { IsBackground = true, Name = "cattura schermo", Priority = ThreadPriority.AboveNormal };
                 capture.Start();
                 _ = Task.Run(PingLoopAsync);
+                _ = Ffmpeg.EncodersAsync();          // prova dei codificatori video in sottofondo (una volta sola)
                 _ = Task.Run(MaintenanceLoopAsync);
                 _ = Task.Run(ClipboardLoopAsync);
                 _ = Task.Run(ClipboardFilesLoopAsync);
@@ -244,6 +256,21 @@ namespace IpDeskCtrl.Core
                 }
                 case Msg.DriveClose: _ = Task.Run(() => CloseDrive("tolta dal visore")); break;
                 case Msg.DriveResp: _drive?.OnResponse(r); break;
+                case Msg.SetCodec: _codecWanted = r.Str(); _videoOff = false; _videoRestart = true; _fullNext = true; break;
+                case Msg.VideoAck:
+                {
+                    int gen = r.I32(), frames = r.I32();
+                    if (gen == _videoGen) { _videoAcked = Math.Max(_videoAcked, frames); _videoGenAcked = gen; }
+                    break;
+                }
+                case Msg.TunnelOpen:
+                {
+                    int id = r.I32(); string host = r.Str(); int port = r.I32();
+                    if (_accepted) _ = Task.Run(() => OpenTunnelAsync(id, host, port));
+                    break;
+                }
+                case Msg.TunnelData: { int id = r.I32(); _tunnels?.OnData(id, r.Rest()); break; }
+                case Msg.TunnelClose: _tunnels?.OnClose(r.I32()); break;
                 case Msg.SelectMonitor:
                     _selected = r.I32();
                     if (_selected < -1) _selected = 0;
@@ -460,6 +487,15 @@ namespace IpDeskCtrl.Core
                     Frame f = raw;
                     if (scale < 0.75) { TileEncoder.Half(raw, half); f = half; }
 
+                    if (_fullNext && _video != null) _videoRestart = true;      // «Aggiorna»: nuovo fotogramma chiave
+                    if (SendVideo(f, _quality))
+                    {
+                        _fullNext = false;
+                        CursorUpdate(area, f, ref lastCx, ref lastCy);
+                        long elv = sw.ElapsedMilliseconds - t0;
+                        Thread.Sleep((int)Math.Max(5, 40 - elv));
+                        continue;
+                    }
                     bool full = _fullNext;
                     _fullNext = false;
                     if (f.Width != _frameW || f.Height != _frameH) { _frameW = f.Width; _frameH = f.Height; full = true; }
@@ -479,19 +515,7 @@ namespace IpDeskCtrl.Core
                         if (id == 1) SessionLog.Write($"SCHERMO primo fotogramma {f.Width}×{f.Height} ({area.Name} {area.W}×{area.H} a {area.X},{area.Y}) · {tiles.Count} riquadri · {encMs} ms");
                     }
 
-                    // puntatore del PC comandato, in coordinate dell'immagine
-                    var c = _screen.Cursor();
-                    if (c != null)
-                    {
-                        int cx = (int)Math.Round((c.Value.x - area.X) * (double)f.Width / Math.Max(1, area.W));
-                        int cy = (int)Math.Round((c.Value.y - area.Y) * (double)f.Height / Math.Max(1, area.H));
-                        if (cx != lastCx || cy != lastCy)
-                        {
-                            lastCx = cx; lastCy = cy;
-                            bool inside = cx >= 0 && cy >= 0 && cx < f.Width && cy < f.Height;
-                            Send(new MsgWriter(Msg.Cursor).I32(cx).I32(cy).Bool(inside).Build());
-                        }
-                    }
+                    CursorUpdate(area, f, ref lastCx, ref lastCy);
                 }
                 catch (OperationCanceledException) { break; }
                 catch (AggregateException) when (Cts.IsCancellationRequested) { break; }
@@ -506,6 +530,19 @@ namespace IpDeskCtrl.Core
             }
         }
 
+        /// <summary>Puntatore del PC comandato, in coordinate dell'immagine.</summary>
+        private void CursorUpdate(MonitorInfo area, Frame f, ref int lastCx, ref int lastCy)
+        {
+            var c = _screen?.Cursor();
+            if (c == null) return;
+            int cx = (int)Math.Round((c.Value.x - area.X) * (double)f.Width / Math.Max(1, area.W));
+            int cy = (int)Math.Round((c.Value.y - area.Y) * (double)f.Height / Math.Max(1, area.H));
+            if (cx == lastCx && cy == lastCy) return;
+            lastCx = cx; lastCy = cy;
+            bool inside = cx >= 0 && cy >= 0 && cx < f.Width && cy < f.Height;
+            Send(new MsgWriter(Msg.Cursor).I32(cx).I32(cy).Bool(inside).Build());
+        }
+
         private async Task MaintenanceLoopAsync()
         {
             while (!Cts.IsCancellationRequested)
@@ -515,7 +552,9 @@ namespace IpDeskCtrl.Core
                 if (Environment.TickCount64 - _statAt > 60000)
                 {
                     _statAt = Environment.TickCount64;
-                    SessionLog.Write($"SCHERMO ultimo minuto: {_statFrames} fotogrammi, {_statTiles} riquadri, {_statBytes / 1024} kB, {_statFail} catture non riuscite · ritardo {_ackMs:F0} ms · {Route}");
+                    long vb = Interlocked.Exchange(ref _statBytesVideo, 0);
+                    SessionLog.Write($"SCHERMO ultimo minuto: {_statFrames} fotogrammi, " + (_video != null ? $"video {Ffmpeg.CodecNames[_video.Codec]} {vb / 1024} kB" : $"{_statTiles} riquadri, {_statBytes / 1024} kB") +
+                                     $", {_statFail} catture non riuscite · ritardo {_ackMs:F0} ms · {Route}");
                     _statFrames = 0; _statTiles = 0; _statBytes = 0; _statFail = 0;
                 }
                 // monitor collegati o staccati
@@ -565,6 +604,9 @@ namespace IpDeskCtrl.Core
             lock (_micLock) { _mic?.Dispose(); _mic = null; }
             _resizer.Dispose();
             CloseDrive("collegamento chiuso");
+            _tunnels?.CloseAll();
+            _video?.Dispose();
+            _video = null;
             _screen?.Dispose();
             try { Platform.HostEnded?.Invoke(); } catch { }
             var h = P.S.Find(PeerNumber);
@@ -672,6 +714,111 @@ namespace IpDeskCtrl.Core
                 Send(new MsgWriter(Msg.DriveState).Bool(false).Str(ex.Message).Build());
                 CloseDrive("");
             }
+        }
+
+        // ------------------------------------------------------------------ tunnel di porte
+
+        private async Task OpenTunnelAsync(int id, string host, int port)
+        {
+            string why = !_allowInput ? "hai solo la visione di questo PC"
+                : !P.S.AllowTunnel ? "questo PC non accetta tunnel di porte (Impostazioni)"
+                : port is <= 0 or > 65535 ? "porta non valida" : "";
+            if (why.Length == 0)
+            {
+                var c = new TcpClient();
+                try
+                {
+                    using var t = new CancellationTokenSource(TimeSpan.FromSeconds(6));
+                    await c.ConnectAsync(host, port, t.Token);
+                    _tunnels ??= new TunnelHub(SendAsync);
+                    await SendAsync(new MsgWriter(Msg.TunnelOk).I32(id).Bool(true).Str("").Build());
+                    _tunnels.Attach(id, c);
+                    SessionLog.Write($"TUNNEL {Identity.Format(PeerNumber)} → {host}:{port} aperto");
+                    return;
+                }
+                catch (Exception ex)
+                {
+                    c.Dispose();
+                    why = $"{host}:{port} non risponde dal PC remoto ({(ex is OperationCanceledException ? "tempo scaduto" : ex.Message)})";
+                }
+            }
+            SessionLog.Write($"TUNNEL {Identity.Format(PeerNumber)} → {host}:{port} rifiutato: {why}");
+            await SendAsync(new MsgWriter(Msg.TunnelOk).I32(id).Bool(false).Str(why).Build());
+        }
+
+        // ------------------------------------------------------------------ video compresso
+
+        /// <summary>
+        /// Prova a mandare il fotogramma come video. false = si usano i riquadri (ffmpeg assente da una parte,
+        /// codec «jpeg» scelto, codificatore fermo).
+        /// </summary>
+        private bool SendVideo(Frame f, string quality)
+        {
+            if (_videoOff || _codecWanted == "jpeg") { StopVideo(); return false; }
+            string[] can = AppVersion.Value(PeerCaps, "vdec").Split(',', StringSplitOptions.RemoveEmptyEntries);
+            if (can.Length == 0 || Ffmpeg.Path == null) return false;
+            var encTask = Ffmpeg.EncodersAsync();
+            if (!encTask.IsCompleted) return false;           // prova dei codificatori in corso: intanto riquadri
+            int w = f.Width & ~1, h = f.Height & ~1;           // i codec vogliono misure pari
+            if (_video == null || _videoRestart || _video.Failed || _video.Width != w || _video.Height != h)
+            {
+                if (_video != null && _video.Failed && !_videoRestart)
+                {
+                    SessionLog.Write("VIDEO codificatore fermo: " + _video.Error);
+                    Note("Video compresso non disponibile (" + (_video.Error.Length > 0 ? _video.Error.Split('
+')[0] : "ffmpeg si è fermato") + "): torno ai riquadri.");
+                    StopVideo();
+                    _videoOff = true;
+                    return false;
+                }
+                StopVideo();
+                var enc = Ffmpeg.Choose(encTask.Result, can, _codecWanted);
+                if (enc == null)
+                {
+                    if (_codecWanted is "h264" or "hevc" or "av1") Note($"{Ffmpeg.CodecNames[_codecWanted]} non disponibile su uno dei due PC: uso i riquadri.");
+                    _videoOff = true;
+                    return false;
+                }
+                int kbps = quality switch { "alta" => 12000, "media" => 4000, "bassa" => 1500, _ => 6000 };
+                int gen = ++_videoGen;
+                _videoWritten = 0; _videoAcked = 0;
+                Link.SendAsync(new MsgWriter(Msg.VideoStart).I32(gen).Str(enc.Codec).I32(w).I32(h).Str(enc.Name).Build(), Cts.Token).Wait(Cts.Token);
+                try
+                {
+                    _video = new VideoEncoder(enc, w, h, kbps, data =>
+                    {
+                        try { Link.SendAsync(new MsgWriter(Msg.VideoData).I32(gen).Bytes(data).Build(), Cts.Token).Wait(Cts.Token); } catch { }
+                        Interlocked.Add(ref _statBytesVideo, data.Length);
+                    });
+                }
+                catch (Exception ex)
+                {
+                    Note("Video compresso non avviabile: " + ex.Message);
+                    _videoOff = true;
+                    return false;
+                }
+                _videoRestart = false;
+                _frameW = w; _frameH = h;
+                SessionLog.Write($"VIDEO {Ffmpeg.CodecNames[enc.Codec]} con {enc.Name} ({(enc.Hardware ? "hardware" : "software")}) {w}×{h} a {kbps} kbit/s");
+            }
+            // al massimo 4 fotogrammi in viaggio (codifica, rete, decodifica): niente ritardo che cresce
+            if (_videoWritten - _videoAcked >= 4)
+            {
+                if (_videoBlockedSince == 0) _videoBlockedSince = Environment.TickCount64;
+                else if (Environment.TickCount64 - _videoBlockedSince > 4000) { _videoRestart = true; _videoBlockedSince = 0; }
+                return true;
+            }
+            _videoBlockedSince = 0;
+            if (_video!.Write(f)) { _videoWritten++; _statFrames++; }
+            return true;
+        }
+
+        private long _statBytesVideo;
+
+        private void StopVideo()
+        {
+            _video?.Dispose();
+            _video = null;
         }
 
         private void CloseDrive(string why)

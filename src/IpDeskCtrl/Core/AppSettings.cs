@@ -18,9 +18,12 @@ namespace IpDeskCtrl.Core
         public bool AllowUnattended { get; set; }         // può entrare in questo PC senza conferma
         public string LastSeconds { get; set; } = "";     // durata dell'ultimo collegamento, testo
         public string Os { get; set; } = "";              // sistema operativo dell'altro PC
+        public string Version { get; set; } = "";         // versione dell'altro PC all'ultimo collegamento («P3 0.5.0»)
         public string SavedPassword { get; set; } = "";
         public string Mac { get; set; } = "";             // Wake-on-LAN: scheda di rete dell'altro PC
         public string Broadcast { get; set; } = "";       // Wake-on-LAN: broadcast della sua rete locale
+        public List<string> Tunnels { get; set; } = new();   // tunnel di porte verso quel PC (TunnelSpec: porta|indirizzo|porta|nome)
+        public bool TunnelsAuto { get; set; } = true;         // aprili da soli a ogni collegamento
         public string PublicIp { get; set; } = "";        // IP pubblico dell'altro PC (stessa rete = stesso IP)   // password di quel PC ricordata (sale:PBKDF2 cifrato, vedi AccessPassword)
     }
 
@@ -41,6 +44,7 @@ namespace IpDeskCtrl.Core
         public string MicOutput { get; set; } = "";        // uscita per quel microfono ("" = cavo virtuale se c'è, altrimenti predefinita)
         public bool AllowResize { get; set; } = true;      // chi si collega può adattare la risoluzione alla sua finestra
         public bool AllowDrive { get; set; } = true;       // chi si collega può montare qui una sua cartella come disco
+        public bool AllowTunnel { get; set; } = true;      // chi si collega può aprire tunnel di porte attraverso questo PC
 
         // ---------------- visore
         public int ZoomPercent { get; set; } = 0;          // 0 = adatta alla finestra
@@ -50,6 +54,7 @@ namespace IpDeskCtrl.Core
         public bool HideNoticeShown { get; set; }           // avviso «resta attivo» già mostrato alla prima chiusura
         public bool SendMic { get; set; }                   // manda il microfono di qui al PC remoto
         public bool FitResolution { get; set; }             // chiedi al PC remoto la risoluzione della finestra
+        public string VideoCodec { get; set; } = "auto";    // auto, h264, hevc, av1, jpeg (riquadri)
         public string SharedFolder { get; set; } = "";      // ultima cartella condivisa come disco
         public bool SharedReadOnly { get; set; }
         public TouchSettings Touch { get; set; } = new();   // telefono e tablet: gesti, velocità, barra dei tasti

@@ -27,6 +27,9 @@ Ogni PC ha un **numero fisso di 10 cifre** (es. `482 913 0675`) che non cambia m
 - **Volume del PC remoto** (Tasti › Volume +, −, muto).
 - **Risoluzione adatta** (plancia): il PC remoto passa alla risoluzione più adatta alla tua finestra o al telefono e a fine collegamento torna com'era (Windows e Linux X11).
 - **Cartella condivisa come disco** (File ▾ › *Condividi una cartella come disco del PC remoto…*): la cartella scelta compare di là come unità (Windows, serve il servizio «WebClient»), in GVFS (Linux) o nel Finder (macOS), anche in sola lettura. I file passano nel canale cifrato.
+- **Video compresso H.264 / H.265 / AV1** (plancia › *Video automatico*): con ffmpeg su tutti e due i PC lo schermo viaggia come video, con i codificatori hardware della scheda video se ci sono (NVIDIA NVENC, Intel Quick Sync, AMD AMF, Media Foundation, VideoToolbox) o con x264; molta meno banda e più fluidità. Su Windows: Impostazioni › *Scarica ffmpeg*; su Linux `sudo apt install ffmpeg`; su Mac `brew install ffmpeg`. Senza ffmpeg si usano i riquadri JPEG.
+- **Tunnel di porte** (plancia › *Tunnel ▾*): un programma di qui si collega a 127.0.0.1:porta e arriva a un indirizzo visto dal PC remoto, per esempio **rigctld** (4532), **rotctld** (4533), **flrig** (12345), **fldigi** (7362) o l'**interfaccia web della radio**. Si salvano per ogni PC e si possono avviare da soli.
+- **Controllo preliminare delle versioni**: nello storico compare la versione di ogni PC (⚠ se diversa) e prima di collegarsi il programma avvisa; con protocollo diverso non si collega e dice cosa aggiornare.
 - **Avviso di nuova versione** nella schermata principale (controllo su GitHub all'avvio e ogni 12 ore).
 - **Sempre attivo**: la **X** della finestra la nasconde soltanto; IP-DESK-CTRL resta attivo con l'icona vicino all'orologio (barra dei menu su macOS), il PC resta raggiungibile e i collegamenti aperti continuano. Clic sull'icona per riaprirlo; per uscire davvero: clic destro sull'icona › **Esci da IP-DESK-CTRL**, oppure Impostazioni › **Esci dal programma**. Riavviarlo mentre è nascosto riapre la finestra di quello già attivo.
 
@@ -90,8 +93,11 @@ Nella cartella dei dati (Impostazioni › Apri cartella dati): `errori.log` e `s
 
 Le versioni con protocollo diverso non si collegano tra loro: aggiorna tutti i dispositivi alla stessa versione principale (la 0.4.1 si collega con la 0.4.0; la 0.5 si collega con la 0.4).
 
-### 0.5.0 — in preparazione
+### 0.5.0 — 11 novembre 2026
 Si collega con la 0.4: le funzioni nuove si attivano quando entrambi i dispositivi hanno la 0.5.
+- **Video compresso H.264, H.265 e AV1** al posto dei riquadri JPEG, con ffmpeg e i codificatori della scheda video (NVIDIA, Intel, AMD, Media Foundation, VideoToolbox) o x264: molta meno banda, più fluido con video e scorrimenti. Su Windows ffmpeg si scarica con un clic dalle impostazioni.
+- **Tunnel di porte**: rigctld, flrig, fldigi o l'interfaccia web della radio del PC remoto raggiungibili da qui, nel collegamento cifrato.
+- **Controllo preliminare delle versioni**: prima di collegarsi, e nello storico, il programma dice se l'altro dispositivo ha una versione diversa e cosa comporta.
 - **Telefono e tablet come visore** (idee da Sofatap e bVNC):
   - **gesti personalizzabili** con quattro profili pronti (Sofatap, Abitudini da touchpad, Pressione per il clic destro, Come la 0.4) e un'azione per ogni gesto: tocco, doppio tocco a sinistra o a destra, tocco con due o tre dita, pressione lunga, tocca e tieni, scorrimento con uno o due dita;
   - **pannello scorciatoie**: tieni il dito, scorri per scegliere il tasto (Spazio, Invio, Esc, frecce, Copia, Incolla, Annulla, Alt+Tab, volume…) e solleva;

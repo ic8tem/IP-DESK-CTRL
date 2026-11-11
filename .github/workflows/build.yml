@@ -185,6 +185,7 @@ jobs:
             Linux e Raspberry: `sudo apt install ./ip-desk-ctrl_…deb` (con la sessione Wayland riavvia dopo l'installazione: serve la regola per mouse e tastiera).
             macOS: concedi «Registrazione schermo» e «Accessibilità» in Impostazioni di Sistema › Privacy e sicurezza; per l'audio installa BlackHole 2ch.
             Le versioni *portatile* non richiedono installazione.
+            Video compresso H.264/H.265/AV1: serve ffmpeg su tutti e due i PC (Windows: Impostazioni › Scarica ffmpeg; Linux: sudo apt install ffmpeg; Mac: brew install ffmpeg).
             La X della finestra nasconde soltanto: IP-DESK-CTRL resta attivo con l'icona vicino all'orologio; per uscire clic destro sull'icona › «Esci da IP-DESK-CTRL».
 
             **Compatibilità**: la 0.5 si collega con la 0.4 (protocollo 3); microfono, volume, risoluzione adatta e cartella condivisa servono la 0.5 da entrambe le parti.

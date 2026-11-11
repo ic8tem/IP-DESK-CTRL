@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
 using IpDeskCtrl.Audio;
@@ -44,7 +46,7 @@ namespace IpDeskCtrl.Core
         private (int x, int y) _pendingMove;
         private int _movePending;
 
-        public ViewerSession(Peer p, SecureLink link) : base(p, link) { }
+        public ViewerSession(Peer p, SecureLink link) : base(p, link) { _tunnelHub = new TunnelHub(SendAsync); }
 
         public void Run(CancellationToken life)
         {
@@ -52,7 +54,7 @@ namespace IpDeskCtrl.Core
             _ = Task.Run(ReceiveLoopAsync);
             _ = Task.Run(async () =>
             {
-                await SendAsync(new MsgWriter(Msg.Hello).Str(AppVersion.Tag).Str(AppVersion.Os).Str(Environment.MachineName).Bool(false).Str(AppVersion.Caps).Build());
+                await SendAsync(new MsgWriter(Msg.Hello).Str(AppVersion.Tag).Str(AppVersion.Os).Str(Environment.MachineName).Bool(false).Str(AppVersion.CapsNow()).Build());
                 _ = Task.Run(PingLoopAsync);
                 _ = Task.Run(StatsLoopAsync);
             });
@@ -79,6 +81,29 @@ namespace IpDeskCtrl.Core
                     });
                     break;
                 }
+                case Msg.VideoStart:
+                {
+                    int gen = r.I32(); string codec = r.Str(); int w = r.I32(), h = r.I32(); string enc = r.AtEnd ? "" : r.Str();
+                    StartVideo(gen, codec, w, h, enc);
+                    break;
+                }
+                case Msg.VideoData:
+                {
+                    int gen = r.I32();
+                    var d = _vdec;
+                    if (gen != _vgen || d == null) break;
+                    if (d.Failed) { VideoFailed("il decodificatore ffmpeg si è fermato"); break; }
+                    d.Feed(r.Rest());
+                    break;
+                }
+                case Msg.TunnelOk:
+                {
+                    int id = r.I32(); bool ok = r.Bool(); string why = r.Str();
+                    if (_tunnelWait.TryRemove(id, out var t)) t.TrySetResult((ok, why));
+                    break;
+                }
+                case Msg.TunnelData: { int id = r.I32(); _tunnelHub.OnData(id, r.Rest()); break; }
+                case Msg.TunnelClose: _tunnelHub.OnClose(r.I32()); break;
                 case Msg.DriveState:
                 {
                     bool on = r.Bool(); string where = r.Str();
@@ -95,9 +120,11 @@ namespace IpDeskCtrl.Core
                     {
                         InputAllowed = StateText.Length == 0;
                         var h = P.S.Touch(PeerNumber, true, Convert.ToHexString(Link.PeerKey), PeerOs);
+                        h.Version = PeerVersion;
                         if (_pendingSaved != null) { h.SavedPassword = _pendingSaved; P.S.Save(); }
                         P.RememberWake(h);
                         Send(new MsgWriter(Msg.SetQuality).Str(P.S.Quality).Build());
+                        if (PeerHas("tunnel") || AppVersion.Value(PeerCaps, "vdec").Length > 0 || PeerHas("mic")) Send(new MsgWriter(Msg.SetCodec).Str(P.S.VideoCodec).Build());
                         SetAudio(P.S.PlayAudio);
                         _ = Task.Run(ClipboardLoopAsync);
                     }
@@ -264,6 +291,104 @@ namespace IpDeskCtrl.Core
         /// <summary>Chiede al PC remoto la risoluzione più adatta a w×h pixel (0, 0 = quella di prima).</summary>
         public void RequestResize(int w, int h) { if (PeerHas("res")) Send(new MsgWriter(Msg.Resize).I32(w).I32(h).Build()); }
 
+        // ------------------------------------------------------------------ video compresso
+
+        private VideoDecoder? _vdec;
+        private volatile int _vgen;
+        private int _vframes;
+        /// <summary>Codec in uso («H.264 (h264_nvenc)»), "" = riquadri JPEG.</summary>
+        public string VideoInfo { get; private set; } = "";
+
+        /// <summary>Codec chiesto al PC remoto: auto, h264, hevc, av1, jpeg.</summary>
+        public void SetCodec(string codec) => Send(new MsgWriter(Msg.SetCodec).Str(codec).Build());
+
+        private void StartVideo(int gen, string codec, int w, int h, string enc)
+        {
+            _vdec?.Dispose();
+            _vdec = null;
+            _vgen = gen;
+            _vframes = 0;
+            if (Screen.Ffmpeg.Path == null) { VideoFailed("ffmpeg non c'è su questo dispositivo"); return; }
+            try
+            {
+                _vdec = new VideoDecoder(codec, w, h, frame =>
+                {
+                    if (gen != _vgen) return;
+                    Decoder.SetFrame(frame, w, h);
+                    int n = Interlocked.Increment(ref _vframes);
+                    Interlocked.Increment(ref _frames);
+                    FrameReady?.Invoke();
+                    Send(new MsgWriter(Msg.VideoAck).I32(gen).I32(n).Build());
+                });
+                VideoInfo = (Screen.Ffmpeg.CodecNames.TryGetValue(codec, out var nm) ? nm : codec) + (enc.Length > 0 ? $" ({enc})" : "");
+                SessionLog.Write($"VIDEO ricevo {VideoInfo} {w}×{h}");
+            }
+            catch (Exception ex) { VideoFailed(ex.Message); }
+        }
+
+        private void VideoFailed(string why)
+        {
+            _vdec?.Dispose();
+            _vdec = null;
+            _vgen = -1;
+            VideoInfo = "";
+            SessionLog.Write("VIDEO decodifica non possibile: " + why + " (torno ai riquadri)");
+            Send(new MsgWriter(Msg.SetCodec).Str("jpeg").Build());
+        }
+
+        // ------------------------------------------------------------------ tunnel di porte
+
+        private readonly TunnelHub _tunnelHub;
+        private readonly ConcurrentDictionary<int, TaskCompletionSource<(bool ok, string why)>> _tunnelWait = new();
+        private readonly List<TunnelListener> _listeners = new();
+        private int _tunnelId;
+        /// <summary>Avvisi dei tunnel (porta occupata, indirizzo che non risponde…).</summary>
+        public event Action<string>? TunnelMessage;
+
+        public IReadOnlyList<TunnelSpec> ActiveTunnels { get { lock (_listeners) return _listeners.Select(l => l.Spec).ToList(); } }
+        public int TunnelConnections => _tunnelHub.Count;
+
+        /// <summary>Apre in ascolto 127.0.0.1:porta locale. "" = fatto, altrimenti il motivo.</summary>
+        public string StartTunnel(TunnelSpec spec)
+        {
+            if (!PeerHas("tunnel")) return "Il PC remoto ha una versione senza tunnel di porte: aggiornalo alla 0.5.";
+            if (!InputAllowed) return "Hai solo la visione del PC remoto: i tunnel non sono permessi.";
+            lock (_listeners)
+            {
+                if (_listeners.Any(l => l.Spec.LocalPort == spec.LocalPort)) return $"La porta {spec.LocalPort} è già usata da un altro tunnel.";
+                try { _listeners.Add(new TunnelListener(spec, OnTunnelClientAsync)); }
+                catch (Exception ex) { return $"La porta {spec.LocalPort} di questo dispositivo è occupata ({ex.Message}): scegline un'altra."; }
+            }
+            SessionLog.Write($"TUNNEL 127.0.0.1:{spec.LocalPort} → {spec.Host}:{spec.Port} sul PC remoto" + (spec.Name.Length > 0 ? $" ({spec.Name})" : ""));
+            return "";
+        }
+
+        public void StopTunnel(int localPort)
+        {
+            lock (_listeners)
+            {
+                foreach (var l in _listeners.Where(l => l.Spec.LocalPort == localPort).ToList()) { l.Dispose(); _listeners.Remove(l); }
+            }
+        }
+
+        private async Task OnTunnelClientAsync(TunnelSpec spec, System.Net.Sockets.TcpClient client)
+        {
+            int id = Interlocked.Increment(ref _tunnelId);
+            var tcs = new TaskCompletionSource<(bool ok, string why)>(TaskCreationOptions.RunContinuationsAsynchronously);
+            _tunnelWait[id] = tcs;
+            await SendAsync(new MsgWriter(Msg.TunnelOpen).I32(id).Str(spec.Host).I32(spec.Port).Build());
+            var done = await Task.WhenAny(tcs.Task, Task.Delay(TimeSpan.FromSeconds(12)));
+            _tunnelWait.TryRemove(id, out _);
+            var (ok, why) = done == tcs.Task ? tcs.Task.Result : (false, "il PC remoto non ha risposto");
+            if (!ok)
+            {
+                client.Dispose();
+                TunnelMessage?.Invoke($"Tunnel {spec.LocalPort} → {spec.Host}:{spec.Port}: {why}.");
+                return;
+            }
+            _tunnelHub.Attach(id, client);
+        }
+
         // cartella condivisa come disco del PC remoto
         private volatile DriveShare? _share;
         public string DriveMounted { get; private set; } = "";
@@ -384,6 +509,10 @@ namespace IpDeskCtrl.Core
             _micCap?.Dispose();
             _micCap = null;
             _share = null;
+            _vdec?.Dispose();
+            _vdec = null;
+            lock (_listeners) { foreach (var l in _listeners) l.Dispose(); _listeners.Clear(); }
+            _tunnelHub.CloseAll();
             var h = P.S.Find(PeerNumber);
             if (h != null && State == AcceptState.Accepted) { h.LastSeconds = HostSession.Duration(DateTime.UtcNow - Started); P.S.Save(); }
         }

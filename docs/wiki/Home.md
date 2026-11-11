@@ -23,6 +23,8 @@ Ogni dispositivo ha un **numero fisso di 10 cifre** che non cambia mai. Per coll
 | [Accesso senza conferma](Accesso-senza-conferma) | PC di fiducia, password, riavvio, Wake-on-LAN |
 | [Servizio di Windows](Servizio-di-Windows) | UAC, schermata di blocco, PC raggiungibile prima dell'accesso |
 | [Android](Android) | Il telefono come visore e come host |
+| [Video compresso](Video) | H.264, H.265, AV1 con ffmpeg |
+| [Tunnel di porte](Tunnel-di-porte) | rigctld, flrig, web della radio raggiungibili da qui |
 | [Rete e porte](Rete-e-porte) | Come i PC si trovano: UPnP, broker MQTT, collegamento inverso, UDP |
 | [Sicurezza](Sicurezza) | Chiavi, cifratura, password |
 | [Problemi e registri](Problemi-e-registri) | Messaggi frequenti e dove sono i registri |

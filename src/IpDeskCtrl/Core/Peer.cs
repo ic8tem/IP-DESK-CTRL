@@ -653,12 +653,15 @@ namespace IpDeskCtrl.Core
 
             progress("Cerco " + Identity.Format(number) + " sui broker MQTT…");
             var a = await ViewerRendezvous.LookupAsync(number, S.MqttBrokers, Log, ct);
-            if (a != null) _lastSeen[number] = a;
+            if (a != null) { _lastSeen[number] = a; ViewerRendezvous.Versions[number] = a.Version; }
             if (a == null)
                 throw new PeerException($"Il numero {Identity.Format(number)} non risulta in linea: il programma su quel PC è chiuso o non raggiunge internet, oppure il numero è sbagliato.");
             var (proto, ver) = AppVersion.Parse(a.Version);
             if (proto != AppVersion.Protocol)
                 throw new PeerException($"L'altro PC usa la versione {ver} (protocollo {proto}), questo la {AppVersion.Text} (protocollo {AppVersion.Protocol}): aggiorna tutti e due.");
+            // controllo preliminare delle versioni: stesso protocollo ma versione diversa = si collega con meno funzioni
+            string verNote = AppVersion.Compare(a.Version);
+            if (verNote.Length > 0) { progress(verNote); Log("VERSIONI " + verNote); }
             if (a.Age > TimeSpan.FromMinutes(8))
                 progress($"Ultimo segnale dell'altro PC: {ViewerRendezvous.Age(a.Age)}. Potrebbe essere spento; provo lo stesso…");
 

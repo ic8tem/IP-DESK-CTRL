@@ -31,6 +31,11 @@ namespace IpDeskCtrl.Net
         public const byte FrameAck = 0x23;       // visore -> host: i32 id
         public const byte Cursor = 0x24;         // i32 x | i32 y | bool visibile (coordinate dell'immagine)
         public const byte ScreenNote = 0x25;     // str avviso dell'host (permessi mancanti, Wayland…)
+        // video compresso (0.5+, al posto dei riquadri quando entrambi hanno ffmpeg)
+        public const byte VideoStart = 0x26;     // i32 generazione | str codec (h264, hevc, av1) | i32 larghezza | i32 altezza | str codificatore
+        public const byte VideoData = 0x27;      // i32 generazione | flusso grezzo del codec
+        public const byte VideoAck = 0x28;       // visore -> host: i32 generazione | i32 fotogrammi decodificati
+        public const byte SetCodec = 0x17;       // visore -> host: str auto | h264 | hevc | av1 | jpeg
 
         // ---- ingresso (visore -> host)
         public const byte MouseMove = 0x30;      // i32 x | i32 y
@@ -61,6 +66,12 @@ namespace IpDeskCtrl.Net
         public const byte Reboot = 0x70;         // riavvia il PC remoto (serve il permesso di comandarlo)
         public const byte StartTrx = 0x71;       // avvia IP-TRX-CTRL sul PC remoto
         public const byte Volume = 0x72;         // u8 0 = giù, 1 = su, 2 = muto sì/no (0.5+)
+
+        // ---- tunnel di porte: una porta di qui porta a un indirizzo raggiungibile dal PC remoto (0.5+)
+        public const byte TunnelOpen = 0x90;     // visore -> host: i32 id | str indirizzo | i32 porta
+        public const byte TunnelOk = 0x91;       // host -> visore: i32 id | bool aperto | str motivo
+        public const byte TunnelData = 0x92;     // nei due versi: i32 id | dati
+        public const byte TunnelClose = 0x93;    // nei due versi: i32 id
 
         // ---- cartella condivisa: una cartella del visore come disco del PC remoto (0.5+)
         public const byte DriveOpen = 0x80;      // visore -> host: str nome della cartella | bool sola lettura

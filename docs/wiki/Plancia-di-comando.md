@@ -8,6 +8,8 @@ Nella finestra del PC remoto, **in alto al centro**, c'è una piccola plancia di
 | **Zoom** | *Adatta* (lo schermo remoto riempie la finestra) oppure una percentuale da 25 % a 200 %. |
 | **Monitor** | Se il PC remoto ha più schermi, scegli quale vedere oppure **tutti insieme**. |
 | **Qualità** | *Automatica* (si adatta alla velocità della connessione) oppure fissa. |
+| **Video automatico** | H.264, H.265, AV1 o riquadri JPEG: vedi [Video compresso](Video). |
+| **Tunnel ▾** | Tunnel di porte verso il PC remoto: vedi [Tunnel di porte](Tunnel-di-porte). |
 | **Risoluzione adatta** | Il PC remoto passa alla risoluzione più adatta a questa finestra (vedi sotto). |
 | **Audio** | Accende o spegne l'audio del PC remoto (32 kHz stereo). |
 | **Microfono** | Manda il tuo microfono al PC remoto (vedi sotto). |
