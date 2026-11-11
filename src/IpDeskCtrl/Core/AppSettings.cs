@@ -57,7 +57,7 @@ namespace IpDeskCtrl.Core
         public string VideoCodec { get; set; } = "auto";    // auto, h264, hevc, av1, jpeg (riquadri)
         public string SharedFolder { get; set; } = "";      // ultima cartella condivisa come disco
         public bool SharedReadOnly { get; set; }
-        public TouchSettings Touch { get; set; } = new();   // telefono e tablet: gesti, velocità, barra dei tasti
+        public TouchSettings TouchInput { get; set; } = new();   // telefono e tablet: gesti, velocità, barra dei tasti
 
         // ---------------- rete (gestita in automatico)
         public List<string> MqttBrokers { get; set; } = new() { "broker.hivemq.com:1883", "test.mosquitto.org:1883", "broker.emqx.io:1883" };

@@ -103,8 +103,8 @@ namespace IpDeskCtrl.UI
             Background = Brushes.Black;
             _view.ShowRemoteCursor = peer.S.ShowRemoteCursor;
             _view.FullScreenToggleRequested += ToggleFullScreen;
-            peer.S.Touch.Normalize();
-            _view.Touch = peer.S.Touch;
+            peer.S.TouchInput.Normalize();
+            _view.Touch = peer.S.TouchInput;
             _view.ActionRequested += OnTouchAction;
             _view.PanelHoldStarted += () => OpenPanel(true);
             _view.PanelHoldMoved += PanelMove;
@@ -582,7 +582,7 @@ namespace IpDeskCtrl.UI
         private void RebuildKeysBar()
         {
             var bar = new WrapPanel { HorizontalAlignment = HorizontalAlignment.Center };
-            foreach (string id in _peer.S.Touch.Keys)
+            foreach (string id in _peer.S.TouchInput.Keys)
             {
                 if (!SpecialKeys.ById.TryGetValue(id, out var k)) continue;
                 if (k.Kind == "mod")
@@ -1130,7 +1130,7 @@ namespace IpDeskCtrl.UI
                     string verWarn = AppVersion.Compare(s.PeerVersion);
                     if (!s.InputAllowed) ShowNote("L'altro PC ha concesso solo la visione: mouse, tastiera e file non arrivano.");
                     else if (verWarn.Length > 0) ShowNote(verWarn);
-                    else if (Platform.IsMobile) ShowNote(_peer.S.Touch.Mode == "diretto"
+                    else if (Platform.IsMobile) ShowNote(_peer.S.TouchInput.Mode == "diretto"
                         ? "Tocco diretto: si clicca dove tocchi. Due dita: rotella; allargale per ingrandire. Gesti e tasti: pulsante ✋."
                         : "Il dito fa da touchpad. Gesti, tempi e velocità si cambiano col pulsante ✋; due dita allargate = zoom.");
                     break;

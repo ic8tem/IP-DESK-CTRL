@@ -17,7 +17,7 @@ namespace IpDeskCtrl.UI
     {
         public static void Show(AppSettings s, Action? saved = null)
         {
-            var t = s.Touch;
+            var t = s.TouchInput;
             t.Normalize();
 
             var mode = new ComboBox { ItemsSource = new[] { "Touchpad: il dito sposta il puntatore", "Tocco diretto: si clicca dove si tocca" }, SelectedIndex = t.Mode == "diretto" ? 1 : 0 };
