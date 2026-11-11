@@ -22,6 +22,10 @@ namespace IpDeskCtrl.Core
         public static Func<IInputSink>? Input { get; set; }
         public static Func<ISystemAudioCapture>? AudioCapture { get; set; }
         public static Func<IAudioPlayer>? AudioPlayer { get; set; }
+        /// <summary>Microfono del telefono (visore che parla nel PC remoto).</summary>
+        public static Func<ISystemAudioCapture>? MicCapture { get; set; }
+        /// <summary>Dettatura vocale (Android: riconoscimento del sistema); null = non disponibile. Restituisce il testo o null.</summary>
+        public static Func<Task<string?>>? Dictate { get; set; }
 
         /// <summary>
         /// Prima di farsi vedere: permessi del sistema (Android: consenso alla cattura dello schermo).

@@ -7,6 +7,7 @@ using Avalonia.Input;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
+using Avalonia.Threading;
 using IpDeskCtrl.Core;
 using IpDeskCtrl.Input;
 
@@ -46,6 +47,7 @@ namespace IpDeskCtrl.UI
             set
             {
                 _zoom = Math.Clamp(value, 0, 400);
+                _pinch = 1;
                 RenderOptions.SetBitmapInterpolationMode(this, _zoom == 100 ? BitmapInterpolationMode.None : BitmapInterpolationMode.HighQuality);
                 InvalidateMeasure();
                 InvalidateVisual();
@@ -115,6 +117,13 @@ namespace IpDeskCtrl.UI
             var b = Bounds.Size;
             double sc = Scale(b);
             double dw = _w * sc, dh = _h * sc;
+            if (_zoom == 0 && _pinch > 1.001)
+            {
+                dw *= _pinch; dh *= _pinch;
+                double zx = dw <= b.Width ? (b.Width - dw) / 2 : Math.Clamp(_zx, b.Width - dw, 0);
+                double zy = dh <= b.Height ? (b.Height - dh) / 2 : Math.Clamp(_zy, b.Height - dh, 0);
+                return new Rect(zx, zy, dw, dh);
+            }
             double x = Math.Max(0, (b.Width - dw) / 2), y = Math.Max(0, (b.Height - dh) / 2);
             return new Rect(x, y, dw, dh);
         }
@@ -125,6 +134,11 @@ namespace IpDeskCtrl.UI
             if (_bmp == null) return;
             var d = Dest();
             ctx.DrawImage(_bmp, new Rect(0, 0, _w, _h), d);
+
+            // striscia di scorrimento lungo il bordo destro (telefono e tablet)
+            if (_touchMode && Touch.ScrollStrip && Platform.IsMobile)
+                ctx.FillRectangle(new SolidColorBrush(Color.FromArgb(_g == G.Strip ? (byte)90 : (byte)40, 255, 255, 255)),
+                    new Rect(Bounds.Width - StripWidth + 8, 8, StripWidth - 14, Math.Max(0, Bounds.Height - 16)), 6);
 
             // puntatore del PC remoto (quando lo muove qualcuno di là, o il nostro è fuori dalla finestra)
             var s = _session;
@@ -232,23 +246,48 @@ namespace IpDeskCtrl.UI
 
         // ------------------------------------------------------------------ tocco (telefono, tablet, schermi touch)
         //
-        // Il dito fa da touchpad: muove il puntatore del PC remoto di quanto si sposta (non lo «teletrasporta»),
-        // così si può puntare con precisione anche con lo schermo rimpicciolito.
-        //   tocco                      clic sinistro
-        //   due tocchi, il secondo tenuto e trascinato    trascinamento (tasto sinistro tenuto)
-        //   dito fermo più di 0,6 s    clic destro
-        //   tocco con due dita         clic destro
-        //   due dita in su o in giù    rotella
+        // Due modi (TouchSettings.Mode):
+        //   touchpad  il dito sposta il puntatore di quanto si muove (non lo «teletrasporta»): si punta con precisione
+        //             anche con lo schermo rimpicciolito;
+        //   diretto   si clicca dove si tocca, come su un tablet.
+        // I gesti (tocco, doppio tocco a sinistra o a destra, due e tre dita, pressione lunga, tocca e tieni, scorrimento
+        // con uno e due dita) fanno l'azione assegnata nelle impostazioni (profili pronti come in Sofatap).
+        // Due dita che si allargano o stringono: zoom dell'immagine qui (non sul PC remoto) e spostamento.
+        // Striscia lungo il bordo destro: scorre come la barra di scorrimento (dito in giù = pagina in giù).
 
+        public TouchSettings Touch { get; set; } = new();
+
+        /// <summary>Azione da fare fuori dalla vista: tastiera, dettatura, pannello scorciatoie aperto con un tocco.</summary>
+        public event Action<string>? ActionRequested;
+        /// <summary>Pannello scorciatoie aperto con la pressione lunga: il dito resta giù e sceglie scorrendo.</summary>
+        public event Action? PanelHoldStarted;
+        public event Action<double, double>? PanelHoldMoved;
+        public event Action? PanelHoldEnded;
+
+        private enum G { None, Pending, Multi, Pointer, Scroll1, Pointer2, Scroll2, Pinch, Strip, Drag, Panel, Consumed }
+
+        private const double Slop = 10, StripWidth = 30;
         private readonly Dictionary<long, Point> _touches = new();
-        private bool _touchMode, _dragging, _moved;
-        private Point _cur, _downPos;
-        private long _downAt, _lastTapAt;
+        private bool _touchMode, _moved, _second, _leftHalf;
+        private G _g;
+        private Point _cur, _downPos, _lastMid, _pinchMid0;
+        private long _downAt;
         private int _maxTouches;
-        private double _scrollAcc;
-        private Point _lastMid;
+        private double _scrollAcc, _spread0, _pinch0;
+        private Rect _rect0;
+        private DispatcherTimer? _holdTimer, _tapTimer;
+        private bool _tapPending, _lastTapImmediate, _tapLeftHalf;
+        private long _lastTapAt;
+        private Point _lastTapPos;
 
+        // zoom con due dita (solo con «Adatta»): fattore e angolo in alto a sinistra dell'immagine ingrandita
+        private double _pinch = 1, _zx, _zy;
+
+        private bool Direct => Touch.Mode == "diretto";
         private double ViewScale => Dest().Width / Math.Max(1, _w);
+
+        /// <summary>Riporta l'immagine intera (fine dello zoom con due dita).</summary>
+        public void ResetPinch() { _pinch = 1; InvalidateVisual(); }
 
         private void TouchPressed(long id, Point p)
         {
@@ -264,17 +303,65 @@ namespace IpDeskCtrl.UI
             if (_touches.Count == 1)
             {
                 _downAt = now; _downPos = p; _moved = false; _maxTouches = 1;
-                if (now - _lastTapAt < 300)
+                _leftHalf = p.X < Bounds.Width / 2;
+                _second = _lastTapAt > 0 && now - _lastTapAt <= Touch.DoubleTapMs + 150 && Distance(p, _lastTapPos) < 80;
+                if (_second) _tapTimer?.Stop();
+                if (Touch.ScrollStrip && Platform.IsMobile && p.X > Bounds.Width - StripWidth)
                 {
-                    _dragging = true;
-                    _session!.MouseButton(MouseBtn.Left, true, (int)_cur.X, (int)_cur.Y);
+                    _g = G.Strip; _scrollAcc = 0;
+                    return;
                 }
+                _g = G.Pending;
+                if (Direct) PointAt(p);
+                StartHold();
             }
             else
             {
                 _maxTouches = Math.Max(_maxTouches, _touches.Count);
-                _lastMid = Mid();
-                _scrollAcc = 0;
+                _holdTimer?.Stop();
+                if (_g is G.Drag or G.Panel or G.Strip or G.Consumed) return;
+                if (_g is G.Pending or G.Pointer or G.Scroll1)
+                {
+                    _g = G.Multi;
+                    _lastMid = _pinchMid0 = Mid();
+                    _spread0 = Spread();
+                    _pinch0 = _pinch;
+                    _rect0 = Dest();
+                    _scrollAcc = 0;
+                }
+            }
+        }
+
+        private void StartHold()
+        {
+            _holdTimer?.Stop();
+            _holdTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(Touch.HoldMs) };
+            _holdTimer.Tick += (_, _) => { _holdTimer?.Stop(); OnHold(); };
+            _holdTimer.Start();
+        }
+
+        private void OnHold()
+        {
+            if (_touches.Count != 1 || _g != G.Pending || _moved) return;
+            string a = Touch.Action(_second ? TouchGestures.TapHold : TouchGestures.LongPress);
+            if (_second) { _lastTapAt = 0; _tapPending = false; }
+            switch (a)
+            {
+                case TouchActions.Drag:
+                    _g = G.Drag;
+                    _session!.MouseButton(MouseBtn.Left, true, (int)_cur.X, (int)_cur.Y);
+                    break;
+                case TouchActions.Shortcuts:
+                    _g = G.Panel;
+                    PanelHoldStarted?.Invoke();
+                    break;
+                case TouchActions.None:
+                    _g = G.Consumed;
+                    break;
+                default:
+                    _g = G.Consumed;
+                    Run(a);
+                    break;
             }
         }
 
@@ -285,67 +372,237 @@ namespace IpDeskCtrl.UI
             return new Point(x / _touches.Count, y / _touches.Count);
         }
 
+        private double Spread()
+        {
+            var m = Mid();
+            double d = 0;
+            foreach (var t in _touches.Values) d += Distance(t, m);
+            return d / Math.Max(1, _touches.Count);
+        }
+
         private void TouchMoved(long id, Point p)
         {
             if (!_touches.TryGetValue(id, out var last)) return;
             _touches[id] = p;
             if (_touches.Count == 1)
             {
-                if (Distance(p, _downPos) > 10) _moved = true;
-                if (!_moved) return;
-                double k = 1.4 / Math.Max(0.05, ViewScale);       // un po' più veloce del dito
-                _cur = new Point(Math.Clamp(_cur.X + (p.X - last.X) * k, 0, _w - 1), Math.Clamp(_cur.Y + (p.Y - last.Y) * k, 0, _h - 1));
-                _session!.MouseMove((int)_cur.X, (int)_cur.Y);
-                FollowCursor();
-                InvalidateVisual();
-            }
-            else
-            {
-                var m = Mid();
-                _scrollAcc += m.Y - _lastMid.Y;
-                if (Distance(m, _lastMid) > 0.5) _moved = true;
-                _lastMid = m;
-                while (Math.Abs(_scrollAcc) >= 24)
+                switch (_g)
                 {
-                    int dir = Math.Sign(_scrollAcc);
-                    _session!.Wheel(0, dir * 120);       // dita in giù = si risale nel documento, come sul telefono
-                    _scrollAcc -= dir * 24;
+                    case G.Strip:
+                        _scrollAcc += p.Y - last.Y;
+                        while (Math.Abs(_scrollAcc) >= 20)
+                        {
+                            int dir = Math.Sign(_scrollAcc);
+                            _session!.Wheel(0, -dir * 120);          // come la barra di scorrimento: dito in giù = pagina in giù
+                            _scrollAcc -= dir * 20;
+                        }
+                        return;
+                    case G.Panel: PanelHoldMoved?.Invoke(p.X - _downPos.X, p.Y - _downPos.Y); return;
+                    case G.Drag: MovePointer(p, last); return;
+                    case G.Pending:
+                        if (Distance(p, _downPos) <= Slop) return;
+                        _moved = true;
+                        _holdTimer?.Stop();
+                        if (_second && Touch.Action(TouchGestures.TapHold) == TouchActions.Drag)
+                        {
+                            // tocca e poi trascina: trascinamento, come sui touchpad
+                            _lastTapAt = 0; _tapPending = false;
+                            _g = G.Drag;
+                            _session!.MouseButton(MouseBtn.Left, true, (int)_cur.X, (int)_cur.Y);
+                            MovePointer(p, last);
+                            return;
+                        }
+                        FlushPendingTap();
+                        string a = Touch.Action(TouchGestures.Slide1);
+                        _g = a == TouchActions.Move ? G.Pointer : a == TouchActions.Scroll ? G.Scroll1 : G.Consumed;
+                        _scrollAcc = 0;
+                        if (_g == G.Pointer) MovePointer(p, last);
+                        return;
+                    case G.Pointer: MovePointer(p, last); return;
+                    case G.Scroll1: ScrollBy(p.Y - last.Y); return;
+                    default: return;
                 }
             }
+            if (_g is G.Drag or G.Panel or G.Strip or G.Consumed) return;
+            var m = Mid();
+            if (_g == G.Multi)
+            {
+                double spread = Spread();
+                if (Touch.PinchZoom && _zoom == 0 && _spread0 > 15 && Math.Abs(spread / _spread0 - 1) > 0.12) { _g = G.Pinch; _moved = true; }
+                else if (Distance(m, _pinchMid0) > Slop)
+                {
+                    _moved = true;
+                    string a = Touch.Action(TouchGestures.Slide2);
+                    _g = a == TouchActions.Scroll ? G.Scroll2 : a == TouchActions.Move ? G.Pointer2 : G.Consumed;
+                    _lastMid = m;
+                    return;
+                }
+                else return;
+            }
+            switch (_g)
+            {
+                case G.Pinch: ApplyPinch(m, Spread()); break;
+                case G.Scroll2: ScrollBy(m.Y - _lastMid.Y); break;
+                case G.Pointer2: MovePointer(m, _lastMid); break;
+            }
+            _lastMid = m;
         }
 
         private void TouchReleased(long id)
         {
             _touches.Remove(id);
             if (_touches.Count > 0) return;
+            _holdTimer?.Stop();
             long now = Environment.TickCount64;
-            int x = (int)_cur.X, y = (int)_cur.Y;
-            if (_dragging)
+            long dur = now - _downAt;
+            switch (_g)
             {
-                _dragging = false;
-                _session!.MouseButton(MouseBtn.Left, false, x, y);
+                case G.Drag:
+                    _session!.MouseButton(MouseBtn.Left, false, (int)_cur.X, (int)_cur.Y);
+                    break;
+                case G.Panel:
+                    PanelHoldEnded?.Invoke();
+                    break;
+                case G.Pending when !_moved && _maxTouches == 1 && dur < Math.Max(Touch.HoldMs, 200):
+                    OnTap(now);
+                    break;
+                case G.Multi when !_moved && dur < 450:
+                    Run(Touch.Action(_maxTouches >= 3 ? TouchGestures.ThreeTap : TouchGestures.TwoTap));
+                    break;
+            }
+            _g = G.None;
+            InvalidateVisual();
+        }
+
+        /// <summary>Tocco singolo: subito, oppure dopo l'intervallo del doppio tocco se il doppio tocco fa altro.</summary>
+        private void OnTap(long now)
+        {
+            if (_second)
+            {
                 _lastTapAt = 0;
+                bool left = _tapLeftHalf;
+                string d = Touch.Action(left ? TouchGestures.DoubleLeft : TouchGestures.DoubleRight);
+                bool firstSent = !_tapPending && _lastTapImmediate;
+                _tapPending = false;
+                string tap = Touch.Action(TouchGestures.Tap);
+                if (d == TouchActions.Double) { if (firstSent && tap == TouchActions.Left) Click(MouseBtn.Left); else Click(MouseBtn.Left, 2); }
+                else if (d == TouchActions.None) { if (!firstSent) Run(tap); Run(tap); }
+                else Run(d);
+                return;
             }
-            else if (_maxTouches == 1 && !_moved && now - _downAt < 350)
+            string t = Touch.Action(TouchGestures.Tap);
+            string dbl = Touch.Action(_leftHalf ? TouchGestures.DoubleLeft : TouchGestures.DoubleRight);
+            bool wait = dbl != TouchActions.None && !(dbl == TouchActions.Double && t == TouchActions.Left);
+            _lastTapAt = now; _lastTapPos = _downPos; _tapLeftHalf = _leftHalf;
+            if (!wait)
             {
-                _session!.MouseButton(MouseBtn.Left, true, x, y);
-                _session.MouseButton(MouseBtn.Left, false, x, y);
-                _lastTapAt = now;
+                _tapPending = false; _lastTapImmediate = true;
+                Run(t);
+                return;
             }
-            else if (!_moved && (_maxTouches == 2 || (_maxTouches == 1 && now - _downAt >= 600)))
+            _lastTapImmediate = false;
+            _tapPending = true;
+            _tapTimer?.Stop();
+            _tapTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(Touch.DoubleTapMs) };
+            _tapTimer.Tick += (_, _) => { _tapTimer?.Stop(); FlushPendingTap(); };
+            _tapTimer.Start();
+        }
+
+        private void FlushPendingTap()
+        {
+            if (!_tapPending) return;
+            _tapPending = false;
+            Run(Touch.Action(TouchGestures.Tap));
+        }
+
+        private void Click(int button, int count = 1)
+        {
+            int x = (int)_cur.X, y = (int)_cur.Y;
+            for (int i = 0; i < count; i++)
             {
-                _session!.MouseButton(MouseBtn.Right, true, x, y);
-                _session.MouseButton(MouseBtn.Right, false, x, y);
+                _session!.MouseButton(button, true, x, y);
+                _session.MouseButton(button, false, x, y);
+            }
+        }
+
+        private void Run(string action)
+        {
+            if (_session == null) return;
+            switch (action)
+            {
+                case TouchActions.Left: Click(MouseBtn.Left); break;
+                case TouchActions.Right: Click(MouseBtn.Right); break;
+                case TouchActions.Middle: Click(MouseBtn.Middle); break;
+                case TouchActions.Double: Click(MouseBtn.Left, 2); break;
+                case TouchActions.Enter: _session.Combo(28); break;
+                case TouchActions.Escape: _session.Combo(KeyMap.Escape); break;
+                case TouchActions.Keyboard:
+                case TouchActions.Dictation:
+                case TouchActions.Shortcuts:
+                    ActionRequested?.Invoke(action);
+                    break;
             }
             InvalidateVisual();
         }
 
-        /// <summary>Con lo zoom, la finestra scorre per tenere il puntatore in vista.</summary>
+        private void PointAt(Point local)
+        {
+            var ip = ToImage(local);
+            if (ip == null) return;
+            _cur = new Point(ip.Value.x, ip.Value.y);
+            _session!.MouseMove(ip.Value.x, ip.Value.y);
+            InvalidateVisual();
+        }
+
+        private void MovePointer(Point p, Point last)
+        {
+            if (Direct) { PointAt(p); return; }
+            double k = 1.4 * Touch.PointerSpeed / Math.Max(0.05, ViewScale);       // un po' più veloce del dito
+            _cur = new Point(Math.Clamp(_cur.X + (p.X - last.X) * k, 0, _w - 1), Math.Clamp(_cur.Y + (p.Y - last.Y) * k, 0, _h - 1));
+            _session!.MouseMove((int)_cur.X, (int)_cur.Y);
+            FollowCursor();
+            InvalidateVisual();
+        }
+
+        /// <summary>Scorrimento con le dita: naturale = dita in giù, si torna su (come sul telefono).</summary>
+        private void ScrollBy(double dy)
+        {
+            _scrollAcc += dy;
+            while (Math.Abs(_scrollAcc) >= 24)
+            {
+                int dir = Math.Sign(_scrollAcc);
+                _session!.Wheel(0, (Touch.NaturalScroll ? dir : -dir) * 120);
+                _scrollAcc -= dir * 24;
+            }
+        }
+
+        /// <summary>Zoom intorno alle dita e spostamento con il loro movimento.</summary>
+        private void ApplyPinch(Point mid, double spread)
+        {
+            var b = Bounds.Size;
+            double fit = Scale(b);
+            _pinch = Math.Clamp(_pinch0 * spread / Math.Max(1, _spread0), 1, 8);
+            double w = _w * fit * _pinch, h = _h * fit * _pinch;
+            // punto dell'immagine che stava sotto le dita all'inizio: resta sotto le dita
+            double ux = (_pinchMid0.X - _rect0.X) / Math.Max(1, _rect0.Width), uy = (_pinchMid0.Y - _rect0.Y) / Math.Max(1, _rect0.Height);
+            _zx = mid.X - ux * w;
+            _zy = mid.Y - uy * h;
+            InvalidateVisual();
+        }
+
+        /// <summary>Con lo zoom, la vista si sposta per tenere il puntatore in vista.</summary>
         private void FollowCursor()
         {
-            if (_zoom == 0) return;
             var d = Dest();
             double sc = ViewScale;
+            if (_zoom == 0)
+            {
+                if (_pinch <= 1.001) return;
+                double px = d.X + _cur.X * sc, py = d.Y + _cur.Y * sc, m = 40;
+                if (px < m) _zx = d.X + (m - px); else if (px > Bounds.Width - m) _zx = d.X - (px - (Bounds.Width - m)); else _zx = d.X;
+                if (py < m) _zy = d.Y + (m - py); else if (py > Bounds.Height - m) _zy = d.Y - (py - (Bounds.Height - m)); else _zy = d.Y;
+                return;
+            }
             this.BringIntoView(new Rect(d.X + _cur.X * sc - 60, d.Y + _cur.Y * sc - 60, 120, 120));
         }
 

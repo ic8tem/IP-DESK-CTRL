@@ -22,6 +22,8 @@ namespace IpDeskCtrl.Audio
     {
         void Play(short[] stereo32k);
         string Note { get; }
+        /// <summary>Uscita usata, se scelta per nome ("" = predefinita).</summary>
+        string Device => "";
     }
 
     public static class SystemAudio
@@ -41,6 +43,44 @@ namespace IpDeskCtrl.Audio
             if (OperatingSystem.IsMacOS()) return new MacAudio.Player();
             return new PulsePlayer();
         }
+
+        /// <summary>Microfono di questo dispositivo (visore che parla nel PC remoto).</summary>
+        public static ISystemAudioCapture CreateMic()
+        {
+            if (Core.Platform.MicCapture != null) return Core.Platform.MicCapture();
+            if (OperatingSystem.IsWindows()) return new WasapiLoopback(mic: true);
+            if (OperatingSystem.IsMacOS()) return new MacAudio.Capture(mic: true);
+            return new PulseCapture("@DEFAULT_SOURCE@");
+        }
+
+        /// <summary>
+        /// Dove suonare il microfono di chi si collega. Per farlo arrivare ai programmi di questo PC come se fosse
+        /// un microfono serve un cavo virtuale: Windows VB-CABLE («CABLE Input»), macOS BlackHole; su Linux il
+        /// programma crea da sé il microfono virtuale «IP-DESK-CTRL microfono». Senza, si sente dalle casse.
+        /// preferred = parte del nome dell'uscita scelta nelle impostazioni ("" = automatico).
+        /// </summary>
+        public static IAudioPlayer CreateMicOutput(string preferred)
+        {
+            if (Core.Platform.AudioPlayer != null) return Core.Platform.AudioPlayer();
+            if (OperatingSystem.IsWindows()) return new WaveOutPlayer(preferred.Length > 0 ? new[] { preferred } : VirtualCables);
+            if (OperatingSystem.IsMacOS()) return new MacAudio.Player(preferred.Length > 0 ? new[] { preferred } : new[] { "BlackHole", "Loopback", "Soundflower" });
+            return new PulsePlayer(virtualMic: true);
+        }
+
+        /// <summary>Nomi dei cavi audio virtuali più diffusi su Windows.</summary>
+        public static readonly string[] VirtualCables = { "CABLE Input", "VB-Audio Virtual", "Voicemeeter Input", "Virtual Audio Cable", "Line 1" };
+
+        /// <summary>Uscite audio di questo PC (per la scelta nelle impostazioni; solo Windows).</summary>
+        public static string[] OutputNames()
+        {
+            if (!OperatingSystem.IsWindows()) return Array.Empty<string>();
+            try
+            {
+                using var en = new NAudio.CoreAudioApi.MMDeviceEnumerator();
+                return en.EnumerateAudioEndPoints(NAudio.CoreAudioApi.DataFlow.Render, NAudio.CoreAudioApi.DeviceState.Active).Select(d => d.FriendlyName).ToArray();
+            }
+            catch { return Array.Empty<string>(); }
+        }
     }
 
     // ===================================================================== Windows (NAudio)
@@ -48,15 +88,19 @@ namespace IpDeskCtrl.Audio
     /// <summary>Windows: WASAPI in «loopback» sull'uscita predefinita, cioè quello che si sente dalle casse.</summary>
     public sealed class WasapiLoopback : ISystemAudioCapture
     {
-        private NAudio.Wave.WasapiLoopbackCapture? _cap;
+        private NAudio.CoreAudioApi.WasapiCapture? _cap;
         private Resampler? _rs;
+        private readonly bool _mic;
         public string Note { get; private set; } = "";
+
+        /// <param name="mic">true = microfono predefinito invece di quello che si sente dalle casse</param>
+        public WasapiLoopback(bool mic = false) { _mic = mic; }
 
         public bool Start(Action<short[]> onFrame)
         {
             try
             {
-                var cap = new NAudio.Wave.WasapiLoopbackCapture();
+                NAudio.CoreAudioApi.WasapiCapture cap = _mic ? new NAudio.CoreAudioApi.WasapiCapture() : new NAudio.Wave.WasapiLoopbackCapture();
                 var fmt = cap.WaveFormat;
                 var rs = new Resampler(fmt.SampleRate, onFrame);
                 _rs = rs;
@@ -88,7 +132,7 @@ namespace IpDeskCtrl.Audio
             }
             catch (Exception ex)
             {
-                Note = "Audio di Windows non catturabile: " + ex.Message;
+                Note = (_mic ? "Microfono di questo PC non disponibile: " : "Audio di Windows non catturabile: ") + ex.Message;
                 return false;
             }
         }
@@ -123,10 +167,15 @@ namespace IpDeskCtrl.Audio
         private readonly object _lock = new();
         private long _retryAt;
         private bool _disposed;
+        private readonly string[]? _wanted;
         public string Note { get; private set; } = "";
+        /// <summary>Nome dell'uscita usata ("" = predefinita).</summary>
+        public string Device { get; private set; } = "";
 
-        public WaveOutPlayer()
+        /// <param name="wanted">parti di nome delle uscite da preferire (cavo virtuale per il microfono); null = predefinita</param>
+        public WaveOutPlayer(string[]? wanted = null)
         {
+            _wanted = wanted;
             _buf = new NAudio.Wave.BufferedWaveProvider(new NAudio.Wave.WaveFormat(Adpcm.Rate, 16, Adpcm.Channels))
             {
                 BufferDuration = TimeSpan.FromSeconds(1),
@@ -141,6 +190,29 @@ namespace IpDeskCtrl.Audio
             {
                 if (_disposed || _out != null) return;
                 string why = "";
+                // 0) uscita indicata per nome (cavo virtuale per il microfono di chi si collega)
+                if (_wanted != null)
+                {
+                    try
+                    {
+                        using var en = new NAudio.CoreAudioApi.MMDeviceEnumerator();
+                        var dev = en.EnumerateAudioEndPoints(NAudio.CoreAudioApi.DataFlow.Render, NAudio.CoreAudioApi.DeviceState.Active)
+                            .FirstOrDefault(d => _wanted.Any(k => d.FriendlyName.Contains(k, StringComparison.OrdinalIgnoreCase)));
+                        if (dev != null)
+                        {
+                            var w = new NAudio.Wave.WasapiOut(dev, NAudio.CoreAudioApi.AudioClientShareMode.Shared, true, 100);
+                            w.Init(_buf);
+                            w.PlaybackStopped += OnStopped;
+                            w.Play();
+                            _out = w;
+                            Note = "";
+                            Device = dev.FriendlyName;
+                            Core.SessionLog.Write("AUDIO riproduzione su " + dev.FriendlyName);
+                            return;
+                        }
+                    }
+                    catch (Exception ex) { why = ex.Message; }
+                }
                 // 1) WASAPI sull'uscita predefinita
                 try
                 {
@@ -235,7 +307,11 @@ namespace IpDeskCtrl.Audio
     {
         private Process? _p;
         private Thread? _t;
+        private readonly string _source;
         public string Note { get; private set; } = "";
+
+        /// <param name="source">@DEFAULT_MONITOR@ = quello che si sente; @DEFAULT_SOURCE@ = microfono</param>
+        public PulseCapture(string source = "@DEFAULT_MONITOR@") { _source = source; }
 
         public bool Start(Action<short[]> onFrame)
         {
@@ -246,7 +322,7 @@ namespace IpDeskCtrl.Audio
             }
             try
             {
-                var psi = new ProcessStartInfo("parec", $"-d @DEFAULT_MONITOR@ --format=s16le --rate={Adpcm.Rate} --channels=2 --latency-msec=20 --raw")
+                var psi = new ProcessStartInfo("parec", $"-d {_source} --format=s16le --rate={Adpcm.Rate} --channels=2 --latency-msec=20 --raw")
                 {
                     RedirectStandardOutput = true, RedirectStandardError = true, UseShellExecute = false, CreateNoWindow = true
                 };
@@ -298,12 +374,17 @@ namespace IpDeskCtrl.Audio
         private readonly Process? _p;
         private readonly BlockingCollection<short[]> _q = new(new ConcurrentQueue<short[]>());
         private readonly Thread? _t;
+        private readonly bool _virtual;
         public string Note { get; } = "";
+        public string Device { get; } = "";
 
-        public PulsePlayer()
+        /// <param name="virtualMic">true = suona nel microfono virtuale «IP-DESK-CTRL microfono» (creato qui, tolto alla fine)</param>
+        public PulsePlayer(bool virtualMic = false)
         {
             string exe, args;
-            if (WaylandScreen.Which("pacat")) { exe = "pacat"; args = $"--playback --format=s16le --rate={Adpcm.Rate} --channels=2 --latency-msec=80 --raw"; }
+            string dev = "";
+            if (virtualMic && WaylandScreen.Which("pactl") && LinuxVirtualMic.Load()) { dev = $" --device={LinuxVirtualMic.Sink}"; _virtual = true; Device = "IP-DESK-CTRL microfono"; }
+            if (WaylandScreen.Which("pacat")) { exe = "pacat"; args = $"--playback{dev} --format=s16le --rate={Adpcm.Rate} --channels=2 --latency-msec=80 --raw"; }
             else if (WaylandScreen.Which("aplay")) { exe = "aplay"; args = $"-q -t raw -f S16_LE -r {Adpcm.Rate} -c 2 -B 100000"; }
             else { Note = "Per sentire l'audio serve «pacat» (sudo apt install pulseaudio-utils) o «aplay»"; return; }
             try
@@ -345,6 +426,50 @@ namespace IpDeskCtrl.Audio
             _q.CompleteAdding();
             try { if (_p != null && !_p.HasExited) _p.Kill(); } catch { }
             _p?.Dispose();
+            if (_virtual) LinuxVirtualMic.Unload();
+        }
+    }
+
+    /// <summary>
+    /// Linux: microfono virtuale per la voce di chi si collega. Un'uscita nulla («ipdesk_voce») in cui si suona e,
+    /// sopra il suo monitor, una sorgente «IP-DESK-CTRL microfono» che i programmi vedono come microfono.
+    /// </summary>
+    public static class LinuxVirtualMic
+    {
+        public const string Sink = "ipdesk_voce";
+        private static string _sinkModule = "", _sourceModule = "";
+
+        public static bool Load()
+        {
+            try
+            {
+                if (_sinkModule.Length > 0) return true;
+                _sinkModule = Pactl($"load-module module-null-sink sink_name={Sink} sink_properties=device.description=IP-DESK-CTRL-voce-remota");
+                if (_sinkModule.Length == 0) return false;
+                _sourceModule = Pactl($"load-module module-remap-source master={Sink}.monitor source_name=ipdesk_microfono source_properties=device.description=IP-DESK-CTRL-microfono");
+                Core.SessionLog.Write("AUDIO microfono virtuale «IP-DESK-CTRL-microfono» creato");
+                return true;
+            }
+            catch { return false; }
+        }
+
+        public static void Unload()
+        {
+            try
+            {
+                if (_sourceModule.Length > 0) Pactl("unload-module " + _sourceModule);
+                if (_sinkModule.Length > 0) Pactl("unload-module " + _sinkModule);
+            }
+            catch { }
+            _sinkModule = _sourceModule = "";
+        }
+
+        private static string Pactl(string args)
+        {
+            using var p = Process.Start(new ProcessStartInfo("pactl", args) { UseShellExecute = false, CreateNoWindow = true, RedirectStandardOutput = true, RedirectStandardError = true })!;
+            string o = p.StandardOutput.ReadToEnd().Trim();
+            p.WaitForExit(3000);
+            return p.ExitCode == 0 ? o : "";
         }
     }
 
@@ -430,7 +555,7 @@ namespace IpDeskCtrl.Audio
         }
 
         /// <summary>UID del primo dispositivo d'ingresso che si chiama come un cavo audio virtuale (BlackHole, Loopback, Soundflower).</summary>
-        private static string? FindLoopbackUid()
+        private static string? FindLoopbackUid(string[]? names = null)
         {
             var a = new Address { Selector = FourCC("dev#"), Scope = FourCC("glob"), Element = 0 };
             if (AudioObjectGetPropertyDataSize(1, ref a, 0, IntPtr.Zero, out uint size) != 0 || size == 0) return null;
@@ -442,7 +567,7 @@ namespace IpDeskCtrl.Audio
                 {
                     uint id = (uint)Marshal.ReadInt32(p, i * 4);
                     string name = StringProp(id, "lnam");
-                    if (new[] { "BlackHole", "Loopback", "Soundflower" }.Any(k => name.Contains(k, StringComparison.OrdinalIgnoreCase)))
+                    if ((names ?? new[] { "BlackHole", "Loopback", "Soundflower" }).Any(k => name.Contains(k, StringComparison.OrdinalIgnoreCase)))
                     {
                         string uid = StringProp(id, "uid ");
                         if (uid.Length > 0) return uid;
@@ -458,13 +583,17 @@ namespace IpDeskCtrl.Audio
             private IntPtr _q;
             private InputCallback? _cb;
             private Action<short[]>? _on;
+            private readonly bool _mic;
             public string Note { get; private set; } = "";
+
+            /// <param name="mic">true = microfono predefinito del Mac (non BlackHole)</param>
+            public Capture(bool mic = false) { _mic = mic; }
 
             public bool Start(Action<short[]> onFrame)
             {
                 try
                 {
-                    string? uid = FindLoopbackUid();
+                    string? uid = _mic ? "" : FindLoopbackUid();
                     if (uid == null)
                     {
                         Note = "Per mandare l'audio del Mac installa BlackHole 2ch (gratuito) e crea un «dispositivo a uscita multipla» con casse + BlackHole";
@@ -474,9 +603,12 @@ namespace IpDeskCtrl.Audio
                     _cb = OnInput;
                     var fmt = Format();
                     if (AudioQueueNewInput(ref fmt, _cb, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, 0, out _q) != 0) { Note = "Ingresso audio non apribile"; return false; }
-                    IntPtr cf = CFStringCreateWithCString(IntPtr.Zero, uid, Utf8);
-                    AudioQueueSetProperty(_q, FourCC("aqcd"), ref cf, (uint)IntPtr.Size);
-                    Mac.CFRelease(cf);
+                    if (uid.Length > 0)
+                    {
+                        IntPtr cf = CFStringCreateWithCString(IntPtr.Zero, uid, Utf8);
+                        AudioQueueSetProperty(_q, FourCC("aqcd"), ref cf, (uint)IntPtr.Size);
+                        Mac.CFRelease(cf);
+                    }
                     for (int i = 0; i < 4; i++)
                         if (AudioQueueAllocateBuffer(_q, FrameBytes, out IntPtr b) == 0) AudioQueueEnqueueBuffer(_q, b, 0, IntPtr.Zero);
                     if (AudioQueueStart(_q, IntPtr.Zero) != 0) { Note = "Permesso «Microfono» negato per IP-DESK-CTRL"; return false; }
@@ -513,14 +645,24 @@ namespace IpDeskCtrl.Audio
             private readonly ConcurrentQueue<short[]> _queue = new();
             private readonly short[] _silence = new short[Adpcm.FrameSamples * 2];
             public string Note { get; } = "";
+            public string Device { get; } = "";
 
-            public Player()
+            /// <param name="wanted">parti di nome dell'uscita da usare (BlackHole per il microfono di chi si collega); null = predefinita</param>
+            public Player(string[]? wanted = null)
             {
                 _cb = OnOutput;
                 try
                 {
                     var fmt = Format();
                     if (AudioQueueNewOutput(ref fmt, _cb, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, 0, out _q) != 0) { Note = "Uscita audio non apribile"; return; }
+                    string? uid = wanted != null ? FindLoopbackUid(wanted) : null;
+                    if (uid != null)
+                    {
+                        IntPtr cf = CFStringCreateWithCString(IntPtr.Zero, uid, Utf8);
+                        AudioQueueSetProperty(_q, FourCC("aqcd"), ref cf, (uint)IntPtr.Size);
+                        Mac.CFRelease(cf);
+                        Device = string.Join("/", wanted!);
+                    }
                     for (int i = 0; i < 4; i++)
                         if (AudioQueueAllocateBuffer(_q, FrameBytes, out IntPtr b) == 0) OnOutput(IntPtr.Zero, _q, b);
                     AudioQueueStart(_q, IntPtr.Zero);

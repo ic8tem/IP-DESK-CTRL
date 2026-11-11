@@ -46,6 +46,16 @@ namespace IpDeskCtrl.Core
         private double _ackMs = 50;
         private string _lastNote = "";
 
+        // 0.5: microfono del visore, risoluzione adattata, cartella condivisa
+        public string PeerCaps { get; private set; } = "";
+        private IAudioPlayer? _mic;
+        private readonly object _micLock = new();
+        private readonly DisplayResizer _resizer = new();
+        private int _fitW, _fitH;
+        private DriveClient? _drive;
+        private DavServer? _dav;
+        private string _davWhere = "";
+
         public bool IsActive => _accepted && !IsClosed;
         public bool InputAllowed => _allowInput;
         public event Action? Activated;
@@ -63,7 +73,7 @@ namespace IpDeskCtrl.Core
         {
             try
             {
-                await SendAsync(new MsgWriter(Msg.Hello).Str(AppVersion.Tag).Str(AppVersion.Os).Str(Environment.MachineName).Bool(TrxCtrl.Installed).Build());
+                await SendAsync(new MsgWriter(Msg.Hello).Str(AppVersion.Tag).Str(AppVersion.Os).Str(Environment.MachineName).Bool(TrxCtrl.Installed).Str(AppVersion.Caps).Build());
                 if (await Task.WhenAny(_helloSeen.Task, Task.Delay(15000, Cts.Token)) != _helloSeen.Task) { Close("l'altro PC non si è presentato"); return; }
                 var (proto, _) = AppVersion.Parse(PeerVersion);
                 if (proto != AppVersion.Protocol) { await Refuse(AcceptState.Rejected, $"versioni non compatibili ({PeerVersion} / {AppVersion.Tag})"); return; }
@@ -195,6 +205,7 @@ namespace IpDeskCtrl.Core
             Send(w.I32(_selected).Build());
             _area = _selected < 0 ? MonitorInfo.Union(_monitors) : _monitors[_selected];
             _fullNext = true;
+            if (_fitW > 0 && _changingMode == 0) _ = Task.Run(() => FitResolution(_fitW, _fitH));
             SessionLog.Write("SCHERMO monitor: " + string.Join(" | ", _monitors.Select((m, i) => m.Label(i) + $" a {m.X},{m.Y}")) + $" · mostro {(_selected < 0 ? "tutti" : (_selected + 1).ToString())}");
         }
 
@@ -206,8 +217,33 @@ namespace IpDeskCtrl.Core
             {
                 case Msg.Hello:
                     PeerVersion = r.Str(); PeerOs = r.Str(); PeerName = r.Str();
+                    if (!r.AtEnd) r.Bool();
+                    if (!r.AtEnd) PeerCaps = r.Str();
                     _helloSeen.TrySetResult(true);
                     break;
+                case Msg.SetMic: if (_accepted) SetMic(r.Bool()); break;
+                case Msg.Audio: if (_accepted) { r.U32(); PlayMic(r.Rest()); } break;
+                case Msg.Resize:
+                {
+                    int w = r.I32(), h = r.I32();
+                    if (_accepted) _ = Task.Run(() => RequestResize(w, h));
+                    break;
+                }
+                case Msg.Volume:
+                {
+                    int a = r.U8();
+                    if (!_accepted || !_allowInput) { Note("Hai solo la visione di questo PC: il volume non si può cambiare."); break; }
+                    _ = Task.Run(() => { string err = VolumeControl.Change(a); if (err.Length > 0) Note(err); });
+                    break;
+                }
+                case Msg.DriveOpen:
+                {
+                    string name = r.Str(); bool ro = r.Bool();
+                    if (_accepted) _ = Task.Run(() => OpenDrive(name, ro));
+                    break;
+                }
+                case Msg.DriveClose: _ = Task.Run(() => CloseDrive("tolta dal visore")); break;
+                case Msg.DriveResp: _drive?.OnResponse(r); break;
                 case Msg.SelectMonitor:
                     _selected = r.I32();
                     if (_selected < -1) _selected = 0;
@@ -526,6 +562,9 @@ namespace IpDeskCtrl.Core
             _accepted = false;
             if (_input != null) { _pressed.ReleaseAll(_input); _input.Dispose(); }
             _audio?.Dispose();
+            lock (_micLock) { _mic?.Dispose(); _mic = null; }
+            _resizer.Dispose();
+            CloseDrive("collegamento chiuso");
             _screen?.Dispose();
             try { Platform.HostEnded?.Invoke(); } catch { }
             var h = P.S.Find(PeerNumber);
@@ -533,6 +572,120 @@ namespace IpDeskCtrl.Core
         }
 
         public static string Duration(TimeSpan t) => t.TotalHours >= 1 ? $"{(int)t.TotalHours} h {t.Minutes} min" : t.TotalMinutes >= 1 ? $"{(int)t.TotalMinutes} min" : $"{t.Seconds} s";
+
+        // ------------------------------------------------------------------ microfono del visore
+
+        private void SetMic(bool on)
+        {
+            lock (_micLock)
+            {
+                if (!on || !P.S.AcceptMic)
+                {
+                    _mic?.Dispose();
+                    _mic = null;
+                    if (on) Note("Questo PC non accetta il microfono di chi si collega (Impostazioni).");
+                    return;
+                }
+                if (_mic != null) return;
+                _mic = SystemAudio.CreateMicOutput(P.S.MicOutput);
+                string dev = _mic.Device;
+                SessionLog.Write($"AUDIO microfono di {Identity.Format(PeerNumber)} su " + (dev.Length > 0 ? dev : "uscita predefinita"));
+                Note(_mic.Note.Length > 0 ? _mic.Note
+                    : dev.Length > 0 ? $"La tua voce arriva sul PC remoto nel microfono virtuale «{dev}»: sceglilo come microfono nei programmi di là."
+                    : "La tua voce si sente dalle casse del PC remoto. Per usarla come microfono nei programmi di là serve un cavo audio virtuale (VB-CABLE su Windows, BlackHole su Mac).");
+            }
+        }
+
+        private void PlayMic(byte[] adpcm)
+        {
+            var m = _mic;
+            if (m == null) return;
+            var pcm = Adpcm.Decode(adpcm);
+            if (pcm.Length > 0) m.Play(pcm);
+        }
+
+        protected override void OnUdpAudio(uint seq, byte[] data) { if (_accepted) PlayMic(data); }
+
+        // ------------------------------------------------------------------ risoluzione adattata alla finestra del visore
+
+        private int _changingMode;
+
+        private void RequestResize(int w, int h)
+        {
+            if (w > 0 && (!_allowInput || !P.S.AllowResize))
+            {
+                Note(!_allowInput ? "Hai solo la visione di questo PC: la risoluzione resta quella di prima." : "Questo PC non permette di cambiargli la risoluzione (Impostazioni).");
+                return;
+            }
+            _fitW = Math.Clamp(w, 0, 8192);
+            _fitH = Math.Clamp(h, 0, 8192);
+            FitResolution(_fitW, _fitH);
+        }
+
+        private void FitResolution(int w, int h)
+        {
+            if (Interlocked.Exchange(ref _changingMode, 1) == 1) return;
+            try
+            {
+                MonitorInfo? mon = _selected >= 0 && _selected < _monitors.Count ? _monitors[_selected] : null;
+                string err = _resizer.Fit(mon, w, h);
+                if (err.Length > 0) Note(err);
+                Thread.Sleep(800);              // il desktop si ridisegna: poi si rimanda l'elenco dei monitor
+                SendMonitors();
+            }
+            finally { Interlocked.Exchange(ref _changingMode, 0); }
+        }
+
+        // ------------------------------------------------------------------ cartella condivisa
+
+        private void OpenDrive(string name, bool readOnly)
+        {
+            CloseDrive("");
+            if (!_allowInput || !P.S.AllowDrive)
+            {
+                Send(new MsgWriter(Msg.DriveState).Bool(false).Str(!_allowInput ? "hai solo la visione di questo PC" : "questo PC non accetta cartelle condivise (Impostazioni)").Build());
+                return;
+            }
+            if (Platform.IsMobile)
+            {
+                Send(new MsgWriter(Msg.DriveState).Bool(false).Str("su Android la cartella condivisa non si può montare: usa «File ▾»").Build());
+                return;
+            }
+            try
+            {
+                _drive = new DriveClient(SendAsync);
+                _dav = new DavServer(_drive, name, readOnly);
+                var (ok, where) = DriveMount.Mount(_dav);
+                if (!ok)
+                {
+                    SessionLog.Write("DISCO cartella condivisa non montata: " + where);
+                    Send(new MsgWriter(Msg.DriveState).Bool(false).Str(where).Build());
+                    _dav.Dispose(); _dav = null; _drive = null;
+                    return;
+                }
+                _davWhere = where;
+                SessionLog.Write($"DISCO cartella «{name}» di {Identity.Format(PeerNumber)} montata in {where}" + (readOnly ? " (sola lettura)" : ""));
+                Send(new MsgWriter(Msg.DriveState).Bool(true).Str(where).Build());
+            }
+            catch (Exception ex)
+            {
+                Send(new MsgWriter(Msg.DriveState).Bool(false).Str(ex.Message).Build());
+                CloseDrive("");
+            }
+        }
+
+        private void CloseDrive(string why)
+        {
+            var dav = Interlocked.Exchange(ref _dav, null);
+            if (dav == null) return;
+            if (_davWhere.Length > 0) DriveMount.Unmount(dav, _davWhere);
+            dav.Dispose();
+            _drive?.CancelAll();
+            _drive = null;
+            if (why.Length > 0) SessionLog.Write("DISCO cartella condivisa smontata: " + why);
+            if (why == "tolta dal visore") Send(new MsgWriter(Msg.DriveState).Bool(false).Str("").Build());
+            _davWhere = "";
+        }
 
         /// <summary>L'utente di questo PC toglie (o ridà) il permesso di usare mouse e tastiera durante la sessione.</summary>
         public void SetInputAllowed(bool on)

@@ -7,7 +7,17 @@ namespace IpDeskCtrl.Core
     /// <summary>Versione del programma e del protocollo («P1 0.1.0»). PC con protocollo diverso non si parlano.</summary>
     public static class AppVersion
     {
-        public const int Protocol = 3;   // 3 = 0.4.x (UDP affidabile, password, riavvio, Wake-on-LAN)
+        public const int Protocol = 3;   // 3 = 0.4.x e 0.5.x (UDP affidabile, password, riavvio, Wake-on-LAN)
+
+        /// <summary>
+        /// Funzioni aggiunte senza cambiare protocollo (0.5+), annunciate in coda a Hello: ognuno usa quelle che
+        /// l'altro dichiara, così la 0.5 resta compatibile con la 0.4.
+        ///   mic = microfono del visore riprodotto sull'host · res = risoluzione adattata alla finestra del visore ·
+        ///   vol = volume dell'host · drive = cartella del visore come disco dell'host
+        /// </summary>
+        public const string Caps = "mic res vol drive";
+
+        public static bool Has(string caps, string what) => (" " + caps + " ").Contains(" " + what + " ");
 
         public static string Text
         {

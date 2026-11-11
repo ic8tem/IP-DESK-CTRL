@@ -35,6 +35,20 @@ namespace IpDeskCtrl.Android
             Platform.Input = () => new AndroidInput();
             Platform.AudioCapture = () => new AndroidAudioCapture();
             Platform.AudioPlayer = () => new AndroidAudioPlayer();
+            Platform.MicCapture = () => new AndroidMicCapture();
+            Platform.Dictate = () => MainActivity.Current?.DictateAsync() ?? Task.FromResult<string?>(null);
+            VolumeControl.Platform = action =>
+            {
+                try
+                {
+                    var am = (AudioManager?)a.GetSystemService(Context.AudioService);
+                    if (am == null) return "Volume non disponibile";
+                    var adj = action == VolumeControl.Up ? Adjust.Raise : action == VolumeControl.Down ? Adjust.Lower : Adjust.ToggleMute;
+                    am.AdjustStreamVolume(global::Android.Media.Stream.Music, adj, VolumeNotificationFlags.ShowUi);
+                    return "";
+                }
+                catch (Exception ex) { return "Volume non cambiato: " + ex.Message; }
+            };
             Platform.PrepareHost = PrepareHostAsync;
             Platform.HostEnded = () =>
             {
@@ -417,6 +431,62 @@ namespace IpDeskCtrl.Android
                 Note = "Audio del telefono non catturabile (serve il permesso Microfono): " + ex.Message;
                 return false;
             }
+        }
+
+        public void Dispose()
+        {
+            _run = false;
+            try { _rec?.Stop(); } catch { }
+            try { _rec?.Release(); } catch { }
+            _rec = null;
+        }
+    }
+
+    /// <summary>Microfono del telefono, mandato al PC remoto (il telefono come visore che parla di là).</summary>
+    public sealed class AndroidMicCapture : ISystemAudioCapture
+    {
+        private AudioRecord? _rec;
+        private volatile bool _run;
+        public string Note { get; private set; } = "";
+
+        public bool Start(Action<short[]> onFrame)
+        {
+            var act = MainActivity.Current;
+            if (act != null && act.CheckSelfPermission(global::Android.Manifest.Permission.RecordAudio) != global::Android.Content.PM.Permission.Granted)
+            {
+                _ = act.RequestAudioPermissionAsync();
+                Note = "Concedi a IP-DESK-CTRL il permesso «Microfono», poi riaccendi il microfono.";
+                return false;
+            }
+            try
+            {
+                int min = AudioRecord.GetMinBufferSize(Adpcm.Rate, ChannelIn.Mono, Encoding.Pcm16bit);
+                _rec = new AudioRecord(AudioSource.VoiceCommunication, Adpcm.Rate, ChannelIn.Mono, Encoding.Pcm16bit, Math.Max(min, Adpcm.FrameSamples * 2 * 8));
+                if (_rec.State != global::Android.Media.State.Initialized) { Note = "Microfono del telefono non disponibile."; _rec.Release(); _rec = null; return false; }
+                _rec.StartRecording();
+                _run = true;
+                var rec = _rec;
+                new Thread(() =>
+                {
+                    var mono = new short[Adpcm.FrameSamples];
+                    while (_run)
+                    {
+                        int got = 0;
+                        while (got < mono.Length && _run)
+                        {
+                            int n = rec.Read(mono, got, mono.Length - got);
+                            if (n <= 0) { Thread.Sleep(10); continue; }
+                            got += n;
+                        }
+                        if (!_run) break;
+                        var st = new short[mono.Length * 2];
+                        for (int i = 0; i < mono.Length; i++) st[i * 2] = st[i * 2 + 1] = mono[i];
+                        onFrame(st);
+                    }
+                }) { IsBackground = true, Name = "microfono" }.Start();
+                return true;
+            }
+            catch (Exception ex) { Note = "Microfono del telefono non disponibile: " + ex.Message; return false; }
         }
 
         public void Dispose()

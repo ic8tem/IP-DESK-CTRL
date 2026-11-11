@@ -187,6 +187,9 @@ namespace IpDeskCtrl.UI
             ToolTip.SetTip(password, "Chi è autorizzato a entrare senza conferma dovrà anche conoscere questa password.");
             var about = Ui.Btn("Informazioni e licenze");
             about.Click += (_, _) => Dialogs.About(_me);
+            var touch = Ui.Btn("Tocco e gesti…");
+            touch.Click += (_, _) => TouchDialog.Show(_s);
+            ToolTip.SetTip(touch, "Telefono, tablet e schermi touch: modo del dito, gesti, velocità del puntatore, barra dei tasti.");
             var quit = Ui.Btn("Esci dal programma");
             quit.Click += (_, _) => Quit?.Invoke();
             quit.IsVisible = Quit != null;
@@ -200,9 +203,36 @@ namespace IpDeskCtrl.UI
                 Chk("Proponi di consentire mouse e tastiera a chi si collega", _s.AllowInput, v => _s.AllowInput = v),
                 Chk("Manda l'audio di questo PC a chi si collega", _s.ShareAudio, v => _s.ShareAudio = v),
                 Chk("Ascolta l'audio dei PC a cui ti colleghi", _s.PlayAudio, v => _s.PlayAudio = v),
+                Chk("Accetta il microfono di chi si collega (la sua voce arriva qui)", _s.AcceptMic, v => _s.AcceptMic = v),
+                MicOutputRow(),
+                Chk("Chi si collega può adattare la risoluzione di questo PC alla sua finestra", _s.AllowResize, v => _s.AllowResize = v),
+                Chk("Chi si collega può montare qui una sua cartella come disco", _s.AllowDrive, v => _s.AllowDrive = v),
                 Ui.Row(10, new TextBlock { Text = "Tema", VerticalAlignment = VerticalAlignment.Center }, theme),
                 Ui.Sub("File ricevuti dagli altri PC: " + Platform.Received, 12),
-                Wrap(password, folder, received, about, support, quit));
+                Wrap(password, touch, folder, received, about, support, quit));
+        }
+
+        /// <summary>Uscita dove suonare il microfono di chi si collega (Windows: elenco delle uscite; altrove automatica).</summary>
+        private Control MicOutputRow()
+        {
+            var names = Audio.SystemAudio.OutputNames();
+            if (names.Length == 0)
+                return Ui.Sub(OperatingSystem.IsLinux()
+                    ? "La voce di chi si collega arriva nel microfono virtuale «IP-DESK-CTRL-microfono», creato da solo durante il collegamento."
+                    : "Per usare la voce di chi si collega come microfono nei programmi installa BlackHole 2ch; senza, si sente dalle casse.", 12);
+            var items = new List<string> { "Automatica (cavo virtuale VB-CABLE se c'è, altrimenti le casse)" };
+            items.AddRange(names);
+            var box = new ComboBox { ItemsSource = items, MinWidth = 320, HorizontalAlignment = HorizontalAlignment.Left };
+            int i = _s.MicOutput.Length == 0 ? 0 : Array.FindIndex(names, n => n.Contains(_s.MicOutput, StringComparison.OrdinalIgnoreCase)) + 1;
+            box.SelectedIndex = Math.Max(0, i);
+            box.SelectionChanged += (_, _) =>
+            {
+                if (box.SelectedIndex < 0) return;
+                _s.MicOutput = box.SelectedIndex == 0 ? "" : names[box.SelectedIndex - 1];
+                _s.Save();
+            };
+            ToolTip.SetTip(box, "Con un cavo audio virtuale (VB-CABLE, gratuito) la voce di chi si collega diventa un microfono per i programmi di questo PC, anche per IP-TRX-CTRL.");
+            return Ui.Row(10, new TextBlock { Text = "Voce di chi si collega su", VerticalAlignment = VerticalAlignment.Center }, box);
         }
 
         private static WrapPanel Wrap(params Control[] items)

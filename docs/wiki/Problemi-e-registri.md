@@ -12,6 +12,10 @@
 | Mac: schermo nero o mouse fermo | Concedi **Registrazione schermo** e **Accessibilità** e riavvia il programma. |
 | Linux Wayland: niente immagine | Usa la sessione **Xorg** (GNOME e KDE su Wayland non permettono la cattura). |
 | Ho chiuso la finestra ma il PC è ancora raggiungibile | È voluto: la X nasconde soltanto. Per uscire: clic destro sull'icona vicino all'orologio › **Esci da IP-DESK-CTRL**. |
+| La mia voce si sente dalle casse del PC remoto ma i programmi non la sentono | Serve un cavo audio virtuale sul PC remoto (VB-CABLE su Windows, BlackHole su Mac): vedi [Plancia di comando](Plancia-di-comando#microfono). |
+| «Windows non ha montato la cartella» | Avvia il servizio **WebClient** (services.msc › Client WebDAV › Avvia, tipo di avvio Manuale o Automatico) sul PC remoto. |
+| Risoluzione adatta: «Sul Mac la risoluzione non si adatta ancora» | Per ora funziona su Windows e Linux X11. |
+| Mouse collegato al telefono: il tasto destro chiudeva il collegamento | Dalla 0.5 il tasto destro fa clic destro. |
 | Linux: dopo la X non vedo l'icona | Il desktop non ha l'area di notifica (per esempio GNOME senza l'estensione «AppIndicator»). Riavvia IP-DESK-CTRL dal menu: si riapre la finestra; per uscire usa Impostazioni › **Esci dal programma**. |
 | Android: tocchi che non arrivano | Attiva **Impostazioni › Accessibilità › IP-DESK-CTRL**. |
 

@@ -52,7 +52,7 @@ namespace IpDeskCtrl.Core
             _ = Task.Run(ReceiveLoopAsync);
             _ = Task.Run(async () =>
             {
-                await SendAsync(new MsgWriter(Msg.Hello).Str(AppVersion.Tag).Str(AppVersion.Os).Str(Environment.MachineName).Build());
+                await SendAsync(new MsgWriter(Msg.Hello).Str(AppVersion.Tag).Str(AppVersion.Os).Str(Environment.MachineName).Bool(false).Str(AppVersion.Caps).Build());
                 _ = Task.Run(PingLoopAsync);
                 _ = Task.Run(StatsLoopAsync);
             });
@@ -65,7 +65,28 @@ namespace IpDeskCtrl.Core
                 case Msg.Hello:
                     PeerVersion = r.Str(); PeerOs = r.Str(); PeerName = r.Str();
                     PeerHasTrx = !r.AtEnd && r.Bool();
+                    PeerCaps = r.AtEnd ? "" : r.Str();
                     break;
+                case Msg.DriveReq:
+                {
+                    int id = r.I32(); byte op = r.U8(); string path = r.Str(), path2 = r.Str(); long pos = r.I64();
+                    byte[] data = r.Bytes(Math.Clamp(r.I32(), 0, 4 << 20));
+                    var share = _share;
+                    _ = Task.Run(async () =>
+                    {
+                        var (status, reply) = share != null ? share.Handle(op, path, path2, pos, data) : (DriveOp.NotFound, Array.Empty<byte>());
+                        await SendAsync(new MsgWriter(Msg.DriveResp).I32(id).I32(status).I32(reply.Length).Bytes(reply).Build());
+                    });
+                    break;
+                }
+                case Msg.DriveState:
+                {
+                    bool on = r.Bool(); string where = r.Str();
+                    if (!on) _share = null;
+                    DriveMounted = on ? where : "";
+                    DriveChanged?.Invoke(on, where);
+                    break;
+                }
                 case Msg.Accept:
                 {
                     State = (AcceptState)r.U8();
@@ -191,6 +212,77 @@ namespace IpDeskCtrl.Core
         }
 
         public void SelectMonitor(int index) => Send(new MsgWriter(Msg.SelectMonitor).I32(index).Build());
+
+        // ------------------------------------------------------------------ 0.5: funzioni annunciate dall'altro PC
+
+        /// <summary>Funzioni del PC remoto (vedi <see cref="AppVersion.Caps"/>); vuoto = 0.4.</summary>
+        public string PeerCaps { get; private set; } = "";
+        public bool PeerHas(string what) => AppVersion.Has(PeerCaps, what);
+
+        // microfono di qui verso il PC remoto
+        private ISystemAudioCapture? _micCap;
+        private readonly Adpcm.State _mL = new(), _mR = new();
+        private uint _micSeq;
+        public bool MicOn => _micCap != null;
+
+        /// <summary>Accende o spegne il microfono verso il PC remoto. "" = fatto, altrimenti il motivo.</summary>
+        public string SetMic(bool on)
+        {
+            if (!on)
+            {
+                _micCap?.Dispose();
+                _micCap = null;
+                Send(new MsgWriter(Msg.SetMic).Bool(false).Build());
+                return "";
+            }
+            if (!PeerHas("mic")) return "Il PC remoto ha una versione che non riceve il microfono: aggiornalo alla 0.5.";
+            if (_micCap != null) return "";
+            var cap = SystemAudio.CreateMic();
+            if (!cap.Start(OnMicFrame)) { string why = cap.Note; cap.Dispose(); return why.Length > 0 ? why : "Microfono non disponibile."; }
+            _micCap = cap;
+            Send(new MsgWriter(Msg.SetMic).Bool(true).Build());
+            return "";
+        }
+
+        private void OnMicFrame(short[] stereo)
+        {
+            if (_micCap == null || IsClosed) return;
+            byte[] enc = Adpcm.Encode(stereo, _mL, _mR);
+            uint seq = ++_micSeq;
+            var udp = Udp;
+            if (udp != null) udp.SendAudio(enc);
+            else Send(new MsgWriter(Msg.Audio).U32(seq).Bytes(enc).Build());
+        }
+
+        /// <summary>Volume del PC remoto: 0 giù, 1 su, 2 muto.</summary>
+        public void Volume(int action)
+        {
+            if (PeerHas("vol")) Send(new MsgWriter(Msg.Volume).U8((byte)action).Build());
+            else Combo(action == 1 ? 115 : action == 0 ? 114 : 113);    // 0.4: tasti multimediali
+        }
+
+        /// <summary>Chiede al PC remoto la risoluzione più adatta a w×h pixel (0, 0 = quella di prima).</summary>
+        public void RequestResize(int w, int h) { if (PeerHas("res")) Send(new MsgWriter(Msg.Resize).I32(w).I32(h).Build()); }
+
+        // cartella condivisa come disco del PC remoto
+        private volatile DriveShare? _share;
+        public string DriveMounted { get; private set; } = "";
+        public string SharedFolder => _share?.Root ?? "";
+        /// <summary>Montata (dove) o no (motivo, "" = tolta).</summary>
+        public event Action<bool, string>? DriveChanged;
+
+        public void ShareFolder(string folder, bool readOnly)
+        {
+            _share = new DriveShare(folder, readOnly);
+            Send(new MsgWriter(Msg.DriveOpen).Str(_share.Name).Bool(readOnly).Build());
+        }
+
+        public void StopSharing()
+        {
+            _share = null;
+            DriveMounted = "";
+            Send(new MsgWriter(Msg.DriveClose).Str("").Build());
+        }
         public void SetQuality(string q) => Send(new MsgWriter(Msg.SetQuality).Str(q).Build());
         public void Refresh() => Send(new MsgWriter(Msg.Refresh).Build());
 
@@ -289,6 +381,9 @@ namespace IpDeskCtrl.Core
         {
             _player?.Dispose();
             _player = null;
+            _micCap?.Dispose();
+            _micCap = null;
+            _share = null;
             var h = P.S.Find(PeerNumber);
             if (h != null && State == AcceptState.Accepted) { h.LastSeconds = HostSession.Duration(DateTime.UtcNow - Started); P.S.Save(); }
         }

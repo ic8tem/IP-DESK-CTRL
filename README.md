@@ -23,6 +23,10 @@ Ogni PC ha un **numero fisso di 10 cifre** (es. `482 913 0675`) che non cambia m
 - **Wake-on-LAN**: dallo storico (`···` › *Accendi*) si accende un PC spento. Dalla stessa rete il pacchetto parte direttamente; da fuori lo manda un altro PC acceso della stessa rete, solo se questo PC può entrare lì senza conferma. Il PC da accendere deve avere il Wake-on-LAN attivo nel BIOS e nella scheda di rete.
 - **QR del numero**: il pulsante *QR* accanto al numero lo mostra come codice QR (`ipdesk:1234567890`); sul telefono *Inquadra QR* lo legge con un'app lettore QR compatibile e si collega.
 - **Radio (IP-TRX-CTRL)**: se sul PC remoto è installato IP-TRX-CTRL, la plancia ha un pulsante che lo avvia lì e, se c'è, anche su questo PC.
+- **Microfono verso il PC remoto** (plancia › *Microfono*): parli nei programmi del PC remoto. Perché arrivi come microfono serve un cavo audio virtuale sul PC remoto (VB-CABLE su Windows, BlackHole su Mac); su Linux il microfono virtuale «IP-DESK-CTRL-microfono» si crea da solo. Senza, la voce esce dalle casse.
+- **Volume del PC remoto** (Tasti › Volume +, −, muto).
+- **Risoluzione adatta** (plancia): il PC remoto passa alla risoluzione più adatta alla tua finestra o al telefono e a fine collegamento torna com'era (Windows e Linux X11).
+- **Cartella condivisa come disco** (File ▾ › *Condividi una cartella come disco del PC remoto…*): la cartella scelta compare di là come unità (Windows, serve il servizio «WebClient»), in GVFS (Linux) o nel Finder (macOS), anche in sola lettura. I file passano nel canale cifrato.
 - **Avviso di nuova versione** nella schermata principale (controllo su GitHub all'avvio e ogni 12 ore).
 - **Sempre attivo**: la **X** della finestra la nasconde soltanto; IP-DESK-CTRL resta attivo con l'icona vicino all'orologio (barra dei menu su macOS), il PC resta raggiungibile e i collegamenti aperti continuano. Clic sull'icona per riaprirlo; per uscire davvero: clic destro sull'icona › **Esci da IP-DESK-CTRL**, oppure Impostazioni › **Esci dal programma**. Riavviarlo mentre è nascosto riapre la finestra di quello già attivo.
 
@@ -30,7 +34,8 @@ Ogni PC ha un **numero fisso di 10 cifre** (es. `482 913 0675`) che non cambia m
 
 Lo stesso programma, per telefoni e tablet con Android 8.0 o successivo (`IP-DESK-CTRL-…-android.apk`).
 
-- **Visore**: il dito fa da touchpad (tocco = clic, dito fermo = clic destro, due tocchi e trascina = trascinamento, due dita su e giù = rotella); il pulsante **Tastiera** apre la tastiera del telefono, con una barra di tasti speciali (Ctrl, Alt, Win, Maiusc, Esc, Tab, frecce, Canc, Home, Fine). Il testo arriva così com'è, qualunque sia la tastiera del PC.
+- **Visore**: il dito fa da **touchpad** oppure, a scelta, **tocco diretto** (si clicca dove si tocca). Con il pulsante **✋** si sceglie il profilo dei gesti (Sofatap, Abitudini da touchpad, Pressione per il clic destro, Come la 0.4) e l'azione di ogni gesto, i tempi, la velocità del puntatore e i tasti della barra. **Pressione lunga** (profilo Sofatap): pannello scorciatoie, si sceglie il tasto scorrendo e si solleva il dito. **Due dita allargate**: zoom dell'immagine e spostamento. **Striscia sul bordo destro**: scorrimento. Il pulsante **Tastiera** apre la tastiera del telefono con la barra dei tasti speciali scelti (i tasti come frecce e Canc si ripetono tenendoli premuti); **🎤 Detta** manda al PC il testo dettato. Il testo arriva così com'è, qualunque sia la tastiera del PC.
+- **Mouse e tastiera** Bluetooth o USB collegati al telefono o al tablet (anche Samsung DeX) vanno direttamente al PC remoto.
 - **Host**: il telefono si fa vedere e comandare. Ad ogni collegamento Android chiede il consenso alla cattura dello schermo; per tocchi e testo va attivato una volta il servizio in Impostazioni › Accessibilità › IP-DESK-CTRL. I clic diventano tocchi, il trascinamento diventa scorrimento, il tasto destro ed Esc sono «Indietro», il tasto Win è «Home». L'audio del telefono (Android 10+) arriva al PC.
 - Il telefono è raggiungibile col suo numero mentre l'app è aperta.
 - **Inquadra QR** legge il QR del numero di un PC con un'app lettore QR compatibile (ZXing «Barcode Scanner» e simili); se non ce n'è, si scrive il numero a mano.
@@ -83,7 +88,24 @@ Nella cartella dei dati (Impostazioni › Apri cartella dati): `errori.log` e `s
 
 ## Storia delle versioni
 
-Le versioni con protocollo diverso non si collegano tra loro: aggiorna tutti i dispositivi alla stessa versione principale (la 0.4.1 si collega con la 0.4.0).
+Le versioni con protocollo diverso non si collegano tra loro: aggiorna tutti i dispositivi alla stessa versione principale (la 0.4.1 si collega con la 0.4.0; la 0.5 si collega con la 0.4).
+
+### 0.5.0 — in preparazione
+Si collega con la 0.4: le funzioni nuove si attivano quando entrambi i dispositivi hanno la 0.5.
+- **Telefono e tablet come visore** (idee da Sofatap e bVNC):
+  - **gesti personalizzabili** con quattro profili pronti (Sofatap, Abitudini da touchpad, Pressione per il clic destro, Come la 0.4) e un'azione per ogni gesto: tocco, doppio tocco a sinistra o a destra, tocco con due o tre dita, pressione lunga, tocca e tieni, scorrimento con uno o due dita;
+  - **pannello scorciatoie**: tieni il dito, scorri per scegliere il tasto (Spazio, Invio, Esc, frecce, Copia, Incolla, Annulla, Alt+Tab, volume…) e solleva;
+  - **tocco diretto** (si clicca dove si tocca) oltre al touchpad;
+  - **zoom con due dita** e spostamento sull'immagine ingrandita;
+  - **striscia di scorrimento** lungo il bordo destro;
+  - **velocità del puntatore** regolabile (0,25–3×), tempi della pressione e del doppio tocco;
+  - **barra dei tasti personalizzabile**, con i tasti che si ripetono tenendoli premuti;
+  - **dettatura vocale** con il riconoscimento del telefono;
+  - **mouse e tastiera Bluetooth o USB** collegati al telefono o al tablet (anche Samsung DeX): il tasto destro non chiude più il collegamento.
+- **Microfono** dal visore al PC remoto: con un cavo audio virtuale (VB-CABLE su Windows, BlackHole su Mac; su Linux il microfono virtuale si crea da solo) la tua voce diventa il microfono dei programmi di là, anche della radio.
+- **Volume del PC remoto** (+, −, muto) dalla plancia, dal pannello scorciatoie e dalla barra dei tasti.
+- **Risoluzione adatta**: il PC remoto passa alla risoluzione più adatta alla finestra o al telefono e a fine collegamento torna com'era (Windows e Linux X11).
+- **Cartella condivisa**: una cartella del visore compare sul PC remoto come un disco (Windows: lettera di unità; Linux: GVFS; macOS: Finder), anche in sola lettura.
 
 ### 0.4.1 — 11 novembre 2026
 - **La X non chiude più il programma**: nasconde la finestra e IP-DESK-CTRL resta attivo, con l'icona vicino all'orologio (barra dei menu su macOS). Il PC resta raggiungibile e i collegamenti aperti non si interrompono. Si riapre con un clic sull'icona o riavviandolo; si esce con clic destro sull'icona › «Esci da IP-DESK-CTRL» o con Impostazioni › «Esci dal programma».

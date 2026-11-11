@@ -9,7 +9,7 @@ namespace IpDeskCtrl.Net
     public static class Msg
     {
         // ---- sessione
-        public const byte Hello = 0x01;          // str versione | str sistema operativo | str nome del PC | bool IP-TRX-CTRL installato
+        public const byte Hello = 0x01;          // str versione | str sistema operativo | str nome del PC | bool IP-TRX-CTRL installato | str funzioni (0.5+, vedi AppVersion.Caps)
         public const byte Accept = 0x02;         // u8 stato (AcceptState) | str motivo
         public const byte Bye = 0x03;            // str motivo
         public const byte Ping = 0x04;           // i64 ticks
@@ -23,6 +23,8 @@ namespace IpDeskCtrl.Net
         public const byte SetQuality = 0x12;     // visore -> host: str qualità
         public const byte SetAudio = 0x13;       // visore -> host: bool
         public const byte Refresh = 0x14;        // visore -> host: rimanda tutta l'immagine
+        public const byte SetMic = 0x15;         // visore -> host: bool (0.5+: il visore manda il suo microfono)
+        public const byte Resize = 0x16;         // visore -> host: i32 larghezza | i32 altezza in pixel (0, 0 = risoluzione originale) (0.5+)
         public const byte FrameStart = 0x20;     // i32 id | i32 larghezza | i32 altezza | bool completo
         public const byte Tile = 0x21;           // i32 id | i32 x y w h | u8 formato | i32 n | n byte
         public const byte FrameEnd = 0x22;       // i32 id | i32 ms di cattura+codifica
@@ -39,7 +41,7 @@ namespace IpDeskCtrl.Net
         public const byte Combo = 0x35;          // str combinazione speciale (es. «ctrl-alt-del»)
 
         // ---- audio e UDP
-        public const byte Audio = 0x40;          // u32 seq | ADPCM (quando UDP non passa)
+        public const byte Audio = 0x40;          // u32 seq | ADPCM (quando UDP non passa); dal visore all'host è il microfono (0.5+)
         public const byte UdpOffer = 0x50;       // str candidati "ip:porta;…" | i32 passo NAT simmetrico
         public const byte UdpOn = 0x51;          // u8 1 = ricevo su UDP
 
@@ -58,6 +60,14 @@ namespace IpDeskCtrl.Net
         // ---- comandi del PC (visore -> host)
         public const byte Reboot = 0x70;         // riavvia il PC remoto (serve il permesso di comandarlo)
         public const byte StartTrx = 0x71;       // avvia IP-TRX-CTRL sul PC remoto
+        public const byte Volume = 0x72;         // u8 0 = giù, 1 = su, 2 = muto sì/no (0.5+)
+
+        // ---- cartella condivisa: una cartella del visore come disco del PC remoto (0.5+)
+        public const byte DriveOpen = 0x80;      // visore -> host: str nome della cartella | bool sola lettura
+        public const byte DriveClose = 0x81;     // nei due versi: str motivo
+        public const byte DriveReq = 0x82;       // host -> visore: i32 id | u8 operazione | str percorso | str secondo percorso | i64 posizione | i32 n | n byte
+        public const byte DriveResp = 0x83;      // visore -> host: i32 id | i32 stato (0 = ok, altrimenti codice HTTP) | i32 n | n byte
+        public const byte DriveState = 0x84;     // host -> visore: bool montato | str dove (lettera, percorso) o motivo
     }
 
     public enum AcceptState : byte { Waiting = 0, Accepted = 1, Rejected = 2, Busy = 3, Disabled = 4 }

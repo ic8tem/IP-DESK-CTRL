@@ -60,6 +60,18 @@ namespace IpDeskCtrl.UI
         private readonly ComboBox _monitor = new() { MinWidth = 140, MaxWidth = 260 };
         private readonly ComboBox _quality = new() { MinWidth = 120 };
         private readonly ToggleButton _audio = new() { Content = "Audio" };
+        private readonly ToggleButton _mic = new() { Content = "Microfono" };
+        private readonly ToggleButton _fitRes = new() { Content = "Risoluzione adatta" };
+        private readonly DispatcherTimer _resizeTimer = new() { Interval = TimeSpan.FromSeconds(1.2) };
+        private (int w, int h) _lastResize;
+
+        // pannello scorciatoie (pressione lunga o tocco)
+        private readonly Border _panel = new() { IsVisible = false };
+        private readonly StackPanel _panelKeys = new() { Orientation = Orientation.Horizontal, Spacing = 4 };
+        private readonly ScrollViewer _panelScroll = new() { HorizontalScrollBarVisibility = ScrollBarVisibility.Auto, VerticalScrollBarVisibility = ScrollBarVisibility.Disabled };
+        private int _panelIndex, _panelStart;
+        private bool _panelHold, _panelCancel;
+        private static int _panelLast;
         private readonly Button _files = new() { Content = "File ▾" };
         private readonly TextBlock _stats = new() { FontSize = 11, VerticalAlignment = VerticalAlignment.Center, Foreground = Brushes.Gainsboro, MinWidth = 150 };
 
@@ -87,6 +99,14 @@ namespace IpDeskCtrl.UI
             Background = Brushes.Black;
             _view.ShowRemoteCursor = peer.S.ShowRemoteCursor;
             _view.FullScreenToggleRequested += ToggleFullScreen;
+            peer.S.Touch.Normalize();
+            _view.Touch = peer.S.Touch;
+            _view.ActionRequested += OnTouchAction;
+            _view.PanelHoldStarted += () => OpenPanel(true);
+            _view.PanelHoldMoved += PanelMove;
+            _view.PanelHoldEnded += PanelRelease;
+            _resizeTimer.Tick += (_, _) => { _resizeTimer.Stop(); SendResize(); };
+            _viewHost.SizeChanged += (_, _) => { if (_fitRes.IsChecked == true) { _resizeTimer.Stop(); _resizeTimer.Start(); } };
             Content = Build();
             SetZoom(peer.S.ZoomPercent);
             _timer.Tick += (_, _) => Tick();
@@ -177,6 +197,24 @@ namespace IpDeskCtrl.UI
             _audio.IsCheckedChanged += (_, _) => _session?.SetAudio(_audio.IsChecked == true);
             ToolTip.SetTip(_audio, "Ascolta l'audio del PC remoto");
 
+            _mic.IsChecked = false;
+            _mic.IsVisible = false;
+            _mic.IsCheckedChanged += (_, _) => ToggleMic();
+            ToolTip.SetTip(_mic, "Manda il microfono di qui al PC remoto (per parlare nei suoi programmi, anche con la radio)");
+
+            _fitRes.IsVisible = false;
+            _fitRes.IsCheckedChanged += (_, _) =>
+            {
+                if (_peer.S.FitResolution != (_fitRes.IsChecked == true)) { _peer.S.FitResolution = _fitRes.IsChecked == true; _peer.S.Save(); }
+                if (_fitRes.IsChecked == true) SendResize();
+                else { _lastResize = (0, 0); _session?.RequestResize(0, 0); }
+            };
+            ToolTip.SetTip(_fitRes, "Il PC remoto passa alla risoluzione più adatta a questa finestra (a fine collegamento torna com'era)");
+
+            var gestures = Small("✋", "Tocco e gesti");
+            gestures.IsVisible = Platform.IsMobile;
+            gestures.Click += (_, _) => TouchDialog.Show(_peer.S, RebuildKeysBar);
+
             var keys = new Button { Content = "Tasti ▾" };
             var menu = new MenuFlyout();
             void Item(string text, params int[] combo)
@@ -193,6 +231,19 @@ namespace IpDeskCtrl.UI
             Item("Ctrl+V", KeyMap.LeftCtrl, 47);
             Item("Stamp", KeyMap.PrintScreen);
             Item("Esc", KeyMap.Escape);
+            menu.Items.Add(new Separator());
+            void Vol(string text, int action)
+            {
+                var mi = new MenuItem { Header = text };
+                mi.Click += (_, _) => { _session?.Volume(action); _view.Focus(); };
+                menu.Items.Add(mi);
+            }
+            Vol("Volume del PC remoto +", VolumeControl.Up);
+            Vol("Volume del PC remoto −", VolumeControl.Down);
+            Vol("Volume del PC remoto: muto sì/no", VolumeControl.Mute);
+            var panelItem = new MenuItem { Header = "Pannello scorciatoie" };
+            panelItem.Click += (_, _) => OpenPanel(false);
+            menu.Items.Add(panelItem);
             menu.Items.Add(new Separator());
             var reboot = new MenuItem { Header = "Riavvia il PC remoto…" };
             reboot.Click += (_, _) => AskReboot();
@@ -231,7 +282,7 @@ namespace IpDeskCtrl.UI
             hide.Click += (_, _) => { _toolbarPinned = false; ShowToolbar(false); };
 
             var bar = new WrapPanel { HorizontalAlignment = HorizontalAlignment.Center };
-            foreach (var c in new Control[] { _fullBtn, minus, _zoom, plus, _monitor, _quality, _audio, keyboard, keys, _files, _radio, refresh, _stats, close, hide })
+            foreach (var c in new Control[] { _fullBtn, minus, _zoom, plus, _monitor, _quality, _fitRes, _audio, _mic, keyboard, gestures, keys, _files, _radio, refresh, _stats, close, hide })
             {
                 c.VerticalAlignment = VerticalAlignment.Center;
                 c.Margin = new Thickness(3);
@@ -267,6 +318,10 @@ namespace IpDeskCtrl.UI
             grid.Children.Add(_kbd);
             BuildKeysBar();
             grid.Children.Add(_keysBar);
+
+            // ---- pannello scorciatoie
+            BuildPanel();
+            grid.Children.Add(_panel);
 
             // ---- trasferimento di file
             _transfer.Child = new StackPanel { Spacing = 4, Children = { _transferText, _transferBar } };
@@ -412,6 +467,17 @@ namespace IpDeskCtrl.UI
                 Add("Manda i file copiati su questo PC (incollali di là con Ctrl+V)", s.InputAllowed, () => _ = SendLocalClipboardAsync());
             Add("Scegli file da mandare…", s.InputAllowed, () => _ = PickAndSendAsync());
             if (!Platform.IsMobile) Add("Apri la cartella dei file ricevuti", true, () => MainView.OpenPath(Platform.Received));
+            if (s.PeerHas("drive"))
+            {
+                menu.Items.Add(new Separator());
+                if (s.SharedFolder.Length > 0)
+                    Add($"Togli la cartella condivisa ({System.IO.Path.GetFileName(s.SharedFolder.TrimEnd('/', '\\'))}{(s.DriveMounted.Length > 0 ? " → " + s.DriveMounted : "")})", true, () => s.StopSharing());
+                else
+                {
+                    Add("Condividi una cartella come disco del PC remoto…", s.InputAllowed, () => _ = ShareFolderAsync(false));
+                    Add("Condividi una cartella in sola lettura…", s.InputAllowed, () => _ = ShareFolderAsync(true));
+                }
+            }
             if (!s.InputAllowed) Add("(solo visione: i file non sono permessi)", false, () => { });
             menu.ShowAt(_files);
         }
@@ -475,23 +541,7 @@ namespace IpDeskCtrl.UI
 
         private void BuildKeysBar()
         {
-            var bar = new WrapPanel { HorizontalAlignment = HorizontalAlignment.Center };
-            Button K(string text, Action a) { var b = new Button { Content = text, MinWidth = 44, Margin = new Thickness(2) }; b.Click += (_, _) => { a(); _kbd.Focus(); }; return b; }
-            void Tap(int k) { var s = _session; if (s == null) return; WithMods(() => { s.Key(k, true); s.Key(k, false); }); }
-            foreach (var t in new[] { _ctrl, _alt, _win, _shift }) { t.Margin = new Thickness(2); bar.Children.Add(t); }
-            bar.Children.Add(K("Esc", () => Tap(KeyMap.Escape)));
-            bar.Children.Add(K("Tab", () => Tap(KeyMap.Tab)));
-            bar.Children.Add(K("←", () => Tap(105)));
-            bar.Children.Add(K("↑", () => Tap(103)));
-            bar.Children.Add(K("↓", () => Tap(108)));
-            bar.Children.Add(K("→", () => Tap(106)));
-            bar.Children.Add(K("Canc", () => Tap(KeyMap.Delete)));
-            bar.Children.Add(K("Home", () => Tap(102)));
-            bar.Children.Add(K("Fine", () => Tap(107)));
-            var done = new Button { Content = "Chiudi tastiera", Margin = new Thickness(2) };
-            done.Click += (_, _) => ToggleKeyboard();
-            bar.Children.Add(done);
-            _keysBar.Child = bar;
+            RebuildKeysBar();
             _keysBar.Background = new SolidColorBrush(Color.FromArgb(235, 24, 28, 36));
             _keysBar.VerticalAlignment = VerticalAlignment.Bottom;
             _keysBar.Padding = new Thickness(4);
@@ -504,6 +554,191 @@ namespace IpDeskCtrl.UI
                 if (e.Key == Key.Enter) { Tap(28); e.Handled = true; }
                 else if (e.Key == Key.Back && (_kbd.Text ?? "").Length <= Sentinel.Length) { Tap(14); e.Handled = true; }
             };
+        }
+
+        /// <summary>Barra dei tasti sopra la tastiera del telefono, con i tasti scelti in «Tocco e gesti».</summary>
+        private void RebuildKeysBar()
+        {
+            var bar = new WrapPanel { HorizontalAlignment = HorizontalAlignment.Center };
+            foreach (string id in _peer.S.Touch.Keys)
+            {
+                if (!SpecialKeys.ById.TryGetValue(id, out var k)) continue;
+                if (k.Kind == "mod")
+                {
+                    var t = id switch { "ctrl" => _ctrl, "alt" => _alt, "win" => _win, _ => _shift };
+                    t.Margin = new Thickness(2);
+                    if (t.Parent is Panel old) old.Children.Remove(t);
+                    bar.Children.Add(t);
+                    continue;
+                }
+                if (k.Kind == "dict" && Platform.Dictate == null) continue;
+                Button b = k.Repeat ? new RepeatButton { Delay = 400, Interval = 70 } : new Button();
+                b.Content = k.Label;
+                b.MinWidth = 44;
+                b.Margin = new Thickness(2);
+                var key = k;
+                b.Click += (_, _) => { SendSpecial(key); _kbd.Focus(); };
+                bar.Children.Add(b);
+            }
+            var done = new Button { Content = "Chiudi tastiera", Margin = new Thickness(2) };
+            done.Click += (_, _) => ToggleKeyboard();
+            bar.Children.Add(done);
+            _keysBar.Child = bar;
+        }
+
+        /// <summary>Un tasto speciale (barra o pannello scorciatoie), con i modificatori attivi.</summary>
+        private void SendSpecial(SpecialKey k)
+        {
+            var s = _session;
+            if (s == null) return;
+            switch (k.Kind)
+            {
+                case "vol+": s.Volume(VolumeControl.Up); return;
+                case "vol-": s.Volume(VolumeControl.Down); return;
+                case "mute": s.Volume(VolumeControl.Mute); return;
+                case "dict": _ = DictateAsync(); return;
+                case "combo": s.Combo(k.Keys); return;
+                case "mod": return;
+            }
+            WithMods(() => s.Combo(k.Keys));
+        }
+
+        // =================================================================== gesti, pannello scorciatoie, dettatura
+
+        private void OnTouchAction(string action)
+        {
+            switch (action)
+            {
+                case TouchActions.Keyboard: ToggleKeyboard(); break;
+                case TouchActions.Dictation: _ = DictateAsync(); break;
+                case TouchActions.Shortcuts: OpenPanel(false); break;
+            }
+        }
+
+        private async Task DictateAsync()
+        {
+            var s = _session;
+            if (s == null) return;
+            if (Platform.Dictate == null) { ShowNote("La dettatura c'è solo sul telefono: qui usa la tastiera."); return; }
+            string? text = await Platform.Dictate();
+            if (string.IsNullOrWhiteSpace(text)) { ShowNote("Dettatura annullata o nessun servizio di riconoscimento vocale sul telefono."); return; }
+            s.Text(text);
+            _view.Focus();
+        }
+
+        private void BuildPanel()
+        {
+            foreach (string id in SpecialKeys.Panel)
+            {
+                var k = SpecialKeys.ById[id];
+                var b = new Button { Content = k.Label, MinWidth = 64, MinHeight = 48 };
+                b.Click += (_, _) => { _panelLast = _panelKeys.Children.IndexOf(b); SendSpecial(k); ClosePanel(); };
+                _panelKeys.Children.Add(b);
+            }
+            var close = new Button { Content = "✕", MinWidth = 48, MinHeight = 48 };
+            close.Click += (_, _) => ClosePanel();
+            _panelScroll.Content = _panelKeys;
+            _panel.Child = new DockPanel { Children = { close, _panelScroll } };
+            DockPanel.SetDock(close, Dock.Right);
+            _panel.Background = new SolidColorBrush(Color.FromArgb(235, 24, 28, 36));
+            _panel.CornerRadius = new CornerRadius(12);
+            _panel.Padding = new Thickness(6);
+            _panel.Margin = new Thickness(12, 0, 12, 24);
+            _panel.HorizontalAlignment = HorizontalAlignment.Center;
+            _panel.VerticalAlignment = VerticalAlignment.Bottom;
+        }
+
+        private void OpenPanel(bool hold)
+        {
+            _panelHold = hold;
+            _panelCancel = false;
+            _panelStart = _panelIndex = Math.Clamp(_panelLast, 0, SpecialKeys.Panel.Length - 1);
+            _panel.IsVisible = true;
+            Highlight();
+        }
+
+        private void PanelMove(double dx, double dy)
+        {
+            if (!_panelHold) return;
+            _panelCancel = Math.Abs(dy) > 96;
+            _panelIndex = Math.Clamp(_panelStart + (int)Math.Round(dx / 48), 0, SpecialKeys.Panel.Length - 1);
+            Highlight();
+        }
+
+        private void PanelRelease()
+        {
+            if (!_panelHold) return;
+            _panelHold = false;
+            if (_panelCancel) { ClosePanel(); return; }
+            if (_panelIndex == _panelStart) { Highlight(); return; }      // sollevato senza scorrere: resta aperto per i tocchi
+            _panelLast = _panelIndex;
+            SendSpecial(SpecialKeys.ById[SpecialKeys.Panel[_panelIndex]]);
+            ClosePanel();
+        }
+
+        private void Highlight()
+        {
+            for (int i = 0; i < _panelKeys.Children.Count; i++)
+            {
+                var c = _panelKeys.Children[i];
+                bool on = i == _panelIndex && (_panelHold || i == _panelLast);
+                if (on && !c.Classes.Contains("accent")) c.Classes.Add("accent");
+                if (!on) c.Classes.Remove("accent");
+                if (on) c.BringIntoView();
+            }
+            _panel.Opacity = _panelCancel ? 0.5 : 1;
+        }
+
+        private void ClosePanel()
+        {
+            _panel.IsVisible = false;
+            _panelHold = false;
+            _view.Focus();
+        }
+
+        // =================================================================== microfono, risoluzione, cartella condivisa
+
+        private void ToggleMic()
+        {
+            var s = _session;
+            if (s == null) return;
+            bool on = _mic.IsChecked == true;
+            if (on == s.MicOn) return;
+            string err = s.SetMic(on);
+            if (err.Length > 0) { ShowNote(err); _mic.IsChecked = false; return; }
+            if (_peer.S.SendMic != on) { _peer.S.SendMic = on; _peer.S.Save(); }
+        }
+
+        /// <summary>Dimensione della vista in pixel veri → al PC remoto (dopo un attimo di pausa nel ridimensionare).</summary>
+        private void SendResize()
+        {
+            var s = _session;
+            if (s == null || s.State != AcceptState.Accepted || _fitRes.IsChecked != true) return;
+            double scale = TopLevel.GetTopLevel(this)?.RenderScaling ?? 1;
+            int w = (int)Math.Round(_viewHost.Bounds.Width * scale), h = (int)Math.Round(_viewHost.Bounds.Height * scale);
+            if (w < 200 || h < 200 || (w, h) == _lastResize) return;
+            _lastResize = (w, h);
+            s.RequestResize(w, h);
+        }
+
+        private async Task ShareFolderAsync(bool readOnly)
+        {
+            var s = _session;
+            var top = TopLevel.GetTopLevel(this);
+            if (s == null || top == null) return;
+            string? path = null;
+            if (Platform.IsMobile) path = Platform.Received;       // su Android: la cartella dei file ricevuti
+            else
+            {
+                var picked = await top.StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions { Title = "Cartella da far vedere al PC remoto come disco", AllowMultiple = false });
+                path = picked.Count > 0 ? picked[0].TryGetLocalPath() : null;
+            }
+            if (string.IsNullOrEmpty(path)) return;
+            _peer.S.SharedFolder = path;
+            _peer.S.SharedReadOnly = readOnly;
+            _peer.S.Save();
+            s.ShareFolder(path, readOnly);
+            ShowNote("Monto la cartella sul PC remoto…");
         }
 
         private void ToggleKeyboard()
@@ -631,6 +866,9 @@ namespace IpDeskCtrl.UI
                 s.FilesReceived += (folder, items, onClip) => Dispatcher.UIThread.Post(() =>
                     ShowNote((items.Count == 1 ? "1 elemento ricevuto" : $"{items.Count} elementi ricevuti") + $" in {folder}" +
                              (onClip ? (Platform.IsMobile ? "." : ": sono negli appunti, incollali con Ctrl+V dove vuoi.") : "."), true));
+                s.DriveChanged += (on, where) => Dispatcher.UIThread.Post(() =>
+                    ShowNote(on ? $"Cartella condivisa: sul PC remoto è il disco {where}."
+                        : where.Length > 0 ? "Cartella non montata sul PC remoto: " + where + "." : "Cartella condivisa tolta."));
                 s.Closed += reason => Dispatcher.UIThread.Post(() => OnClosed(s, reason));
                 _overlayText.Text = "Collegato con cifratura AES-256. Attendo che l'altro PC risponda…";
                 s.Run(ct);
@@ -738,11 +976,21 @@ namespace IpDeskCtrl.UI
                     _overlay.IsVisible = false;
                     _radio.IsVisible = s.PeerHasTrx && s.InputAllowed;
                     _audio.IsChecked = s.AudioOn;
+                    _mic.IsVisible = s.PeerHas("mic");
+                    _fitRes.IsVisible = s.PeerHas("res") && s.InputAllowed;
+                    if (_mic.IsVisible && _peer.S.SendMic && !s.MicOn) _mic.IsChecked = true;
+                    if (_fitRes.IsVisible && _peer.S.FitResolution)
+                    {
+                        _lastResize = (0, 0);
+                        if (_fitRes.IsChecked == true) SendResize(); else _fitRes.IsChecked = true;
+                    }
                     HistoryChanged?.Invoke();
                     RefreshTitle();
                     _view.Focus();
                     if (!s.InputAllowed) ShowNote("L'altro PC ha concesso solo la visione: mouse, tastiera e file non arrivano.");
-                    else if (Platform.IsMobile) ShowNote("Il dito fa da touchpad: tocco = clic, dito fermo = clic destro, due tocchi e trascina = trascinamento, due dita su e giù = rotella.");
+                    else if (Platform.IsMobile) ShowNote(_peer.S.Touch.Mode == "diretto"
+                        ? "Tocco diretto: si clicca dove tocchi. Due dita: rotella; allargale per ingrandire. Gesti e tasti: pulsante ✋."
+                        : "Il dito fa da touchpad. Gesti, tempi e velocità si cambiano col pulsante ✋; due dita allargate = zoom.");
                     break;
                 case AcceptState.Rejected:
                     Overlay("Collegamento rifiutato", s.StateText.Length > 0 ? s.StateText : "L'utente dell'altro PC non ha accettato.", ("Riprova", true, () => _ = ConnectAsync()), ("Chiudi", false, Disconnect));

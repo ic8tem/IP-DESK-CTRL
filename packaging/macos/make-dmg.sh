@@ -37,7 +37,7 @@ cat > "$APP/Contents/Info.plist" <<PLIST
   <key>CFBundleVersion</key><string>${VERSION}</string>
   <key>LSMinimumSystemVersion</key><string>11.0</string>
   <key>NSHighResolutionCapable</key><true/>
-  <key>NSMicrophoneUsageDescription</key><string>IP-DESK-CTRL registra dal dispositivo BlackHole per mandare l'audio di questo Mac al PC collegato.</string>
+  <key>NSMicrophoneUsageDescription</key><string>IP-DESK-CTRL registra dal dispositivo BlackHole per mandare l'audio di questo Mac al PC collegato e, se lo accendi, dal microfono per farti parlare nel PC remoto.</string>
 </dict>
 </plist>
 PLIST

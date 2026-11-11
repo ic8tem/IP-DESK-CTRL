@@ -25,8 +25,9 @@ namespace IpDeskCtrl.Android
     {
         public static MainActivity? Current { get; private set; }
 
-        private const int RequestCapture = 4711, RequestPerms = 4712, RequestScan = 4713;
+        private const int RequestCapture = 4711, RequestPerms = 4712, RequestScan = 4713, RequestSpeech = 4714;
         private TaskCompletionSource<string?>? _scan;
+        private TaskCompletionSource<string?>? _speech;
         private TaskCompletionSource<(Result code, Intent? data)>? _capture;
         private TaskCompletionSource<bool>? _perms;
         private WifiManager.MulticastLock? _multicast;
@@ -170,9 +171,47 @@ namespace IpDeskCtrl.Android
             return tcs.Task;
         }
 
+        /// <summary>
+        /// Dettatura: riconoscimento vocale del telefono (finestra del sistema, lingua del telefono).
+        /// null = annullata o nessun servizio di riconoscimento installato.
+        /// </summary>
+        public Task<string?> DictateAsync()
+        {
+            var tcs = new TaskCompletionSource<string?>(TaskCreationOptions.RunContinuationsAsynchronously);
+            _speech = tcs;
+            RunOnUiThread(() =>
+            {
+                try
+                {
+                    var intent = new Intent(global::Android.Speech.RecognizerIntent.ActionRecognizeSpeech);
+                    intent.PutExtra(global::Android.Speech.RecognizerIntent.ExtraLanguageModel, global::Android.Speech.RecognizerIntent.LanguageModelFreeForm);
+                    intent.PutExtra(global::Android.Speech.RecognizerIntent.ExtraPrompt, "Parla: il testo va al PC remoto");
+                    StartActivityForResult(intent, RequestSpeech);
+                }
+                catch (ActivityNotFoundException) { tcs.TrySetResult(null); }
+                catch (Exception ex) { ErrorLog.Write("Dettatura: " + ex.Message); tcs.TrySetResult(null); }
+            });
+            return tcs.Task;
+        }
+
+        /// <summary>
+        /// Mouse collegato al telefono o al tablet (Bluetooth, USB, Samsung DeX): Android trasforma il tasto destro
+        /// in «Indietro», che chiuderebbe il collegamento. Lo si ferma qui: il clic destro arriva già come pulsante.
+        /// </summary>
+        public override bool DispatchKeyEvent(KeyEvent? e)
+        {
+            if (e != null && e.KeyCode == Keycode.Back && (e.Source & InputSourceType.Mouse) == InputSourceType.Mouse) return true;
+            return base.DispatchKeyEvent(e);
+        }
+
         protected override void OnActivityResult(int requestCode, Result resultCode, Intent? data)
         {
             base.OnActivityResult(requestCode, resultCode, data);
+            if (requestCode == RequestSpeech)
+            {
+                var list = resultCode == Result.Ok ? data?.GetStringArrayListExtra(global::Android.Speech.RecognizerIntent.ExtraResults) : null;
+                _speech?.TrySetResult(list != null && list.Count > 0 ? list[0] : null);
+            }
             if (requestCode == RequestCapture) _capture?.TrySetResult((resultCode, data));
             if (requestCode == RequestScan) _scan?.TrySetResult(resultCode == Result.Ok ? data?.GetStringExtra("SCAN_RESULT") : null);
         }

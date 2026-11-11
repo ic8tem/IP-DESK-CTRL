@@ -37,6 +37,10 @@ namespace IpDeskCtrl.Core
         public string PasswordSalt { get; set; } = "";     // password per l'accesso senza conferma ("" = nessuna)
         public string PasswordHash { get; set; } = "";
         public int PasswordIterations { get; set; } = AccessPassword.DefaultIterations;
+        public bool AcceptMic { get; set; } = true;        // riproduce qui il microfono di chi si collega
+        public string MicOutput { get; set; } = "";        // uscita per quel microfono ("" = cavo virtuale se c'è, altrimenti predefinita)
+        public bool AllowResize { get; set; } = true;      // chi si collega può adattare la risoluzione alla sua finestra
+        public bool AllowDrive { get; set; } = true;       // chi si collega può montare qui una sua cartella come disco
 
         // ---------------- visore
         public int ZoomPercent { get; set; } = 0;          // 0 = adatta alla finestra
@@ -44,6 +48,11 @@ namespace IpDeskCtrl.Core
         public bool PlayAudio { get; set; } = true;
         public bool ShowRemoteCursor { get; set; } = true;
         public bool HideNoticeShown { get; set; }           // avviso «resta attivo» già mostrato alla prima chiusura
+        public bool SendMic { get; set; }                   // manda il microfono di qui al PC remoto
+        public bool FitResolution { get; set; }             // chiedi al PC remoto la risoluzione della finestra
+        public string SharedFolder { get; set; } = "";      // ultima cartella condivisa come disco
+        public bool SharedReadOnly { get; set; }
+        public TouchSettings Touch { get; set; } = new();   // telefono e tablet: gesti, velocità, barra dei tasti
 
         // ---------------- rete (gestita in automatico)
         public List<string> MqttBrokers { get; set; } = new() { "broker.hivemq.com:1883", "test.mosquitto.org:1883", "broker.emqx.io:1883" };
