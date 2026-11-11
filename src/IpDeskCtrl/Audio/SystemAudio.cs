@@ -155,7 +155,7 @@ namespace IpDeskCtrl.Audio
                 }
                 catch (Exception ex) { why = ex.Message; }
                 // 2) waveOut: prima il mappatore di Windows, poi ogni uscita
-                for (int dev = -1; dev < NAudio.Wave.WaveOut.DeviceCount; dev++)
+                for (int dev = -1; dev < OutDevices(); dev++)
                 {
                     try
                     {
@@ -170,12 +170,19 @@ namespace IpDeskCtrl.Audio
                     }
                     catch (Exception ex) { why = ex.Message; }
                 }
-                Note = NAudio.Wave.WaveOut.DeviceCount == 0
+                Note = OutDevices() == 0
                     ? "Su questo PC non c'è un'uscita audio attiva (casse o cuffie scollegate o disattivate): l'audio del PC remoto partirà appena ne colleghi una."
                     : "Uscita audio di questo PC non apribile (" + why + "): riprovo tra poco.";
                 Core.SessionLog.Write("AUDIO " + Note);
                 _retryAt = Environment.TickCount64 + 5000;
             }
+        }
+
+        [System.Runtime.InteropServices.DllImport("winmm.dll")] private static extern int waveOutGetNumDevs();
+
+        private static int OutDevices()
+        {
+            try { return waveOutGetNumDevs(); } catch { return 0; }
         }
 
         private void OnStopped(object? sender, NAudio.Wave.StoppedEventArgs e)

@@ -232,7 +232,7 @@ namespace IpDeskCtrl.UI
         private async Task AttachServiceAsync()
         {
             var mine = _s.History.ToList();
-            AppSettings.SharedHistoryPath = Path.Combine(ServiceClient.ServiceFolder, "storico.json");
+            AppSettings.SharedHistoryPath = System.IO.Path.Combine(ServiceClient.ServiceFolder, "storico.json");
             _s.ReloadShared();
             _s.MergeHistory(mine);
             _svc = await Task.Run(ServiceClient.Attach);
