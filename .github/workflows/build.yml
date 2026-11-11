@@ -108,8 +108,15 @@ jobs:
           distribution: 'microsoft'
           java-version: '17'
 
-      - name: Carico di lavoro Android
-        run: dotnet workload install android
+      # sul runner c'è anche un SDK più nuovo: per l'app Android (net8.0-android) si usa l'SDK 8
+      - name: SDK 8 e carico di lavoro Android
+        shell: bash
+        run: |
+          SDK=$(dotnet --list-sdks | awk '/^8\./{v=$1} END{print v}')
+          echo "SDK 8: $SDK"
+          dotnet new globaljson --sdk-version "$SDK" --roll-forward latestPatch --force
+          dotnet --version
+          dotnet workload install android
 
       - name: Versione e chiave
         shell: bash
