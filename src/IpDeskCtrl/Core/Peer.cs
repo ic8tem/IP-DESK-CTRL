@@ -393,7 +393,8 @@ namespace IpDeskCtrl.Core
                 }
 
                 // il visore non raggiunge la mia porta e io non raggiungo la sua: cambio porta
-                if (req.TriedPort > 0 && req.TriedPort == _extPort && req.Round >= 2 && UpnpOk)
+                // (solo al 2° giro: al 3° e al 4° le porte si invertono ed è il visore a cambiare la sua)
+                if (req.TriedPort > 0 && req.TriedPort == _extPort && req.Round == 2 && UpnpOk)
                 {
                     await _portLock.WaitAsync(ct);
                     try
@@ -673,10 +674,28 @@ namespace IpDeskCtrl.Core
             _waitReverse[number] = tcs;
             try
             {
-                const int rounds = 2;
+                // giri 1 e 2: si chiede all'altro PC di collegarsi alla porta di questo (al 2° l'altro può cambiare la sua);
+                // giri 3 e 4, invertiti: è questo PC ad aprire una porta nuova (al 4° tra quelle che escono quasi
+                // da ogni rete: 443, 8443, 80, 8080) e a richiedere il collegamento inverso.
+                const int rounds = 4;
                 for (int round = 1; round <= rounds && !ct.IsCancellationRequested; round++)
                 {
-                    progress($"Collegamento diretto non riuscito: chiedo all'altro PC di collegarsi a questo (giro {round} di {rounds})…");
+                    if (round <= 2)
+                        progress($"Collegamento diretto non riuscito: chiedo all'altro PC di collegarsi a questo (giro {round} di {rounds})…");
+                    else
+                    {
+                        progress($"Giro {round} di {rounds}, porte invertite: apro una nuova porta su questo PC e chiedo di nuovo all'altro di collegarsi…");
+                        await _portLock.WaitAsync(ct);
+                        try
+                        {
+                            int old = _extPort;
+                            await OpenPortAsync(round == 4 ? new List<int> { 443, 8443, 80, 8080 } : null, ct);
+                            Announce();
+                            ShowNetworkStatus();
+                            Log($"PORTE giro {round} (invertito): porta di questo PC {old} → {_extPort}" + (UpnpOk ? " (UPnP)" : " (router senza UPnP: vale solo con inoltro manuale o DMZ)"));
+                        }
+                        finally { _portLock.Release(); }
+                    }
                     var o = _outbound;
                     var req = new ConnectRequest(Me.PublicKey, _publicIp?.ToString() ?? "", _extPort,
                         LanIp().Length > 0 && _localPort > 0 ? $"{LanIp()}:{_localPort}" : "", a.Port,
@@ -684,7 +703,7 @@ namespace IpDeskCtrl.Core
                     int sent = await ViewerRendezvous.SendRequestAsync(number, req, Me, S.MqttBrokers, ct);
                     Log($"PORTE giro {round}: richiesta di collegamento inverso consegnata a {sent} broker");
 
-                    var wait = Task.Delay(TimeSpan.FromSeconds(20), ct);
+                    var wait = Task.Delay(TimeSpan.FromSeconds(round <= 2 ? 20 : 15), ct);
                     var recheck = Task.Delay(TimeSpan.FromSeconds(9), ct);
                     var first = await Task.WhenAny(tcs.Task, recheck);
                     if (first == tcs.Task) return tcs.Task.Result;

@@ -31,6 +31,8 @@ Windows SmartScreen può avvisare che il programma non è riconosciuto: clic su 
 sudo apt install ./ip-desk-ctrl_…deb
 ```
 
+apt installa da solo anche ffmpeg (video compresso), xrandr (risoluzione adatta) e gio (cartella condivisa).
+
 - Con **X11** funziona tutto.
 - Con **Wayland** (Raspberry Pi OS Bookworm, Sway…) lo schermo si cattura con `grim` (pochi fotogrammi al secondo) e mouse e tastiera passano da `/dev/uinput`: il pacchetto installa la regola necessaria, ma **devi riavviare** dopo l'installazione.
 - GNOME e KDE su Wayland non permettono la cattura: al login scegli la sessione **Xorg**. Sul Raspberry puoi passare a X11 con `sudo raspi-config` › Advanced Options › Wayland › X11.
