@@ -57,7 +57,7 @@ namespace IpDeskCtrl.UI
 
         private readonly Button _fullBtn = new();
         private readonly ComboBox _zoom = new() { MinWidth = 100 };
-        private readonly ComboBox _monitor = new() { MinWidth = 140, MaxWidth = 260 };
+        private readonly ComboBox _monitor = new() { MinWidth = 140, MaxWidth = 260, IsVisible = false };   // visibile quando arrivano i monitor
         private readonly ComboBox _quality = new() { MinWidth = 120 };
         private readonly ToggleButton _audio = new() { Content = "Audio" };
         private readonly ToggleButton _mic = new() { Content = "Microfono" };
@@ -244,7 +244,7 @@ namespace IpDeskCtrl.UI
             _tunnelBtn.Click += (_, _) => ShowTunnels();
             ToolTip.SetTip(_tunnelBtn, "Tunnel di porte: rigctld, flrig, l'interfaccia web della radio… del PC remoto raggiungibili da qui");
 
-            var gestures = Small("✋", "Tocco e gesti");
+            var gestures = Small("Gesti", "Tocco e gesti: modo del dito, gesti, velocità, barra dei tasti");
             gestures.IsVisible = Platform.IsMobile;
             gestures.Click += (_, _) => TouchDialog.Show(_peer.S, RebuildKeysBar);
 
@@ -322,7 +322,22 @@ namespace IpDeskCtrl.UI
                 bar.Children.Add(c);
             }
             _stats.IsVisible = !Platform.IsMobile;
-            _toolbar.Child = bar;
+            // telefono: la plancia sta su una riga sola che scorre col dito, invece di occupare mezzo schermo
+            _toolbar.Child = Platform.IsMobile
+                ? new ScrollViewer
+                {
+                    Content = new StackPanel { Orientation = Orientation.Horizontal, Children = { } },
+                    HorizontalScrollBarVisibility = ScrollBarVisibility.Auto,
+                    VerticalScrollBarVisibility = ScrollBarVisibility.Disabled,
+                }
+                : bar;
+            if (Platform.IsMobile && _toolbar.Child is ScrollViewer sv && sv.Content is StackPanel row)
+            {
+                var barItems = bar.Children.ToList();
+                bar.Children.Clear();
+                foreach (var c in barItems) row.Children.Add(c);
+                _toolbar.HorizontalAlignment = HorizontalAlignment.Stretch;
+            }
             _toolbar.Background = new SolidColorBrush(Color.FromArgb(225, 24, 28, 36));
             _toolbar.BorderBrush = new SolidColorBrush(Color.FromArgb(255, 70, 80, 96));
             _toolbar.BorderThickness = new Thickness(1, 0, 1, 1);
@@ -1166,6 +1181,7 @@ namespace IpDeskCtrl.UI
             var items = s.Monitors.Select((m, i) => m.Label(i)).ToList();
             if (s.Monitors.Count > 1) items.Add("Tutti gli schermi");
             _monitor.ItemsSource = items;
+            _monitor.IsVisible = items.Count > 1;
             _monitor.SelectedIndex = s.SelectedMonitor < 0 ? items.Count - 1 : Math.Min(s.SelectedMonitor, items.Count - 1);
             _monitor.IsEnabled = s.Monitors.Count > 1;
             _updatingMonitors = false;

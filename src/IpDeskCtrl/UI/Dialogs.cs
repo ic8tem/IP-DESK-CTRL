@@ -100,6 +100,21 @@ namespace IpDeskCtrl.UI
             var log = Ui.Btn("Apri il registro delle sessioni");
             log.Click += (_, _) => MainView.OpenPath(SessionLog.FilePath);
             log.IsVisible = !Platform.IsMobile;
+            var share = Ui.Btn("Condividi il registro");
+            share.IsVisible = Platform.ShareText != null;
+            share.Click += (_, _) =>
+            {
+                string text = "";
+                try
+                {
+                    text = System.IO.File.Exists(SessionLog.FilePath) ? System.IO.File.ReadAllText(SessionLog.FilePath) : "";
+                    string err = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(SessionLog.FilePath) ?? "", "errori.log");
+                    if (System.IO.File.Exists(err)) text += "\n\n===== errori.log =====\n" + System.IO.File.ReadAllText(err);
+                }
+                catch (Exception ex) { text = "Registro non leggibile: " + ex.Message; }
+                if (text.Length > 200_000) text = "…" + text[^200_000..];
+                Platform.ShareText?.Invoke("IP-DESK-CTRL " + AppVersion.Text + " · registro", text.Length > 0 ? text : "(registro vuoto)");
+            };
             var support = Ui.Btn("♥ Sostieni il progetto");
             support.Click += (_, _) => MainView.OpenPath(AppVersion.SupportUrl);
             var close = Ui.Btn("Chiudi", true);
@@ -111,7 +126,7 @@ namespace IpDeskCtrl.UI
                 Ui.Sub("Gratuito e senza pubblicità: se ti è utile puoi sostenerlo su ko-fi.com/ic8tem."),
                 Ui.Sub(me == null ? "" : $"Numero di questo dispositivo: {Identity.Format(me.Number)} · impronta della chiave {Crypto.Fingerprint(me.PublicKey)} · {AppVersion.Os}", 12),
                 text,
-                Ui.Row(10, log, support, close));
+                Ui.Row(10, log, share, support, close));
             var h = Shell.Current.ShowDialog("Informazioni e licenze", content, 640, false);
             close.Click += (_, _) => h.Close();
         }

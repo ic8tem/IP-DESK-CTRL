@@ -44,6 +44,8 @@ namespace IpDeskCtrl.Core
         public static Func<string>? Reboot { get; set; }
         /// <summary>Apre una cartella o un file con il programma del sistema.</summary>
         public static Action<string>? Open { get; set; }
+        /// <summary>Condivide un testo con le app del telefono (Android: e-mail, WhatsApp…). null = non disponibile.</summary>
+        public static Action<string, string>? ShareText { get; set; }
 
         /// <summary>Appunti del sistema; impostati dall'interfaccia all'avvio.</summary>
         public static IClipboardBridge? Clipboard { get; set; }

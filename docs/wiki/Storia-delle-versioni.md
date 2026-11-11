@@ -3,6 +3,10 @@
 
 Le versioni con protocollo diverso non si collegano tra loro: aggiorna tutti i dispositivi alla stessa versione principale (la 0.4.1 si collega con la 0.4.0; la 0.5 si collega con la 0.4).
 
+## 0.5.2 — in preparazione
+- **Telefono**: la plancia di comando sta su una sola riga che scorre col dito (prima occupava mezzo schermo); il pulsante dei gesti si chiama «Gesti» (il simbolo non si vedeva); il menu dei monitor compare solo se il PC remoto ne ha più di uno.
+- **Registro condivisibile dal telefono**: Informazioni › «Condividi il registro» lo manda per e-mail, WhatsApp…, per capire i collegamenti non riusciti.
+
 ## 0.5.1 — 11 novembre 2026
 - **Telefono**: il numero si vede sempre intero (si rimpicciolisce per stare nella larghezza), il campo per il numero da chiamare è su tutta la larghezza con «Inquadra QR» e «Collegati» sotto, i titoli non si tagliano più.
 - **Più visori insieme**: mentre uno comanda, fino a 4 altri possono collegarsi per **guardare** (solo visione: niente mouse, tastiera, file o tunnel). Chi è al PC accetta ognuno, oppure entrano da soli i numeri con accesso senza conferma; la finestrella «comandato da» dice quanti guardano e «Disconnetti» chiude tutti. Si può spegnere in Impostazioni.

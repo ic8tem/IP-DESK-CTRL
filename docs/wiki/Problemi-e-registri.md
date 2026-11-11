@@ -35,4 +35,6 @@ Nella cartella dei dati (Impostazioni › **Apri cartella dati**):
 | Windows | `%APPDATA%\IP-DESK-CTRL` (il servizio scrive i suoi in `%ProgramData%\IP-DESK-CTRL`) |
 | Linux, Raspberry Pi, macOS | `~/.config/IP-DESK-CTRL` |
 
+Sul telefono: Impostazioni › **Informazioni e licenze** › **Condividi il registro** (dalla 0.5.2).
+
 Per segnalare un problema apri una [issue](https://github.com/ic8tem/IP-DESK-CTRL/issues) allegando il `sessioni.log` di **entrambi** i PC.

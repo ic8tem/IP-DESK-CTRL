@@ -36,6 +36,20 @@ namespace IpDeskCtrl.Android
             Platform.AudioCapture = () => new AndroidAudioCapture();
             Platform.AudioPlayer = () => new AndroidAudioPlayer();
             Platform.MicCapture = () => new AndroidMicCapture();
+            Platform.ShareText = (subject, text) =>
+            {
+                try
+                {
+                    var send = new Intent(Intent.ActionSend);
+                    send.SetType("text/plain");
+                    send.PutExtra(Intent.ExtraSubject, subject);
+                    send.PutExtra(Intent.ExtraText, text);
+                    var chooser = Intent.CreateChooser(send, "Condividi il registro");
+                    chooser!.AddFlags(ActivityFlags.NewTask);
+                    a.StartActivity(chooser);
+                }
+                catch (Exception ex) { ErrorLog.Write("Condivisione del registro: " + ex.Message); }
+            };
             Platform.Dictate = () => MainActivity.Current?.DictateAsync() ?? Task.FromResult<string?>(null);
             IpDeskCtrl.Core.VolumeControl.Platform = action =>
             {
