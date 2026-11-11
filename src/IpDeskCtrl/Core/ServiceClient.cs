@@ -122,7 +122,7 @@ namespace IpDeskCtrl.Core
                             _ = Task.Run(() => AnswerAsync(p[1], p[2]));
                             break;
                         case "CANCEL" when p.Length >= 2:
-                            if (_asks.TryRemove(p[1], out var c)) c.Cancel();
+                            if (_asks.TryRemove(p[1], out var c)) { try { c.Cancel(); } catch { } }
                             break;
                         case "START" when p.Length >= 3:
                             HostStarted?.Invoke(p[1], p[2] == "1");
@@ -156,7 +156,7 @@ namespace IpDeskCtrl.Core
                 if (info != null && f != null) d = await f(info, cts.Token);
             }
             catch { }
-            finally { _asks.TryRemove(id, out _); cts.Dispose(); }
+            finally { _asks.TryRemove(id, out _); }
             Write($"ANS {id} {(d.Accept ? 1 : 0)} {(d.AllowInput ? 1 : 0)} {(d.AlwaysAllow ? 1 : 0)}");
         }
 
