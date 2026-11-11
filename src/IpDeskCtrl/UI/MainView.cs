@@ -96,11 +96,21 @@ namespace IpDeskCtrl.UI
             ToolTip.SetTip(qr, "Mostra il numero come codice QR, da inquadrare con IP-DESK-CTRL sul telefono");
             qr.Click += (_, _) => ShowQr();
             var numButtons = Ui.Row(8, qr, copy);
-            var numRow = new DockPanel();
-            DockPanel.SetDock(numButtons, Dock.Right);
-            numButtons.VerticalAlignment = VerticalAlignment.Center;
-            numRow.Children.Add(numButtons);
-            numRow.Children.Add(_number);
+            // il numero si rimpicciolisce per stare tutto nella larghezza (telefono, finestra stretta)
+            var numFit = new Viewbox { Child = _number, Stretch = Stretch.Uniform, StretchDirection = StretchDirection.DownOnly, HorizontalAlignment = HorizontalAlignment.Left };
+            Control numRow;
+            if (Platform.IsMobile)
+                numRow = Ui.Col(8, numFit, numButtons);       // telefono: numero intero su una riga, pulsanti sotto
+            else
+            {
+                var dock = new DockPanel();
+                DockPanel.SetDock(numButtons, Dock.Right);
+                numButtons.VerticalAlignment = VerticalAlignment.Center;
+                numButtons.Margin = new Thickness(10, 0, 0, 0);
+                dock.Children.Add(numButtons);
+                dock.Children.Add(numFit);
+                numRow = dock;
+            }
             _incomingInput.IsCheckedChanged += (_, _) =>
             {
                 _peer?.CurrentHost?.SetInputAllowed(_incomingInput.IsChecked == true);
@@ -115,9 +125,9 @@ namespace IpDeskCtrl.UI
             _incomingBanner.Background = Themes.B(Themes.Current.TxDim);
             _incomingBanner.Child = Ui.Col(8, _incomingText, Ui.Row(10, _incomingInput, stop));
             col.Children.Add(Ui.Panel(Ui.Col(6,
-                Ui.H2("IL NUMERO DI QUESTO PC"),
+                Ui.H2(Platform.IsMobile ? "IL NUMERO DI QUESTO DISPOSITIVO" : "IL NUMERO DI QUESTO PC"),
                 numRow,
-                Ui.Sub("Dallo a chi deve collegarsi a questo PC: non cambia mai. Ogni volta ti verrà chiesto se accettare."),
+                Ui.Sub($"Dallo a chi deve collegarsi a questo {(Platform.IsMobile ? "dispositivo" : "PC")}: non cambia mai. Ogni volta ti verrà chiesto se accettare."),
                 _netDetail,
                 _incomingBanner)));
 
@@ -127,28 +137,58 @@ namespace IpDeskCtrl.UI
             go.Click += (_, _) => ConnectTo(_target.Text ?? "");
             _target.KeyDown += (_, e) => { if (e.Key == Key.Enter) ConnectTo(_target.Text ?? ""); };
             _target.TextChanged += (_, _) => FormatTarget();
-            var tRow = new DockPanel();
-            DockPanel.SetDock(go, Dock.Right);
-            go.Margin = new Thickness(10, 0, 0, 0);
-            tRow.Children.Add(go);
-            if (Platform.ScanQr != null)
+            Control tRow;
+            if (Platform.IsMobile)
             {
-                var scan = Ui.Btn("Inquadra QR");
-                DockPanel.SetDock(scan, Dock.Right);
-                scan.Margin = new Thickness(10, 0, 0, 0);
-                scan.Click += async (_, _) => await ScanAsync();
-                tRow.Children.Add(scan);
+                // telefono: campo del numero su tutta la larghezza, pulsanti sotto
+                var buttons = new Grid { ColumnDefinitions = new ColumnDefinitions(Platform.ScanQr != null ? "*,10,*" : "*") };
+                if (Platform.ScanQr != null)
+                {
+                    var scan = Ui.Btn("Inquadra QR");
+                    scan.HorizontalAlignment = HorizontalAlignment.Stretch;
+                    scan.Click += async (_, _) => await ScanAsync();
+                    buttons.Children.Add(scan);
+                    Grid.SetColumn(go, 2);
+                }
+                go.MinWidth = 0;
+                go.HorizontalAlignment = HorizontalAlignment.Stretch;
+                buttons.Children.Add(go);
+                _target.HorizontalAlignment = HorizontalAlignment.Stretch;
+                tRow = Ui.Col(10, _target, buttons);
             }
-            tRow.Children.Add(_target);
+            else
+            {
+                var dock = new DockPanel();
+                DockPanel.SetDock(go, Dock.Right);
+                go.Margin = new Thickness(10, 0, 0, 0);
+                dock.Children.Add(go);
+                if (Platform.ScanQr != null)
+                {
+                    var scan = Ui.Btn("Inquadra QR");
+                    DockPanel.SetDock(scan, Dock.Right);
+                    scan.Margin = new Thickness(10, 0, 0, 0);
+                    scan.Click += async (_, _) => await ScanAsync();
+                    dock.Children.Add(scan);
+                }
+                dock.Children.Add(_target);
+                tRow = dock;
+            }
             col.Children.Add(Ui.Panel(Ui.Col(8, Ui.H2("COLLEGATI A UN ALTRO PC"), tRow, _connectInfo)));
 
             // ---- storico
             var refresh = Ui.Btn("Aggiorna stato");
             refresh.Click += (_, _) => _ = RefreshPresenceAsync();
-            var hHead = new DockPanel();
-            DockPanel.SetDock(refresh, Dock.Right);
-            hHead.Children.Add(refresh);
-            hHead.Children.Add(new StackPanel { VerticalAlignment = VerticalAlignment.Center, Children = { Ui.H2("COLLEGAMENTI PRECEDENTI"), Ui.Sub(Platform.IsMobile ? "Pallino verde: il programma è aperto su quel PC." : "Pallino verde: il programma è aperto su quel PC. Doppio clic per collegarti.", 12) } });
+            var hTitle = new StackPanel { VerticalAlignment = VerticalAlignment.Center, Children = { Ui.H2("COLLEGAMENTI PRECEDENTI"), Ui.Sub(Platform.IsMobile ? "Pallino verde: il programma è aperto su quel PC." : "Pallino verde: il programma è aperto su quel PC. Doppio clic per collegarti.", 12) } };
+            Control hHead;
+            if (Platform.IsMobile) hHead = Ui.Col(8, hTitle, refresh);       // telefono: il pulsante sotto, il titolo non si taglia
+            else
+            {
+                var dock = new DockPanel();
+                DockPanel.SetDock(refresh, Dock.Right);
+                dock.Children.Add(refresh);
+                dock.Children.Add(hTitle);
+                hHead = dock;
+            }
             col.Children.Add(Ui.Panel(Ui.Col(10, hHead, _history)));
 
             // ---- impostazioni
