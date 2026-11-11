@@ -765,8 +765,7 @@ namespace IpDeskCtrl.Core
                 if (_video != null && _video.Failed && !_videoRestart)
                 {
                     SessionLog.Write("VIDEO codificatore fermo: " + _video.Error);
-                    Note("Video compresso non disponibile (" + (_video.Error.Length > 0 ? _video.Error.Split('
-')[0] : "ffmpeg si è fermato") + "): torno ai riquadri.");
+                    Note("Video compresso non disponibile (" + (_video.Error.Length > 0 ? _video.Error.Split('\n')[0] : "ffmpeg si è fermato") + "): torno ai riquadri.");
                     StopVideo();
                     _videoOff = true;
                     return false;
