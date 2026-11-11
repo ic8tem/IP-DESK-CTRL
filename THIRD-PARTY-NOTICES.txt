@@ -46,11 +46,20 @@ dall'utente (per esempio BlackHole), che non e' incluso.
 Servizi esterni interrogati: broker MQTT pubblici (broker.hivemq.com, test.mosquitto.org,
 broker.emqx.io), server STUN (Google, Cloudflare), ifconfig.co e portchecker.io (verifica
 delle porte), portquiz.net (porte in uscita), api.ipify.org, icanhazip.com e
-checkip.amazonaws.com (IP pubblico). Nessuno di loro vede il contenuto dei collegamenti.
+checkip.amazonaws.com (IP pubblico), api.github.com (controllo delle nuove versioni).
+Nessuno di loro vede il contenuto dei collegamenti.
+
+Per «Inquadra QR» su Android si usa, se installata, un'app esterna di lettura QR
+compatibile con l'intent di ZXing (com.google.zxing.client.android.SCAN), che non e'
+inclusa. Il codice QR del numero e' generato da IP-DESK-CTRL stesso (scritto da zero
+seguendo la norma ISO/IEC 18004, nessuna libreria).
+
+IP-TRX-CTRL, dello stesso autore, non e' incluso: se e' installato, IP-DESK-CTRL
+si limita ad avviarlo.
 
 Il ritrovo MQTT, la gestione delle porte (UPnP, verifica esterna, collegamento inverso,
 porte in uscita) e il collegamento UDP derivano da IP-TRX-CTRL, dello stesso autore.
-La cattura dello schermo, la codifica a riquadri, mouse e tastiera e il resto del
+Il trasporto affidabile su UDP, la cattura dello schermo, la codifica a riquadri, mouse e tastiera e il resto del
 programma sono scritti da zero.
 
 ---------------------------------------------------------
