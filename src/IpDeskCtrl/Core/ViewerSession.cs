@@ -139,8 +139,20 @@ namespace IpDeskCtrl.Core
         {
             if (!_audioOn) return;
             var pcm = Adpcm.Decode(adpcm);
-            if (pcm.Length > 0) _player?.Play(pcm);
+            var p = _player;
+            if (pcm.Length == 0 || p == null) return;
+            p.Play(pcm);
+            // l'uscita audio può sparire o tornare durante il collegamento: l'avviso segue
+            if (p.Note != _playerNote)
+            {
+                bool wasAudioNote = Note == _playerNote && _playerNote.Length > 0;
+                _playerNote = p.Note;
+                if (p.Note.Length > 0) { Note = p.Note; NoteChanged?.Invoke(); }
+                else if (wasAudioNote) { Note = ""; NoteChanged?.Invoke(); }
+            }
         }
+
+        private string _playerNote = "";
 
         public bool AudioOn => _audioOn;
 
@@ -150,6 +162,7 @@ namespace IpDeskCtrl.Core
             if (on && _player == null)
             {
                 _player = SystemAudio.CreatePlayer();
+                _playerNote = _player.Note;
                 if (_player.Note.Length > 0) { Note = _player.Note; NoteChanged?.Invoke(); }
             }
             if (!on) { _player?.Dispose(); _player = null; }

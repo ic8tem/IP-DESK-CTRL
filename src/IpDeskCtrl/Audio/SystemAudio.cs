@@ -110,31 +110,95 @@ namespace IpDeskCtrl.Audio
         }
     }
 
+    /// <summary>
+    /// Windows: riproduce l'audio del PC remoto sull'uscita predefinita con WASAPI (si adatta da solo alla
+    /// frequenza della scheda); se non va prova le uscite waveOut una per una. Se il PC non ha uscite attive
+    /// (casse o cuffie scollegate, sessione di Desktop remoto) riprova ogni 5 secondi e lo dice chiaramente.
+    /// Se l'uscita sparisce durante il collegamento (cuffie USB staccate) si riapre da sola.
+    /// </summary>
     public sealed class WaveOutPlayer : IAudioPlayer
     {
-        private readonly NAudio.Wave.WaveOutEvent? _out;
-        private readonly NAudio.Wave.BufferedWaveProvider? _buf;
-        public string Note { get; } = "";
+        private NAudio.Wave.IWavePlayer? _out;
+        private readonly NAudio.Wave.BufferedWaveProvider _buf;
+        private readonly object _lock = new();
+        private long _retryAt;
+        private bool _disposed;
+        public string Note { get; private set; } = "";
 
         public WaveOutPlayer()
         {
-            try
+            _buf = new NAudio.Wave.BufferedWaveProvider(new NAudio.Wave.WaveFormat(Adpcm.Rate, 16, Adpcm.Channels))
             {
-                _buf = new NAudio.Wave.BufferedWaveProvider(new NAudio.Wave.WaveFormat(Adpcm.Rate, 16, Adpcm.Channels))
+                BufferDuration = TimeSpan.FromSeconds(1),
+                DiscardOnBufferOverflow = true
+            };
+            Open();
+        }
+
+        private void Open()
+        {
+            lock (_lock)
+            {
+                if (_disposed || _out != null) return;
+                string why = "";
+                // 1) WASAPI sull'uscita predefinita
+                try
                 {
-                    BufferDuration = TimeSpan.FromSeconds(1),
-                    DiscardOnBufferOverflow = true
-                };
-                _out = new NAudio.Wave.WaveOutEvent { DesiredLatency = 120 };
-                _out.Init(_buf);
-                _out.Play();
+                    var w = new NAudio.Wave.WasapiOut(NAudio.CoreAudioApi.AudioClientShareMode.Shared, true, 100);
+                    w.Init(_buf);
+                    w.PlaybackStopped += OnStopped;
+                    w.Play();
+                    _out = w;
+                    Note = "";
+                    Core.SessionLog.Write("AUDIO riproduzione con WASAPI sull'uscita predefinita");
+                    return;
+                }
+                catch (Exception ex) { why = ex.Message; }
+                // 2) waveOut: prima il mappatore di Windows, poi ogni uscita
+                for (int dev = -1; dev < NAudio.Wave.WaveOut.DeviceCount; dev++)
+                {
+                    try
+                    {
+                        var w = new NAudio.Wave.WaveOutEvent { DeviceNumber = dev, DesiredLatency = 120 };
+                        w.Init(_buf);
+                        w.PlaybackStopped += OnStopped;
+                        w.Play();
+                        _out = w;
+                        Note = "";
+                        Core.SessionLog.Write($"AUDIO riproduzione con waveOut, uscita {dev}");
+                        return;
+                    }
+                    catch (Exception ex) { why = ex.Message; }
+                }
+                Note = NAudio.Wave.WaveOut.DeviceCount == 0
+                    ? "Su questo PC non c'è un'uscita audio attiva (casse o cuffie scollegate o disattivate): l'audio del PC remoto partirà appena ne colleghi una."
+                    : "Uscita audio di questo PC non apribile (" + why + "): riprovo tra poco.";
+                Core.SessionLog.Write("AUDIO " + Note);
+                _retryAt = Environment.TickCount64 + 5000;
             }
-            catch (Exception ex) { Note = "Uscita audio non disponibile: " + ex.Message; }
+        }
+
+        private void OnStopped(object? sender, NAudio.Wave.StoppedEventArgs e)
+        {
+            if (e.Exception == null) return;
+            // uscita persa (dispositivo staccato o cambiato): la richiudo e la riapro al prossimo pacchetto
+            Core.SessionLog.Write("AUDIO uscita persa: " + e.Exception.Message);
+            lock (_lock)
+            {
+                try { _out?.Dispose(); } catch { }
+                _out = null;
+                _retryAt = Environment.TickCount64 + 1000;
+            }
         }
 
         public void Play(short[] s)
         {
-            if (_buf == null) return;
+            if (_out == null)
+            {
+                if (Environment.TickCount64 < _retryAt) return;
+                Open();
+                if (_out == null) return;
+            }
             // ritardo che cresce (rete a scatti): si butta via e si riparte
             if (_buf.BufferedDuration > TimeSpan.FromMilliseconds(350)) _buf.ClearBuffer();
             var b = new byte[s.Length * 2];
@@ -144,8 +208,13 @@ namespace IpDeskCtrl.Audio
 
         public void Dispose()
         {
-            try { _out?.Stop(); } catch { }
-            try { _out?.Dispose(); } catch { }
+            lock (_lock)
+            {
+                _disposed = true;
+                try { _out?.Stop(); } catch { }
+                try { _out?.Dispose(); } catch { }
+                _out = null;
+            }
         }
     }
 
