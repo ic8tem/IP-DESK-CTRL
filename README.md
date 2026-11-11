@@ -1,5 +1,7 @@
 # IP-DESK-CTRL
 
+[![Sostieni il progetto su Ko-fi](https://img.shields.io/badge/Ko--fi-Sostieni%20il%20progetto-FF5E5B?logo=ko-fi&logoColor=white)](https://ko-fi.com/ic8tem)
+
 Desktop remoto cifrato tra Windows (64 e 32 bit), macOS (Apple Silicon e Intel), Linux 64 bit, Raspberry Pi (64 e 32 bit) e **Android**. Un unico programma: ogni PC è insieme **host** (si fa vedere e comandare) e **visore** (vede e comanda gli altri), senza che l'utente scelga niente.
 
 Ogni PC ha un **numero fisso di 10 cifre** (es. `482 913 0675`) che non cambia mai: per collegarti a un PC scrivi il suo numero e premi **Collegati**. Sull'altro PC compare la richiesta da accettare.
