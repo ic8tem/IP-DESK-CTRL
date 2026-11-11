@@ -26,6 +26,15 @@ La schermata principale mostra lo **storico dei collegamenti**, sia quelli fatti
   - **Accendi (Wake-on-LAN)** un PC spento;
   - **Togli dallo storico**.
 
+## Chiudere e riaprire la finestra
+
+La **X** in alto a destra **non chiude** IP-DESK-CTRL: nasconde la finestra e il programma resta attivo, con la sua icona vicino all'orologio (su macOS nella barra dei menu in alto). Il PC resta raggiungibile col suo numero e i collegamenti aperti continuano.
+
+- **Riaprire**: clic sull'icona, oppure avvia di nuovo IP-DESK-CTRL dal menu o dal desktop (si riapre la finestra di quello già attivo, non ne parte un secondo).
+- **Uscire davvero**: clic destro sull'icona › **Esci da IP-DESK-CTRL**, oppure Impostazioni › **Esci dal programma**. Da quel momento il PC non è più raggiungibile (salvo il [servizio di Windows](Servizio-di-Windows)).
+
+La prima volta che chiudi la finestra un avviso lo ricorda.
+
 ## Impostazioni principali
 
 - **Accetta richieste di collegamento a questo PC** — se la togli, nessuno può collegarsi.
@@ -33,4 +42,4 @@ La schermata principale mostra lo **storico dei collegamenti**, sia quelli fatti
 - **Manda l'audio di questo PC a chi si collega** / **Ascolta l'audio dei PC a cui ti colleghi**.
 - **Tema** dei colori.
 - **Password per l'accesso senza conferma**.
-- **Apri cartella dati**, **File ricevuti**, **Informazioni e licenze**, **♥ Sostieni il progetto**.
+- **Apri cartella dati**, **File ricevuti**, **Informazioni e licenze**, **♥ Sostieni il progetto**, **Esci dal programma**.

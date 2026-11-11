@@ -13,7 +13,7 @@ Tutti i file sono nella pagina **[Releases](https://github.com/ic8tem/IP-DESK-CT
 
 1. Avvia l'installatore e accetta la richiesta di Windows (serve l'amministratore).
 2. Lascia attiva l'opzione **Accesso completo**: installa il [servizio di Windows](Servizio-di-Windows), che permette di vedere e comandare le finestre UAC, la schermata di blocco e i programmi da amministratore, e rende il PC raggiungibile appena acceso.
-3. Se vuoi, scegli anche **l'avvio automatico all'accesso**.
+3. Se vuoi, scegli anche **l'avvio automatico all'accesso**: il programma parte nascosto, con la sola icona vicino all'orologio, e il PC è subito raggiungibile.
 
 Esiste anche la versione **portatile** (`…-portatile.zip`), che non si installa: in quel caso il servizio non c'è, quindi UAC e schermata di blocco restano nere e il PC è raggiungibile solo con il programma aperto.
 

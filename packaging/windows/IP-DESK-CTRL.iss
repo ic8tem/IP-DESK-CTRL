@@ -51,7 +51,7 @@ Source: "..\..\README.md"; DestDir: "{app}"; Flags: ignoreversion
 [Icons]
 Name: "{autoprograms}\IP-DESK-CTRL"; Filename: "{app}\IP-DESK-CTRL.exe"
 Name: "{autodesktop}\IP-DESK-CTRL"; Filename: "{app}\IP-DESK-CTRL.exe"; Tasks: desktopicon
-Name: "{userstartup}\IP-DESK-CTRL"; Filename: "{app}\IP-DESK-CTRL.exe"; Tasks: autostart
+Name: "{userstartup}\IP-DESK-CTRL"; Filename: "{app}\IP-DESK-CTRL.exe"; Parameters: "--nascosto"; Tasks: autostart
 
 [Registry]
 ; Ctrl+Alt+Canc generato dal servizio (SendSAS): 1 = permesso ai servizi

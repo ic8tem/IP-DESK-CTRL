@@ -24,6 +24,7 @@ Ogni PC ha un **numero fisso di 10 cifre** (es. `482 913 0675`) che non cambia m
 - **QR del numero**: il pulsante *QR* accanto al numero lo mostra come codice QR (`ipdesk:1234567890`); sul telefono *Inquadra QR* lo legge con un'app lettore QR compatibile e si collega.
 - **Radio (IP-TRX-CTRL)**: se sul PC remoto è installato IP-TRX-CTRL, la plancia ha un pulsante che lo avvia lì e, se c'è, anche su questo PC.
 - **Avviso di nuova versione** nella schermata principale (controllo su GitHub all'avvio e ogni 12 ore).
+- **Sempre attivo**: la **X** della finestra la nasconde soltanto; IP-DESK-CTRL resta attivo con l'icona vicino all'orologio (barra dei menu su macOS), il PC resta raggiungibile e i collegamenti aperti continuano. Clic sull'icona per riaprirlo; per uscire davvero: clic destro sull'icona › **Esci da IP-DESK-CTRL**, oppure Impostazioni › **Esci dal programma**. Riavviarlo mentre è nascosto riapre la finestra di quello già attivo.
 
 ## Android
 
@@ -67,7 +68,7 @@ Senza UPnP su nessuno dei due router di solito si arriva al collegamento **solo 
 
 Gli installatori sono nella pagina **Releases**:
 
-- Windows 64 / 32 bit: `…-win-x64-setup.exe` / `…-win-x86-setup.exe` (opzione per l'avvio automatico all'accesso);
+- Windows 64 / 32 bit: `…-win-x64-setup.exe` / `…-win-x86-setup.exe` (opzione per l'avvio automatico all'accesso, nascosto con la sola icona vicino all'orologio);
 - Linux 64 bit e Raspberry Pi: `ip-desk-ctrl_…_amd64.deb`, `…_arm64.deb`, `…_armhf.deb` (`sudo apt install ./<file>.deb`);
 - macOS: `…-osx-arm64.dmg` / `…-osx-x64.dmg` (al primo avvio clic destro › Apri).
 
@@ -82,7 +83,12 @@ Nella cartella dei dati (Impostazioni › Apri cartella dati): `errori.log` e `s
 
 ## Storia delle versioni
 
-Le versioni con protocollo diverso non si collegano tra loro: aggiorna tutti i dispositivi alla stessa versione.
+Le versioni con protocollo diverso non si collegano tra loro: aggiorna tutti i dispositivi alla stessa versione principale (la 0.4.1 si collega con la 0.4.0).
+
+### 0.4.1 — 11 novembre 2026
+- **La X non chiude più il programma**: nasconde la finestra e IP-DESK-CTRL resta attivo, con l'icona vicino all'orologio (barra dei menu su macOS). Il PC resta raggiungibile e i collegamenti aperti non si interrompono. Si riapre con un clic sull'icona o riavviandolo; si esce con clic destro sull'icona › «Esci da IP-DESK-CTRL» o con Impostazioni › «Esci dal programma».
+- Un solo programma per utente: riavviarlo mentre è nascosto mostra la finestra di quello già attivo.
+- Con l'avvio automatico all'accesso a Windows il programma parte nascosto, solo con l'icona.
 
 ### 0.4.0 — 11 novembre 2026 (protocollo 3)
 - **Collegamento solo UDP**: se la connessione TCP non passa (nessuna porta aperta, niente UPnP), il collegamento va su un canale UDP affidabile e cifrato, attraverso il foro aperto nei NAT.

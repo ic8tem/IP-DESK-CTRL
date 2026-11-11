@@ -163,7 +163,8 @@ namespace IpDeskCtrl.UI
                 Content = new Border { Padding = new Thickness(22), Child = content }
             };
             var h = new WinHandle(w);
-            if (topmost) { w.Show(); w.Activate(); } else w.Show(_main);
+            // con la finestra principale nascosta il dialogo non può averla come proprietaria
+            if (topmost || !_main.IsVisible) { w.Show(); w.Activate(); } else w.Show(_main);
             return h;
         }
 

@@ -185,6 +185,7 @@ jobs:
             Linux e Raspberry: `sudo apt install ./ip-desk-ctrl_…deb` (con la sessione Wayland riavvia dopo l'installazione: serve la regola per mouse e tastiera).
             macOS: concedi «Registrazione schermo» e «Accessibilità» in Impostazioni di Sistema › Privacy e sicurezza; per l'audio installa BlackHole 2ch.
             Le versioni *portatile* non richiedono installazione.
+            La X della finestra nasconde soltanto: IP-DESK-CTRL resta attivo con l'icona vicino all'orologio; per uscire clic destro sull'icona › «Esci da IP-DESK-CTRL».
 
             **Compatibilità**: tutti i dispositivi devono avere la 0.4.x (protocollo 3); le versioni precedenti non si collegano con la 0.4.
 

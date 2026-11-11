@@ -11,6 +11,8 @@
 | Il collegamento non parte mai | Controlla che il PC remoto sia acceso con il programma aperto (o col servizio). Con NAT simmetrico/CGNAT su entrambi i lati può non esserci strada: attiva l'UPnP su almeno un router. |
 | Mac: schermo nero o mouse fermo | Concedi **Registrazione schermo** e **Accessibilità** e riavvia il programma. |
 | Linux Wayland: niente immagine | Usa la sessione **Xorg** (GNOME e KDE su Wayland non permettono la cattura). |
+| Ho chiuso la finestra ma il PC è ancora raggiungibile | È voluto: la X nasconde soltanto. Per uscire: clic destro sull'icona vicino all'orologio › **Esci da IP-DESK-CTRL**. |
+| Linux: dopo la X non vedo l'icona | Il desktop non ha l'area di notifica (per esempio GNOME senza l'estensione «AppIndicator»). Riavvia IP-DESK-CTRL dal menu: si riapre la finestra; per uscire usa Impostazioni › **Esci dal programma**. |
 | Android: tocchi che non arrivano | Attiva **Impostazioni › Accessibilità › IP-DESK-CTRL**. |
 
 ## Registri

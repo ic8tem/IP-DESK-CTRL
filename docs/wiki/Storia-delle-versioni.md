@@ -1,7 +1,12 @@
 # Storia delle versioni
 
 
-Le versioni con protocollo diverso non si collegano tra loro: aggiorna tutti i dispositivi alla stessa versione.
+Le versioni con protocollo diverso non si collegano tra loro: aggiorna tutti i dispositivi alla stessa versione principale (la 0.4.1 si collega con la 0.4.0).
+
+## 0.4.1 — 11 novembre 2026
+- **La X non chiude più il programma**: nasconde la finestra e IP-DESK-CTRL resta attivo, con l'icona vicino all'orologio (barra dei menu su macOS). Il PC resta raggiungibile e i collegamenti aperti non si interrompono. Si riapre con un clic sull'icona o riavviandolo; si esce con clic destro sull'icona › «Esci da IP-DESK-CTRL» o con Impostazioni › «Esci dal programma».
+- Un solo programma per utente: riavviarlo mentre è nascosto mostra la finestra di quello già attivo.
+- Con l'avvio automatico all'accesso a Windows il programma parte nascosto, solo con l'icona.
 
 ## 0.4.0 — 11 novembre 2026 (protocollo 3)
 - **Collegamento solo UDP**: se la connessione TCP non passa (nessuna porta aperta, niente UPnP), il collegamento va su un canale UDP affidabile e cifrato, attraverso il foro aperto nei NAT.

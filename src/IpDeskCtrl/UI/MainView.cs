@@ -53,8 +53,17 @@ namespace IpDeskCtrl.UI
         {
             _s = s;
             Content = Build();
-            AttachedToVisualTree += (_, _) => { if (_me == null && _peer == null && !_starting) { _starting = true; _ = StartAsync(); } };
+            AttachedToVisualTree += (_, _) => EnsureStarted();
         }
+
+        /// <summary>Avvio della rete (una volta sola), anche con la finestra nascosta.</summary>
+        public void EnsureStarted()
+        {
+            if (_me == null && _peer == null && !_starting) { _starting = true; _ = StartAsync(); }
+        }
+
+        /// <summary>Uscita vera dal programma (sul PC: la X nasconde soltanto). null su Android.</summary>
+        public static Action? Quit { get; set; }
 
         private bool _starting;
 
@@ -178,6 +187,10 @@ namespace IpDeskCtrl.UI
             ToolTip.SetTip(password, "Chi è autorizzato a entrare senza conferma dovrà anche conoscere questa password.");
             var about = Ui.Btn("Informazioni e licenze");
             about.Click += (_, _) => Dialogs.About(_me);
+            var quit = Ui.Btn("Esci dal programma");
+            quit.Click += (_, _) => Quit?.Invoke();
+            quit.IsVisible = Quit != null;
+            ToolTip.SetTip(quit, "Chiude davvero IP-DESK-CTRL: questo PC non sarà più raggiungibile finché non lo riavvii. La X della finestra invece lo nasconde soltanto.");
             var support = Ui.Btn("♥ Sostieni il progetto");
             support.Click += (_, _) => OpenPath(AppVersion.SupportUrl);
             ToolTip.SetTip(support, "IP-DESK-CTRL è gratuito e senza pubblicità. Se ti è utile, puoi offrirmi un caffè su Ko-fi.");
@@ -189,7 +202,7 @@ namespace IpDeskCtrl.UI
                 Chk("Ascolta l'audio dei PC a cui ti colleghi", _s.PlayAudio, v => _s.PlayAudio = v),
                 Ui.Row(10, new TextBlock { Text = "Tema", VerticalAlignment = VerticalAlignment.Center }, theme),
                 Ui.Sub("File ricevuti dagli altri PC: " + Platform.Received, 12),
-                Wrap(password, folder, received, about, support));
+                Wrap(password, folder, received, about, support, quit));
         }
 
         private static WrapPanel Wrap(params Control[] items)

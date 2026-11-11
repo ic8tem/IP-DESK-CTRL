@@ -43,6 +43,7 @@ namespace IpDeskCtrl.Core
         public string Quality { get; set; } = "auto";      // auto, alta, media, bassa
         public bool PlayAudio { get; set; } = true;
         public bool ShowRemoteCursor { get; set; } = true;
+        public bool HideNoticeShown { get; set; }           // avviso «resta attivo» già mostrato alla prima chiusura
 
         // ---------------- rete (gestita in automatico)
         public List<string> MqttBrokers { get; set; } = new() { "broker.hivemq.com:1883", "test.mosquitto.org:1883", "broker.emqx.io:1883" };

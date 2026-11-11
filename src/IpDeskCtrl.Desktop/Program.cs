@@ -20,6 +20,8 @@ namespace IpDeskCtrl.Desktop
             {
                 if (OperatingSystem.IsLinux()) Screen.ScreenSources.InitLinux();
                 if (OperatingSystem.IsWindows()) Screen.WinHelper.InstallHooks();
+                // già avviato (magari nascosto vicino all'orologio): gli si chiede di mostrare la finestra e si esce
+                if (!UI.SingleInstance.Acquire()) return;
                 BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
             }
             catch (Exception ex)
