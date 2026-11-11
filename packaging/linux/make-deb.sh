@@ -48,7 +48,7 @@ Priority: optional
 Architecture: ${ARCH}
 Installed-Size: ${SIZE}
 Depends: libfontconfig1, libx11-6, libxtst6, libxrandr2, libice6, libsm6
-Recommends: pulseaudio-utils | pipewire-pulse, grim, wlr-randr
+Recommends: pulseaudio-utils | pipewire-pulse, grim, wlr-randr, ffmpeg, x11-xserver-utils, gvfs-bin | libglib2.0-bin
 Maintainer: ic8tem <ic8tem@users.noreply.github.com>
 Homepage: https://github.com/ic8tem/IP-DESK-CTRL
 Description: desktop remoto cifrato con numero fisso di 10 cifre
