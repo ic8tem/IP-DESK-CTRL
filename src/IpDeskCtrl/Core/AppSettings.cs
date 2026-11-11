@@ -40,6 +40,13 @@ namespace IpDeskCtrl.Core
         // ---------------- rete (gestita in automatico)
         public List<string> MqttBrokers { get; set; } = new() { "broker.hivemq.com:1883", "test.mosquitto.org:1883", "broker.emqx.io:1883" };
 
+        /// <summary>
+        /// Windows con il servizio: lo storico sta in ProgramData (storico.json), condiviso tra il servizio, che
+        /// riceve i collegamenti, e il programma di ogni utente. null = storico dentro settings.json.
+        /// </summary>
+        public static string? SharedHistoryPath { get; set; }
+        private DateTime _sharedStamp;
+
         public static string Folder
         {
             get
@@ -65,7 +72,51 @@ namespace IpDeskCtrl.Core
             }
             catch { s = new AppSettings(); }
             s.History = s.History.Where(h => Identity.IsValidNumber(h.Number)).ToList();
+            s.ReloadShared();
             return s;
+        }
+
+        /// <summary>Rilegge lo storico condiviso se un altro processo l'ha cambiato.</summary>
+        public void ReloadShared()
+        {
+            string? p = SharedHistoryPath;
+            if (p == null) return;
+            lock (_saveLock)
+            {
+                try
+                {
+                    if (!File.Exists(p)) return;
+                    var stamp = File.GetLastWriteTimeUtc(p);
+                    if (stamp == _sharedStamp) return;
+                    var list = JsonSerializer.Deserialize<List<HistoryEntry>>(File.ReadAllText(p));
+                    _sharedStamp = stamp;
+                    if (list != null) History = list.Where(h => Identity.IsValidNumber(h.Number)).OrderByDescending(h => h.LastUtc).ToList();
+                }
+                catch { }
+            }
+        }
+
+        /// <summary>Porta nello storico condiviso le righe di uno storico personale (le più recenti vincono).</summary>
+        public void MergeHistory(IEnumerable<HistoryEntry> mine)
+        {
+            lock (_saveLock)
+            {
+                foreach (var h in mine)
+                {
+                    var cur = History.FirstOrDefault(x => x.Number == h.Number);
+                    if (cur == null) History.Add(h);
+                    else
+                    {
+                        if (cur.Alias.Length == 0) cur.Alias = h.Alias;
+                        if (cur.PeerKey.Length == 0) cur.PeerKey = h.PeerKey;
+                        cur.AllowUnattended |= h.AllowUnattended;
+                        if (h.LastUtc > cur.LastUtc) { cur.LastUtc = h.LastUtc; cur.Outgoing = h.Outgoing; }
+                        cur.Count = Math.Max(cur.Count, h.Count);
+                    }
+                }
+                History = History.OrderByDescending(x => x.LastUtc).ToList();
+            }
+            Save();
         }
 
         private readonly object _saveLock = new();
@@ -81,11 +132,23 @@ namespace IpDeskCtrl.Core
                     File.Move(tmp, FilePath, true);
                 }
                 catch { }
+                string? p = SharedHistoryPath;
+                if (p != null)
+                {
+                    // scritto sul posto: il file conserva i permessi dati dal servizio a tutti gli utenti
+                    try
+                    {
+                        File.WriteAllText(p, JsonSerializer.Serialize(History, JsonOpts));
+                        _sharedStamp = File.GetLastWriteTimeUtc(p);
+                    }
+                    catch { }
+                }
             }
         }
 
         public HistoryEntry? Find(string number)
         {
+            ReloadShared();
             lock (_saveLock) return History.FirstOrDefault(h => h.Number == number);
         }
 
@@ -93,6 +156,7 @@ namespace IpDeskCtrl.Core
         public HistoryEntry Touch(string number, bool outgoing, string peerKeyHex, string os)
         {
             HistoryEntry h;
+            ReloadShared();
             lock (_saveLock)
             {
                 h = History.FirstOrDefault(x => x.Number == number) ?? new HistoryEntry { Number = number };

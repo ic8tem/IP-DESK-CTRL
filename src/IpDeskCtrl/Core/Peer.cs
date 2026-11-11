@@ -18,7 +18,8 @@ namespace IpDeskCtrl.Core
 
     /// <summary>Richiesta in arrivo, da far accettare all'utente.</summary>
     public sealed record IncomingInfo(string Number, string Alias, string Os, string PcName, string Version, string Fingerprint, bool Known);
-    public sealed record IncomingDecision(bool Accept, bool AllowInput, bool AlwaysAllow);
+    /// <summary>Why: motivo del rifiuto da mostrare all'altro PC ("" = «richiesta rifiutata»).</summary>
+    public sealed record IncomingDecision(bool Accept, bool AllowInput, bool AlwaysAllow, string Why = "");
 
     /// <summary>
     /// Il «nodo» di questo PC, sempre attivo in entrambi i ruoli, senza che l'utente scelga nulla:
@@ -62,6 +63,11 @@ namespace IpDeskCtrl.Core
         public int LocalPort => _localPort;
         public IPAddress? PublicIp => _publicIp;
         public HostSession? CurrentHost { get { lock (_hostLock) return _host; } }
+        /// <summary>
+        /// Windows con il servizio: questo programma si collega solo ad altri PC. Indirizzo, richieste in arrivo
+        /// e collegamenti verso questo PC li gestisce il servizio (che ha lo stesso numero).
+        /// </summary>
+        public bool ViewerOnly { get; init; }
 
         public event Action? StatusChanged;
         public event Action<HostSession>? HostStarted;
@@ -93,7 +99,7 @@ namespace IpDeskCtrl.Core
             try
             {
                 SessionLog.Write($"AVVIO IP-DESK-CTRL {AppVersion.Text} · {AppVersion.Os} · numero {Identity.Format(Me.Number)}");
-                _rdv = new HostRendezvous(Me, S.MqttBrokers) { Log = Log };
+                _rdv = new HostRendezvous(Me, S.MqttBrokers) { Log = Log, Publish = !ViewerOnly, AcceptRequests = !ViewerOnly };
                 _rdv.RequestReceived += r => _ = Task.Run(() => OnRequestAsync(r, ct));
                 _rdv.NoteReceived += n => _ = Task.Run(() => OnNoteAsync(n, ct));
                 var rdv = _rdv;
@@ -124,6 +130,7 @@ namespace IpDeskCtrl.Core
         private void ShowNetworkStatus()
         {
             string where = _publicIp == null ? "IP pubblico sconosciuto" : $"IP {_publicIp}";
+            if (ViewerOnly) { SetStatus("Pronto: i collegamenti a questo PC li riceve il servizio di Windows", where); return; }
             if (_extPort == 0) SetStatus("Pronto solo per collegarti ad altri PC", "nessuna porta in ascolto");
             else if (_reachable) SetStatus("Pronto: raggiungibile da internet", $"{where} · porta {_extPort}" + (UpnpOk ? " (UPnP)" : ""));
             else SetStatus("Pronto (porta non raggiungibile da internet: si useranno il collegamento inverso e la rete locale)",
@@ -285,7 +292,12 @@ namespace IpDeskCtrl.Core
                     try
                     {
                         var link = await SecureLink.HandshakeAsync(tcp, Me, null, null, ct);
-                        if (link.MyRole == LinkRole.Host) StartHost(link);
+                        if (link.MyRole == LinkRole.Host && ViewerOnly)
+                        {
+                            Log($"SESSIONE {Identity.Format(link.PeerNumber)} si è collegato al programma invece che al servizio: chiuso");
+                            link.Dispose();
+                        }
+                        else if (link.MyRole == LinkRole.Host) StartHost(link);
                         else if (_waitReverse.TryRemove(link.PeerNumber, out var tcs) && tcs.TrySetResult(link)) { }
                         else
                         {
@@ -407,7 +419,7 @@ namespace IpDeskCtrl.Core
                 switch (note.Type)
                 {
                     case Note.UdpOffer:
-                        await OnUdpOfferAsync(note, ct);
+                        if (!ViewerOnly) await OnUdpOfferAsync(note, ct);
                         break;
                     case Note.UdpAnswer:
                     {

@@ -33,6 +33,25 @@ namespace IpDeskCtrl.Core
             Number = NumberOf(PublicKey);
         }
 
+        /// <summary>Identità da una chiave privata PKCS#8 (per esempio quella del servizio di Windows).</summary>
+        public static Identity FromPkcs8(byte[] pkcs8)
+        {
+            var k = ECDsa.Create();
+            k.ImportPkcs8PrivateKey(pkcs8, out _);
+            return new Identity(k);
+        }
+
+        public byte[] ExportPkcs8() => Key.ExportPkcs8PrivateKey();
+
+        /// <summary>Solo la chiave già salvata (null se non c'è o è illeggibile): il servizio non ne crea di nuove.</summary>
+        public static Identity? LoadExisting()
+        {
+            byte[]? pkcs8 = KeyStore.Load();
+            if (pkcs8 == null) return null;
+            try { return FromPkcs8(pkcs8); }
+            catch (Exception ex) { ErrorLog.Write("Chiave di questo PC illeggibile: " + ex.Message); return null; }
+        }
+
         public static Identity LoadOrCreate()
         {
             byte[]? pkcs8 = KeyStore.Load();
@@ -97,7 +116,7 @@ namespace IpDeskCtrl.Core
 
     /// <summary>
     /// Chiave privata di questo PC.
-    /// Windows: DPAPI dell'utente. macOS: Portachiavi (comando security).
+    /// Windows: DPAPI dell'utente (del computer per il servizio, <see cref="MachineScope"/>). macOS: Portachiavi (comando security).
     /// Linux/Raspberry: file cifrato con chiave legata a macchina e utente, permessi 600.
     /// </summary>
     public static class KeyStore
@@ -106,13 +125,17 @@ namespace IpDeskCtrl.Core
         private const string Account = "identity";
         private static string KeyPath => Path.Combine(AppSettings.Folder, "identity.key");
         private static readonly byte[] Entropy = Encoding.UTF8.GetBytes("IP-DESK-CTRL-identity-v1");
+        /// <summary>Windows, servizio: chiave protetta con DPAPI del computer (cartella ProgramData).</summary>
+        public static bool MachineScope { get; set; }
+        public static string FilePath => KeyPath;
+        private static DataProtectionScope Scope => MachineScope ? DataProtectionScope.LocalMachine : DataProtectionScope.CurrentUser;
 
         public static byte[]? Load()
         {
             try
             {
                 if (OperatingSystem.IsWindows())
-                    return File.Exists(KeyPath) ? ProtectedData.Unprotect(File.ReadAllBytes(KeyPath), Entropy, DataProtectionScope.CurrentUser) : null;
+                    return File.Exists(KeyPath) ? ProtectedData.Unprotect(File.ReadAllBytes(KeyPath), Entropy, Scope) : null;
                 if (OperatingSystem.IsMacOS())
                 {
                     string hex = Run("security", $"find-generic-password -s {Service} -a {Account} -w").Trim();
@@ -128,7 +151,7 @@ namespace IpDeskCtrl.Core
         {
             if (OperatingSystem.IsWindows())
             {
-                File.WriteAllBytes(KeyPath, ProtectedData.Protect(key, Entropy, DataProtectionScope.CurrentUser));
+                File.WriteAllBytes(KeyPath, ProtectedData.Protect(key, Entropy, Scope));
                 return;
             }
             if (OperatingSystem.IsMacOS())

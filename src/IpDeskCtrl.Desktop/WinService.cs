@@ -18,9 +18,13 @@ namespace IpDeskCtrl.Desktop
 {
     /// <summary>
     /// Servizio di Windows «IPDeskCtrl» (LocalSystem), installato dal setup se l'utente lo sceglie.
-    /// Non tocca la rete: aspetta sulla pipe locale le richieste del programma IP-DESK-CTRL dell'utente e
-    ///   HELPER → avvia il processo di supporto come SYSTEM nella sessione di chi chiede (vede UAC e blocco);
-    ///   SAS    → Ctrl+Alt+Canc (SendSAS, permesso solo ai servizi).
+    /// Tiene la rete del PC (vedi <see cref="ServiceNet"/>: numero, porta, MQTT, collegamenti in arrivo, anche
+    /// prima dell'accesso) e risponde sulla pipe locale al programma IP-DESK-CTRL degli utenti:
+    ///   HELPER     → avvia il processo di supporto come SYSTEM nella sessione di chi chiede (vede UAC e blocco);
+    ///   SAS        → Ctrl+Alt+Canc (SendSAS, permesso solo ai servizi);
+    ///   IDENTITY   → chiave del PC («NEED» se il servizio non ne ha ancora una); SETKEY → la riceve;
+    ///   ATTACH     → collegamento permanente del programma: domande di consenso, sessioni in arrivo;
+    ///   REBOOT     → riavvio del PC (chiesto da un visore autorizzato).
     /// Accetta solo richieste dallo stesso eseguibile installato.
     /// </summary>
     [SupportedOSPlatform("windows")]
@@ -39,6 +43,11 @@ namespace IpDeskCtrl.Desktop
         protected override void OnStart(string[] args)
         {
             SessionLog.Write($"SERVIZIO avviato ({AppVersion.Text})");
+            _ = Task.Run(() =>
+            {
+                try { ServiceNet.Start(_cts.Token); }
+                catch (Exception ex) { ErrorLog.Write("Servizio, avvio della rete: " + ex); }
+            });
             new Thread(() => Loop(_cts.Token)) { IsBackground = true, Name = "pipe del servizio" }.Start();
         }
 
@@ -58,7 +67,7 @@ namespace IpDeskCtrl.Desktop
                     var ps = new PipeSecurity();
                     ps.AddAccessRule(new PipeAccessRule(new SecurityIdentifier(WellKnownSidType.AuthenticatedUserSid, null), PipeAccessRights.ReadWrite, AccessControlType.Allow));
                     ps.AddAccessRule(new PipeAccessRule(new SecurityIdentifier(WellKnownSidType.LocalSystemSid, null), PipeAccessRights.FullControl, AccessControlType.Allow));
-                    server = NamedPipeServerStreamAcl.Create(WinHelper.ServicePipe, PipeDirection.InOut, 4, PipeTransmissionMode.Byte, PipeOptions.Asynchronous, 4096, 4096, ps);
+                    server = NamedPipeServerStreamAcl.Create(WinHelper.ServicePipe, PipeDirection.InOut, 16, PipeTransmissionMode.Byte, PipeOptions.Asynchronous, 4096, 4096, ps);
                     server.WaitForConnectionAsync(ct).Wait(ct);
                     var s = server;
                     server = null;
@@ -86,7 +95,7 @@ namespace IpDeskCtrl.Desktop
                     int pid = WinHelper.ClientPid(s);
                     if (!WinHelper.SameExecutable(pid))
                     {
-                        SessionLog.Write($"SERVIZIO richiesta «{req}» rifiutata: il processo {pid} non è IP-DESK-CTRL");
+                        SessionLog.Write($"SERVIZIO richiesta «{(req.Length > 20 ? req[..20] + "…" : req)}» rifiutata: il processo {pid} non è IP-DESK-CTRL");
                         w.WriteLine("ERR solo IP-DESK-CTRL può usare il servizio");
                         return;
                     }
@@ -107,8 +116,20 @@ namespace IpDeskCtrl.Desktop
                             SendSAS(false);
                             w.WriteLine("OK");
                             break;
+                        case "PING":
+                            w.WriteLine($"OK {AppVersion.Protocol} {ServiceNet.Me?.Number ?? "-"}");
+                            break;
+                        case "IDENTITY":
+                            w.WriteLine(ServiceNet.Me != null ? "OK " + Convert.ToHexString(ServiceNet.Me.ExportPkcs8()) : "NEED");
+                            break;
+                        case "ATTACH":
+                            ServiceNet.ServeAttached(s, r, w, SessionOf(pid));
+                            break;
+                        case var k when k.StartsWith("SETKEY "):
+                            w.WriteLine(ServiceNet.SetKey(k[7..].Trim()));
+                            break;
                         default:
-                            w.WriteLine("ERR richiesta sconosciuta");
+                            if (!ServiceCommands.Handle(req.Split(' '), w.WriteLine)) w.WriteLine("ERR richiesta sconosciuta");
                             break;
                     }
                 }
@@ -137,6 +158,20 @@ namespace IpDeskCtrl.Desktop
                 return id.User!.Value;
             }
             finally { CloseHandle(tok); }
+        }
+    }
+
+    /// <summary>Comandi del servizio che non riguardano la rete (riavvio del PC…). true = gestito.</summary>
+    [SupportedOSPlatform("windows")]
+    internal static class ServiceCommands
+    {
+        public static bool Handle(string[] p, Action<string> reply)
+        {
+            switch (p[0])
+            {
+                default:
+                    return false;
+            }
         }
     }
 

@@ -89,7 +89,7 @@ namespace IpDeskCtrl.Core
                     catch (OperationCanceledException) { d = new IncomingDecision(false, false, false); }
                 }
                 if (IsClosed) return;
-                if (!d.Accept) { await Refuse(AcceptState.Rejected, "richiesta rifiutata"); return; }
+                if (!d.Accept) { await Refuse(AcceptState.Rejected, d.Why.Length > 0 ? d.Why : "richiesta rifiutata"); return; }
 
                 _allowInput = d.AllowInput;
                 var entry = P.S.Touch(PeerNumber, false, keyHex, PeerOs);

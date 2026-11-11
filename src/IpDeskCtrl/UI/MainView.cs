@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -26,6 +27,7 @@ namespace IpDeskCtrl.UI
         private readonly AppSettings _s;
         private Identity? _me;
         private Peer? _peer;
+        private ServiceClient? _svc;       // Windows con il servizio: i collegamenti in arrivo li riceve lui
         private readonly Dictionary<string, ViewerView> _viewers = new();
         private Dictionary<string, TimeSpan?> _presence = new();
         private readonly CancellationTokenSource _life = new();
@@ -84,9 +86,17 @@ namespace IpDeskCtrl.UI
             copy.VerticalAlignment = VerticalAlignment.Center;
             numRow.Children.Add(copy);
             numRow.Children.Add(_number);
-            _incomingInput.IsCheckedChanged += (_, _) => _peer?.CurrentHost?.SetInputAllowed(_incomingInput.IsChecked == true);
+            _incomingInput.IsCheckedChanged += (_, _) =>
+            {
+                _peer?.CurrentHost?.SetInputAllowed(_incomingInput.IsChecked == true);
+                _svc?.SetInput(_incomingInput.IsChecked == true);
+            };
             var stop = Ui.Btn("Disconnetti");
-            stop.Click += (_, _) => _peer?.CurrentHost?.Close("chiuso dall'utente dell'altro PC");
+            stop.Click += (_, _) =>
+            {
+                _peer?.CurrentHost?.Close("chiuso dall'utente dell'altro PC");
+                _svc?.Kick();
+            };
             _incomingBanner.Background = Themes.B(Themes.Current.TxDim);
             _incomingBanner.Child = Ui.Col(8, _incomingText, Ui.Row(10, _incomingInput, stop));
             col.Children.Add(Ui.Panel(Ui.Col(6,
@@ -131,7 +141,7 @@ namespace IpDeskCtrl.UI
             CheckBox Chk(string text, bool value, Action<bool> set)
             {
                 var c = new CheckBox { Content = text, IsChecked = value };
-                c.IsCheckedChanged += (_, _) => { set(c.IsChecked == true); _s.Save(); };
+                c.IsCheckedChanged += (_, _) => { set(c.IsChecked == true); _s.Save(); _svc?.SendSettings(_s.AcceptIncoming, _s.AllowInput, _s.ShareAudio); };
                 return c;
             }
             var theme = new ComboBox { ItemsSource = Themes.All.Select(t => t.Name).ToList(), SelectedIndex = Math.Max(0, Themes.All.FindIndex(t => t.Key == _s.Theme)), Width = 180, HorizontalAlignment = HorizontalAlignment.Left };
@@ -175,10 +185,13 @@ namespace IpDeskCtrl.UI
         {
             try
             {
-                _me = await Task.Run(Identity.LoadOrCreate);
+                // Windows con il servizio: numero del servizio (la prima volta gli si passa la chiave dell'utente)
+                Identity? svcId = OperatingSystem.IsWindows() && !Platform.IsMobile ? await Task.Run(ServiceClient.ServiceIdentity) : null;
+                _me = svcId ?? await Task.Run(Identity.LoadOrCreate);
                 _number.Text = Identity.Format(_me.Number);
                 TitleChanged?.Invoke("IP-DESK-CTRL · " + Identity.Format(_me.Number));
-                _peer = new Peer(_me, _s);
+                if (svcId != null) await AttachServiceAsync();
+                _peer = new Peer(_me, _s) { ViewerOnly = svcId != null };
                 _peer.StatusChanged += () => Dispatcher.UIThread.Post(UpdateStatus);
                 _peer.AskAccept = AskAcceptAsync;
                 _peer.HostStarted += hs => Dispatcher.UIThread.Post(() => OnHostStarted(hs));
@@ -192,6 +205,33 @@ namespace IpDeskCtrl.UI
                 _netStatus.Text = "Errore: " + ex.Message;
                 _led.Fill = Brushes.Red;
             }
+        }
+
+        /// <summary>Storico condiviso con il servizio e collegamento permanente per consenso e sessioni in arrivo.</summary>
+        private async Task AttachServiceAsync()
+        {
+            var mine = _s.History.ToList();
+            AppSettings.SharedHistoryPath = Path.Combine(ServiceClient.ServiceFolder, "storico.json");
+            _s.ReloadShared();
+            _s.MergeHistory(mine);
+            _svc = await Task.Run(ServiceClient.Attach);
+            if (_svc == null) return;
+            _svc.AskAccept = AskAcceptAsync;
+            _svc.HostStarted += (n, input) => Dispatcher.UIThread.Post(() => OnServiceHostStarted(n, input));
+            _svc.HostEnded += (n, why) => Dispatcher.UIThread.Post(() => { _incomingBanner.IsVisible = false; RebuildHistory(); });
+            _svc.Lost += () => Dispatcher.UIThread.Post(() => _incomingBanner.IsVisible = false);
+            _svc.SendSettings(_s.AcceptIncoming, _s.AllowInput, _s.ShareAudio);
+            SessionLog.Write("SERVIZIO collegato: i collegamenti a questo PC li riceve il servizio di Windows");
+        }
+
+        private void OnServiceHostStarted(string number, bool input)
+        {
+            var h = _s.Find(number);
+            string who = (h?.Alias.Length > 0 ? h.Alias + " · " : "") + Identity.Format(number);
+            _incomingText.Text = $"{who} è collegato a questo PC e lo vede" + (input ? " e lo comanda." : ".");
+            _incomingInput.IsChecked = input;
+            _incomingBanner.IsVisible = true;
+            RebuildHistory();
         }
 
         private void UpdateStatus()
@@ -402,6 +442,7 @@ namespace IpDeskCtrl.UI
             _life.Cancel();
             _controlled?.Close();
             try { _peer?.Dispose(); } catch { }
+            _svc?.Dispose();
             _s.Save();
         }
 

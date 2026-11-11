@@ -39,14 +39,17 @@ namespace IpDeskCtrl.Screen
         public static HelperClient? Current { get; private set; }
 
         /// <summary>Collegamento al processo di supporto (lo fa partire il servizio). null se il servizio non c'è.</summary>
-        public static HelperClient? Start()
+        public static HelperClient? Start() => StartWith(() => AskService("HELPER"));
+
+        /// <summary>request: chi fa partire il processo di supporto e risponde «OK nome-della-pipe».</summary>
+        public static HelperClient? StartWith(Func<string> request)
         {
             if (!OperatingSystem.IsWindows()) return null;
             Current?.Dispose();
             Current = null;
             try
             {
-                string reply = AskService("HELPER");
+                string reply = request();
                 if (!reply.StartsWith("OK ")) { SessionLog.Write("AIUTO il servizio risponde: " + reply); return null; }
                 string pipe = reply[3..].Trim();
                 var c = new NamedPipeClientStream(".", pipe, PipeDirection.InOut, PipeOptions.None);
@@ -72,10 +75,11 @@ namespace IpDeskCtrl.Screen
             try { SessionLog.Write("AIUTO Ctrl+Alt+Canc: " + AskService("SAS")); } catch (Exception ex) { SessionLog.Write("AIUTO Ctrl+Alt+Canc non riuscito: " + ex.Message); }
         }
 
-        private static string AskService(string request)
+        /// <summary>Una richiesta di una riga al servizio, una riga di risposta.</summary>
+        public static string AskService(string request, int timeoutMs = 1500)
         {
             using var svc = new NamedPipeClientStream(".", ServicePipe, PipeDirection.InOut, PipeOptions.None);
-            svc.Connect(1500);
+            svc.Connect(timeoutMs);
             var w = new StreamWriter(svc, new UTF8Encoding(false)) { AutoFlush = true };
             var r = new StreamReader(svc, Encoding.UTF8);
             w.WriteLine(request);
@@ -87,6 +91,23 @@ namespace IpDeskCtrl.Screen
         {
             if (!OperatingSystem.IsWindows()) return;
             Platform.PrepareHost = () => Task.Run(() => { Start(); return ""; });
+            Platform.HostEnded = Stop;
+            Platform.Screen = () => Current != null ? new HelperScreen(Current) : new WindowsScreen();
+            Platform.Input = () => Current != null ? new HelperInput(Current) : new WindowsInput();
+        }
+
+        /// <summary>
+        /// Nel servizio (rete del servizio, PC raggiungibile anche prima dell'accesso): il processo di supporto
+        /// lo avvia direttamente il servizio nella sessione della console attiva, anche sulla schermata di accesso.
+        /// </summary>
+        public static void InstallServiceHooks(Func<string> launchHelper)
+        {
+            if (!OperatingSystem.IsWindows()) return;
+            Platform.PrepareHost = () => Task.Run(() =>
+            {
+                StartWith(launchHelper);
+                return Current == null ? "Il processo di sistema non è partito: lo schermo del PC remoto potrebbe non essere visibile." : "";
+            });
             Platform.HostEnded = Stop;
             Platform.Screen = () => Current != null ? new HelperScreen(Current) : new WindowsScreen();
             Platform.Input = () => Current != null ? new HelperInput(Current) : new WindowsInput();
