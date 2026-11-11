@@ -118,6 +118,7 @@ namespace IpDeskCtrl.Core
                 case Msg.ScreenNote:
                     Note = r.Str();
                     if (Note.Contains("solo guardare")) InputAllowed = false;
+                    if (Note.Contains("iavvio")) RebootRequested = false;      // riavvio rifiutato o non riuscito
                     NoteChanged?.Invoke();
                     break;
                 case Msg.FilesAvailable:
@@ -214,6 +215,15 @@ namespace IpDeskCtrl.Core
 
         protected override void OnFilesReceived(TransferPurpose purpose, string folder, List<string> topLevel, bool onClipboard) =>
             FilesReceived?.Invoke(folder, topLevel, onClipboard);
+
+        /// <summary>true dopo «Riavvia il PC remoto»: alla chiusura la plancia aspetta il PC e si ricollega.</summary>
+        public bool RebootRequested { get; private set; }
+
+        public void Reboot()
+        {
+            RebootRequested = true;
+            Send(new MsgWriter(Msg.Reboot).Build());
+        }
 
         /// <summary>Combinazione di tasti premuti in ordine e rilasciati al contrario.</summary>
         public void Combo(params int[] keys)

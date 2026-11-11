@@ -32,6 +32,8 @@ namespace IpDeskCtrl.Core
         public static Action? HostEnded { get; set; }
         /// <summary>Schermo intero dell'intera app (Android: modalità immersiva).</summary>
         public static Action<bool>? FullScreen { get; set; }
+        /// <summary>Riavvio del PC ("" = partito); null = <see cref="Power.Reboot"/> normale.</summary>
+        public static Func<string>? Reboot { get; set; }
         /// <summary>Apre una cartella o un file con il programma del sistema.</summary>
         public static Action<string>? Open { get; set; }
 

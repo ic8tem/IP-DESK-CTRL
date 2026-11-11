@@ -36,6 +36,7 @@ namespace IpDeskCtrl.UI
         private ViewerSession? _session;
         private CancellationTokenSource _cts = new();
         private bool _ended;
+        private CancellationTokenSource? _rebootCts;     // attesa del PC remoto dopo il riavvio
 
         private readonly RemoteView _view = new();
         private readonly ScrollViewer _scroll = new() { HorizontalScrollBarVisibility = ScrollBarVisibility.Auto, VerticalScrollBarVisibility = ScrollBarVisibility.Auto };
@@ -104,6 +105,7 @@ namespace IpDeskCtrl.UI
         /// <summary>Chiusura dall'utente (pulsante Disconnetti, tasto Indietro): chiude il collegamento e la vista.</summary>
         public void Disconnect()
         {
+            _rebootCts?.Cancel();
             _cts.Cancel();
             _session?.Close("chiuso dall'altro PC");
             Shell.Current.CloseViewer(this);
@@ -115,6 +117,7 @@ namespace IpDeskCtrl.UI
             if (_ended) return;
             _ended = true;
             _timer.Stop();
+            _rebootCts?.Cancel();
             _cts.Cancel();
             _session?.Close("finestra chiusa sull'altro PC");
             Ended?.Invoke();
@@ -189,6 +192,10 @@ namespace IpDeskCtrl.UI
             Item("Ctrl+V", KeyMap.LeftCtrl, 47);
             Item("Stamp", KeyMap.PrintScreen);
             Item("Esc", KeyMap.Escape);
+            menu.Items.Add(new Separator());
+            var reboot = new MenuItem { Header = "Riavvia il PC remoto…" };
+            reboot.Click += (_, _) => AskReboot();
+            menu.Items.Add(reboot);
             keys.Flyout = menu;
             ToolTip.SetTip(keys, "Combinazioni che il tuo sistema non lascerebbe passare. Ctrl+Alt+Canc su Windows richiede il servizio «accesso completo» sul PC remoto.");
 
@@ -577,17 +584,20 @@ namespace IpDeskCtrl.UI
             _overlay.IsVisible = true;
         }
 
-        private async Task ConnectAsync()
+        /// <param name="quiet">true = tentativo dopo il riavvio: in caso di errore non mostra nulla e restituisce false</param>
+        private async Task<bool> ConnectAsync(bool quiet = false)
         {
+            if (!quiet) _rebootCts?.Cancel();
             _cts.Cancel();
             _cts = new CancellationTokenSource();
             var ct = _cts.Token;
             string who = (_alias.Length > 0 ? _alias + " · " : "") + Identity.Format(_number);
-            Overlay("Collegamento a " + who, "Avvio…", ("Annulla", false, Disconnect));
+            if (quiet) _overlayText.Text = "Il PC remoto è tornato in linea: mi ricollego…";
+            else Overlay("Collegamento a " + who, "Avvio…", ("Annulla", false, Disconnect));
             try
             {
                 var link = await _peer.ConnectAsync(_number, msg => Dispatcher.UIThread.Post(() => { if (!ct.IsCancellationRequested) _overlayText.Text = msg; }), ct);
-                if (ct.IsCancellationRequested) { link.Dispose(); return; }
+                if (ct.IsCancellationRequested) { link.Dispose(); return false; }
                 var s = new ViewerSession(_peer, link);
                 _session = s;
                 _view.Session = s;
@@ -607,14 +617,69 @@ namespace IpDeskCtrl.UI
                 s.Closed += reason => Dispatcher.UIThread.Post(() => OnClosed(s, reason));
                 _overlayText.Text = "Collegato con cifratura AES-256. Attendo che l'altro PC risponda…";
                 s.Run(ct);
+                return true;
             }
             catch (OperationCanceledException) { }
-            catch (PeerException ex) { Failed(ex.Message); }
+            catch (PeerException ex) { if (!quiet) Failed(ex.Message); }
             catch (Exception ex)
             {
                 ErrorLog.Write(ex.ToString());
-                Failed("Collegamento non riuscito: " + ex.Message);
+                if (!quiet) Failed("Collegamento non riuscito: " + ex.Message);
             }
+            return false;
+        }
+
+        // ------------------------------------------------------------------ riavvio del PC remoto
+
+        private void AskReboot()
+        {
+            var s = _session;
+            if (s == null || s.State != AcceptState.Accepted) return;
+            string who = (_alias.Length > 0 ? _alias + " · " : "") + Identity.Format(_number);
+            Overlay("Riavviare il PC remoto?",
+                $"{who} verrà riavviato: i programmi aperti lì si chiudono senza salvare. Appena il PC torna in linea mi ricollego da solo.",
+                ("Riavvia", true, () =>
+                {
+                    _overlay.IsVisible = false;
+                    s.Reboot();
+                    ShowNote("Riavvio chiesto: aspetto che il PC remoto si spenga…");
+                }),
+                ("Annulla", false, () => { _overlay.IsVisible = false; _view.Focus(); }));
+        }
+
+        /// <summary>Dopo il riavvio: controlla sui broker ogni 15 s (per 10 minuti) e si ricollega appena il PC ripubblica l'indirizzo.</summary>
+        private async Task WaitRebootAsync()
+        {
+            _rebootCts?.Cancel();
+            var cts = new CancellationTokenSource();
+            _rebootCts = cts;
+            var ct = cts.Token;
+            var until = DateTime.UtcNow.AddMinutes(10);
+            Overlay("Riavvio in corso", "Riavvio in corso, mi ricollego appena torna…", ("Annulla", false, Disconnect));
+            try
+            {
+                // indirizzo di prima del riavvio (o nessuno, se il PC l'ha già tolto chiudendosi)
+                var before = await ViewerRendezvous.LookupAsync(_number, _peer.S.MqttBrokers, null, ct);
+                long beforeTicks = before?.Ticks ?? 0;
+                int attempt = 0;
+                while (DateTime.UtcNow < until)
+                {
+                    await Task.Delay(TimeSpan.FromSeconds(15), ct);
+                    attempt++;
+                    int left = Math.Max(0, (int)Math.Ceiling((until - DateTime.UtcNow).TotalMinutes));
+                    _overlayText.Text = $"Riavvio in corso, mi ricollego appena torna (controllo n. {attempt}, ancora {left} min)…";
+                    var a = await ViewerRendezvous.LookupAsync(_number, _peer.S.MqttBrokers, null, ct);
+                    if (a == null || a.Ticks <= beforeTicks || a.Age > TimeSpan.FromMinutes(5)) continue;
+                    if (await ConnectAsync(true)) { _rebootCts = null; return; }
+                    if (ct.IsCancellationRequested) return;
+                    _overlayTitle.Text = "Riavvio in corso";
+                }
+            }
+            catch (OperationCanceledException) { return; }
+            catch (Exception ex) { ErrorLog.Write(ex.ToString()); }
+            if (ct.IsCancellationRequested || _ended) return;
+            Overlay("Il PC remoto non è tornato", "Dopo 10 minuti il PC remoto non risulta ancora in linea.",
+                ("Riprova", true, () => _ = ConnectAsync()), ("Chiudi", false, Disconnect));
         }
 
         private void Failed(string why) =>
@@ -664,6 +729,7 @@ namespace IpDeskCtrl.UI
             if (s != _session) return;
             HistoryChanged?.Invoke();
             if (_ended) return;
+            if (s.RebootRequested) { _ = WaitRebootAsync(); return; }
             if (s.State == AcceptState.Accepted || s.State == AcceptState.Waiting)
                 Overlay("Collegamento terminato", reason, ("Ricollegati", true, () => _ = ConnectAsync()), ("Chiudi", false, Disconnect));
         }

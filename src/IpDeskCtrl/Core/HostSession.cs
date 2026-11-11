@@ -163,6 +163,7 @@ namespace IpDeskCtrl.Core
                 case Msg.SetAudio: SetAudio(r.Bool()); break;
                 case Msg.Refresh: _fullNext = true; break;
                 case Msg.FileFetch: _ = Task.Run(SendClipboardFilesAsync); break;
+                case Msg.Reboot: _ = Task.Run(RebootAsync); break;
                 case Msg.FrameAck:
                 {
                     int id = r.I32();
@@ -208,6 +209,17 @@ namespace IpDeskCtrl.Core
         }
 
         protected override bool FilesAllowed => _accepted && _allowInput;
+
+        /// <summary>Riavvio chiesto dal visore: solo se può comandare questo PC.</summary>
+        private async Task RebootAsync()
+        {
+            if (!_accepted || !_allowInput) { Note("Riavvio rifiutato: hai solo la visione di questo PC."); return; }
+            SessionLog.Write($"SESSIONE {Identity.Format(PeerNumber)} chiede il riavvio del PC");
+            string err = Power.Reboot();
+            if (err.Length > 0) { Note(err); SessionLog.Write("SESSIONE " + err); return; }
+            await Task.Delay(500);
+            Close("riavvio del PC in corso");
+        }
 
         /// <summary>
         /// File trascinati sulla finestra del visore: sono negli appunti di questo PC; si incollano dove sono

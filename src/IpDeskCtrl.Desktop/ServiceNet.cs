@@ -78,6 +78,7 @@ namespace IpDeskCtrl.Desktop
                 _s = AppSettings.Load();
                 Platform.ReceiveFolder = Path.Combine(AppSettings.Folder, "ricevuti");
                 WinHelper.InstallServiceHooks(LaunchHelper);
+                Platform.Reboot = ServiceCommands.RebootNow;
                 _peer = new Peer(me, _s) { AskAccept = AskAsync };
                 _peer.HostStarted += hs => Broadcast($"START {hs.PeerNumber} {(hs.InputAllowed ? 1 : 0)}");
                 _peer.HostEnded += (hs, why) => Broadcast($"END {hs.PeerNumber} {why.Replace('\n', ' ')}");

@@ -52,6 +52,9 @@ namespace IpDeskCtrl.Net
         public const byte FileFetch = 0x64;      // chiede all'altro PC i file che ha negli appunti
         public const byte FilesAvailable = 0x65; // i32 numero | i64 byte | str primo nome (file negli appunti dell'altro PC)
         public const byte FileCancel = 0x66;     // i32 id | str motivo
+
+        // ---- comandi del PC (visore -> host)
+        public const byte Reboot = 0x70;         // riavvia il PC remoto (serve il permesso di comandarlo)
     }
 
     public enum AcceptState : byte { Waiting = 0, Accepted = 1, Rejected = 2, Busy = 3, Disabled = 4 }

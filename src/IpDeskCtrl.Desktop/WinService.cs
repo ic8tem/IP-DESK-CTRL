@@ -169,9 +169,22 @@ namespace IpDeskCtrl.Desktop
         {
             switch (p[0])
             {
+                case "REBOOT":
+                {
+                    string err = RebootNow();
+                    reply(err.Length == 0 ? "OK" : "ERR " + err);
+                    return true;
+                }
                 default:
                     return false;
             }
+        }
+
+        /// <summary>Riavvio fatto dal servizio (ha sempre il diritto di spegnere il PC).</summary>
+        public static string RebootNow()
+        {
+            SessionLog.Write("SERVIZIO riavvio del PC chiesto da remoto");
+            return Power.Run("shutdown", "/r /f /t 5 /c \"IP-DESK-CTRL: riavvio chiesto da remoto\"");
         }
     }
 
