@@ -178,6 +178,9 @@ namespace IpDeskCtrl.UI
             ToolTip.SetTip(password, "Chi è autorizzato a entrare senza conferma dovrà anche conoscere questa password.");
             var about = Ui.Btn("Informazioni e licenze");
             about.Click += (_, _) => Dialogs.About(_me);
+            var support = Ui.Btn("♥ Sostieni il progetto");
+            support.Click += (_, _) => OpenPath(AppVersion.SupportUrl);
+            ToolTip.SetTip(support, "IP-DESK-CTRL è gratuito e senza pubblicità. Se ti è utile, puoi offrirmi un caffè su Ko-fi.");
             return Ui.Col(8,
                 Ui.H2("IMPOSTAZIONI"),
                 Chk("Accetta richieste di collegamento a questo PC", _s.AcceptIncoming, v => _s.AcceptIncoming = v),
@@ -186,7 +189,7 @@ namespace IpDeskCtrl.UI
                 Chk("Ascolta l'audio dei PC a cui ti colleghi", _s.PlayAudio, v => _s.PlayAudio = v),
                 Ui.Row(10, new TextBlock { Text = "Tema", VerticalAlignment = VerticalAlignment.Center }, theme),
                 Ui.Sub("File ricevuti dagli altri PC: " + Platform.Received, 12),
-                Wrap(password, folder, received, about));
+                Wrap(password, folder, received, about, support));
         }
 
         private static WrapPanel Wrap(params Control[] items)

@@ -53,14 +53,14 @@ namespace IpDeskCtrl.Core
             try
             {
                 string reply = WinHelper.AskService("IDENTITY");
-                if (reply.StartsWith("OK ")) return Identity.FromPkcs8(Convert.FromHexString(reply[3..].Trim()));
+                if (reply.StartsWith("OK ")) return RemoteIdentity(Convert.FromHexString(reply[3..].Trim()));
                 if (reply.Trim() != "NEED") return null;
                 var mine = Identity.LoadOrCreate();
                 string set = WinHelper.AskService("SETKEY " + Convert.ToHexString(mine.ExportPkcs8()), 5000);
                 if (set.StartsWith("OK"))
                 {
                     SessionLog.Write($"SERVIZIO chiave di questo utente passata al servizio: il numero {Identity.Format(mine.Number)} resta lo stesso");
-                    return mine;
+                    return RemoteIdentity(mine.PublicKey);
                 }
                 SessionLog.Write("SERVIZIO chiave non accettata: " + set);
             }
@@ -68,6 +68,18 @@ namespace IpDeskCtrl.Core
             catch (Exception ex) { SessionLog.Write("SERVIZIO non raggiungibile: " + ex.Message); }
             return null;
         }
+
+        /// <summary>
+        /// La chiave privata resta nel servizio: il programma ha solo la pubblica e chiede al servizio ogni firma.
+        /// Così nessun utente del PC può copiare la chiave e farsi passare per questo PC da un altro computer.
+        /// </summary>
+        private static Identity RemoteIdentity(byte[] publicKey) =>
+            Identity.Remote(publicKey, data =>
+            {
+                string r = WinHelper.AskService("SIGN " + Convert.ToHexString(data), 5000);
+                if (!r.StartsWith("OK ")) throw new System.Security.Cryptography.CryptographicException("Il servizio non ha firmato: " + r);
+                return Convert.FromHexString(r[3..].Trim());
+            });
 
         /// <summary>Cartella dati del servizio (storico condiviso, registri).</summary>
         public static string ServiceFolder =>

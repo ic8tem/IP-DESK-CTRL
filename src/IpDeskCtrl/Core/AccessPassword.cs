@@ -10,9 +10,11 @@ namespace IpDeskCtrl.Core
 
     /// <summary>
     /// Password facoltativa per l'accesso senza conferma.
-    ///   • l'host salva solo sale e PBKDF2-SHA256 (200 000 iterazioni) della password;
-    ///   • nel canale cifrato manda sale, iterazioni e un nonce casuale; il visore risponde con
-    ///     HMAC-SHA256(PBKDF2(password), nonce): la password non viaggia mai, nemmeno cifrata;
+    ///   • il visore calcola K = PBKDF2-SHA256(password, sale, 200 000 iterazioni) e lo manda nel canale cifrato
+    ///     (AES-256-GCM, aperto solo dopo aver verificato che l'altro PC è proprio quel numero): la password
+    ///     in chiaro non viaggia mai;
+    ///   • l'host salva solo sale e V = SHA-256(K): chi leggesse il file non potrebbe entrare, perché da V
+    ///     non si ricava K;
     ///   • 5 errori per numero → quel numero è bloccato per 10 minuti;
     ///   • il visore può ricordarla: tiene il PBKDF2 (non la password) cifrato con una chiave legata alla
     ///     propria identità e al numero dell'altro PC.
@@ -29,14 +31,19 @@ namespace IpDeskCtrl.Core
         public static (string salt, string hash) Make(string password, int iterations = DefaultIterations)
         {
             byte[] salt = RandomNumberGenerator.GetBytes(16);
-            return (Convert.ToHexString(salt), Convert.ToHexString(Derive(password, salt, iterations)));
+            return (Convert.ToHexString(salt), Convert.ToHexString(Verifier(Derive(password, salt, iterations))));
         }
+
+        /// <summary>Quello che l'host conserva: non basta per entrare.</summary>
+        public static byte[] Verifier(byte[] key) =>
+            SHA256.HashData(Crypto.Concat(Encoding.ASCII.GetBytes("IPDK1-verifica|"), key));
+
+        /// <summary>Controllo dell'host sulla chiave ricevuta.</summary>
+        public static bool Check(byte[] received, byte[] storedVerifier) =>
+            received.Length == 32 && Crypto.Equal(Verifier(received), storedVerifier);
 
         public static byte[] Derive(string password, byte[] salt, int iterations) =>
             Rfc2898DeriveBytes.Pbkdf2(Encoding.UTF8.GetBytes(password), salt, Math.Clamp(iterations, 10_000, 5_000_000), HashAlgorithmName.SHA256, 32);
-
-        public static byte[] Proof(byte[] key, byte[] nonce) =>
-            HMACSHA256.HashData(key, Crypto.Concat(Encoding.ASCII.GetBytes("IPDK1-password|"), nonce));
 
         // ------------------------------------------------------------------ blocco dopo 5 errori
 
@@ -64,8 +71,42 @@ namespace IpDeskCtrl.Core
 
         // ------------------------------------------------------------------ password ricordata dal visore
 
+        // segreto locale di questo utente (non la chiave del PC, che con il servizio non è qui)
+        private static byte[]? _secret;
+        private static readonly object SecretLock = new();
+
+        private static byte[] LocalSecret()
+        {
+            lock (SecretLock)
+            {
+                if (_secret != null) return _secret;
+                string path = System.IO.Path.Combine(AppSettings.Folder, "password-ricordate.key");
+                byte[]? s = null;
+                try
+                {
+                    if (System.IO.File.Exists(path))
+                    {
+                        byte[] raw = System.IO.File.ReadAllBytes(path);
+                        s = OperatingSystem.IsWindows() ? ProtectedData.Unprotect(raw, null, DataProtectionScope.CurrentUser) : raw;
+                    }
+                }
+                catch { s = null; }
+                if (s == null || s.Length != 32)
+                {
+                    s = RandomNumberGenerator.GetBytes(32);
+                    try
+                    {
+                        System.IO.File.WriteAllBytes(path, OperatingSystem.IsWindows() ? ProtectedData.Protect(s, null, DataProtectionScope.CurrentUser) : s);
+                        if (!OperatingSystem.IsWindows()) System.IO.File.SetUnixFileMode(path, System.IO.UnixFileMode.UserRead | System.IO.UnixFileMode.UserWrite);
+                    }
+                    catch { }
+                }
+                return _secret = s;
+            }
+        }
+
         private static byte[] LocalKey(Identity me, string number) =>
-            Crypto.Hkdf(me.ExportPkcs8(), Encoding.ASCII.GetBytes(number), "IPDK1 password ricordata");
+            Crypto.Hkdf(LocalSecret(), Encoding.ASCII.GetBytes(me.Number + "|" + number), "IPDK1 password ricordata");
 
         /// <summary>«sale:chiave cifrata» da tenere nello storico.</summary>
         public static string Protect(Identity me, string number, byte[] salt, byte[] key) =>

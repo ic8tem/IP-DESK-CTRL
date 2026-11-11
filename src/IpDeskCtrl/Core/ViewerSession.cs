@@ -91,7 +91,7 @@ namespace IpDeskCtrl.Core
                     if (key != null)
                     {
                         SessionLog.Write($"SESSIONE {Identity.Format(PeerNumber)} chiede la password: uso quella ricordata");
-                        Send(new MsgWriter(Msg.AuthResponse).I32(32).Bytes(AccessPassword.Proof(key, c.Nonce)).Build());
+                        Send(new MsgWriter(Msg.AuthResponse).I32(32).Bytes(key).Build());
                     }
                     else if (PasswordRequested != null) PasswordRequested(c);
                     else Send(new MsgWriter(Msg.AuthResponse).I32(0).Build());
@@ -246,7 +246,7 @@ namespace IpDeskCtrl.Core
             }
             byte[] key = await Task.Run(() => AccessPassword.Derive(password, c.Salt, c.Iterations));
             _pendingSaved = remember ? AccessPassword.Protect(P.Me, PeerNumber, c.Salt, key) : "";
-            await SendAsync(new MsgWriter(Msg.AuthResponse).I32(32).Bytes(AccessPassword.Proof(key, c.Nonce)).Build());
+            await SendAsync(new MsgWriter(Msg.AuthResponse).I32(32).Bytes(key).Build());
         }
 
         /// <summary>true dopo «Riavvia il PC remoto»: alla chiusura la plancia aspetta il PC e si ricollega.</summary>

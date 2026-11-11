@@ -20,6 +20,9 @@ namespace IpDeskCtrl.Core
 
         public static string Tag => $"P{Protocol} {Text}";
 
+        /// <summary>Pagina per sostenere il progetto (pulsante «Sostieni il progetto»).</summary>
+        public const string SupportUrl = "https://ko-fi.com/ic8tem";
+
         public static (int proto, string version) Parse(string? tag)
         {
             if (string.IsNullOrWhiteSpace(tag) || !tag.StartsWith("P")) return (0, "");

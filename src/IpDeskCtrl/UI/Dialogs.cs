@@ -93,15 +93,18 @@ namespace IpDeskCtrl.UI
             var log = Ui.Btn("Apri il registro delle sessioni");
             log.Click += (_, _) => MainView.OpenPath(SessionLog.FilePath);
             log.IsVisible = !Platform.IsMobile;
+            var support = Ui.Btn("♥ Sostieni il progetto");
+            support.Click += (_, _) => MainView.OpenPath(AppVersion.SupportUrl);
             var close = Ui.Btn("Chiudi", true);
             var content = Ui.Col(8,
                 Ui.H1("IP-DESK-CTRL " + AppVersion.Text),
                 Ui.Sub("Desktop remoto cifrato (ECDH P-256, AES-256-GCM) tra Windows, macOS, Linux, Raspberry Pi e Android, con ritrovo sui broker MQTT."),
                 Ui.Sub("Copyright (C) 2026 Costantino IC8TEM · Sezione ARI «Valle del Liri» · ccerrotta@gmail.com · ic8tem@gmail.com · www.qrz.com/db/ic8tem"),
                 Ui.Sub("Software libero: GNU GPL versione 3 o successiva, senza alcuna garanzia."),
+                Ui.Sub("Gratuito e senza pubblicità: se ti è utile puoi sostenerlo su ko-fi.com/ic8tem."),
                 Ui.Sub(me == null ? "" : $"Numero di questo dispositivo: {Identity.Format(me.Number)} · impronta della chiave {Crypto.Fingerprint(me.PublicKey)} · {AppVersion.Os}", 12),
                 text,
-                Ui.Row(10, log, close));
+                Ui.Row(10, log, support, close));
             var h = Shell.Current.ShowDialog("Informazioni e licenze", content, 640, false);
             close.Click += (_, _) => h.Close();
         }

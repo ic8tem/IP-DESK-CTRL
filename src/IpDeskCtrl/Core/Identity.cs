@@ -22,9 +22,11 @@ namespace IpDeskCtrl.Core
         private static readonly byte[] Salt = Encoding.ASCII.GetBytes("IP-DESK-CTRL numero v1");
         private static readonly ConcurrentDictionary<string, string> Cache = new();
 
-        public ECDsa Key { get; }
+        /// <summary>Chiave privata; null quando le firme le fa il servizio di Windows (la chiave non lascia il servizio).</summary>
+        public ECDsa? Key { get; }
         public byte[] PublicKey { get; }
         public string Number { get; }
+        private readonly Func<byte[], byte[]>? _remoteSigner;
 
         private Identity(ECDsa key)
         {
@@ -32,6 +34,18 @@ namespace IpDeskCtrl.Core
             PublicKey = key.ExportSubjectPublicKeyInfo();
             Number = NumberOf(PublicKey);
         }
+
+        private Identity(byte[] publicKey, Func<byte[], byte[]> signer)
+        {
+            PublicKey = publicKey;
+            Number = NumberOf(publicKey);
+            _remoteSigner = signer;
+        }
+
+        /// <summary>Identità del PC tenuta dal servizio: qui c'è solo la chiave pubblica, le firme le fa il servizio.</summary>
+        public static Identity Remote(byte[] publicKey, Func<byte[], byte[]> signer) => new(publicKey, signer);
+
+        public bool IsRemote => Key == null;
 
         /// <summary>Identità da una chiave privata PKCS#8 (per esempio quella del servizio di Windows).</summary>
         public static Identity FromPkcs8(byte[] pkcs8)
@@ -41,7 +55,7 @@ namespace IpDeskCtrl.Core
             return new Identity(k);
         }
 
-        public byte[] ExportPkcs8() => Key.ExportPkcs8PrivateKey();
+        public byte[] ExportPkcs8() => Key?.ExportPkcs8PrivateKey() ?? throw new InvalidOperationException("La chiave privata è nel servizio");
 
         /// <summary>Solo la chiave già salvata (null se non c'è o è illeggibile): il servizio non ne crea di nuove.</summary>
         public static Identity? LoadExisting()
@@ -83,7 +97,13 @@ namespace IpDeskCtrl.Core
             });
         }
 
-        public byte[] Sign(byte[] data) => Key.SignData(data, HashAlgorithmName.SHA256, DSASignatureFormat.Rfc3279DerSequence);
+        public byte[] Sign(byte[] data)
+        {
+            if (Key != null) return Key.SignData(data, HashAlgorithmName.SHA256, DSASignatureFormat.Rfc3279DerSequence);
+            byte[] sig = _remoteSigner!(data);
+            if (!Verify(PublicKey, data, sig)) throw new CryptographicException("Firma del servizio non valida");
+            return sig;
+        }
 
         public static bool Verify(byte[] publicKey, byte[] data, byte[] signature)
         {

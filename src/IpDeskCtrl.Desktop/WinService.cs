@@ -22,7 +22,8 @@ namespace IpDeskCtrl.Desktop
     /// prima dell'accesso) e risponde sulla pipe locale al programma IP-DESK-CTRL degli utenti:
     ///   HELPER     → avvia il processo di supporto come SYSTEM nella sessione di chi chiede (vede UAC e blocco);
     ///   SAS        → Ctrl+Alt+Canc (SendSAS, permesso solo ai servizi);
-    ///   IDENTITY   → chiave del PC («NEED» se il servizio non ne ha ancora una); SETKEY → la riceve;
+    ///   IDENTITY   → chiave PUBBLICA del PC («NEED» se il servizio non ne ha ancora una); SETKEY → la riceve
+    ///                (una volta sola); SIGN → firma per conto del programma (la chiave privata non esce mai);
     ///   ATTACH     → collegamento permanente del programma: domande di consenso, sessioni in arrivo;
     ///   REBOOT     → riavvio del PC (chiesto da un visore autorizzato).
     /// Accetta solo richieste dallo stesso eseguibile installato.
@@ -120,11 +121,22 @@ namespace IpDeskCtrl.Desktop
                             w.WriteLine($"OK {AppVersion.Protocol} {ServiceNet.Me?.Number ?? "-"}");
                             break;
                         case "IDENTITY":
-                            w.WriteLine(ServiceNet.Me != null ? "OK " + Convert.ToHexString(ServiceNet.Me.ExportPkcs8()) : "NEED");
+                            // solo la chiave pubblica: la privata non esce mai dal servizio
+                            w.WriteLine(ServiceNet.Me != null ? "OK " + Convert.ToHexString(ServiceNet.Me.PublicKey) : "NEED");
                             break;
                         case "ATTACH":
                             ServiceNet.ServeAttached(s, r, w, SessionOf(pid));
                             break;
+                        case var g when g.StartsWith("SIGN "):
+                        {
+                            var me = ServiceNet.Me;
+                            byte[] data;
+                            try { data = Convert.FromHexString(g[5..].Trim()); } catch { w.WriteLine("ERR dati non validi"); break; }
+                            if (me == null) w.WriteLine("ERR il servizio non ha ancora una chiave");
+                            else if (data.Length == 0 || data.Length > 65536) w.WriteLine("ERR dimensione non valida");
+                            else w.WriteLine("OK " + Convert.ToHexString(me.Sign(data)));
+                            break;
+                        }
                         case var k when k.StartsWith("SETKEY "):
                             w.WriteLine(ServiceNet.SetKey(k[7..].Trim()));
                             break;

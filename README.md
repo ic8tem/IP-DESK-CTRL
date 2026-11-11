@@ -77,6 +77,10 @@ Nella cartella dei dati (Impostazioni › Apri cartella dati): `errori.log` e `s
 - Windows: `%APPDATA%\IP-DESK-CTRL` (il servizio scrive i suoi in `%ProgramData%\IP-DESK-CTRL`)
 - Linux, Raspberry Pi e macOS: `~/.config/IP-DESK-CTRL`
 
+## Sostieni il progetto
+
+IP-DESK-CTRL è gratuito e senza pubblicità. Se ti è utile puoi offrire un caffè su [Ko-fi](https://ko-fi.com/ic8tem): il pulsante «♥ Sostieni il progetto» è anche nelle impostazioni del programma.
+
 ## Licenza
 
 IP-DESK-CTRL è software libero, Copyright (C) 2026 Costantino IC8TEM, distribuito secondo la **GNU General Public License versione 3 o successiva** (file [`LICENSE`](LICENSE)), senza alcuna garanzia. Le licenze dei componenti di terze parti sono in `THIRD-PARTY-NOTICES.txt` e nella finestra «Informazioni e licenze».

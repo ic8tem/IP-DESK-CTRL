@@ -139,7 +139,8 @@ namespace IpDeskCtrl.Core
         }
 
         /// <summary>
-        /// Password dell'accesso senza conferma: sfida nel canale cifrato, risposta HMAC. Errori contati per
+        /// Password dell'accesso senza conferma: richiesta nel canale cifrato, il visore manda la chiave derivata,
+        /// l'host la confronta con il verificatore salvato. Errori contati per
         /// numero (5 → 10 minuti di blocco). Annulla = si chiede a chi è davanti al PC.
         /// </summary>
         private async Task<PwResult> CheckPasswordAsync()
@@ -163,7 +164,7 @@ namespace IpDeskCtrl.Core
                     SessionLog.Write($"SESSIONE {Identity.Format(PeerNumber)} non ha messo la password: chiedo a chi è al PC");
                     return PwResult.Cancel;
                 }
-                if (Crypto.Equal(proof, AccessPassword.Proof(stored, nonce)))
+                if (AccessPassword.Check(proof, stored))
                 {
                     AccessPassword.Ok(PeerNumber);
                     return PwResult.Ok;
