@@ -89,8 +89,6 @@ namespace IpDeskCtrl.Desktop
             }
         }
 
-        public static Peer? Peer => _peer;
-
         // =================================================================== file condivisi
 
         /// <summary>Storico condiviso scrivibile da tutti gli utenti; chiave leggibile solo da sistema e amministratori.</summary>
