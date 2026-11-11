@@ -7,7 +7,7 @@ namespace IpDeskCtrl.Core
     /// <summary>Versione del programma e del protocollo («P1 0.1.0»). PC con protocollo diverso non si parlano.</summary>
     public static class AppVersion
     {
-        public const int Protocol = 2;   // 2 = 0.2.x (segreto ECDH con SHA-256, testo, appunti e file)
+        public const int Protocol = 3;   // 3 = 0.4.x (UDP affidabile, password, riavvio, Wake-on-LAN)
 
         public static string Text
         {

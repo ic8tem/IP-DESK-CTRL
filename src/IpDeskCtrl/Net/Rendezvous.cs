@@ -161,6 +161,74 @@ namespace IpDeskCtrl.Net
     }
 
     /// <summary>
+    /// Messaggio firmato tra due PC sul broker, per tutto quello che non è indirizzo o collegamento inverso:
+    /// corpo = tipo | chiave pubblica di chi scrive | ora (ticks UTC) | dati. Cifrato con la chiave del
+    /// canale del destinatario, firmato con la chiave fissa del mittente; più vecchio di 3 minuti = scartato.
+    /// </summary>
+    public sealed record Note(byte Type, byte[] SenderKey, long Ticks, byte[] Data)
+    {
+        public const byte UdpOffer = 3, UdpAnswer = 4, WakeRequest = 5;
+
+        public string SenderNumber => Identity.NumberOf(SenderKey);
+        public bool Fresh => Math.Abs((DateTime.UtcNow - new DateTime(Math.Clamp(Ticks, DateTime.MinValue.Ticks, DateTime.MaxValue.Ticks), DateTimeKind.Utc)).TotalMinutes) <= 3;
+
+        public static byte[] Encode(Identity me, byte type, byte[] data)
+        {
+            byte[] body = new MsgWriter(type).I32(me.PublicKey.Length).Bytes(me.PublicKey).I64(DateTime.UtcNow.Ticks).I32(data.Length).Bytes(data).Build();
+            return Signed.Wrap(me, body);
+        }
+
+        public static Note? Decode(byte[] plain)
+        {
+            try
+            {
+                var u = Signed.Unwrap(plain);
+                if (u == null) return null;
+                var (body, sig) = u.Value;
+                var r = new MsgReader(body);
+                if (r.Type < 3) return null;
+                byte[] key = r.Bytes(Math.Clamp(r.I32(), 0, 512));
+                long ticks = r.I64();
+                byte[] data = r.Bytes(Math.Clamp(r.I32(), 0, 64 * 1024));
+                if (!Identity.Verify(key, body, sig)) return null;
+                return new Note(r.Type, key, ticks, data);
+            }
+            catch { return null; }
+        }
+    }
+
+    /// <summary>
+    /// Offerta UDP del visore (sul canale dell'host) e risposta dell'host (sul canale del visore), quando TCP
+    /// non passa: candidati (IP:porta), passo del NAT simmetrico, chiave effimera ECDH P-256 per la chiave
+    /// AES dei datagrammi, nonce che lega la risposta all'offerta.
+    /// </summary>
+    public sealed record UdpCandidates(string Candidates, int Delta, byte[] EphemeralKey, byte[] Nonce)
+    {
+        public byte[] Encode() => new MsgWriter(0).Str(Candidates).I32(Delta).I32(EphemeralKey.Length).Bytes(EphemeralKey).I32(Nonce.Length).Bytes(Nonce).Build();
+
+        public static UdpCandidates? Decode(byte[] data)
+        {
+            try
+            {
+                var r = new MsgReader(data);
+                string c = r.Str(); int d = r.I32();
+                byte[] eph = r.Bytes(Math.Clamp(r.I32(), 0, 512));
+                byte[] nonce = r.Bytes(Math.Clamp(r.I32(), 0, 64));
+                return nonce.Length == 16 ? new UdpCandidates(c, d, eph, nonce) : null;
+            }
+            catch { return null; }
+        }
+
+        public List<System.Net.IPEndPoint> Endpoints()
+        {
+            var list = new List<System.Net.IPEndPoint>();
+            foreach (var c in Candidates.Split(';', StringSplitOptions.RemoveEmptyEntries))
+                if (System.Net.IPEndPoint.TryParse(c, out var ep) && ep.Port > 0) list.Add(ep);
+            return list;
+        }
+    }
+
+    /// <summary>
     /// Lato «host» di ogni PC: resta collegato ai broker MQTT, lascia il proprio indirizzo sul canale del
     /// proprio numero e ascolta le richieste di collegamento inverso.
     /// </summary>
@@ -175,7 +243,12 @@ namespace IpDeskCtrl.Net
         private readonly SemaphoreSlim _publishNow = new(0, 1);
 
         public event Action<ConnectRequest>? RequestReceived;
+        public event Action<Note>? NoteReceived;
         public Action<string>? Log;
+        /// <summary>false = solo ascolto dei messaggi per questo PC come visore (l'indirizzo lo pubblica il servizio).</summary>
+        public bool Publish { get; set; } = true;
+        /// <summary>false = le richieste di collegamento inverso non si guardano (le gestisce il servizio).</summary>
+        public bool AcceptRequests { get; set; } = true;
         public int ConnectedBrokers => _clients.Values.Count(c => c.IsConnected);
 
         public HostRendezvous(Identity me, IReadOnlyList<string> brokers)
@@ -215,7 +288,15 @@ namespace IpDeskCtrl.Net
                     {
                         byte[] raw = e.ApplicationMessage.PayloadSegment.ToArray();
                         if (raw.Length == 0 || e.ApplicationMessage.Topic != _base + "/r") return Task.CompletedTask;
-                        var req = ConnectRequest.Decode(Crypto.Open(_key, raw));
+                        byte[] plain = Crypto.Open(_key, raw);
+                        var note = Note.Decode(plain);
+                        if (note != null)
+                        {
+                            if (note.Fresh) NoteReceived?.Invoke(note);
+                            return Task.CompletedTask;
+                        }
+                        if (!AcceptRequests) return Task.CompletedTask;
+                        var req = ConnectRequest.Decode(plain);
                         if (req == null) { L($"{broker}: richiesta non valida scartata"); return Task.CompletedTask; }
                         if (Math.Abs((DateTime.UtcNow - new DateTime(req.Ticks, DateTimeKind.Utc)).TotalMinutes) > 3) return Task.CompletedTask;
                         RequestReceived?.Invoke(req);
@@ -235,7 +316,7 @@ namespace IpDeskCtrl.Net
                     failures = 0;
                     L($"{broker}: collegato, in ascolto delle richieste");
                     var a = _current;
-                    if (a != null) await PublishOn(c, a, ct);
+                    if (a != null && Publish) await PublishOn(c, a, ct);
                     await Task.WhenAny(gone.Task, Task.Delay(Timeout.Infinite, ct));
                     if (!ct.IsCancellationRequested) L($"{broker}: collegamento perso, riprovo");
                 }
@@ -248,7 +329,7 @@ namespace IpDeskCtrl.Net
                 finally
                 {
                     _clients.TryRemove(broker, out _);
-                    if (ct.IsCancellationRequested && c.IsConnected)
+                    if (ct.IsCancellationRequested && c.IsConnected && Publish)
                     {
                         // uscita pulita: tolgo l'indirizzo dal broker, così gli altri vedono «non in linea»
                         try
@@ -272,7 +353,7 @@ namespace IpDeskCtrl.Net
             {
                 try { await _publishNow.WaitAsync(TimeSpan.FromMinutes(3), ct); } catch { break; }
                 var a = _current;
-                if (a == null) continue;
+                if (a == null || !Publish) continue;
                 a = a with { Ticks = DateTime.UtcNow.Ticks };
                 _current = a;
                 int ok = 0;
@@ -280,6 +361,30 @@ namespace IpDeskCtrl.Net
                     if (await PublishOn(c, a, ct)) ok++;
                 L($"indirizzo {a.PublicIp}:{a.Port} (LAN {a.LanIp}) pubblicato su {ok} broker");
             }
+        }
+
+        /// <summary>
+        /// Manda un messaggio firmato sul canale di un altro numero usando i broker già collegati (più veloce che
+        /// aprire collegamenti nuovi); se nessuno è collegato, apre collegamenti al volo.
+        /// </summary>
+        public async Task<int> SendNoteAsync(string number, byte type, byte[] data, CancellationToken ct)
+        {
+            string topic = Mqtt.Base(number) + "/r";
+            byte[] payload = Crypto.Seal(Mqtt.Key(number), Note.Encode(_me, type, data));
+            int ok = 0;
+            foreach (var c in _clients.Values.ToList())
+            {
+                try
+                {
+                    using var t = CancellationTokenSource.CreateLinkedTokenSource(ct);
+                    t.CancelAfter(6000);
+                    await c.PublishAsync(Mqtt.Message(topic, payload, false), t.Token);
+                    ok++;
+                }
+                catch { }
+            }
+            if (ok == 0) ok = await ViewerRendezvous.SendRawAsync(number, payload, _brokers, ct);
+            return ok;
         }
 
         private async Task<bool> PublishOn(IMqttClient c, Announce a, CancellationToken ct)
@@ -339,10 +444,13 @@ namespace IpDeskCtrl.Net
             return all.Where(a => a != null).OrderByDescending(a => a!.Ticks).FirstOrDefault();
         }
 
-        public static async Task<int> SendRequestAsync(string number, ConnectRequest req, Identity me, IReadOnlyList<string> brokers, CancellationToken ct)
+        public static Task<int> SendRequestAsync(string number, ConnectRequest req, Identity me, IReadOnlyList<string> brokers, CancellationToken ct) =>
+            SendRawAsync(number, Crypto.Seal(Mqtt.Key(number), req.Encode(me)), brokers, ct);
+
+        /// <summary>Pubblica un messaggio già cifrato sul canale «richieste» del numero, su tutti i broker insieme.</summary>
+        public static async Task<int> SendRawAsync(string number, byte[] payload, IReadOnlyList<string> brokers, CancellationToken ct)
         {
             string topic = Mqtt.Base(number) + "/r";
-            byte[] payload = Crypto.Seal(Mqtt.Key(number), req.Encode(me));
             var tasks = brokers.Select(async broker =>
             {
                 using var c = new MqttFactory().CreateMqttClient();

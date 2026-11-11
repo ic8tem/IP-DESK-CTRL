@@ -34,7 +34,8 @@ namespace IpDeskCtrl.Core
         public DateTime Started { get; } = DateTime.UtcNow;
         public double RttMs { get; private set; } = double.NaN;
         public bool UdpActive => _udpMine && _udpPeer && _udp?.Remote != null;
-        public string Route => UdpActive ? "UDP + TCP" : "TCP";
+        /// <summary>Strada del collegamento come la mostra la plancia: «TCP», «UDP + TCP» o «solo UDP».</summary>
+        public string Route => Link.IsUdp ? "solo UDP" : UdpActive ? "UDP + TCP" : "TCP";
         public bool IsClosed => _closed != 0;
 
         public event Action<string>? Closed;
@@ -43,6 +44,16 @@ namespace IpDeskCtrl.Core
         {
             P = p;
             Link = link;
+            if (link.UdpTransport != null)
+            {
+                // collegamento «solo UDP»: audio e mouse usano lo stesso socket, già perforato da entrambi i lati
+                var shared = link.UdpTransport;
+                shared.DatagramReceived += OnDatagram;
+                shared.AudioReceived += OnUdpAudio;
+                _udp = shared;
+                _udpMine = _udpPeer = true;
+                UdpLog("collegamento solo UDP: audio e mouse sullo stesso socket");
+            }
         }
 
         protected UdpLink? Udp => UdpActive ? _udp : null;
@@ -114,7 +125,8 @@ namespace IpDeskCtrl.Core
             Cts.Cancel();
             AbortTransfers();
             try { OnClosing(); } catch (Exception ex) { ErrorLog.Write(ex.ToString()); }
-            Interlocked.Exchange(ref _udp, null)?.Dispose();
+            var u = Interlocked.Exchange(ref _udp, null);
+            if (u != null && u != Link.UdpTransport) u.Dispose();    // quello del collegamento «solo UDP» lo chiude Link
             Link.Dispose();
             SessionLog.Write($"SESSIONE fine con {Identity.Format(PeerNumber)}: {reason}");
             Closed?.Invoke(reason);

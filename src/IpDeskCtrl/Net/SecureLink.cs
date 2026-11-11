@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using IpDeskCtrl.Core;
+using IpDeskCtrl.Net.Udp;
 
 namespace IpDeskCtrl.Net
 {
@@ -15,7 +16,8 @@ namespace IpDeskCtrl.Net
     public enum LinkRole : byte { Viewer = 1, Host = 2 }
 
     /// <summary>
-    /// Collegamento TCP cifrato tra due PC.
+    /// Collegamento cifrato tra due PC, sopra TCP o, quando TCP non passa, sopra il flusso affidabile UDP
+    /// (<see cref="Udp.ReliableUdpStream"/>): handshake e frame sono identici.
     ///
     /// Handshake (uguale per chi apre la connessione TCP e per chi la riceve, così funziona anche il
     /// collegamento inverso):
@@ -35,8 +37,8 @@ namespace IpDeskCtrl.Net
         private static readonly byte[] Magic = Encoding.ASCII.GetBytes("IPDK1");
         private const int MaxFrame = 16 * 1024 * 1024;
 
-        private readonly TcpClient _tcp;
-        private readonly NetworkStream _stream;
+        private readonly Stream _stream;
+        private readonly IDisposable _owner;
         private readonly AesGcm _tx, _rx;
         private readonly SemaphoreSlim _writeLock = new(1, 1);
         private ulong _txCounter, _rxCounter;
@@ -48,23 +50,64 @@ namespace IpDeskCtrl.Net
         public byte[] UdpKey { get; }
         public IPEndPoint Remote { get; }
         public IPEndPoint? Local { get; }
+        /// <summary>true = il collegamento corre solo su UDP (nessuna connessione TCP tra i due PC).</summary>
+        public bool IsUdp => UdpTransport != null;
+        /// <summary>Il socket UDP sotto il flusso, se il collegamento è «solo UDP»: serve anche per audio e mouse.</summary>
+        public UdpLink? UdpTransport { get; }
         public long BytesSent, BytesReceived;
 
-        private SecureLink(TcpClient tcp, LinkRole role, byte[] txKey, byte[] rxKey, byte[] udpKey, byte[] peerKey, string peerNumber)
+        private SecureLink(Transport t, LinkRole role, byte[] txKey, byte[] rxKey, byte[] udpKey, byte[] peerKey, string peerNumber)
         {
-            _tcp = tcp;
-            _tcp.NoDelay = true;
-            _tcp.SendBufferSize = 1 << 20;
-            _tcp.ReceiveBufferSize = 1 << 20;
-            _stream = tcp.GetStream();
+            _stream = t.Stream;
+            _owner = t.Owner;
+            UdpTransport = t.Udp;
+            Remote = t.Remote;
+            Local = t.Local;
             _tx = new AesGcm(txKey, Crypto.TagSize);
             _rx = new AesGcm(rxKey, Crypto.TagSize);
             UdpKey = udpKey;
             MyRole = role;
             PeerKey = peerKey;
             PeerNumber = peerNumber;
-            Remote = (IPEndPoint)tcp.Client.RemoteEndPoint!;
-            Local = tcp.Client.LocalEndPoint as IPEndPoint;
+        }
+
+        /// <summary>Su cosa corre il collegamento: il flusso, chi chiudere alla fine e gli indirizzi.</summary>
+        public sealed record Transport(Stream Stream, IDisposable Owner, IPEndPoint Remote, IPEndPoint? Local, UdpLink? Udp);
+
+        /// <summary>Flusso UDP affidabile e socket UDP chiusi insieme.</summary>
+        private sealed class UdpOwner : IDisposable
+        {
+            private readonly ReliableUdpStream _s; private readonly UdpLink _l;
+            public UdpOwner(ReliableUdpStream s, UdpLink l) { _s = s; _l = l; }
+            public void Dispose() { try { _s.Dispose(); } catch { } _l.Dispose(); }
+        }
+
+        /// <summary>Handshake su una connessione TCP già aperta (vedi l'altra versione).</summary>
+        public static Task<SecureLink> HandshakeAsync(TcpClient tcp, Identity me, LinkRole? role, string? expectedNumber, CancellationToken ct)
+        {
+            Transport t;
+            try
+            {
+                tcp.NoDelay = true;
+                tcp.SendBufferSize = 1 << 20;
+                tcp.ReceiveBufferSize = 1 << 20;
+                t = new Transport(tcp.GetStream(), tcp, (IPEndPoint)tcp.Client.RemoteEndPoint!, tcp.Client.LocalEndPoint as IPEndPoint, null);
+            }
+            catch
+            {
+                tcp.Dispose();
+                throw;
+            }
+            return HandshakeAsync(t, me, role, expectedNumber, ct);
+        }
+
+        /// <summary>Handshake sul flusso affidabile UDP, dopo la perforazione del NAT.</summary>
+        public static Task<SecureLink> HandshakeAsync(UdpLink udp, Identity me, LinkRole role, string? expectedNumber, CancellationToken ct)
+        {
+            var rs = new ReliableUdpStream(udp);
+            rs.Log += SessionLog.Write;
+            var t = new Transport(rs, new UdpOwner(rs, udp), udp.Remote!, new IPEndPoint(IPAddress.Any, udp.LocalPort), udp);
+            return HandshakeAsync(t, me, role, expectedNumber, ct);
         }
 
         /// <summary>
@@ -73,13 +116,13 @@ namespace IpDeskCtrl.Net
         /// dell'altro e prende il ruolo opposto (chi apre la connessione parla sempre per primo).
         /// expectedNumber: il numero chiamato dal visore (null = qualunque, controlla poi il chiamante).
         /// </summary>
-        public static async Task<SecureLink> HandshakeAsync(TcpClient tcp, Identity me, LinkRole? role, string? expectedNumber, CancellationToken ct)
+        public static async Task<SecureLink> HandshakeAsync(Transport tr, Identity me, LinkRole? role, string? expectedNumber, CancellationToken ct)
         {
             try
             {
-                var s = tcp.GetStream();
+                var s = tr.Stream;
                 using var hs = CancellationTokenSource.CreateLinkedTokenSource(ct);
-                hs.CancelAfter(TimeSpan.FromSeconds(15));
+                hs.CancelAfter(TimeSpan.FromSeconds(tr.Udp != null ? 25 : 15));
                 ct = hs.Token;
 
                 using var eph = ECDiffieHellman.Create(ECCurve.NamedCurves.nistP256);
@@ -141,14 +184,14 @@ namespace IpDeskCtrl.Net
                 CryptographicOperations.ZeroMemory(shared);
 
                 var link = role == LinkRole.Viewer
-                    ? new SecureLink(tcp, role.Value, v2h, h2v, udp, peerKey, peerNumber)
-                    : new SecureLink(tcp, role.Value, h2v, v2h, udp, peerKey, peerNumber);
-                SessionLog.Write($"SESSIONE {(role == LinkRole.Viewer ? "visore" : "host")} ⇄ {Identity.Format(peerNumber)} ({link.Remote}) · ECDH P-256 · AES-256-GCM · impronta {Crypto.Fingerprint(peerKey)}");
+                    ? new SecureLink(tr, role.Value, v2h, h2v, udp, peerKey, peerNumber)
+                    : new SecureLink(tr, role.Value, h2v, v2h, udp, peerKey, peerNumber);
+                SessionLog.Write($"SESSIONE {(role == LinkRole.Viewer ? "visore" : "host")} ⇄ {Identity.Format(peerNumber)} ({link.Remote}{(link.IsUdp ? ", solo UDP" : "")}) · ECDH P-256 · AES-256-GCM · impronta {Crypto.Fingerprint(peerKey)}");
                 return link;
             }
             catch
             {
-                tcp.Dispose();
+                tr.Owner.Dispose();
                 throw;
             }
         }
@@ -196,8 +239,7 @@ namespace IpDeskCtrl.Net
         public void Dispose()
         {
             if (Interlocked.Exchange(ref _disposed, 1) == 1) return;
-            try { _tcp.Close(); } catch { }
-            _tcp.Dispose();
+            try { _owner.Dispose(); } catch { }
             _tx.Dispose();
             _rx.Dispose();
         }

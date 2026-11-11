@@ -21,14 +21,18 @@ namespace IpDeskCtrl.Net.Udp
     ///   CTRL / ACK         seq(u32) | messaggio, consegna garantita (ritrasmissione 200 ms × 1,5ⁿ, 12 tentativi)
     ///   KEEPALIVE          ogni 2 s, tiene aperta la mappatura del NAT
     ///   PROBE / PROBE_ACK  verifica dall'esterno di una porta UDP aperta con UPnP
+    ///   STREAM_*           trasporto affidabile e ordinato (<see cref="ReliableUdpStream"/>), quando TCP non passa
+    /// La chiave può arrivare dopo la creazione (<see cref="SetKey"/>): prima serve solo per STUN.
     /// </summary>
     public sealed class UdpLink : IDisposable
     {
         private const byte Mark = 0xA5;
-        public const byte Punch = 1, PunchAck = 2, Audio = 0x10, Datagram = 0x11, Ctrl = 0x20, Ack = 0x21, KeepAlive = 0x30, Probe = 0x40, ProbeAck = 0x41;
+        public const byte Punch = 1, PunchAck = 2, Audio = 0x10, Datagram = 0x11, Ctrl = 0x20, Ack = 0x21, KeepAlive = 0x30, Probe = 0x40, ProbeAck = 0x41,
+            StreamData = 0x50, StreamAck = 0x51, StreamFin = 0x52;
 
         private readonly UdpClient _udp;
-        private readonly AesGcm _aes;
+        private volatile AesGcm? _aes;
+        private int _disposed;
         private readonly byte[] _id = RandomNumberGenerator.GetBytes(8);
         private readonly CancellationTokenSource _cts = new();
         private readonly ConcurrentDictionary<string, TaskCompletionSource<IPEndPoint?>> _stunWaits = new();
@@ -48,9 +52,11 @@ namespace IpDeskCtrl.Net.Udp
         public event Action<uint, byte[]>? AudioReceived;     // seq, audio
         public event Action<byte[]>? DatagramReceived;       // messaggio non garantito
         public event Action<byte[]>? ControlReceived;          // messaggio già senza duplicati
+        public event Action<byte, byte[]>? StreamPacket;      // tipo STREAM_*, dati
 
-        /// <param name="key">chiave AES-256 della sessione, derivata dall'handshake del canale TCP</param>
-        public UdpLink(byte[] key, int localPort = 0)
+        /// <param name="key">chiave AES-256 della sessione, derivata dall'handshake del canale TCP
+        /// (null = la si imposta dopo con <see cref="SetKey"/>, per esempio dopo lo scambio sul broker)</param>
+        public UdpLink(byte[]? key, int localPort = 0)
         {
             _udp = new UdpClient(new IPEndPoint(IPAddress.Any, localPort));
             if (OperatingSystem.IsWindows())
@@ -59,12 +65,20 @@ namespace IpDeskCtrl.Net.Udp
                 const int SIO_UDP_CONNRESET = -1744830452;
                 try { _udp.Client.IOControl(SIO_UDP_CONNRESET, new byte[] { 0 }, null); } catch { }
             }
-            _aes = new AesGcm(key, 16);
+            if (key != null) _aes = new AesGcm(key, 16);
             _ = Task.Run(ReceiveLoopAsync);
             _ = Task.Run(MaintainLoopAsync);
         }
 
         private void L(string s) => Log?.Invoke("UDP " + s);
+
+        /// <summary>Imposta la chiave AES-256 (una volta sola, prima della perforazione).</summary>
+        public void SetKey(byte[] key)
+        {
+            var old = _aes;
+            _aes = new AesGcm(key, 16);
+            old?.Dispose();
+        }
 
         // ------------------------------------------------------------------ cifratura
         private byte[] Seal(byte type, ReadOnlySpan<byte> payload)
@@ -76,17 +90,19 @@ namespace IpDeskCtrl.Net.Udp
             byte[] plain = new byte[1 + payload.Length];
             plain[0] = type;
             payload.CopyTo(plain.AsSpan(1));
-            _aes.Encrypt(nonce, plain, outp.AsSpan(13, plain.Length), outp.AsSpan(13 + plain.Length, 16));
+            _aes!.Encrypt(nonce, plain, outp.AsSpan(13, plain.Length), outp.AsSpan(13 + plain.Length, 16));
             return outp;
         }
 
         private bool TryOpen(byte[] d, out byte type, out byte[] payload)
         {
             type = 0; payload = Array.Empty<byte>();
+            var aes = _aes;
+            if (aes == null) return false;
             if (d.Length < 1 + 12 + 1 + 16 || d[0] != Mark) return false;
             int n = d.Length - 13 - 16;
             byte[] plain = new byte[n];
-            try { _aes.Decrypt(d.AsSpan(1, 12), d.AsSpan(13, n), d.AsSpan(13 + n, 16), plain); }
+            try { aes.Decrypt(d.AsSpan(1, 12), d.AsSpan(13, n), d.AsSpan(13 + n, 16), plain); }
             catch (CryptographicException) { return false; }      // estraneo o falsificato
             type = plain[0];
             payload = plain.AsSpan(1).ToArray();
@@ -96,7 +112,7 @@ namespace IpDeskCtrl.Net.Udp
         private void Send(byte type, ReadOnlySpan<byte> payload, IPEndPoint? to = null)
         {
             to ??= Remote;
-            if (to == null) return;
+            if (to == null || _aes == null) return;
             byte[] d = Seal(type, payload);
             try { _udp.Send(d, d.Length, to); } catch { }
         }
@@ -157,6 +173,11 @@ namespace IpDeskCtrl.Net.Udp
                     case Probe:
                         Send(ProbeAck, p, src);
                         L($"PROBE ricevuto da {src}: la porta {LocalPort} è raggiungibile da internet");
+                        break;
+                    case StreamData:
+                    case StreamAck:
+                    case StreamFin:
+                        StreamPacket?.Invoke(type, p);
                         break;
                     case ProbeAck:
                         if (_probeWaits.TryRemove(Convert.ToHexString(p), out var w)) w.TrySetResult(true);
@@ -262,6 +283,9 @@ namespace IpDeskCtrl.Net.Udp
 
         public void SendDatagram(ReadOnlySpan<byte> message) => Send(Datagram, message);
 
+        /// <summary>Pacchetto del trasporto affidabile (STREAM_DATA, STREAM_ACK, STREAM_FIN).</summary>
+        public void SendStream(byte type, byte[] payload) => Send(type, payload);
+
         /// <summary>Ultimo pacchetto audio o datagramma ricevuto.</summary>
         public DateTime LastReceived => _lastRx;
         private DateTime _lastRx = DateTime.UtcNow;
@@ -301,9 +325,10 @@ namespace IpDeskCtrl.Net.Udp
 
         public void Dispose()
         {
+            if (Interlocked.Exchange(ref _disposed, 1) == 1) return;
             _cts.Cancel();
             try { _udp.Dispose(); } catch { }
-            _aes.Dispose();
+            _aes?.Dispose();
         }
     }
 }

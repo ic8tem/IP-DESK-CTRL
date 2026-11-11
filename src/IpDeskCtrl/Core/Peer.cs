@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
+using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
 using IpDeskCtrl.Net;
@@ -24,7 +25,9 @@ namespace IpDeskCtrl.Core
     ///   • come HOST apre una porta (TCP e UDP con lo stesso numero) sul router con UPnP, la verifica
     ///     dall'esterno, lascia indirizzo e porta firmati sul canale MQTT del proprio numero e ascolta;
     ///   • come VISORE cerca il numero sui broker, si collega diretto (internet o rete locale) e, se non ci
-    ///     riesce, chiede sul broker il collegamento inverso: è l'host a collegarsi alla porta del visore.
+    ///     riesce, chiede sul broker il collegamento inverso: è l'host a collegarsi alla porta del visore;
+    ///     se anche questo non passa, scambia i candidati UDP sul broker e fa tutto su UDP (perforazione
+    ///     del NAT + trasporto affidabile), con lo stesso handshake cifrato.
     /// Ruolo e sicurezza li decide l'handshake di <see cref="SecureLink"/>.
     /// </summary>
     public sealed class Peer : IDisposable
@@ -42,6 +45,7 @@ namespace IpDeskCtrl.Core
         private Task? _rdvTask;
         private OutboundProbe.Result? _outbound;
         private readonly ConcurrentDictionary<string, TaskCompletionSource<SecureLink>> _waitReverse = new();
+        private readonly ConcurrentDictionary<string, (string number, TaskCompletionSource<UdpCandidates> tcs)> _waitUdp = new();
         private readonly ConcurrentDictionary<string, DateTime> _seenRequests = new();
         private readonly ConcurrentDictionary<string, bool> _dialing = new();
         private readonly SemaphoreSlim _portLock = new(1, 1);
@@ -91,6 +95,7 @@ namespace IpDeskCtrl.Core
                 SessionLog.Write($"AVVIO IP-DESK-CTRL {AppVersion.Text} · {AppVersion.Os} · numero {Identity.Format(Me.Number)}");
                 _rdv = new HostRendezvous(Me, S.MqttBrokers) { Log = Log };
                 _rdv.RequestReceived += r => _ = Task.Run(() => OnRequestAsync(r, ct));
+                _rdv.NoteReceived += n => _ = Task.Run(() => OnNoteAsync(n, ct));
                 var rdv = _rdv;
                 _rdvTask = Task.Run(() => rdv.RunAsync(ct));
 
@@ -392,11 +397,172 @@ namespace IpDeskCtrl.Core
             finally { _dialing.TryRemove(viewer, out _); }
         }
 
+        // =================================================================== messaggi firmati dal broker
+
+        private async Task OnNoteAsync(Note note, CancellationToken ct)
+        {
+            if (note.SenderNumber == Me.Number) return;
+            try
+            {
+                switch (note.Type)
+                {
+                    case Note.UdpOffer:
+                        await OnUdpOfferAsync(note, ct);
+                        break;
+                    case Note.UdpAnswer:
+                    {
+                        var ans = UdpCandidates.Decode(note.Data);
+                        if (ans == null) return;
+                        if (_waitUdp.TryGetValue(Convert.ToHexString(ans.Nonce), out var w) && w.number == note.SenderNumber)
+                            w.tcs.TrySetResult(ans);
+                        break;
+                    }
+                }
+            }
+            catch (OperationCanceledException) { }
+            catch (Exception ex) { Log("MQTT messaggio non gestito: " + ex.Message); }
+        }
+
+        // =================================================================== solo UDP
+
+        /// <summary>Socket UDP nuovo (chiave ancora da stabilire), indirizzo pubblico da STUN e candidati.</summary>
+        private static async Task<(UdpLink link, string cands, int delta)> PrepareUdpAsync(CancellationToken ct)
+        {
+            var link = new UdpLink(null, 0);
+            try
+            {
+                link.Log += Log;
+                var nat = await Stun.DiscoverAsync(link, Stun.DefaultServers, Log, ct);
+                var cands = new List<string>();
+                if (nat.Public != null) cands.Add(nat.Public.ToString());
+                string lan = LanIp();
+                if (lan.Length > 0) cands.Add($"{lan}:{link.LocalPort}");
+                Log($"UDP NAT {nat.Type} · candidati {string.Join(" ", cands)}");
+                return (link, string.Join(";", cands.Distinct()), nat.PortDelta);
+            }
+            catch
+            {
+                link.Dispose();
+                throw;
+            }
+        }
+
+        /// <summary>Chiave AES dei datagrammi dallo scambio ECDH effimero fatto sul broker (messaggi firmati).</summary>
+        private static byte[] UdpKeyFrom(ECDiffieHellman eph, byte[] peerEph, byte[] nonce)
+        {
+            using var other = ECDiffieHellman.Create();
+            other.ImportSubjectPublicKeyInfo(peerEph, out _);
+            byte[] shared = eph.DeriveKeyFromHash(other.PublicKey, HashAlgorithmName.SHA256);
+            byte[] key = Crypto.Hkdf(shared, nonce, "IPDK1 udp-mqtt");
+            CryptographicOperations.ZeroMemory(shared);
+            return key;
+        }
+
+        /// <summary>Lato host: il visore propone il collegamento solo UDP. Si risponde con i propri candidati e si bussa.</summary>
+        private async Task OnUdpOfferAsync(Note note, CancellationToken ct)
+        {
+            string viewer = note.SenderNumber;
+            var offer = UdpCandidates.Decode(note.Data);
+            var rdv = _rdv;
+            if (offer == null || rdv == null) return;
+            if (!_seenRequests.TryAdd("udp:" + Convert.ToHexString(offer.Nonce), DateTime.UtcNow)) return;   // arriva da più broker
+            Log($"UDP {Identity.Format(viewer)} chiede il collegamento solo UDP · candidati {offer.Candidates} · passo NAT {offer.Delta}");
+            UdpLink? link = null;
+            try
+            {
+                var (l, cands, delta) = await PrepareUdpAsync(ct);
+                link = l;
+                using var eph = ECDiffieHellman.Create(ECCurve.NamedCurves.nistP256);
+                link.SetKey(UdpKeyFrom(eph, offer.EphemeralKey, offer.Nonce));
+                var ans = new UdpCandidates(cands, delta, eph.ExportSubjectPublicKeyInfo(), offer.Nonce);
+                int sent = await rdv.SendNoteAsync(viewer, Note.UdpAnswer, ans.Encode(), ct);
+                Log($"UDP risposta consegnata a {sent} broker: busso verso il visore");
+                if (!await link.PunchAsync(offer.Endpoints(), offer.Delta, TimeSpan.FromSeconds(15), ct))
+                {
+                    link.Dispose();
+                    return;
+                }
+                var sl = await SecureLink.HandshakeAsync(link, Me, LinkRole.Host, viewer, ct);
+                link = null;
+                Log($"UDP collegamento solo UDP riuscito con {Identity.Format(viewer)} ({sl.Remote})");
+                StartHost(sl);
+            }
+            catch (Exception ex)
+            {
+                link?.Dispose();
+                if (!ct.IsCancellationRequested) Log($"UDP collegamento solo UDP con {Identity.Format(viewer)} non riuscito ({ex.Message})");
+            }
+        }
+
+        /// <summary>Lato visore: offerta sul broker, attesa della risposta, perforazione e handshake sul flusso UDP.</summary>
+        private async Task<SecureLink?> TryUdpAsync(string number, Action<string> progress, CancellationToken ct)
+        {
+            var rdv = _rdv;
+            if (rdv == null) return null;
+            progress("TCP non passa tra i due PC: provo il collegamento solo UDP (perforazione del NAT)…");
+            UdpLink? link = null;
+            string? key = null;
+            try
+            {
+                var (l, cands, delta) = await PrepareUdpAsync(ct);
+                link = l;
+                using var eph = ECDiffieHellman.Create(ECCurve.NamedCurves.nistP256);
+                byte[] nonce = RandomNumberGenerator.GetBytes(16);
+                key = Convert.ToHexString(nonce);
+                var tcs = new TaskCompletionSource<UdpCandidates>(TaskCreationOptions.RunContinuationsAsynchronously);
+                _waitUdp[key] = (number, tcs);
+                var offer = new UdpCandidates(cands, delta, eph.ExportSubjectPublicKeyInfo(), nonce);
+                int sent = await rdv.SendNoteAsync(number, Note.UdpOffer, offer.Encode(), ct);
+                Log($"UDP offerta consegnata a {sent} broker, attendo i candidati dell'altro PC");
+                if (await Task.WhenAny(tcs.Task, Task.Delay(TimeSpan.FromSeconds(15), ct)) != tcs.Task)
+                {
+                    Log("UDP l'altro PC non ha risposto all'offerta");
+                    link.Dispose();
+                    return null;
+                }
+                var ans = tcs.Task.Result;
+                Log($"UDP candidati dell'altro PC: {ans.Candidates} · passo NAT {ans.Delta}");
+                link.SetKey(UdpKeyFrom(eph, ans.EphemeralKey, nonce));
+                progress("Perforazione UDP in corso…");
+                if (!await link.PunchAsync(ans.Endpoints(), ans.Delta, TimeSpan.FromSeconds(12), ct))
+                {
+                    link.Dispose();
+                    return null;
+                }
+                progress("Canale UDP aperto: handshake cifrato…");
+                var sl = await SecureLink.HandshakeAsync(link, Me, LinkRole.Viewer, number, ct);
+                link = null;
+                Log($"UDP collegamento solo UDP riuscito verso {Identity.Format(number)} ({sl.Remote})");
+                return sl;
+            }
+            catch (CryptographicException ex)
+            {
+                link?.Dispose();
+                throw new PeerException("Collegamento rifiutato per motivi di sicurezza: " + ex.Message);
+            }
+            catch (Exception ex) when (!ct.IsCancellationRequested)
+            {
+                link?.Dispose();
+                Log("UDP collegamento solo UDP non riuscito: " + ex.Message);
+                return null;
+            }
+            catch
+            {
+                link?.Dispose();
+                throw;
+            }
+            finally
+            {
+                if (key != null) _waitUdp.TryRemove(key, out _);
+            }
+        }
+
         // =================================================================== collegamento verso un altro PC
 
         /// <summary>
         /// Collegamento al numero indicato. progress riceve le frasi da mostrare.
-        /// Ordine: indirizzo dai broker → diretto (internet, poi rete locale) → collegamento inverso, fino a 6 giri.
+        /// Ordine: indirizzo dai broker → diretto TCP (internet, poi rete locale) → collegamento inverso TCP
+        /// (fino a 2 giri) → solo UDP (candidati scambiati sul broker, perforazione, trasporto affidabile).
         /// </summary>
         public async Task<SecureLink> ConnectAsync(string number, Action<string> progress, CancellationToken ct)
         {
@@ -427,7 +593,7 @@ namespace IpDeskCtrl.Core
             _waitReverse[number] = tcs;
             try
             {
-                const int rounds = 6;
+                const int rounds = 2;
                 for (int round = 1; round <= rounds && !ct.IsCancellationRequested; round++)
                 {
                     progress($"Collegamento diretto non riuscito: chiedo all'altro PC di collegarsi a questo (giro {round} di {rounds})…");
@@ -462,7 +628,12 @@ namespace IpDeskCtrl.Core
                 if (tcs.Task.IsCompletedSuccessfully && ct.IsCancellationRequested) tcs.Task.Result.Dispose();
             }
             if (ct.IsCancellationRequested) throw new OperationCanceledException();
-            throw new PeerException("Nessuna strada tra i due PC: né il collegamento diretto né quello inverso sono riusciti. " +
+
+            link = await TryUdpAsync(number, progress, ct);
+            if (link != null) return link;
+
+            if (ct.IsCancellationRequested) throw new OperationCanceledException();
+            throw new PeerException("Nessuna strada tra i due PC: né il collegamento diretto, né quello inverso, né quello solo UDP sono riusciti. " +
                                     "Attiva UPnP sul router di almeno uno dei due PC (meglio su entrambi), oppure inoltra a mano la porta sul router. " +
                                     "Con IP condiviso dell'operatore (CGNAT) su entrambi i lati il collegamento diretto non è possibile.");
         }

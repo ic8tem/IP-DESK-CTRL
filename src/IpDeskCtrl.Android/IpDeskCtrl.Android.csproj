@@ -13,8 +13,8 @@
     <AssemblyName>IpDeskCtrl.Android</AssemblyName>
     <ApplicationId>it.ic8tem.ipdeskctrl</ApplicationId>
     <ApplicationTitle>IP-DESK-CTRL</ApplicationTitle>
-    <ApplicationDisplayVersion>0.3.1</ApplicationDisplayVersion>
-    <ApplicationVersion>300</ApplicationVersion>
+    <ApplicationDisplayVersion>0.4.0</ApplicationDisplayVersion>
+    <ApplicationVersion>400</ApplicationVersion>
     <AndroidPackageFormat>apk</AndroidPackageFormat>
     <RuntimeIdentifiers>android-arm64;android-arm</RuntimeIdentifiers>
     <AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
