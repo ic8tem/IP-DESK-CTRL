@@ -40,7 +40,8 @@ Lo stesso programma, per telefoni e tablet con Android 8.0 o successivo (`IP-DES
 - Il numero è ricavato dalla chiave pubblica (PBKDF2-SHA256, 100 000 iterazioni): chi si collega controlla che il PC che risponde abbia davvero la chiave di quel numero.
 - A ogni collegamento: scambio **ECDH P-256 effimero** firmato da entrambi i PC, poi **AES-256-GCM** con due chiavi distinte (una per verso) e contatore anti-ripetizione; anche UDP è cifrato AES-256-GCM. Segretezza in avanti: le chiavi di sessione non si possono ricavare dopo.
 - Sui broker MQTT passano solo indirizzo e porta (e, per il collegamento solo UDP e il Wake-on-LAN, candidati UDP, MAC e richieste), firmati con la chiave del PC e cifrati; i nomi dei canali derivano dal numero e non lo mostrano. La chiave dei datagrammi UDP nasce da uno scambio ECDH effimero firmato.
-- Password dell'accesso senza conferma: sul PC si tengono solo sale e PBKDF2-SHA256 (200 000 iterazioni); la password non viaggia mai, il visore risponde a una sfida con HMAC-SHA256.
+- Password dell'accesso senza conferma: il visore ricava dalla password una chiave PBKDF2-SHA256 (200 000 iterazioni, sale del PC) e la manda solo dentro il canale già cifrato; la password in chiaro non viaggia mai. Sul PC comandato restano solo il sale e un'impronta SHA-256 di quella chiave, che non basta per entrare. La password ricordata dal visore è protetta da un segreto che resta su quel dispositivo.
+- Con il servizio di Windows la chiave privata del PC sta solo nel servizio (DPAPI di sistema): il programma gli chiede le firme e le verifica.
 
 ## Rete
 
@@ -99,7 +100,7 @@ Le versioni con protocollo diverso non si collegano tra loro: aggiorna tutti i d
 - **Audio su Windows**: riproduzione con WASAPI sull'uscita predefinita; se non va, prova ogni uscita waveOut.
 - Se l'uscita audio sparisce o non c'è (errore «BadDeviceId»), il programma lo dice chiaramente e la riapre appena torna disponibile.
 
-### 0.3.0 — 11 novembre 2026 (protocollo 2)
+### 0.3.0 — 11 novembre 2026
 - **Servizio di Windows** (facoltativo, scelto nell'installazione): il visore vede e comanda anche le finestre UAC, la schermata di blocco e i programmi avviati come amministratore.
 - **Ctrl+Alt+Canc** dalla plancia.
 
@@ -107,7 +108,7 @@ Le versioni con protocollo diverso non si collegano tra loro: aggiorna tutti i d
 - Avvisi chiari quando il PC remoto è bloccato o lo schermo è nero.
 - Nel registro delle sessioni: avvisi, monitor e fotogrammi ricevuti, per capire i problemi.
 
-### 0.2.0 — 11 novembre 2026
+### 0.2.0 — 11 novembre 2026 (protocollo 2)
 - **App Android** (APK firmato), sia come visore sia come host: il telefono si può comandare da un PC.
 - **Copia/incolla** tra i dispositivi.
 - **File tra i PC** con il trascinamento (drag and drop).
@@ -120,6 +121,10 @@ Le versioni con protocollo diverso non si collegano tra loro: aggiorna tutti i d
 - Cronologia dei collegamenti con alias.
 - Più monitor, audio del PC remoto.
 - Zoom in percentuale e schermo intero, con la plancia di comando in alto al centro.
+
+## Guida
+
+La guida passo per passo è nella [wiki](https://github.com/ic8tem/IP-DESK-CTRL/wiki).
 
 ## Sostieni il progetto
 

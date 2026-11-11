@@ -186,4 +186,29 @@ jobs:
             macOS: concedi «Registrazione schermo» e «Accessibilità» in Impostazioni di Sistema › Privacy e sicurezza; per l'audio installa BlackHole 2ch.
             Le versioni *portatile* non richiedono installazione.
 
-            **Compatibilità**: tutti i dispositivi devono avere la 0.2.x (protocollo 2); la 0.1.0 non si collega con la 0.2.
+            **Compatibilità**: tutti i dispositivi devono avere la 0.4.x (protocollo 3); le versioni precedenti non si collegano con la 0.4.
+
+            Guida: https://github.com/ic8tem/IP-DESK-CTRL/wiki · Novità di ogni versione: https://github.com/ic8tem/IP-DESK-CTRL/wiki/Storia-delle-versioni
+
+            IP-DESK-CTRL è gratuito e senza pubblicità: se ti è utile puoi sostenerlo su [Ko-fi](https://ko-fi.com/ic8tem) ♥
+
+  # Pubblica le pagine di docs/wiki nella wiki di GitHub a ogni push su main.
+  wiki:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Aggiorna la wiki
+        shell: bash
+        env:
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git clone "https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}.wiki.git" wiki
+          cp docs/wiki/*.md wiki/
+          cd wiki
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then echo "Wiki già aggiornata"; exit 0; fi
+          git commit -m "Wiki da docs/wiki (${GITHUB_SHA::7})"
+          git push
