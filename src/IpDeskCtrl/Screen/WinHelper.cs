@@ -36,7 +36,7 @@ namespace IpDeskCtrl.Screen
         // comandi della pipe del supporto: [u8 comando][i32 lunghezza][dati] → risposta [u8 esito][i32 lunghezza][dati]
         public const byte CmdMonitors = 1, CmdCapture = 2, CmdCursor = 3,
                           CmdMove = 10, CmdButton = 11, CmdWheel = 12, CmdKey = 13, CmdText = 14,
-                          CmdClipGet = 20, CmdClipSet = 21, CmdBye = 99;
+                          CmdClipGet = 20, CmdClipSet = 21, CmdClipFiles = 22, CmdClipSetFiles = 23, CmdUserFolder = 24, CmdBye = 99;
 
         public static HelperClient? Current { get; private set; }
 
@@ -108,6 +108,13 @@ namespace IpDeskCtrl.Screen
             Platform.PrepareHost = () => Task.Run(() =>
             {
                 StartWith(launchHelper);
+                // i file ricevuti vanno in Scaricati/IP-DESK-CTRL dell'utente (non nel profilo di sistema del servizio)
+                var hc = Current;
+                if (hc != null)
+                {
+                    var (st, data) = hc.Ask(CmdUserFolder);
+                    if (st == 0 && data.Length > 0) Platform.ReceiveFolder = Encoding.UTF8.GetString(data);
+                }
                 return Current == null ? "Il processo di sistema non è partito: lo schermo del PC remoto potrebbe non essere visibile." : "";
             });
             Platform.HostEnded = Stop;
@@ -198,6 +205,30 @@ namespace IpDeskCtrl.Screen
                         case CmdClipSet:
                             Reply(bw, WinClip.SetText(r.ReadString()) ? (byte)0 : (byte)1, Array.Empty<byte>());
                             break;
+                        case CmdClipFiles:
+                        {
+                            var files = WinClip.GetFiles();
+                            var ms = new MemoryStream();
+                            var w = new BinaryWriter(ms);
+                            w.Write(files.Count);
+                            foreach (var f in files) w.Write(f);
+                            Reply(bw, 0, ms.ToArray());
+                            break;
+                        }
+                        case CmdClipSetFiles:
+                        {
+                            int n = r.ReadInt32();
+                            var list = new List<string>();
+                            for (int i = 0; i < n; i++) list.Add(r.ReadString());
+                            Reply(bw, WinClip.SetFiles(list) ? (byte)0 : (byte)1, Array.Empty<byte>());
+                            break;
+                        }
+                        case CmdUserFolder:
+                        {
+                            string f = UserDownloads(userSid);
+                            Reply(bw, f.Length > 0 ? (byte)0 : (byte)1, Encoding.UTF8.GetBytes(f));
+                            break;
+                        }
                         case CmdBye: return 0;
                     }
                 }
@@ -209,6 +240,19 @@ namespace IpDeskCtrl.Screen
                 ErrorLog.Write("Processo di supporto: " + ex);
                 return 1;
             }
+        }
+
+        /// <summary>Scaricati/IP-DESK-CTRL dell'utente (dal suo profilo nel registro: il supporto gira come SYSTEM).</summary>
+        private static string UserDownloads(string sid)
+        {
+            try
+            {
+                using var k = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList\" + sid);
+                string? profile = k?.GetValue("ProfileImagePath") as string;
+                if (string.IsNullOrEmpty(profile)) return "";
+                return Path.Combine(Environment.ExpandEnvironmentVariables(profile), "Downloads", "IP-DESK-CTRL");
+            }
+            catch { return ""; }
         }
 
         private static void Reply(BinaryWriter bw, byte status, byte[] data)
@@ -283,6 +327,64 @@ namespace IpDeskCtrl.Screen
         }
 
         public static string? GetText() => OnClipThread(GetTextHere);
+        public static List<string> GetFiles() => OnClipThread(GetFilesHere) ?? new List<string>();
+        public static bool SetFiles(List<string> paths) => OnClipThread(() => SetFilesHere(paths));
+
+        private const uint CF_HDROP = 15;
+        [DllImport("shell32.dll", CharSet = CharSet.Unicode)] private static extern uint DragQueryFileW(IntPtr drop, uint index, StringBuilder? file, uint size);
+        [DllImport("user32.dll", CharSet = CharSet.Unicode)] private static extern uint RegisterClipboardFormatW(string name);
+
+        private static List<string> GetFilesHere()
+        {
+            var list = new List<string>();
+            if (!IsClipboardFormatAvailable(CF_HDROP) || !Open()) return list;
+            try
+            {
+                IntPtr h = GetClipboardData(CF_HDROP);
+                if (h == IntPtr.Zero) return list;
+                uint n = DragQueryFileW(h, 0xFFFFFFFF, null, 0);
+                for (uint i = 0; i < n; i++)
+                {
+                    uint len = DragQueryFileW(h, i, null, 0);
+                    var sb = new StringBuilder((int)len + 1);
+                    DragQueryFileW(h, i, sb, len + 1);
+                    list.Add(sb.ToString());
+                }
+            }
+            finally { CloseClipboard(); }
+            return list;
+        }
+
+        /// <summary>File negli appunti come li mette Esplora file (CF_HDROP + «copia»): pronti per Ctrl+V.</summary>
+        private static bool SetFilesHere(List<string> paths)
+        {
+            if (paths.Count == 0 || !Open()) return false;
+            try
+            {
+                EmptyClipboard();
+                string joined = string.Join("\0", paths) + "\0\0";
+                int bytes = 20 + joined.Length * 2;
+                IntPtr h = GlobalAlloc(GMEM_MOVEABLE | 0x40 /* GMEM_ZEROINIT */, (UIntPtr)bytes);
+                if (h == IntPtr.Zero) return false;
+                IntPtr p = GlobalLock(h);
+                Marshal.WriteInt32(p, 0, 20);        // DROPFILES.pFiles: i nomi cominciano dopo la struttura
+                Marshal.WriteInt32(p, 16, 1);        // DROPFILES.fWide: nomi in UTF-16
+                Marshal.Copy(joined.ToCharArray(), 0, p + 20, joined.Length);
+                GlobalUnlock(h);
+                if (SetClipboardData(CF_HDROP, h) == IntPtr.Zero) { GlobalFree(h); return false; }
+                uint effect = RegisterClipboardFormatW("Preferred DropEffect");
+                IntPtr e = GlobalAlloc(GMEM_MOVEABLE, (UIntPtr)4);
+                if (e != IntPtr.Zero)
+                {
+                    IntPtr ep = GlobalLock(e);
+                    Marshal.WriteInt32(ep, 1);       // DROPEFFECT_COPY
+                    GlobalUnlock(e);
+                    if (SetClipboardData(effect, e) == IntPtr.Zero) GlobalFree(e);
+                }
+                return true;
+            }
+            finally { CloseClipboard(); }
+        }
         public static bool SetText(string text) => OnClipThread(() => SetTextHere(text));
 
         /// <summary>Finestra invisibile (solo messaggi): serve come proprietaria degli appunti per poterli scrivere.</summary>
@@ -351,8 +453,26 @@ namespace IpDeskCtrl.Screen
 
         public Task SetTextAsync(string text) => Task.Run(() => { WinHelper.Current?.Ask(WinHelper.CmdClipSet, w => w.Write(text)); });
 
-        public Task<List<string>> GetFilesAsync() => Task.FromResult(new List<string>());
-        public Task<bool> SetFilesAsync(List<string> paths) => Task.FromResult(false);
+        public Task<List<string>> GetFilesAsync() => Task.Run(() =>
+        {
+            var list = new List<string>();
+            var c = WinHelper.Current;
+            if (c == null) return list;
+            var (st, data) = c.Ask(WinHelper.CmdClipFiles);
+            if (st != 0 || data.Length < 4) return list;
+            var r = new BinaryReader(new MemoryStream(data));
+            int n = r.ReadInt32();
+            for (int i = 0; i < n; i++) list.Add(r.ReadString());
+            return list;
+        });
+
+        public Task<bool> SetFilesAsync(List<string> paths) => Task.Run(() =>
+        {
+            var c = WinHelper.Current;
+            if (c == null || paths.Count == 0) return false;
+            var (st, _) = c.Ask(WinHelper.CmdClipSetFiles, w => { w.Write(paths.Count); foreach (var p in paths) w.Write(p); });
+            return st == 0;
+        });
     }
 
     /// <summary>Lato programma dell'utente: parla con il processo di supporto, una richiesta alla volta.</summary>
