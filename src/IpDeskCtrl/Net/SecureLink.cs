@@ -164,8 +164,8 @@ namespace IpDeskCtrl.Net
                 byte[] packet = new byte[4 + 8 + Crypto.TagSize + plain.Length];
                 BinaryPrimitives.WriteInt32BigEndian(packet, 8 + Crypto.TagSize + plain.Length);
                 BinaryPrimitives.WriteUInt64BigEndian(packet.AsSpan(4), n);
-                Span<byte> nonce = stackalloc byte[12];
-                BinaryPrimitives.WriteUInt64BigEndian(nonce[4..], n);
+                byte[] nonce = new byte[12];
+                BinaryPrimitives.WriteUInt64BigEndian(nonce.AsSpan(4), n);
                 _tx.Encrypt(nonce, plain, packet.AsSpan(4 + 8 + Crypto.TagSize), packet.AsSpan(12, Crypto.TagSize));
                 await _stream.WriteAsync(packet, ct);
                 Interlocked.Add(ref BytesSent, packet.Length);
@@ -185,8 +185,8 @@ namespace IpDeskCtrl.Net
             ulong n = BinaryPrimitives.ReadUInt64BigEndian(data);
             if (n <= _rxCounter) throw new CryptographicException("Frame ripetuto");
             _rxCounter = n;
-            Span<byte> nonce = stackalloc byte[12];
-            BinaryPrimitives.WriteUInt64BigEndian(nonce[4..], n);
+            byte[] nonce = new byte[12];
+            BinaryPrimitives.WriteUInt64BigEndian(nonce.AsSpan(4), n);
             byte[] plain = new byte[len - 8 - Crypto.TagSize];
             _rx.Decrypt(nonce, data.AsSpan(8 + Crypto.TagSize), data.AsSpan(8, Crypto.TagSize), plain);
             Interlocked.Add(ref BytesReceived, 4 + len);
