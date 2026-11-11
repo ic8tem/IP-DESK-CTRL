@@ -39,6 +39,7 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"
+Name: "servizio"; Description: "Accesso completo: richieste UAC, schermata di blocco, programmi da amministratore e Ctrl+Alt+Canc (servizio di Windows; serve l'installazione come amministratore)"; GroupDescription: "Accesso:"; Check: IsAdminInstallMode
 Name: "autostart"; Description: "Avvia IP-DESK-CTRL all'accesso a Windows (così il PC è sempre raggiungibile col suo numero)"; GroupDescription: "Avvio:"; Flags: unchecked
 
 [Files]
@@ -52,5 +53,28 @@ Name: "{autoprograms}\IP-DESK-CTRL"; Filename: "{app}\IP-DESK-CTRL.exe"
 Name: "{autodesktop}\IP-DESK-CTRL"; Filename: "{app}\IP-DESK-CTRL.exe"; Tasks: desktopicon
 Name: "{userstartup}\IP-DESK-CTRL"; Filename: "{app}\IP-DESK-CTRL.exe"; Tasks: autostart
 
+[Registry]
+; Ctrl+Alt+Canc generato dal servizio (SendSAS): 1 = permesso ai servizi
+Root: HKLM; Subkey: "SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System"; ValueType: dword; ValueName: "SoftwareSASGeneration"; ValueData: "1"; Tasks: servizio; Check: IsAdminInstallMode
+
 [Run]
+Filename: "{sys}\sc.exe"; Parameters: "create IPDeskCtrl binPath= ""\""{app}\IP-DESK-CTRL.exe\"" --service"" start= auto DisplayName= ""IP-DESK-CTRL accesso completo"""; Flags: runhidden; Tasks: servizio
+Filename: "{sys}\sc.exe"; Parameters: "description IPDeskCtrl ""Permette a IP-DESK-CTRL di mostrare e comandare le richieste UAC, la schermata di blocco e i programmi da amministratore durante i collegamenti accettati."""; Flags: runhidden; Tasks: servizio
+Filename: "{sys}\sc.exe"; Parameters: "start IPDeskCtrl"; Flags: runhidden; Tasks: servizio
 Filename: "{app}\IP-DESK-CTRL.exe"; Description: "{cm:LaunchProgram,IP-DESK-CTRL}"; Flags: nowait postinstall skipifsilent
+
+[UninstallRun]
+Filename: "{sys}\sc.exe"; Parameters: "stop IPDeskCtrl"; Flags: runhidden; RunOnceId: "FermaServizio"
+Filename: "{sys}\sc.exe"; Parameters: "delete IPDeskCtrl"; Flags: runhidden; RunOnceId: "TogliServizio"
+
+[Code]
+// aggiornamento: il servizio usa l'eseguibile, va fermato (e tolto: lo ricrea il setup se richiesto)
+function PrepareToInstall(var NeedsRestart: Boolean): String;
+var
+  Code: Integer;
+begin
+  Exec(ExpandConstant('{sys}\sc.exe'), 'stop IPDeskCtrl', '', SW_HIDE, ewWaitUntilTerminated, Code);
+  Exec(ExpandConstant('{sys}\sc.exe'), 'delete IPDeskCtrl', '', SW_HIDE, ewWaitUntilTerminated, Code);
+  Sleep(1500);
+  Result := '';
+end;

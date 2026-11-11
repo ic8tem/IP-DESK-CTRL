@@ -10,7 +10,7 @@
     <RootNamespace>IpDeskCtrl.Desktop</RootNamespace>
     <AssemblyName>IP-DESK-CTRL</AssemblyName>
     <Product>IP-DESK-CTRL</Product>
-    <Version>0.2.0</Version>
+    <Version>0.3.0</Version>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
     <!-- niente dipendenza da ICU su Linux/Raspberry -->
@@ -30,6 +30,8 @@
 
   <ItemGroup>
     <PackageReference Include="Avalonia.Desktop" Version="11.2.3" />
+    <!-- servizio di Windows per UAC e schermata di blocco -->
+    <PackageReference Include="System.ServiceProcess.ServiceController" Version="8.0.1" />
   </ItemGroup>
 
   <ItemGroup>

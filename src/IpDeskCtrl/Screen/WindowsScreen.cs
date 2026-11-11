@@ -63,6 +63,30 @@ namespace IpDeskCtrl.Screen
             finally { CloseDesktop(d); }
         }
 
+        [ThreadStatic] private static IntPtr _threadDesk;
+        [ThreadStatic] private static string? _threadDeskName;
+
+        /// <summary>
+        /// Solo per il processo di supporto «di sistema»: porta il thread sul desktop che riceve mouse e tastiera
+        /// (Default, oppure Winlogon con schermata di blocco, UAC, Ctrl+Alt+Canc). Restituisce il nome del desktop.
+        /// </summary>
+        public static string FollowInputDesktop()
+        {
+            string name = InputDesktopName();
+            if (name.Length == 0 || name == _threadDeskName) return name;
+            IntPtr d = OpenInputDesktop(0, false, 0x10000000 /* GENERIC_ALL */);
+            if (d == IntPtr.Zero) return name;
+            if (SetThreadDesktop(d))
+            {
+                if (_threadDesk != IntPtr.Zero) CloseDesktop(_threadDesk);
+                _threadDesk = d;
+                _threadDeskName = name;
+                Core.SessionLog.Write("AIUTO desktop attivo: " + name);
+            }
+            else CloseDesktop(d);
+            return name;
+        }
+
         public const string LockedNote = "Il PC remoto è bloccato (schermata di blocco o di accesso) oppure mostra una finestra di sicurezza (UAC, Ctrl+Alt+Canc): " +
                                          "Windows non la lascia vedere né comandare. Sbloccalo e l'immagine torna da sola.";
         [DllImport("gdi32.dll")] public static extern IntPtr CreateCompatibleDC(IntPtr hdc);
@@ -86,6 +110,9 @@ namespace IpDeskCtrl.Screen
         private IntPtr _memDc, _dib, _bits, _old;
         private int _w, _h;
         public string Note { get; private set; } = "";
+
+        /// <summary>true nel processo di supporto di sistema: segue anche la schermata di blocco e UAC.</summary>
+        public bool FollowInputDesktop { get; init; }
 
         public List<MonitorInfo> Monitors()
         {
@@ -115,8 +142,8 @@ namespace IpDeskCtrl.Screen
         public bool Capture(MonitorInfo area, Frame into)
         {
             // con il PC bloccato il desktop attivo non è quello dell'utente: lo si dice chiaramente
-            string desktop = Win32.InputDesktopName();
-            if (desktop.Length == 0 || !desktop.Equals("Default", StringComparison.OrdinalIgnoreCase))
+            string desktop = FollowInputDesktop ? Win32.FollowInputDesktop() : Win32.InputDesktopName();
+            if (!FollowInputDesktop && (desktop.Length == 0 || !desktop.Equals("Default", StringComparison.OrdinalIgnoreCase)))
             {
                 Note = Win32.LockedNote + (desktop.Length > 0 ? $" (desktop attivo: {desktop})" : "");
                 return false;
@@ -148,7 +175,7 @@ namespace IpDeskCtrl.Screen
                 }
                 into.Ensure(w, h);
                 Marshal.Copy(_bits, into.Data, 0, into.Data.Length);
-                Note = AllBlack(into)
+                Note = AllBlack(into) && desktop.Equals("Default", StringComparison.OrdinalIgnoreCase)
                     ? "Lo schermo del PC remoto è completamente nero: di solito è una sessione di Desktop remoto di Windows (RDP) rimasta scollegata, " +
                       "che spegne lo schermo vero. Su quel PC accedi di nuovo dalla tastiera, oppure chiudi la sessione RDP."
                     : "";

@@ -190,7 +190,7 @@ namespace IpDeskCtrl.UI
             Item("Stamp", KeyMap.PrintScreen);
             Item("Esc", KeyMap.Escape);
             keys.Flyout = menu;
-            ToolTip.SetTip(keys, "Combinazioni che il tuo sistema non lascerebbe passare (Windows non accetta Ctrl+Alt+Canc simulato)");
+            ToolTip.SetTip(keys, "Combinazioni che il tuo sistema non lascerebbe passare. Ctrl+Alt+Canc su Windows richiede il servizio «accesso completo» sul PC remoto.");
 
             _files.Click += (_, _) => ShowFilesMenu();
             ToolTip.SetTip(_files, "Manda file al PC remoto o prendi quelli copiati lì. Puoi anche trascinarli sulla finestra.");
