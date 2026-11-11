@@ -37,6 +37,7 @@ namespace IpDeskCtrl.UI
         private CancellationTokenSource _cts = new();
         private bool _ended;
         private CancellationTokenSource? _rebootCts;     // attesa del PC remoto dopo il riavvio
+        private readonly Button _radio = new() { Content = "Radio (IP-TRX-CTRL)" };
 
         private readonly RemoteView _view = new();
         private readonly ScrollViewer _scroll = new() { HorizontalScrollBarVisibility = ScrollBarVisibility.Auto, VerticalScrollBarVisibility = ScrollBarVisibility.Auto };
@@ -206,6 +207,21 @@ namespace IpDeskCtrl.UI
             keyboard.Click += (_, _) => ToggleKeyboard();
             keyboard.IsVisible = Platform.IsMobile;
 
+            _radio.IsVisible = false;
+            ToolTip.SetTip(_radio, "Avvia IP-TRX-CTRL sul PC remoto e, se c'è, anche su questo");
+            _radio.Click += (_, _) =>
+            {
+                var s = _session;
+                if (s == null) return;
+                s.StartTrx();
+                if (Platform.IsMobile || !TrxCtrl.Installed) ShowNote("Chiesto l'avvio di IP-TRX-CTRL sul PC remoto.");
+                else
+                {
+                    string err = TrxCtrl.Launch();
+                    ShowNote(err.Length == 0 ? "IP-TRX-CTRL avviato sul PC remoto e su questo." : "IP-TRX-CTRL chiesto sul PC remoto; su questo: " + err);
+                }
+            };
+
             var refresh = Small("⟳", "Aggiorna l'immagine");
             refresh.Click += (_, _) => _session?.Refresh();
             var close = new Button { Content = "Disconnetti" };
@@ -215,7 +231,7 @@ namespace IpDeskCtrl.UI
             hide.Click += (_, _) => { _toolbarPinned = false; ShowToolbar(false); };
 
             var bar = new WrapPanel { HorizontalAlignment = HorizontalAlignment.Center };
-            foreach (var c in new Control[] { _fullBtn, minus, _zoom, plus, _monitor, _quality, _audio, keyboard, keys, _files, refresh, _stats, close, hide })
+            foreach (var c in new Control[] { _fullBtn, minus, _zoom, plus, _monitor, _quality, _audio, keyboard, keys, _files, _radio, refresh, _stats, close, hide })
             {
                 c.VerticalAlignment = VerticalAlignment.Center;
                 c.Margin = new Thickness(3);
@@ -720,6 +736,7 @@ namespace IpDeskCtrl.UI
                     break;
                 case AcceptState.Accepted:
                     _overlay.IsVisible = false;
+                    _radio.IsVisible = s.PeerHasTrx && s.InputAllowed;
                     _audio.IsChecked = s.AudioOn;
                     HistoryChanged?.Invoke();
                     RefreshTitle();

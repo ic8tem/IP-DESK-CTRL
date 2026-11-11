@@ -127,6 +127,13 @@ namespace IpDeskCtrl.Core
                         case "START" when p.Length >= 3:
                             HostStarted?.Invoke(p[1], p[2] == "1");
                             break;
+                        case "TRX":
+                        {
+                            // il servizio (sessione 0) non può aprire finestre: IP-TRX-CTRL lo avvia il programma dell'utente
+                            string err = TrxCtrl.Launch();
+                            Write("TRXDONE " + (err.Length == 0 ? "OK" : err));
+                            break;
+                        }
                         case "END" when p.Length >= 2:
                             HostEnded?.Invoke(p[1], p.Length == 3 ? p[2] : "");
                             break;

@@ -64,6 +64,7 @@ namespace IpDeskCtrl.Core
             {
                 case Msg.Hello:
                     PeerVersion = r.Str(); PeerOs = r.Str(); PeerName = r.Str();
+                    PeerHasTrx = !r.AtEnd && r.Bool();
                     break;
                 case Msg.Accept:
                 {
@@ -250,6 +251,10 @@ namespace IpDeskCtrl.Core
 
         /// <summary>true dopo «Riavvia il PC remoto»: alla chiusura la plancia aspetta il PC e si ricollega.</summary>
         public bool RebootRequested { get; private set; }
+        /// <summary>Sul PC remoto è installato IP-TRX-CTRL.</summary>
+        public bool PeerHasTrx { get; private set; }
+
+        public void StartTrx() => Send(new MsgWriter(Msg.StartTrx).Build());
 
         public void Reboot()
         {

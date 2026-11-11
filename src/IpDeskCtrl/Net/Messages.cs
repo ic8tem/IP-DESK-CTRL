@@ -9,7 +9,7 @@ namespace IpDeskCtrl.Net
     public static class Msg
     {
         // ---- sessione
-        public const byte Hello = 0x01;          // str versione | str sistema operativo | str nome del PC
+        public const byte Hello = 0x01;          // str versione | str sistema operativo | str nome del PC | bool IP-TRX-CTRL installato
         public const byte Accept = 0x02;         // u8 stato (AcceptState) | str motivo
         public const byte Bye = 0x03;            // str motivo
         public const byte Ping = 0x04;           // i64 ticks
@@ -57,6 +57,7 @@ namespace IpDeskCtrl.Net
 
         // ---- comandi del PC (visore -> host)
         public const byte Reboot = 0x70;         // riavvia il PC remoto (serve il permesso di comandarlo)
+        public const byte StartTrx = 0x71;       // avvia IP-TRX-CTRL sul PC remoto
     }
 
     public enum AcceptState : byte { Waiting = 0, Accepted = 1, Rejected = 2, Busy = 3, Disabled = 4 }

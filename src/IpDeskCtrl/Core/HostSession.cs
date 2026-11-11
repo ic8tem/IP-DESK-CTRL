@@ -63,7 +63,7 @@ namespace IpDeskCtrl.Core
         {
             try
             {
-                await SendAsync(new MsgWriter(Msg.Hello).Str(AppVersion.Tag).Str(AppVersion.Os).Str(Environment.MachineName).Build());
+                await SendAsync(new MsgWriter(Msg.Hello).Str(AppVersion.Tag).Str(AppVersion.Os).Str(Environment.MachineName).Bool(TrxCtrl.Installed).Build());
                 if (await Task.WhenAny(_helloSeen.Task, Task.Delay(15000, Cts.Token)) != _helloSeen.Task) { Close("l'altro PC non si è presentato"); return; }
                 var (proto, _) = AppVersion.Parse(PeerVersion);
                 if (proto != AppVersion.Protocol) { await Refuse(AcceptState.Rejected, $"versioni non compatibili ({PeerVersion} / {AppVersion.Tag})"); return; }
@@ -217,6 +217,7 @@ namespace IpDeskCtrl.Core
                 case Msg.Refresh: _fullNext = true; break;
                 case Msg.FileFetch: _ = Task.Run(SendClipboardFilesAsync); break;
                 case Msg.Reboot: _ = Task.Run(RebootAsync); break;
+                case Msg.StartTrx: _ = Task.Run(StartTrx); break;
                 case Msg.AuthResponse: _authReply?.TrySetResult(r.Bytes(Math.Clamp(r.I32(), 0, 64))); break;
                 case Msg.FrameAck:
                 {
@@ -263,6 +264,14 @@ namespace IpDeskCtrl.Core
         }
 
         protected override bool FilesAllowed => _accepted && _allowInput;
+
+        private void StartTrx()
+        {
+            if (!_accepted || !_allowInput) { Note("Hai solo la visione di questo PC: IP-TRX-CTRL non è stato avviato."); return; }
+            string err = Platform.LaunchTrx != null ? Platform.LaunchTrx() : TrxCtrl.Launch();
+            SessionLog.Write($"SESSIONE {Identity.Format(PeerNumber)} avvia IP-TRX-CTRL: " + (err.Length == 0 ? "avviato" : err));
+            Note(err.Length == 0 ? "IP-TRX-CTRL avviato sul PC remoto." : err);
+        }
 
         /// <summary>Riavvio chiesto dal visore: solo se può comandare questo PC.</summary>
         private async Task RebootAsync()

@@ -79,6 +79,7 @@ namespace IpDeskCtrl.Desktop
                 Platform.ReceiveFolder = Path.Combine(AppSettings.Folder, "ricevuti");
                 WinHelper.InstallServiceHooks(LaunchHelper);
                 Platform.Reboot = ServiceCommands.RebootNow;
+                Platform.LaunchTrx = LaunchTrx;
                 _peer = new Peer(me, _s) { AskAccept = AskAsync };
                 _peer.HostStarted += hs => Broadcast($"START {hs.PeerNumber} {(hs.InputAllowed ? 1 : 0)}");
                 _peer.HostEnded += (hs, why) => Broadcast($"END {hs.PeerNumber} {why.Replace('\n', ' ')}");
@@ -190,6 +191,9 @@ namespace IpDeskCtrl.Desktop
                             _s.Save();
                             SessionLog.Write("SERVIZIO password dell'accesso senza conferma " + (p[1] == "-" ? "tolta" : "aggiornata"));
                             break;
+                        case "TRXDONE":
+                            SessionLog.Write("SERVIZIO IP-TRX-CTRL nella sessione dell'utente: " + string.Join(' ', p.Skip(1)));
+                            break;
                         case "KICK":
                             _peer?.CurrentHost?.Close("chiuso dall'utente dell'altro PC");
                             break;
@@ -210,6 +214,18 @@ namespace IpDeskCtrl.Desktop
                 foreach (var t in a.Asks.Values) t.TrySetResult(new IncomingDecision(false, false, false, "nessuno al PC per accettare"));
                 SessionLog.Write($"SERVIZIO programma dell'utente scollegato (sessione {session})");
             }
+        }
+
+        /// <summary>IP-TRX-CTRL va aperto nella sessione dell'utente alla console: lo fa il suo programma.</summary>
+        private static string LaunchTrx()
+        {
+            uint console = WTSGetActiveConsoleSessionId();
+            Attached? a;
+            lock (Users) a = Users.FirstOrDefault(u => u.Session == console);
+            if (a == null) return "Sul PC remoto non c'è un utente collegato: IP-TRX-CTRL si può avviare solo dopo l'accesso.";
+            if (!TrxCtrl.Installed) return "IP-TRX-CTRL non è installato sul PC remoto.";
+            a.Write("TRX");
+            return "";
         }
 
         private static int _askId;
