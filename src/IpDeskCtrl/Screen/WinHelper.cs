@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.IO.Pipes;
 using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 using System.Security.AccessControl;
 using System.Security.Principal;
 using System.Text;
@@ -34,7 +35,8 @@ namespace IpDeskCtrl.Screen
 
         // comandi della pipe del supporto: [u8 comando][i32 lunghezza][dati] → risposta [u8 esito][i32 lunghezza][dati]
         public const byte CmdMonitors = 1, CmdCapture = 2, CmdCursor = 3,
-                          CmdMove = 10, CmdButton = 11, CmdWheel = 12, CmdKey = 13, CmdText = 14, CmdBye = 99;
+                          CmdMove = 10, CmdButton = 11, CmdWheel = 12, CmdKey = 13, CmdText = 14,
+                          CmdClipGet = 20, CmdClipSet = 21, CmdBye = 99;
 
         public static HelperClient? Current { get; private set; }
 
@@ -111,6 +113,8 @@ namespace IpDeskCtrl.Screen
             Platform.HostEnded = Stop;
             Platform.Screen = () => Current != null ? new HelperScreen(Current) : new WindowsScreen();
             Platform.Input = () => Current != null ? new HelperInput(Current) : new WindowsInput();
+            // il servizio gira nella sessione 0, che non ha gli appunti dell'utente: passano dal processo di supporto
+            Platform.Clipboard = new HelperClipboard();
         }
 
         // ================================================================== processo di supporto
@@ -184,6 +188,16 @@ namespace IpDeskCtrl.Screen
                         case CmdWheel: input.Wheel(r.ReadInt32(), r.ReadInt32()); break;
                         case CmdKey: input.Key(r.ReadInt32(), r.ReadBoolean()); break;
                         case CmdText: input.Text(r.ReadString()); break;
+                        case CmdClipGet:
+                        {
+                            string? t = WinClip.GetText();
+                            if (t == null) Reply(bw, 1, Array.Empty<byte>());
+                            else Reply(bw, 0, Encoding.UTF8.GetBytes(t));
+                            break;
+                        }
+                        case CmdClipSet:
+                            Reply(bw, WinClip.SetText(r.ReadString()) ? (byte)0 : (byte)1, Array.Empty<byte>());
+                            break;
                         case CmdBye: return 0;
                     }
                 }
@@ -223,6 +237,122 @@ namespace IpDeskCtrl.Screen
             }
             catch { return false; }
         }
+    }
+
+    /// <summary>
+    /// Appunti di Windows (testo) con le funzioni del sistema, per il processo di supporto: gira come SYSTEM
+    /// nella sessione dell'utente, quindi vede gli stessi appunti dei suoi programmi.
+    /// </summary>
+    [SupportedOSPlatform("windows")]
+    internal static class WinClip
+    {
+        private const uint CF_UNICODETEXT = 13, GMEM_MOVEABLE = 2;
+        private static IntPtr _wnd;
+
+        [DllImport("user32.dll", SetLastError = true)] private static extern bool OpenClipboard(IntPtr owner);
+        [DllImport("user32.dll")] private static extern bool CloseClipboard();
+        [DllImport("user32.dll")] private static extern bool EmptyClipboard();
+        [DllImport("user32.dll")] private static extern IntPtr GetClipboardData(uint format);
+        [DllImport("user32.dll")] private static extern IntPtr SetClipboardData(uint format, IntPtr mem);
+        [DllImport("user32.dll")] private static extern bool IsClipboardFormatAvailable(uint format);
+        [DllImport("user32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+        private static extern IntPtr CreateWindowExW(int exStyle, string cls, string name, int style, int x, int y, int w, int h, IntPtr parent, IntPtr menu, IntPtr inst, IntPtr param);
+        [DllImport("kernel32.dll")] private static extern IntPtr GlobalAlloc(uint flags, UIntPtr bytes);
+        [DllImport("kernel32.dll")] private static extern IntPtr GlobalLock(IntPtr mem);
+        [DllImport("kernel32.dll")] private static extern bool GlobalUnlock(IntPtr mem);
+        [DllImport("kernel32.dll")] private static extern IntPtr GlobalFree(IntPtr mem);
+
+        // Il thread principale del processo di supporto cambia desktop (UAC, schermata di blocco) e non può avere
+        // finestre: gli appunti si usano da un thread a parte, che possiede la finestra invisibile.
+        private static readonly System.Collections.Concurrent.BlockingCollection<Action> _work = new();
+        private static Thread? _thread;
+
+        private static T OnClipThread<T>(Func<T> f)
+        {
+            if (_thread == null)
+            {
+                _thread = new Thread(() => { foreach (var a in _work.GetConsumingEnumerable()) a(); }) { IsBackground = true, Name = "appunti" };
+                _thread.SetApartmentState(ApartmentState.STA);
+                _thread.Start();
+            }
+            T result = default!;
+            var done = new ManualResetEventSlim();     // non si chiude: il lavoro può finire dopo l'attesa
+            _work.Add(() => { try { result = f(); } catch { } finally { done.Set(); } });
+            done.Wait(3000);
+            return result;
+        }
+
+        public static string? GetText() => OnClipThread(GetTextHere);
+        public static bool SetText(string text) => OnClipThread(() => SetTextHere(text));
+
+        /// <summary>Finestra invisibile (solo messaggi): serve come proprietaria degli appunti per poterli scrivere.</summary>
+        private static IntPtr Owner()
+        {
+            if (_wnd == IntPtr.Zero) _wnd = CreateWindowExW(0, "STATIC", "IP-DESK-CTRL appunti", 0, 0, 0, 0, 0, new IntPtr(-3) /* HWND_MESSAGE */, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero);
+            return _wnd;
+        }
+
+        private static bool Open()
+        {
+            var owner = Owner();
+            for (int i = 0; i < 10; i++)
+            {
+                if (OpenClipboard(owner)) return true;
+                Thread.Sleep(30);          // un altro programma li sta usando
+            }
+            return false;
+        }
+
+        private static string? GetTextHere()
+        {
+            if (!IsClipboardFormatAvailable(CF_UNICODETEXT) || !Open()) return null;
+            try
+            {
+                IntPtr h = GetClipboardData(CF_UNICODETEXT);
+                if (h == IntPtr.Zero) return null;
+                IntPtr p = GlobalLock(h);
+                if (p == IntPtr.Zero) return null;
+                try { return Marshal.PtrToStringUni(p); }
+                finally { GlobalUnlock(h); }
+            }
+            finally { CloseClipboard(); }
+        }
+
+        private static bool SetTextHere(string text)
+        {
+            if (!Open()) return false;
+            try
+            {
+                EmptyClipboard();
+                int bytes = (text.Length + 1) * 2;
+                IntPtr h = GlobalAlloc(GMEM_MOVEABLE, (UIntPtr)bytes);
+                if (h == IntPtr.Zero) return false;
+                IntPtr p = GlobalLock(h);
+                Marshal.Copy(text.ToCharArray(), 0, p, text.Length);
+                Marshal.WriteInt16(p, text.Length * 2, 0);
+                GlobalUnlock(h);
+                if (SetClipboardData(CF_UNICODETEXT, h) == IntPtr.Zero) { GlobalFree(h); return false; }
+                return true;
+            }
+            finally { CloseClipboard(); }
+        }
+    }
+
+    /// <summary>Servizio: appunti dell'utente attraverso il processo di supporto (solo testo).</summary>
+    public sealed class HelperClipboard : IClipboardBridge
+    {
+        public Task<string?> GetTextAsync() => Task.Run(() =>
+        {
+            var c = WinHelper.Current;
+            if (c == null) return (string?)null;
+            var (st, data) = c.Ask(WinHelper.CmdClipGet);
+            return st == 0 ? Encoding.UTF8.GetString(data) : null;
+        });
+
+        public Task SetTextAsync(string text) => Task.Run(() => { WinHelper.Current?.Ask(WinHelper.CmdClipSet, w => w.Write(text)); });
+
+        public Task<List<string>> GetFilesAsync() => Task.FromResult(new List<string>());
+        public Task<bool> SetFilesAsync(List<string> paths) => Task.FromResult(false);
     }
 
     /// <summary>Lato programma dell'utente: parla con il processo di supporto, una richiesta alla volta.</summary>

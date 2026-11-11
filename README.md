@@ -94,6 +94,7 @@ Nella cartella dei dati (Impostazioni › Apri cartella dati): `errori.log` e `s
 Le versioni con protocollo diverso non si collegano tra loro: aggiorna tutti i dispositivi alla stessa versione principale (la 0.4.1 si collega con la 0.4.0; la 0.5 si collega con la 0.4).
 
 ### 0.5.2 — in preparazione
+- **Copia/incolla di testo con i PC che hanno il servizio di Windows**: dalla 0.4 i collegamenti in arrivo li riceve il servizio, che non vede gli appunti dell'utente; ora passano dal processo di supporto, nei due versi.
 - **Telefono**: la plancia di comando sta su una sola riga che scorre col dito (prima occupava mezzo schermo); il pulsante dei gesti si chiama «Gesti» (il simbolo non si vedeva); il menu dei monitor compare solo se il PC remoto ne ha più di uno.
 - **Registro condivisibile dal telefono**: Informazioni › «Condividi il registro» lo manda per e-mail, WhatsApp…, per capire i collegamenti non riusciti.
 
