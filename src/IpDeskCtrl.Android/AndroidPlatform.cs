@@ -37,13 +37,13 @@ namespace IpDeskCtrl.Android
             Platform.AudioPlayer = () => new AndroidAudioPlayer();
             Platform.MicCapture = () => new AndroidMicCapture();
             Platform.Dictate = () => MainActivity.Current?.DictateAsync() ?? Task.FromResult<string?>(null);
-            VolumeControl.Platform = action =>
+            IpDeskCtrl.Core.VolumeControl.Platform = action =>
             {
                 try
                 {
                     var am = (AudioManager?)a.GetSystemService(Context.AudioService);
                     if (am == null) return "Volume non disponibile";
-                    var adj = action == VolumeControl.Up ? Adjust.Raise : action == VolumeControl.Down ? Adjust.Lower : Adjust.ToggleMute;
+                    var adj = action == IpDeskCtrl.Core.VolumeControl.Up ? Adjust.Raise : action == IpDeskCtrl.Core.VolumeControl.Down ? Adjust.Lower : Adjust.ToggleMute;
                     am.AdjustStreamVolume(global::Android.Media.Stream.Music, adj, VolumeNotificationFlags.ShowUi);
                     return "";
                 }
