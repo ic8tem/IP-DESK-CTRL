@@ -47,7 +47,18 @@ namespace IpDeskCtrl.Android
             Platform.Open = path =>
             {
                 var act = MainActivity.Current;
-                act?.RunOnUiThread(() => Toast.MakeText(act, "File in: " + path, ToastLength.Long)?.Show());
+                if (act == null) return;
+                if (path.StartsWith("http://") || path.StartsWith("https://"))
+                {
+                    // link (nuova versione, APK): browser del telefono
+                    act.RunOnUiThread(() =>
+                    {
+                        try { act.StartActivity(new Intent(Intent.ActionView, global::Android.Net.Uri.Parse(path))); }
+                        catch { Toast.MakeText(act, path, ToastLength.Long)?.Show(); }
+                    });
+                    return;
+                }
+                act.RunOnUiThread(() => Toast.MakeText(act, "File in: " + path, ToastLength.Long)?.Show());
             };
         }
 

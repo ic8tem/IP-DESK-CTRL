@@ -43,6 +43,7 @@ namespace IpDeskCtrl.UI
         private readonly TextBlock _incomingText = new() { TextWrapping = TextWrapping.Wrap, FontWeight = FontWeight.Bold };
         private readonly CheckBox _incomingInput = new() { Content = "Mouse e tastiera" };
         private IDialogHandle? _controlled;
+        private readonly Border _update = new() { IsVisible = false, CornerRadius = new CornerRadius(10), Padding = new Thickness(14) };
         private bool _closingForReal;
 
         /// <summary>Titolo da mostrare (la finestra del PC lo usa).</summary>
@@ -76,6 +77,7 @@ namespace IpDeskCtrl.UI
             root.Children.Add(head);
 
             var col = new StackPanel { Spacing = 14, Margin = new Thickness(20, 6, 20, 20) };
+            col.Children.Add(_update);
 
             // ---- questo PC
             var copy = Ui.Btn("Copia");
@@ -201,6 +203,7 @@ namespace IpDeskCtrl.UI
                 _peer.HostEnded += (hs, why) => Dispatcher.UIThread.Post(() => OnHostEnded(hs, why));
                 _peer.Start();
                 _ = PresenceLoopAsync();
+                _ = UpdateCheck.LoopAsync(r => Dispatcher.UIThread.Post(() => ShowUpdate(r)), _life.Token);
             }
             catch (Exception ex)
             {
@@ -400,6 +403,26 @@ namespace IpDeskCtrl.UI
                 edit.AttachedToVisualTree += (_, _) => { edit.Focus(); edit.SelectAll(); };
             };
             return box;
+        }
+
+        // =================================================================== nuova versione
+
+        private void ShowUpdate(ReleaseInfo r)
+        {
+            bool apk = Platform.IsMobile && r.ApkUrl.Length > 0;
+            var open = Ui.Btn(apk ? "Scarica l'APK" : "Vai allo scaricamento", true);
+            open.Click += (_, _) => OpenPath(apk ? r.ApkUrl : r.PageUrl);
+            var later = Ui.Btn("Più tardi");
+            later.Click += (_, _) => _update.IsVisible = false;
+            var text = new TextBlock
+            {
+                Text = $"È disponibile IP-DESK-CTRL {r.Version} (questa è la {AppVersion.Text}). " +
+                       "Aggiorna tutti e due i PC: versioni con protocollo diverso non si collegano.",
+                TextWrapping = TextWrapping.Wrap, FontWeight = FontWeight.Bold
+            };
+            _update.Background = Themes.B(Themes.Current.TxDim);
+            _update.Child = Ui.Col(8, text, Ui.Row(10, later, open));
+            _update.IsVisible = true;
         }
 
         // =================================================================== password dell'accesso senza conferma
