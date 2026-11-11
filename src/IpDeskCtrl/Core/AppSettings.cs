@@ -18,7 +18,10 @@ namespace IpDeskCtrl.Core
         public bool AllowUnattended { get; set; }         // può entrare in questo PC senza conferma
         public string LastSeconds { get; set; } = "";     // durata dell'ultimo collegamento, testo
         public string Os { get; set; } = "";              // sistema operativo dell'altro PC
-        public string SavedPassword { get; set; } = "";   // password di quel PC ricordata (sale:PBKDF2 cifrato, vedi AccessPassword)
+        public string SavedPassword { get; set; } = "";
+        public string Mac { get; set; } = "";             // Wake-on-LAN: scheda di rete dell'altro PC
+        public string Broadcast { get; set; } = "";       // Wake-on-LAN: broadcast della sua rete locale
+        public string PublicIp { get; set; } = "";        // IP pubblico dell'altro PC (stessa rete = stesso IP)   // password di quel PC ricordata (sale:PBKDF2 cifrato, vedi AccessPassword)
     }
 
     /// <summary>Impostazioni salvate nella cartella dati dell'utente (IP-DESK-CTRL/settings.json).</summary>

@@ -250,8 +250,10 @@ namespace IpDeskCtrl.Core
         private void Announce()
         {
             if (_rdv == null) return;
-            _rdv.SetAnnounce(new Net.Announce(AppVersion.Tag, Me.PublicKey, _publicIp?.ToString() ?? "", _extPort, LanIp(), _localPort,
-                UpnpOk, _reachable, DateTime.UtcNow.Ticks, AppVersion.Os));
+            string lan = LanIp();
+            var (mac, bc) = WakeOnLan.LocalInfo(lan);
+            _rdv.SetAnnounce(new Net.Announce(AppVersion.Tag, Me.PublicKey, _publicIp?.ToString() ?? "", _extPort, lan, _localPort,
+                UpnpOk, _reachable, DateTime.UtcNow.Ticks, AppVersion.Os, mac, bc));
         }
 
         /// <summary>IP di rete locale della scheda che porta a internet.</summary>
@@ -421,6 +423,9 @@ namespace IpDeskCtrl.Core
                     case Note.UdpOffer:
                         if (!ViewerOnly) await OnUdpOfferAsync(note, ct);
                         break;
+                    case Note.WakeRequest:
+                        if (!ViewerOnly) OnWakeRequest(note);
+                        break;
                     case Note.UdpAnswer:
                     {
                         var ans = UdpCandidates.Decode(note.Data);
@@ -433,6 +438,65 @@ namespace IpDeskCtrl.Core
             }
             catch (OperationCanceledException) { }
             catch (Exception ex) { Log("MQTT messaggio non gestito: " + ex.Message); }
+        }
+
+        // =================================================================== Wake-on-LAN
+
+        private readonly ConcurrentDictionary<string, Net.Announce> _lastSeen = new();
+
+        /// <summary>Ricorda nello storico MAC, broadcast e IP pubblico dell'altro PC (letti dal suo indirizzo sui broker).</summary>
+        public void RememberWake(HistoryEntry h)
+        {
+            if (!_lastSeen.TryGetValue(h.Number, out var a)) return;
+            bool changed = false;
+            if (a.Mac.Length > 0 && a.Mac != h.Mac) { h.Mac = a.Mac; changed = true; }
+            if (a.Broadcast.Length > 0 && a.Broadcast != h.Broadcast) { h.Broadcast = a.Broadcast; changed = true; }
+            if (a.PublicIp.Length > 0 && a.PublicIp != h.PublicIp) { h.PublicIp = a.PublicIp; changed = true; }
+            if (changed) S.Save();
+        }
+
+        /// <summary>
+        /// Accende un PC dello storico: dalla stessa rete manda direttamente il pacchetto magico; da fuori chiede
+        /// (messaggio firmato sul broker) ai PC accesi della stessa rete — stesso IP pubblico — di mandarlo.
+        /// Lo fanno solo se questo PC è «senza conferma» nel loro storico. Restituisce la frase da mostrare.
+        /// </summary>
+        public async Task<string> WakeAsync(HistoryEntry target, CancellationToken ct)
+        {
+            if (target.Mac.Length != 12) return "Il MAC di quel PC non è noto: collegati una volta mentre è acceso con questa versione.";
+            if (_publicIp != null && target.PublicIp == _publicIp.ToString())
+            {
+                WakeOnLan.Send(target.Mac, target.Broadcast);
+                Log($"WOL pacchetto magico per {Identity.Format(target.Number)} mandato sulla rete locale ({target.Mac})");
+                return "Pacchetto di accensione mandato sulla rete locale. Se il PC è predisposto si accende entro un minuto.";
+            }
+            var rdv = _rdv;
+            if (rdv == null || target.PublicIp.Length == 0) return "Non so in che rete si trova quel PC.";
+            var others = S.History.Where(h => h.Number != target.Number && h.PublicIp == target.PublicIp).Take(10).ToList();
+            if (others.Count == 0) return "Nessun altro PC dello storico è nella stessa rete di quello da accendere: il pacchetto si può mandare solo da lì.";
+            var looks = await Task.WhenAll(others.Select(h => ViewerRendezvous.LookupAsync(h.Number, S.MqttBrokers, null, ct)));
+            var awake = looks.Where(a => a != null && a.Age < TimeSpan.FromMinutes(8) && a.PublicIp == target.PublicIp).Select(a => a!).ToList();
+            if (awake.Count == 0) return "Nessun PC acceso nella stessa rete di quello da accendere.";
+            byte[] data = new MsgWriter(0).Str(target.Number).Str(target.Mac).Str(target.Broadcast).Build();
+            foreach (var a in awake) await rdv.SendNoteAsync(a.Number, Note.WakeRequest, data, ct);
+            Log($"WOL chiesto a {awake.Count} PC della stessa rete di accendere {Identity.Format(target.Number)}");
+            return $"Chiesto a {awake.Count} PC accesi della stessa rete di mandare il pacchetto di accensione " +
+                   "(lo fanno solo se questo PC può entrare lì senza conferma).";
+        }
+
+        /// <summary>Un altro PC chiede di accendere un PC di questa rete: solo se è «senza conferma» qui.</summary>
+        private void OnWakeRequest(Note note)
+        {
+            string from = note.SenderNumber;
+            var h = S.Find(from);
+            if (h == null || !h.AllowUnattended || h.PeerKey != Convert.ToHexString(note.SenderKey))
+            {
+                Log($"WOL richiesta di {Identity.Format(from)} ignorata: non è autorizzato a entrare senza conferma");
+                return;
+            }
+            var r = new MsgReader(note.Data);
+            string number = r.Str(), mac = r.Str(), bc = r.Str();
+            bool ok = WakeOnLan.Send(mac, bc);
+            Log($"WOL {Identity.Format(from)} chiede di accendere {Identity.Format(number)}: " + (ok ? $"pacchetto mandato ({mac})" : "MAC non valido"));
         }
 
         // =================================================================== solo UDP
@@ -589,6 +653,7 @@ namespace IpDeskCtrl.Core
 
             progress("Cerco " + Identity.Format(number) + " sui broker MQTT…");
             var a = await ViewerRendezvous.LookupAsync(number, S.MqttBrokers, Log, ct);
+            if (a != null) _lastSeen[number] = a;
             if (a == null)
                 throw new PeerException($"Il numero {Identity.Format(number)} non risulta in linea: il programma su quel PC è chiuso o non raggiunge internet, oppure il numero è sbagliato.");
             var (proto, ver) = AppVersion.Parse(a.Version);

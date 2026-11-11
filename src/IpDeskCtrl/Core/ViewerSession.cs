@@ -74,6 +74,7 @@ namespace IpDeskCtrl.Core
                         InputAllowed = StateText.Length == 0;
                         var h = P.S.Touch(PeerNumber, true, Convert.ToHexString(Link.PeerKey), PeerOs);
                         if (_pendingSaved != null) { h.SavedPassword = _pendingSaved; P.S.Save(); }
+                        P.RememberWake(h);
                         Send(new MsgWriter(Msg.SetQuality).Str(P.S.Quality).Build());
                         SetAudio(P.S.PlayAudio);
                         _ = Task.Run(ClipboardLoopAsync);

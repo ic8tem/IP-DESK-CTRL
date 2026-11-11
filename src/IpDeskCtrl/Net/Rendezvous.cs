@@ -89,8 +89,9 @@ namespace IpDeskCtrl.Net
     }
 
     /// <summary>Indirizzo che ogni PC lascia sui broker (messaggio «retained»), firmato con la sua chiave.</summary>
+    /// <remarks>Mac e Broadcast: scheda di rete locale, per accendere il PC con Wake-on-LAN quando è spento.</remarks>
     public sealed record Announce(string Version, byte[] PublicKey, string PublicIp, int Port, string LanIp, int LanPort, bool Upnp,
-                                  bool Reachable, long Ticks, string Os)
+                                  bool Reachable, long Ticks, string Os, string Mac = "", string Broadcast = "")
     {
         public string Number => Identity.NumberOf(PublicKey);
         public TimeSpan Age => DateTime.UtcNow - new DateTime(Math.Clamp(Ticks, DateTime.MinValue.Ticks, DateTime.MaxValue.Ticks), DateTimeKind.Utc);
@@ -98,7 +99,7 @@ namespace IpDeskCtrl.Net
         public byte[] Encode(Identity me)
         {
             byte[] body = new MsgWriter(1).Str(Version).I32(PublicKey.Length).Bytes(PublicKey).Str(PublicIp).I32(Port).Str(LanIp).I32(LanPort)
-                .Bool(Upnp).Bool(Reachable).I64(Ticks).Str(Os).Build();
+                .Bool(Upnp).Bool(Reachable).I64(Ticks).Str(Os).Str(Mac).Str(Broadcast).Build();
             return Signed.Wrap(me, body);
         }
 
@@ -112,6 +113,7 @@ namespace IpDeskCtrl.Net
                 var r = new MsgReader(body);
                 if (r.Type != 1) return null;
                 var a = new Announce(r.Str(), r.Bytes(Math.Clamp(r.I32(), 0, 512)), r.Str(), r.I32(), r.Str(), r.I32(), r.Bool(), r.Bool(), r.I64(), r.Str());
+                if (!r.AtEnd) a = a with { Mac = r.Str(), Broadcast = r.AtEnd ? "" : r.Str() };
                 if (!Identity.Verify(a.PublicKey, body, sig)) return null;
                 if (a.Number != expectedNumber) return null;
                 return a;

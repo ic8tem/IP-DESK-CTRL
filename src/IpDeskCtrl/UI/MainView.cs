@@ -363,9 +363,17 @@ namespace IpDeskCtrl.UI
             var more = Ui.Btn("···");
             var unattended = new MenuItem { Header = h.AllowUnattended ? "✓ Può entrare in questo PC senza conferma" : "Consenti di entrare in questo PC senza conferma" };
             unattended.Click += (_, _) => { h.AllowUnattended = !h.AllowUnattended; _s.Save(); RebuildHistory(); };
+            var wake = new MenuItem { Header = "Accendi (Wake-on-LAN)", IsEnabled = h.Mac.Length == 12 };
+            wake.Click += async (_, _) =>
+            {
+                if (_peer == null) return;
+                _connectInfo.Text = "Accensione di " + title + "…";
+                _connectInfo.Text = await _peer.WakeAsync(h, _life.Token);
+            };
             var remove = new MenuItem { Header = "Togli dallo storico" };
             remove.Click += (_, _) => { _s.History.Remove(h); _s.Save(); RebuildHistory(); };
             var flyout = new MenuFlyout();
+            flyout.Items.Add(wake);
             flyout.Items.Add(unattended);
             flyout.Items.Add(remove);
             more.Flyout = flyout;
