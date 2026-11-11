@@ -131,9 +131,9 @@ namespace IpDeskCtrl.Android
                     if (_reader == null || tw != _tw || th != _th)
                     {
                         var old = _reader;
-                        _reader = ImageReader.NewInstance(tw, th, (ImageFormatType)1 /* RGBA_8888 */, 2);
+                        _reader = ImageReader.NewInstance(tw, th, (global::Android.Graphics.ImageFormatType)1 /* RGBA_8888 */, 2);
                         if (_vd == null)
-                            _vd = mp.CreateVirtualDisplay("ip-desk-ctrl", tw, th, dpi, VirtualDisplayFlags.AutoMirror, _reader.Surface, null, null);
+                            _vd = mp.CreateVirtualDisplay("ip-desk-ctrl", tw, th, dpi, (global::Android.Views.DisplayFlags)16 /* VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR */, _reader.Surface, null, null);
                         else
                         {
                             // da Android 14 il VirtualDisplay si crea una volta sola: alla rotazione lo si ridimensiona
@@ -269,10 +269,10 @@ namespace IpDeskCtrl.Android
             if (s == null) return;
             if (button == MouseBtn.Left)
             {
-                if (down) { _down = true; _t0 = Environment.TickCount64; _path.Clear(); _path.Add((_x, _y)); return; }
+                if (down) { _down = true; _t0 = System.Environment.TickCount64; _path.Clear(); _path.Add((_x, _y)); return; }
                 if (!_down) return;
                 _down = false;
-                long dt = Environment.TickCount64 - _t0;
+                long dt = System.Environment.TickCount64 - _t0;
                 var (sx, sy) = _path[0];
                 double moved = Math.Sqrt((_x - sx) * (_x - sx) + (_y - sy) * (_y - sy));
                 if (moved < 15) Gesture(s, new[] { (sx, sy) }, dt > 500 ? 700 : 60);
