@@ -52,7 +52,7 @@ namespace IpDeskCtrl
                 try
                 {
                     // macOS: clic sull'icona del Dock con la finestra nascosta
-                    var act = this.TryGetFeature<IActivatableLifetime>();
+                    var act = TryGetFeature(typeof(IActivatableLifetime)) as IActivatableLifetime;
                     if (act != null) act.Activated += (_, e) => { if (e.Kind == ActivationKind.Reopen) main.ShowMain(); };
                 }
                 catch (Exception ex) { ErrorLog.Write("Riapertura dal Dock: " + ex.Message); }
