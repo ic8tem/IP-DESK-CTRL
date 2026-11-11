@@ -44,11 +44,32 @@ namespace IpDeskCtrl.Screen
         [DllImport("user32.dll")] public static extern IntPtr OpenInputDesktop(uint flags, bool inherit, uint access);
         [DllImport("user32.dll")] public static extern bool SetThreadDesktop(IntPtr desktop);
         [DllImport("user32.dll")] public static extern bool CloseDesktop(IntPtr desktop);
+        [DllImport("user32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+        public static extern bool GetUserObjectInformation(IntPtr obj, int index, System.Text.StringBuilder? info, int length, out int needed);
+
+        /// <summary>
+        /// Nome del desktop che riceve mouse e tastiera: «Default» quando il PC è in uso; «Winlogon» con la schermata
+        /// di blocco, di accesso o Ctrl+Alt+Canc; «Screen-saver»… "" se Windows non lo dice (desktop protetto).
+        /// </summary>
+        public static string InputDesktopName()
+        {
+            IntPtr d = OpenInputDesktop(0, false, 0x0001 /* DESKTOP_READOBJECTS */);
+            if (d == IntPtr.Zero) return "";
+            try
+            {
+                var sb = new System.Text.StringBuilder(64);
+                return GetUserObjectInformation(d, 2 /* UOI_NAME */, sb, sb.Capacity * 2, out _) ? sb.ToString() : "";
+            }
+            finally { CloseDesktop(d); }
+        }
+
+        public const string LockedNote = "Il PC remoto è bloccato (schermata di blocco o di accesso) oppure mostra una finestra di sicurezza (UAC, Ctrl+Alt+Canc): " +
+                                         "Windows non la lascia vedere né comandare. Sbloccalo e l'immagine torna da sola.";
         [DllImport("gdi32.dll")] public static extern IntPtr CreateCompatibleDC(IntPtr hdc);
         [DllImport("gdi32.dll")] public static extern bool DeleteDC(IntPtr hdc);
         [DllImport("gdi32.dll")] public static extern IntPtr SelectObject(IntPtr hdc, IntPtr obj);
         [DllImport("gdi32.dll")] public static extern bool DeleteObject(IntPtr obj);
-        [DllImport("gdi32.dll")] public static extern bool BitBlt(IntPtr dst, int x, int y, int w, int h, IntPtr src, int sx, int sy, uint rop);
+        [DllImport("gdi32.dll", SetLastError = true)] public static extern bool BitBlt(IntPtr dst, int x, int y, int w, int h, IntPtr src, int sx, int sy, uint rop);
         [DllImport("gdi32.dll")] public static extern IntPtr CreateDIBSection(IntPtr hdc, ref BITMAPINFOHEADER bmi, uint usage, out IntPtr bits, IntPtr section, uint offset);
 
         public const uint SRCCOPY = 0x00CC0020;
@@ -93,9 +114,13 @@ namespace IpDeskCtrl.Screen
 
         public bool Capture(MonitorInfo area, Frame into)
         {
-            // segue il desktop attivo (per esempio dopo lo sblocco del PC)
-            IntPtr desk = Win32.OpenInputDesktop(0, false, 0x10000000 /* GENERIC_ALL */);
-            if (desk != IntPtr.Zero) { Win32.SetThreadDesktop(desk); Win32.CloseDesktop(desk); }
+            // con il PC bloccato il desktop attivo non è quello dell'utente: lo si dice chiaramente
+            string desktop = Win32.InputDesktopName();
+            if (desktop.Length == 0 || !desktop.Equals("Default", StringComparison.OrdinalIgnoreCase))
+            {
+                Note = Win32.LockedNote + (desktop.Length > 0 ? $" (desktop attivo: {desktop})" : "");
+                return false;
+            }
 
             int w = Math.Max(1, area.W), h = Math.Max(1, area.H);
             IntPtr screen = Win32.GetDC(IntPtr.Zero);
@@ -118,15 +143,31 @@ namespace IpDeskCtrl.Screen
                 }
                 if (!Win32.BitBlt(_memDc, 0, 0, w, h, screen, area.X, area.Y, Win32.SRCCOPY))
                 {
-                    Note = "Lo schermo non è catturabile in questo momento (schermata di blocco o finestra di sicurezza)";
+                    Note = $"Cattura dello schermo non riuscita (BitBlt, errore {Marshal.GetLastWin32Error()}) sull'area {area.X},{area.Y} {w}×{h}";
                     return false;
                 }
-                Note = "";
                 into.Ensure(w, h);
                 Marshal.Copy(_bits, into.Data, 0, into.Data.Length);
+                Note = AllBlack(into)
+                    ? "Lo schermo del PC remoto è completamente nero: di solito è una sessione di Desktop remoto di Windows (RDP) rimasta scollegata, " +
+                      "che spegne lo schermo vero. Su quel PC accedi di nuovo dalla tastiera, oppure chiudi la sessione RDP."
+                    : "";
                 return true;
             }
             finally { Win32.ReleaseDC(IntPtr.Zero, screen); }
+        }
+
+        /// <summary>Guarda circa 4000 pixel sparsi: tutti a zero = immagine nera.</summary>
+        private static bool AllBlack(Frame f)
+        {
+            int px = f.Width * f.Height;
+            int step = Math.Max(1, px / 4000);
+            for (int i = 0; i < px; i += step)
+            {
+                int o = i * 4;
+                if ((f.Data[o] | f.Data[o + 1] | f.Data[o + 2]) != 0) return false;
+            }
+            return true;
         }
 
         public (int x, int y)? Cursor() => Win32.GetCursorPos(out var p) ? (p.X, p.Y) : null;

@@ -141,6 +141,7 @@ namespace IpDeskCtrl.Core
             Send(w.I32(_selected).Build());
             _area = _selected < 0 ? MonitorInfo.Union(_monitors) : _monitors[_selected];
             _fullNext = true;
+            SessionLog.Write("SCHERMO monitor: " + string.Join(" | ", _monitors.Select((m, i) => m.Label(i) + $" a {m.X},{m.Y}")) + $" · mostro {(_selected < 0 ? "tutti" : (_selected + 1).ToString())}");
         }
 
         // ------------------------------------------------------------------ messaggi dal visore
@@ -284,8 +285,15 @@ namespace IpDeskCtrl.Core
         {
             if (text == _lastNote) return;
             _lastNote = text;
+            if (text.Length > 0) SessionLog.Write("AVVISO " + text);
             Send(new MsgWriter(Msg.ScreenNote).Str(text).Build());
         }
+
+        // contatori per il registro (una riga al minuto durante la sessione)
+        private int _statFrames, _statFail, _statTiles;
+        private long _statBytes;
+        private string _lastCaptureNote = "";
+        private long _statAt = Environment.TickCount64;
 
         // ------------------------------------------------------------------ schermo
 
@@ -319,11 +327,14 @@ namespace IpDeskCtrl.Core
                     if (area == null || _screen == null) { Thread.Sleep(50); continue; }
                     if (!_screen.Capture(area, raw))
                     {
+                        _statFail++;
                         if (_screen.Note.Length > 0) Note(_screen.Note);
                         Thread.Sleep(500);
                         continue;
                     }
                     if (_screen.Note.Length > 0) Note(_screen.Note);
+                    else if (_lastNote.Length > 0 && _lastNote == _lastCaptureNote) Note("");
+                    _lastCaptureNote = _screen.Note;
 
                     // qualità automatica: si guarda quanto ci mette un fotogramma ad arrivare
                     if (_quality == "auto")
@@ -351,6 +362,9 @@ namespace IpDeskCtrl.Core
                         foreach (var t in tiles)
                             Link.SendAsync(new MsgWriter(Msg.Tile).I32(id).I32(t.X).I32(t.Y).I32(t.W).I32(t.H).U8(t.Format).I32(t.Data.Length).Bytes(t.Data).Build(), Cts.Token).Wait(Cts.Token);
                         Link.SendAsync(new MsgWriter(Msg.FrameEnd).I32(id).I32((int)encMs).Build(), Cts.Token).Wait(Cts.Token);
+                        _statFrames++; _statTiles += tiles.Count;
+                        foreach (var t in tiles) _statBytes += t.Data.Length;
+                        if (id == 1) SessionLog.Write($"SCHERMO primo fotogramma {f.Width}×{f.Height} ({area.Name} {area.W}×{area.H} a {area.X},{area.Y}) · {tiles.Count} riquadri · {encMs} ms");
                     }
 
                     // puntatore del PC comandato, in coordinate dell'immagine
@@ -386,6 +400,12 @@ namespace IpDeskCtrl.Core
             {
                 try { await Task.Delay(3000, Cts.Token); } catch { break; }
                 CheckUdpAlive(TimeSpan.FromSeconds(6));
+                if (Environment.TickCount64 - _statAt > 60000)
+                {
+                    _statAt = Environment.TickCount64;
+                    SessionLog.Write($"SCHERMO ultimo minuto: {_statFrames} fotogrammi, {_statTiles} riquadri, {_statBytes / 1024} kB, {_statFail} catture non riuscite · ritardo {_ackMs:F0} ms · {Route}");
+                    _statFrames = 0; _statTiles = 0; _statBytes = 0; _statFail = 0;
+                }
                 // monitor collegati o staccati
                 try
                 {

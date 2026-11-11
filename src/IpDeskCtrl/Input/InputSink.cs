@@ -109,7 +109,14 @@ namespace IpDeskCtrl.Input
         private void Send(params INPUT[] ins)
         {
             if (SendInput((uint)ins.Length, ins, Marshal.SizeOf<INPUT>()) == 0)
-                Note = "Windows ha bloccato mouse e tastiera (finestra di un programma avviato come amministratore o schermata di sicurezza)";
+            {
+                int err = Marshal.GetLastWin32Error();
+                string desktop = Win32.InputDesktopName();
+                Note = desktop.Length == 0 || !desktop.Equals("Default", StringComparison.OrdinalIgnoreCase)
+                    ? Win32.LockedNote
+                    : $"Windows ha rifiutato mouse e tastiera (errore {err}): in primo piano c'è un programma avviato come amministratore. " +
+                      "Avvia anche IP-DESK-CTRL come amministratore, oppure chiudi quel programma.";
+            }
             else Note = "";
         }
 
