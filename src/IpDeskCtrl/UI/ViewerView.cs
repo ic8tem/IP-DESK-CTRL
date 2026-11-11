@@ -602,6 +602,7 @@ namespace IpDeskCtrl.UI
                 _session = s;
                 _view.Session = s;
                 s.StateChanged += () => Dispatcher.UIThread.Post(() => OnState(s));
+                s.PasswordRequested += c => Dispatcher.UIThread.Post(() => AskPassword(s, c));
                 s.MonitorsChanged += () => Dispatcher.UIThread.Post(() => OnMonitors(s));
                 s.FrameReady += () =>
                 {
@@ -627,6 +628,30 @@ namespace IpDeskCtrl.UI
                 if (!quiet) Failed("Collegamento non riuscito: " + ex.Message);
             }
             return false;
+        }
+
+        // ------------------------------------------------------------------ password dell'accesso senza conferma
+
+        private void AskPassword(ViewerSession s, PasswordChallenge c)
+        {
+            if (s != _session) return;
+            var box = new TextBox { PasswordChar = '•', Watermark = "Password", MinWidth = 240 };
+            var remember = new CheckBox { Content = "Ricorda per questo PC", IsChecked = true };
+            void Submit()
+            {
+                string pw = box.Text ?? "";
+                if (pw.Length == 0) return;
+                _overlayButtons.Children.Clear();
+                _overlayText.Text = "Controllo la password…";
+                _ = s.AnswerPasswordAsync(c, pw, remember.IsChecked == true);
+            }
+            Overlay("Password richiesta",
+                c.Message.Length > 0 ? c.Message : "Questo PC chiede una password per entrare senza conferma. Con «Chiedi a chi è al PC» decide invece la persona davanti al PC remoto.",
+                ("Chiedi a chi è al PC", false, () => { _overlayButtons.Children.Clear(); _overlayText.Text = "Attendo…"; _ = s.AnswerPasswordAsync(c, null, false); }),
+                ("Entra", true, Submit));
+            _overlayButtons.Children.Insert(0, new StackPanel { Spacing = 6, VerticalAlignment = VerticalAlignment.Center, Children = { box, remember } });
+            box.KeyDown += (_, e) => { if (e.Key == Key.Enter) Submit(); };
+            box.AttachedToVisualTree += (_, _) => box.Focus();
         }
 
         // ------------------------------------------------------------------ riavvio del PC remoto

@@ -23,6 +23,9 @@ namespace IpDeskCtrl.Core
         public double KbitPerSecond { get; private set; }
 
         public event Action? StateChanged;
+        /// <summary>L'host chiede la password dell'accesso senza conferma (e quella ricordata non c'è o è sbagliata).</summary>
+        public event Action<PasswordChallenge>? PasswordRequested;
+        private string? _pendingSaved;            // password da ricordare (o "" = da dimenticare) quando l'host accetta
         public event Action? MonitorsChanged;
         public event Action? FrameReady;          // dal thread di rete
         public event Action? CursorMoved;
@@ -70,11 +73,26 @@ namespace IpDeskCtrl.Core
                     {
                         InputAllowed = StateText.Length == 0;
                         var h = P.S.Touch(PeerNumber, true, Convert.ToHexString(Link.PeerKey), PeerOs);
+                        if (_pendingSaved != null) { h.SavedPassword = _pendingSaved; P.S.Save(); }
                         Send(new MsgWriter(Msg.SetQuality).Str(P.S.Quality).Build());
                         SetAudio(P.S.PlayAudio);
                         _ = Task.Run(ClipboardLoopAsync);
                     }
                     StateChanged?.Invoke();
+                    break;
+                }
+                case Msg.AuthChallenge:
+                {
+                    var c = new PasswordChallenge(r.Bytes(Math.Clamp(r.I32(), 0, 64)), r.I32(), r.Bytes(Math.Clamp(r.I32(), 0, 64)), r.Str());
+                    var saved = P.S.Find(PeerNumber)?.SavedPassword ?? "";
+                    byte[]? key = c.Message.Length == 0 && saved.Length > 0 ? AccessPassword.Unprotect(P.Me, PeerNumber, saved, c.Salt) : null;
+                    if (key != null)
+                    {
+                        SessionLog.Write($"SESSIONE {Identity.Format(PeerNumber)} chiede la password: uso quella ricordata");
+                        Send(new MsgWriter(Msg.AuthResponse).I32(32).Bytes(AccessPassword.Proof(key, c.Nonce)).Build());
+                    }
+                    else if (PasswordRequested != null) PasswordRequested(c);
+                    else Send(new MsgWriter(Msg.AuthResponse).I32(0).Build());
                     break;
                 }
                 case Msg.Monitors:
@@ -215,6 +233,19 @@ namespace IpDeskCtrl.Core
 
         protected override void OnFilesReceived(TransferPurpose purpose, string folder, List<string> topLevel, bool onClipboard) =>
             FilesReceived?.Invoke(folder, topLevel, onClipboard);
+
+        /// <summary>Risposta alla richiesta di password (null = annulla: decide chi è davanti all'altro PC).</summary>
+        public async Task AnswerPasswordAsync(PasswordChallenge c, string? password, bool remember)
+        {
+            if (password == null)
+            {
+                await SendAsync(new MsgWriter(Msg.AuthResponse).I32(0).Build());
+                return;
+            }
+            byte[] key = await Task.Run(() => AccessPassword.Derive(password, c.Salt, c.Iterations));
+            _pendingSaved = remember ? AccessPassword.Protect(P.Me, PeerNumber, c.Salt, key) : "";
+            await SendAsync(new MsgWriter(Msg.AuthResponse).I32(32).Bytes(AccessPassword.Proof(key, c.Nonce)).Build());
+        }
 
         /// <summary>true dopo «Riavvia il PC remoto»: alla chiusura la plancia aspetta il PC e si ricollega.</summary>
         public bool RebootRequested { get; private set; }

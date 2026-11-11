@@ -14,6 +14,8 @@ namespace IpDeskCtrl.Net
         public const byte Bye = 0x03;            // str motivo
         public const byte Ping = 0x04;           // i64 ticks
         public const byte Pong = 0x05;           // i64 ticks
+        public const byte AuthChallenge = 0x06;  // host -> visore: i32 n | sale | i32 iterazioni | i32 n | nonce | str avviso
+        public const byte AuthResponse = 0x07;   // visore -> host: i32 n | HMAC (0 byte = annulla: decide chi è al PC)
 
         // ---- schermo (host -> visore, salvo dove indicato)
         public const byte Monitors = 0x10;       // i32 n | n × (str nome | i32 x y w h | bool principale) | i32 scelto (-1 = tutti)

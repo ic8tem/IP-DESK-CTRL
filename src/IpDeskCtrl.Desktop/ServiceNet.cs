@@ -181,6 +181,15 @@ namespace IpDeskCtrl.Desktop
                             _s.ShareAudio = p[3] == "1";
                             _s.Save();
                             break;
+                        case "PWD" when p.Length >= 2 && _s != null:
+                            if (p[1] == "-") { _s.PasswordSalt = ""; _s.PasswordHash = ""; }
+                            else if (p.Length >= 4 && int.TryParse(p[3], out int it))
+                            {
+                                _s.PasswordSalt = p[1]; _s.PasswordHash = p[2]; _s.PasswordIterations = it;
+                            }
+                            _s.Save();
+                            SessionLog.Write("SERVIZIO password dell'accesso senza conferma " + (p[1] == "-" ? "tolta" : "aggiornata"));
+                            break;
                         case "KICK":
                             _peer?.CurrentHost?.Close("chiuso dall'utente dell'altro PC");
                             break;

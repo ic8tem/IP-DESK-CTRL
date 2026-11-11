@@ -159,6 +159,9 @@ namespace IpDeskCtrl.UI
             var received = Ui.Btn("File ricevuti");
             received.Click += (_, _) => OpenPath(Platform.Received);
             received.IsVisible = !Platform.IsMobile;
+            var password = Ui.Btn("Password per l'accesso senza conferma…");
+            password.Click += (_, _) => PasswordDialog();
+            ToolTip.SetTip(password, "Chi è autorizzato a entrare senza conferma dovrà anche conoscere questa password.");
             var about = Ui.Btn("Informazioni e licenze");
             about.Click += (_, _) => Dialogs.About(_me);
             return Ui.Col(8,
@@ -169,7 +172,7 @@ namespace IpDeskCtrl.UI
                 Chk("Ascolta l'audio dei PC a cui ti colleghi", _s.PlayAudio, v => _s.PlayAudio = v),
                 Ui.Row(10, new TextBlock { Text = "Tema", VerticalAlignment = VerticalAlignment.Center }, theme),
                 Ui.Sub("File ricevuti dagli altri PC: " + Platform.Received, 12),
-                Wrap(folder, received, about));
+                Wrap(password, folder, received, about));
         }
 
         private static WrapPanel Wrap(params Control[] items)
@@ -221,6 +224,7 @@ namespace IpDeskCtrl.UI
             _svc.HostEnded += (n, why) => Dispatcher.UIThread.Post(() => { _incomingBanner.IsVisible = false; RebuildHistory(); });
             _svc.Lost += () => Dispatcher.UIThread.Post(() => _incomingBanner.IsVisible = false);
             _svc.SendSettings(_s.AcceptIncoming, _s.AllowInput, _s.ShareAudio);
+            if (_s.PasswordHash.Length > 0) _svc.Send($"PWD {_s.PasswordSalt} {_s.PasswordHash} {_s.PasswordIterations}");
             SessionLog.Write("SERVIZIO collegato: i collegamenti a questo PC li riceve il servizio di Windows");
         }
 
@@ -396,6 +400,49 @@ namespace IpDeskCtrl.UI
                 edit.AttachedToVisualTree += (_, _) => { edit.Focus(); edit.SelectAll(); };
             };
             return box;
+        }
+
+        // =================================================================== password dell'accesso senza conferma
+
+        private void PasswordDialog()
+        {
+            var p1 = new TextBox { PasswordChar = '•', Watermark = "Nuova password" };
+            var p2 = new TextBox { PasswordChar = '•', Watermark = "Ripeti la password" };
+            var info = Ui.Sub(_s.PasswordHash.Length > 0
+                ? "Una password è già impostata. Puoi cambiarla o toglierla."
+                : "Nessuna password: chi è autorizzato entra senza conferma e senza password.", 12);
+            var save = Ui.Btn("Salva", true);
+            var remove = Ui.Btn("Togli la password");
+            var close = Ui.Btn("Chiudi");
+            remove.IsEnabled = _s.PasswordHash.Length > 0;
+            var content = Ui.Col(10,
+                Ui.H1("Password per l'accesso senza conferma"),
+                new TextBlock { TextWrapping = TextWrapping.Wrap, Text = "Vale per i numeri dello storico con «entra senza conferma»: prima di entrare devono dare questa password " +
+                    "(5 errori bloccano quel numero per 10 minuti). Gli altri continuano a chiedere il permesso a chi è davanti al PC." },
+                p1, p2, info, Ui.Row(10, close, remove, save));
+            var h = Shell.Current.ShowDialog("IP-DESK-CTRL · password", content, 460, false);
+            close.Click += (_, _) => h.Close();
+            remove.Click += (_, _) =>
+            {
+                _s.PasswordSalt = ""; _s.PasswordHash = "";
+                _s.Save();
+                _svc?.Send("PWD -");
+                SessionLog.Write("IMPOSTAZIONI password dell'accesso senza conferma tolta");
+                h.Close();
+            };
+            save.Click += async (_, _) =>
+            {
+                string a = p1.Text ?? "", b = p2.Text ?? "";
+                if (a.Length < 6) { info.Text = "La password deve avere almeno 6 caratteri."; return; }
+                if (a != b) { info.Text = "Le due password non sono uguali."; return; }
+                save.IsEnabled = false;
+                var (salt, hash) = await Task.Run(() => AccessPassword.Make(a));
+                _s.PasswordSalt = salt; _s.PasswordHash = hash; _s.PasswordIterations = AccessPassword.DefaultIterations;
+                _s.Save();
+                _svc?.Send($"PWD {salt} {hash} {_s.PasswordIterations}");
+                SessionLog.Write("IMPOSTAZIONI password dell'accesso senza conferma impostata");
+                h.Close();
+            };
         }
 
         // =================================================================== richieste in arrivo

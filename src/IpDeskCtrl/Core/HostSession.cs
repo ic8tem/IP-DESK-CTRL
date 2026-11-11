@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
+using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
 using IpDeskCtrl.Audio;
@@ -22,6 +23,8 @@ namespace IpDeskCtrl.Core
         private volatile bool _accepted;
         private bool _allowInput;
         private readonly TaskCompletionSource<bool> _helloSeen = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        private volatile TaskCompletionSource<byte[]>? _authReply;
+        private enum PwResult { Ok, Cancel, Blocked }
 
         private IScreenSource? _screen;
         private IInputSink? _input;
@@ -70,13 +73,25 @@ namespace IpDeskCtrl.Core
                 var h = P.S.Find(PeerNumber);
                 string keyHex = Convert.ToHexString(Link.PeerKey);
                 bool known = h != null && h.PeerKey == keyHex;
-                IncomingDecision d;
+                IncomingDecision? d = null;
                 if (known && h!.AllowUnattended)
                 {
-                    d = new IncomingDecision(true, P.S.AllowInput, true);
-                    SessionLog.Write($"SESSIONE {Identity.Format(PeerNumber)} entra senza conferma (accesso consentito in precedenza)");
+                    var pw = P.S.PasswordHash.Length > 0 ? await CheckPasswordAsync() : PwResult.Ok;
+                    if (IsClosed) return;
+                    if (pw == PwResult.Blocked)
+                    {
+                        int min = (int)Math.Ceiling((AccessPassword.BlockedFor(PeerNumber) ?? AccessPassword.BlockTime).TotalMinutes);
+                        await Refuse(AcceptState.Rejected, $"troppe password sbagliate: riprova tra {min} minuti");
+                        return;
+                    }
+                    if (pw == PwResult.Ok)
+                    {
+                        d = new IncomingDecision(true, P.S.AllowInput, true);
+                        SessionLog.Write($"SESSIONE {Identity.Format(PeerNumber)} entra senza conferma (accesso consentito in precedenza" +
+                                         (P.S.PasswordHash.Length > 0 ? ", password giusta)" : ")"));
+                    }
                 }
-                else
+                if (d == null)
                 {
                     await SendAsync(new MsgWriter(Msg.Accept).U8((byte)AcceptState.Waiting).Str("").Build());
                     using var t = CancellationTokenSource.CreateLinkedTokenSource(Cts.Token);
@@ -88,7 +103,7 @@ namespace IpDeskCtrl.Core
                     }
                     catch (OperationCanceledException) { d = new IncomingDecision(false, false, false); }
                 }
-                if (IsClosed) return;
+                if (IsClosed || d == null) return;
                 if (!d.Accept) { await Refuse(AcceptState.Rejected, d.Why.Length > 0 ? d.Why : "richiesta rifiutata"); return; }
 
                 _allowInput = d.AllowInput;
@@ -121,6 +136,44 @@ namespace IpDeskCtrl.Core
                 Close("errore sul PC comandato: " + ex.Message);
             }
             catch { }
+        }
+
+        /// <summary>
+        /// Password dell'accesso senza conferma: sfida nel canale cifrato, risposta HMAC. Errori contati per
+        /// numero (5 → 10 minuti di blocco). Annulla = si chiede a chi è davanti al PC.
+        /// </summary>
+        private async Task<PwResult> CheckPasswordAsync()
+        {
+            byte[] salt, stored;
+            try { salt = Convert.FromHexString(P.S.PasswordSalt); stored = Convert.FromHexString(P.S.PasswordHash); }
+            catch { return PwResult.Ok; }          // password salvata male: come se non ci fosse
+            string msg = "";
+            while (!IsClosed)
+            {
+                if (AccessPassword.BlockedFor(PeerNumber) != null) return PwResult.Blocked;
+                byte[] nonce = RandomNumberGenerator.GetBytes(32);
+                var tcs = new TaskCompletionSource<byte[]>(TaskCreationOptions.RunContinuationsAsynchronously);
+                _authReply = tcs;
+                await SendAsync(new MsgWriter(Msg.AuthChallenge).I32(salt.Length).Bytes(salt).I32(P.S.PasswordIterations)
+                    .I32(nonce.Length).Bytes(nonce).Str(msg).Build());
+                if (await Task.WhenAny(tcs.Task, Task.Delay(TimeSpan.FromMinutes(2), Cts.Token)) != tcs.Task) return PwResult.Cancel;
+                byte[] proof = tcs.Task.Result;
+                if (proof.Length == 0)
+                {
+                    SessionLog.Write($"SESSIONE {Identity.Format(PeerNumber)} non ha messo la password: chiedo a chi è al PC");
+                    return PwResult.Cancel;
+                }
+                if (Crypto.Equal(proof, AccessPassword.Proof(stored, nonce)))
+                {
+                    AccessPassword.Ok(PeerNumber);
+                    return PwResult.Ok;
+                }
+                int left = AccessPassword.Fail(PeerNumber);
+                SessionLog.Write($"SESSIONE {Identity.Format(PeerNumber)} password sbagliata (tentativi rimasti: {left})");
+                if (left <= 0) return PwResult.Blocked;
+                msg = left == 1 ? "Password sbagliata: resta un solo tentativo." : $"Password sbagliata: restano {left} tentativi.";
+            }
+            return PwResult.Cancel;
         }
 
         private async Task Refuse(AcceptState s, string why)
@@ -164,6 +217,7 @@ namespace IpDeskCtrl.Core
                 case Msg.Refresh: _fullNext = true; break;
                 case Msg.FileFetch: _ = Task.Run(SendClipboardFilesAsync); break;
                 case Msg.Reboot: _ = Task.Run(RebootAsync); break;
+                case Msg.AuthResponse: _authReply?.TrySetResult(r.Bytes(Math.Clamp(r.I32(), 0, 64))); break;
                 case Msg.FrameAck:
                 {
                     int id = r.I32();

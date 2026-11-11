@@ -18,6 +18,7 @@ namespace IpDeskCtrl.Core
         public bool AllowUnattended { get; set; }         // può entrare in questo PC senza conferma
         public string LastSeconds { get; set; } = "";     // durata dell'ultimo collegamento, testo
         public string Os { get; set; } = "";              // sistema operativo dell'altro PC
+        public string SavedPassword { get; set; } = "";   // password di quel PC ricordata (sale:PBKDF2 cifrato, vedi AccessPassword)
     }
 
     /// <summary>Impostazioni salvate nella cartella dati dell'utente (IP-DESK-CTRL/settings.json).</summary>
@@ -30,6 +31,9 @@ namespace IpDeskCtrl.Core
         public bool AcceptIncoming { get; set; } = true;   // gli altri possono chiedere di collegarsi
         public bool AllowInput { get; set; } = true;       // mouse e tastiera dall'altro PC
         public bool ShareAudio { get; set; } = true;       // manda l'audio del sistema all'altro PC
+        public string PasswordSalt { get; set; } = "";     // password per l'accesso senza conferma ("" = nessuna)
+        public string PasswordHash { get; set; } = "";
+        public int PasswordIterations { get; set; } = AccessPassword.DefaultIterations;
 
         // ---------------- visore
         public int ZoomPercent { get; set; } = 0;          // 0 = adatta alla finestra
