@@ -3,7 +3,7 @@
 
 Le versioni con protocollo diverso non si collegano tra loro: aggiorna tutti i dispositivi alla stessa versione principale (la 0.4.1 si collega con la 0.4.0; la 0.5 si collega con la 0.4).
 
-## 0.5.1 — in preparazione
+## 0.5.1 — 11 novembre 2026
 - **Telefono**: il numero si vede sempre intero (si rimpicciolisce per stare nella larghezza), il campo per il numero da chiamare è su tutta la larghezza con «Inquadra QR» e «Collegati» sotto, i titoli non si tagliano più.
 - **Più visori insieme**: mentre uno comanda, fino a 4 altri possono collegarsi per **guardare** (solo visione: niente mouse, tastiera, file o tunnel). Chi è al PC accetta ognuno, oppure entrano da soli i numeri con accesso senza conferma; la finestrella «comandato da» dice quanti guardano e «Disconnetti» chiude tutti. Si può spegnere in Impostazioni.
 - **Aggiornamento dal programma aperto**: quando esce una nuova versione compare un riquadro con «Aggiorna ora». Il programma scarica il file giusto, controlla l'impronta SHA-256 pubblicata da GitHub, lo installa da solo, si chiude e si riapre. I collegamenti aperti riprendono da soli: il PC comandato lascia rientrare senza conferma, per 5 minuti, chi era collegato; il visore si ricollega appena l'altro torna. Su Windows con il servizio l'installazione non chiede nulla (va bene anche quando il PC è comandato da remoto); senza, Windows chiede il permesso di amministratore. Linux .deb: password di amministratore; macOS: l'app si sostituisce da sola; Android: si apre il browser con l'APK.
