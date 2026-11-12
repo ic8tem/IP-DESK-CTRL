@@ -3,6 +3,9 @@
 
 Le versioni con protocollo diverso non si collegano tra loro: aggiorna tutti i dispositivi alla stessa versione principale (la 0.4.1 si collega con la 0.4.0; la 0.5 si collega con la 0.4).
 
+## 0.5.5 — 12 novembre 2026
+- **L'aggiornamento automatico non interrompe i collegamenti**: se esce una versione nuova mentre comandi un PC o qualcuno comanda il tuo, compare solo il pulsante «Nuova versione» in alto a destra e l'installazione parte da sola appena si chiude l'ultimo collegamento (dopo il solito minuto per fermarla). «Aggiorna ora» la fa subito, con circa 45 secondi di interruzione e ripresa automatica.
+
 ## 0.5.4 — 12 novembre 2026
 - **Aggiornamenti automatici**: il programma guarda ogni 30 minuti (prima ogni 12 ore) se è uscita una nuova versione. In alto a destra, accanto a «In linea», compare il pulsante **Nuova versione x.y.z**. Con l'opzione **Aggiornamenti automatici** (Impostazioni, attiva di serie) il riquadro si apre da solo e dopo 60 secondi la versione nuova si scarica, si controlla e si installa; il programma si riapre e i collegamenti riprendono. **Più tardi** la ferma per quella versione. Android: solo l'avviso.
 

@@ -45,6 +45,12 @@ namespace IpDeskCtrl.UI
         private IDialogHandle? _controlled;
         private readonly Button _newVersion = new() { Padding = new Thickness(10, 4), VerticalAlignment = VerticalAlignment.Center };
         private ReleaseInfo? _latest;
+        private ReleaseInfo? _autoPending;      // aggiornamento automatico in attesa che si chiudano i collegamenti
+        private DispatcherTimer? _autoWait;
+        private int _svcHosts;                  // collegamenti in arrivo tenuti dal servizio di Windows
+
+        /// <summary>Collegamenti aperti adesso, nei due versi.</summary>
+        private int OpenSessions => _viewers.Count + (_peer?.CurrentHost?.IsActive == true ? 1 : 0) + _svcHosts;
         private readonly Border _update = new() { IsVisible = false, CornerRadius = new CornerRadius(10), Padding = new Thickness(14) };
         private bool _closingForReal;
 
@@ -361,9 +367,9 @@ namespace IpDeskCtrl.UI
             _svc = await Task.Run(ServiceClient.Attach);
             if (_svc == null) return;
             _svc.AskAccept = AskAcceptAsync;
-            _svc.HostStarted += (n, input) => Dispatcher.UIThread.Post(() => OnServiceHostStarted(n, input));
-            _svc.HostEnded += (n, why) => Dispatcher.UIThread.Post(() => { _incomingBanner.IsVisible = false; RebuildHistory(); });
-            _svc.Lost += () => Dispatcher.UIThread.Post(() => _incomingBanner.IsVisible = false);
+            _svc.HostStarted += (n, input) => Dispatcher.UIThread.Post(() => { _svcHosts++; OnServiceHostStarted(n, input); });
+            _svc.HostEnded += (n, why) => Dispatcher.UIThread.Post(() => { _svcHosts = Math.Max(0, _svcHosts - 1); _incomingBanner.IsVisible = false; RebuildHistory(); });
+            _svc.Lost += () => Dispatcher.UIThread.Post(() => { _svcHosts = 0; _incomingBanner.IsVisible = false; });
             _svc.SendSettings(_s.AcceptIncoming, _s.AllowInput, _s.ShareAudio);
             if (_s.PasswordHash.Length > 0) _svc.Send($"PWD {_s.PasswordSalt} {_s.PasswordHash} {_s.PasswordIterations}");
             SessionLog.Write("SERVIZIO collegato: i collegamenti a questo PC li riceve il servizio di Windows");
@@ -627,7 +633,7 @@ namespace IpDeskCtrl.UI
 
             var bar = new ProgressBar { Minimum = 0, Maximum = 1, Height = 8, IsVisible = false };
             var status = Ui.Sub("", 12);
-            int sessions = _viewers.Count + (_peer?.CurrentHost?.IsActive == true ? 1 : 0);
+            int sessions = OpenSessions;
             var go = Ui.Btn(kind == Updater.Kind.Android ? "Scarica l'APK" : "Aggiorna ora", true);
             var later = Ui.Btn("Più tardi");
             var notes = Ui.Btn("Novità");
@@ -701,6 +707,13 @@ namespace IpDeskCtrl.UI
                     left--;
                     if (left > 0) { countdown.Text = $"Aggiornamento automatico: parte da solo tra {left} s."; return; }
                     timer.Stop();
+                    if (OpenSessions > 0)
+                    {
+                        // nel frattempo si è collegato qualcuno: si aspetta che finisca
+                        _updateDialog?.Close(); _updateDialog = null;
+                        ShowUpdate(r);
+                        return;
+                    }
                     countdown.Text = "Aggiornamento automatico in corso.";
                     SessionLog.Write($"AGGIORNAMENTI installazione automatica della {r.Version}");
                     if (go.IsEnabled) go.RaiseEvent(new Avalonia.Interactivity.RoutedEventArgs(Button.ClickEvent));
@@ -723,6 +736,29 @@ namespace IpDeskCtrl.UI
             {
                 _update.IsVisible = false;
                 bool auto = _s.AutoUpdate && kind != Updater.Kind.Android && _s.SkipAutoVersion != r.Version;
+                if (auto && OpenSessions > 0)
+                {
+                    // con collegamenti aperti non si interrompe nessuno: si installa appena si chiude l'ultimo
+                    if (_autoPending?.Version != r.Version) SessionLog.Write($"AGGIORNAMENTI la {r.Version} si installerà da sola appena si chiudono i collegamenti aperti");
+                    _autoPending = r;
+                    ToolTip.SetTip(_newVersion, $"È uscita IP-DESK-CTRL {r.Version} (questa è la {AppVersion.Text}). " +
+                                                "Si installa da sola appena si chiudono i collegamenti aperti; clic per aggiornare subito.");
+                    if (_autoWait == null)
+                    {
+                        _autoWait = new DispatcherTimer { Interval = TimeSpan.FromSeconds(10) };
+                        _autoWait.Tick += (_, _) =>
+                        {
+                            if (_autoPending == null) { _autoWait!.Stop(); _autoWait = null; return; }
+                            if (OpenSessions > 0) return;
+                            var p = _autoPending;
+                            _autoPending = null;
+                            _autoWait!.Stop(); _autoWait = null;
+                            ShowUpdatePopup(p, auto: true);
+                        };
+                        _autoWait.Start();
+                    }
+                    return;
+                }
                 // con l'aggiornamento automatico ci si riprova a ogni controllo; senza, il riquadro compare una volta per versione
                 if (auto || newOne) ShowUpdatePopup(r, auto);
                 return;

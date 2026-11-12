@@ -60,7 +60,7 @@ File `IP-DESK-CTRL-…-android.apk`, per Android 8.0 o successivo. Consenti l'in
 
 Il programma controlla all'avvio e poi **ogni 30 minuti** se c'è una versione nuova. Se c'è, in alto a destra, accanto a «In linea», compare il pulsante **Nuova versione x.y.z**, che apre il riquadro con **Aggiorna ora**.
 
-Con **Aggiornamenti automatici** (Impostazioni, attivo di serie) il riquadro si apre da solo e l'aggiornamento parte dopo 60 secondi; **Più tardi** lo ferma per quella versione, e resta il pulsante in alto a destra. Su Android si apre solo l'avviso: l'APK va installato a mano.
+Con **Aggiornamenti automatici** (Impostazioni, attivo di serie) il riquadro si apre da solo e l'aggiornamento parte dopo 60 secondi; se ci sono collegamenti aperti aspetta che si chiudano, così non interrompe nessuno; **Più tardi** lo ferma per quella versione, e resta il pulsante in alto a destra. Su Android si apre solo l'avviso: l'APK va installato a mano.
 
 L'aggiornamento:
 
