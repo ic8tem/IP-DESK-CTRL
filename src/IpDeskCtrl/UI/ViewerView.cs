@@ -557,10 +557,10 @@ namespace IpDeskCtrl.UI
         /// <summary>File copiati sul PC remoto: arrivano da soli negli appunti di qua (fino a 2 GB).</summary>
         private void AutoFetch(ViewerSession s, int count, long bytes, string first)
         {
-            bool first = !_remoteFilesSeen;
+            bool firstSeen = !_remoteFilesSeen;
             _remoteFilesSeen = true;
             if (count <= 0 || Platform.IsMobile || !s.InputAllowed || s.State != AcceptState.Accepted) return;
-            if (first)
+            if (firstSeen)
             {
                 ShowNote($"Sul PC remoto erano già copiati {count} elementi: se ti servono, File › «Prendi qui i file copiati sul PC remoto».");
                 return;
