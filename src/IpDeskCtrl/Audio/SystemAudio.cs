@@ -91,49 +91,117 @@ namespace IpDeskCtrl.Audio
         private NAudio.CoreAudioApi.WasapiCapture? _cap;
         private Resampler? _rs;
         private readonly bool _mic;
+        private Action<short[]>? _onFrame;
+        private System.Threading.Timer? _retry;
+        private readonly object _lock = new();
+        private bool _disposed;
         public string Note { get; private set; } = "";
+
+        /// <summary>Messaggio quando il PC non ha un'uscita audio (casse o cuffie scollegate o disattivate).</summary>
+        public const string NoOutput = "Sul PC remoto non c'è un'uscita audio attiva (casse o cuffie scollegate o disattivate): l'audio partirà appena ne colleghi una.";
 
         /// <param name="mic">true = microfono predefinito invece di quello che si sente dalle casse</param>
         public WasapiLoopback(bool mic = false) { _mic = mic; }
 
         public bool Start(Action<short[]> onFrame)
         {
-            try
+            _onFrame = onFrame;
+            if (TryOpen(out string err)) { Note = ""; return true; }
+            if (_mic) { Note = "Microfono di questo PC non disponibile: " + err; return false; }
+            // nessuna uscita (o è sparita): si riprova ogni 5 secondi, e l'audio parte appena ce n'è una
+            Note = err.Length > 0 && !NoDevice(err) ? "Audio di Windows non catturabile: " + err + " (riprovo ogni 5 s)" : NoOutput;
+            Core.SessionLog.Write("AUDIO " + Note);
+            ScheduleRetry();
+            return true;
+        }
+
+        private static bool NoDevice(string err) => err.Contains("0x80070490") || err.Contains("0x88890004") || err.Contains("0x88890008");
+
+        /// <summary>Apre la cattura sull'uscita predefinita; se non c'è, sulla prima uscita attiva.</summary>
+        private bool TryOpen(out string err)
+        {
+            err = "";
+            lock (_lock)
             {
-                NAudio.CoreAudioApi.WasapiCapture cap = _mic ? new NAudio.CoreAudioApi.WasapiCapture() : new NAudio.Wave.WasapiLoopbackCapture();
-                var fmt = cap.WaveFormat;
-                var rs = new Resampler(fmt.SampleRate, onFrame);
-                _rs = rs;
-                int ch = fmt.Channels;
-                bool isFloat = fmt.Encoding == NAudio.Wave.WaveFormatEncoding.IeeeFloat
-                               || (fmt.Encoding == NAudio.Wave.WaveFormatEncoding.Extensible && fmt.BitsPerSample == 32);
-                cap.DataAvailable += (_, e) =>
+                if (_disposed) return false;
+                NAudio.CoreAudioApi.WasapiCapture? cap = null;
+                try
                 {
-                    try
+                    if (_mic) cap = new NAudio.CoreAudioApi.WasapiCapture();
+                    else
                     {
-                        int bps = fmt.BitsPerSample / 8;
-                        int frames = e.BytesRecorded / (bps * ch);
-                        var st = new short[frames * 2];
-                        for (int i = 0; i < frames; i++)
+                        using var en = new NAudio.CoreAudioApi.MMDeviceEnumerator();
+                        NAudio.CoreAudioApi.MMDevice? dev = null;
+                        try { dev = en.GetDefaultAudioEndpoint(NAudio.CoreAudioApi.DataFlow.Render, NAudio.CoreAudioApi.Role.Multimedia); }
+                        catch
                         {
-                            int o = i * ch * bps;
-                            short l = Sample(e.Buffer, o, isFloat, bps);
-                            short r = ch > 1 ? Sample(e.Buffer, o + bps, isFloat, bps) : l;
-                            st[i * 2] = l; st[i * 2 + 1] = r;
+                            // senza uscita predefinita si prova la prima uscita attiva
+                            foreach (var d in en.EnumerateAudioEndPoints(NAudio.CoreAudioApi.DataFlow.Render, NAudio.CoreAudioApi.DeviceState.Active)) { dev = d; break; }
                         }
-                        rs.Push(st);
+                        if (dev == null) { err = "nessuna uscita audio attiva (0x80070490)"; return false; }
+                        cap = new NAudio.Wave.WasapiLoopbackCapture(dev);
                     }
-                    catch { }
-                };
-                cap.StartRecording();
-                _cap = cap;
-                Note = "";
-                return true;
+                    var fmt = cap.WaveFormat;
+                    var rs = new Resampler(fmt.SampleRate, _onFrame!);
+                    _rs = rs;
+                    int ch = fmt.Channels;
+                    bool isFloat = fmt.Encoding == NAudio.Wave.WaveFormatEncoding.IeeeFloat
+                                   || (fmt.Encoding == NAudio.Wave.WaveFormatEncoding.Extensible && fmt.BitsPerSample == 32);
+                    cap.DataAvailable += (_, e) =>
+                    {
+                        try
+                        {
+                            int bps = fmt.BitsPerSample / 8;
+                            int frames = e.BytesRecorded / (bps * ch);
+                            var st = new short[frames * 2];
+                            for (int i = 0; i < frames; i++)
+                            {
+                                int o = i * ch * bps;
+                                short l = Sample(e.Buffer, o, isFloat, bps);
+                                short r = ch > 1 ? Sample(e.Buffer, o + bps, isFloat, bps) : l;
+                                st[i * 2] = l; st[i * 2 + 1] = r;
+                            }
+                            rs.Push(st);
+                        }
+                        catch { }
+                    };
+                    var mine = cap;
+                    cap.RecordingStopped += (_, e) =>
+                    {
+                        // uscita staccata o cambiata durante il collegamento: si riapre da sola
+                        if (_mic || _disposed || e.Exception == null) return;
+                        lock (_lock) { if (_cap == mine) { try { mine.Dispose(); } catch { } _cap = null; } }
+                        Core.SessionLog.Write("AUDIO uscita persa (" + e.Exception.Message + "): riprovo ogni 5 s");
+                        ScheduleRetry();
+                    };
+                    cap.StartRecording();
+                    _cap = cap;
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    try { cap?.Dispose(); } catch { }
+                    err = ex.Message;
+                    return false;
+                }
             }
-            catch (Exception ex)
+        }
+
+        private void ScheduleRetry()
+        {
+            lock (_lock)
             {
-                Note = (_mic ? "Microfono di questo PC non disponibile: " : "Audio di Windows non catturabile: ") + ex.Message;
-                return false;
+                if (_disposed || _retry != null) return;
+                _retry = new System.Threading.Timer(_ =>
+                {
+                    if (_cap != null || _disposed) return;
+                    if (TryOpen(out _))
+                    {
+                        Note = "";
+                        Core.SessionLog.Write("AUDIO uscita trovata: cattura dell'audio partita");
+                        lock (_lock) { _retry?.Dispose(); _retry = null; }
+                    }
+                }, null, 5000, 5000);
             }
         }
 
@@ -148,9 +216,15 @@ namespace IpDeskCtrl.Audio
 
         public void Dispose()
         {
-            try { _cap?.StopRecording(); } catch { }
-            try { _cap?.Dispose(); } catch { }
-            _cap = null;
+            lock (_lock)
+            {
+                _disposed = true;
+                _retry?.Dispose();
+                _retry = null;
+                try { _cap?.StopRecording(); } catch { }
+                try { _cap?.Dispose(); } catch { }
+                _cap = null;
+            }
         }
     }
 

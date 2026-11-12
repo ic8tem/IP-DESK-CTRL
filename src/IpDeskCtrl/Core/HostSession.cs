@@ -657,7 +657,7 @@ namespace IpDeskCtrl.Core
             if (_audioWanted && _audio == null && _accepted)
             {
                 var a = SystemAudio.CreateCapture();
-                if (a.Start(OnAudioFrame)) _audio = a;
+                if (a.Start(OnAudioFrame)) { _audio = a; if (a.Note.Length > 0) Note(a.Note); }
                 else { if (a.Note.Length > 0) Note(a.Note); a.Dispose(); }
             }
             else if (!_audioWanted && _audio != null)

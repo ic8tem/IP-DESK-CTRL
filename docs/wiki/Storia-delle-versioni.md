@@ -3,6 +3,9 @@
 
 Le versioni con protocollo diverso non si collegano tra loro: aggiorna tutti i dispositivi alla stessa versione principale (la 0.4.1 si collega con la 0.4.0; la 0.5 si collega con la 0.4).
 
+## 0.5.8 — 12 novembre 2026
+- **Audio del PC comandato senza uscita predefinita**: invece dell'errore «Audio di Windows non catturabile: Impossibile trovare elemento (0x80070490)» la cattura prova la prima uscita attiva; se il PC non ne ha (casse o cuffie scollegate o disattivate) lo dice chiaramente e riprova ogni 5 secondi, così l'audio parte da solo appena colleghi qualcosa. Se l'uscita sparisce durante il collegamento si riapre da sola.
+
 ## 0.5.7 — 12 novembre 2026
 - **Copia e incolla di file da qualsiasi posizione, nei due versi**: su Windows gli appunti dei file si leggono e si scrivono con le funzioni di Windows (prima passavano da Avalonia, che con i file copiati in Esplora file non funzionava). I file copiati sul PC remoto con Ctrl+C arrivano da soli negli appunti di qua (fino a 2 GB); i file copiati qui si mandano con Ctrl+V nella finestra del PC remoto e di là si incollano appena arrivano. Niente rimbalzi: i file appena passati non tornano indietro.
 
