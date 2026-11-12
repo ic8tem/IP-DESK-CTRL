@@ -27,7 +27,6 @@ Release:        1
 Summary:        Desktop remoto cifrato con numero fisso di 10 cifre
 License:        GPL-3.0-or-later
 URL:            https://github.com/ic8tem/IP-DESK-CTRL
-BuildArch:      ${ARCH}
 AutoReqProv:    no
 Requires:       libfontconfig.so.1${LIB}, libX11.so.6${LIB}, libXtst.so.6${LIB}, libXrandr.so.2${LIB}, libICE.so.6${LIB}, libSM.so.6${LIB}
 Recommends:     (ffmpeg or ffmpeg-free), xrandr, pulseaudio-utils, grim, glib2
@@ -75,6 +74,6 @@ exit 0
 /usr/lib/modules-load.d/ip-desk-ctrl.conf
 SPEC
 
-rpmbuild --define "_topdir $TOP" --target "$ARCH" -bb "$TOP/SPECS/ip-desk-ctrl.spec" >/dev/null
+rpmbuild --define "_topdir $TOP" --target "${ARCH}-linux" -bb "$TOP/SPECS/ip-desk-ctrl.spec" >/dev/null
 cp "$TOP"/RPMS/*/ip-desk-ctrl-"${VERSION}"-1.*.rpm "$OUT/"
 ls -l "$OUT"/*.rpm
