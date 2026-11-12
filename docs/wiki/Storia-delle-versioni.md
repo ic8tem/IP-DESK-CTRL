@@ -3,6 +3,9 @@
 
 Le versioni con protocollo diverso non si collegano tra loro: aggiorna tutti i dispositivi alla stessa versione principale (la 0.4.1 si collega con la 0.4.0; la 0.5 si collega con la 0.4).
 
+## 0.5.4 — 12 novembre 2026
+- **Aggiornamenti automatici**: il programma guarda ogni 30 minuti (prima ogni 12 ore) se è uscita una nuova versione. In alto a destra, accanto a «In linea», compare il pulsante **Nuova versione x.y.z**. Con l'opzione **Aggiornamenti automatici** (Impostazioni, attiva di serie) il riquadro si apre da solo e dopo 60 secondi la versione nuova si scarica, si controlla e si installa; il programma si riapre e i collegamenti riprendono. **Più tardi** la ferma per quella versione. Android: solo l'avviso.
+
 ## 0.5.3 — 12 novembre 2026
 - **Finestre UAC con il servizio di Windows**: quando compariva la richiesta UAC l'immagine diventava nera («Cattura dello schermo non riuscita (BitBlt, errore 6)») e non si poteva rispondere. Ora cattura, mouse e tastiera girano su un thread che, a ogni cambio di desktop (UAC, schermata di blocco, Ctrl+Alt+Canc), viene rifatto nuovo e spostato sul desktop attivo: la finestra UAC si vede e si comanda. Nel registro delle sessioni compaiono le righe «AIUTO desktop attivo: Winlogon» / «Default».
 

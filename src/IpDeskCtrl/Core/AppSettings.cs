@@ -45,6 +45,8 @@ namespace IpDeskCtrl.Core
         public bool AllowResize { get; set; } = true;      // chi si collega può adattare la risoluzione alla sua finestra
         public bool AllowDrive { get; set; } = true;       // chi si collega può montare qui una sua cartella come disco
         public bool AllowTunnel { get; set; } = true;
+        public bool AutoUpdate { get; set; } = true;       // le nuove versioni si scaricano e si installano da sole
+        public string SkipAutoVersion { get; set; } = "";  // versione per cui si è scelto «Più tardi»: niente installazione da sola
         public bool AllowObservers { get; set; } = true;   // mentre uno comanda, altri possono chiedere di guardare (solo visione)
         public List<string> ResumeGrants { get; set; } = new();   // numero|input|scadenza: rientrano senza conferma dopo un aggiornamento
         public List<string> ResumeViewers { get; set; } = new();  // collegamenti da riaprire dopo l'aggiornamento di questo PC

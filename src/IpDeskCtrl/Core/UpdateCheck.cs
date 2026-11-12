@@ -12,7 +12,7 @@ namespace IpDeskCtrl.Core
     public sealed record ReleaseInfo(string Version, string PageUrl, string ApkUrl, List<ReleaseAsset> Assets);
 
     /// <summary>
-    /// Controllo delle nuove versioni: all'avvio e poi ogni 12 ore chiede a GitHub l'ultima release
+    /// Controllo delle nuove versioni: all'avvio e poi ogni 30 minuti chiede a GitHub l'ultima release
     /// (api.github.com, senza account). Se è più nuova di questa, la schermata principale lo dice.
     /// </summary>
     public static class UpdateCheck
@@ -61,19 +61,24 @@ namespace IpDeskCtrl.Core
             return core.Contains('.') ? core : core + ".0";
         }
 
-        /// <summary>Controllo subito e poi ogni 12 ore; found riceve solo le versioni più nuove di questa.</summary>
+        /// <summary>Ogni quanto si guarda se è uscita una nuova versione.</summary>
+        public static readonly TimeSpan Every = TimeSpan.FromMinutes(30);
+
+        /// <summary>Controllo subito e poi ogni 30 minuti; found riceve solo le versioni più nuove di questa.</summary>
         public static async Task LoopAsync(Action<ReleaseInfo> found, CancellationToken ct)
         {
             try { await Task.Delay(TimeSpan.FromSeconds(8), ct); } catch { return; }
+            string told = "";
             while (!ct.IsCancellationRequested)
             {
                 var r = await LatestAsync(ct);
                 if (r != null && IsNewer(r.Version, AppVersion.Text))
                 {
-                    SessionLog.Write($"AGGIORNAMENTI disponibile la versione {r.Version} (questa è la {AppVersion.Text})");
+                    if (r.Version != told) SessionLog.Write($"AGGIORNAMENTI disponibile la versione {r.Version} (questa è la {AppVersion.Text})");
+                    told = r.Version;
                     found(r);
                 }
-                try { await Task.Delay(TimeSpan.FromHours(12), ct); } catch { break; }
+                try { await Task.Delay(Every, ct); } catch { break; }
             }
         }
     }

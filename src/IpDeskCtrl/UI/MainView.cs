@@ -43,6 +43,8 @@ namespace IpDeskCtrl.UI
         private readonly TextBlock _incomingText = new() { TextWrapping = TextWrapping.Wrap, FontWeight = FontWeight.Bold };
         private readonly CheckBox _incomingInput = new() { Content = "Mouse e tastiera" };
         private IDialogHandle? _controlled;
+        private readonly Button _newVersion = new() { Padding = new Thickness(10, 4), VerticalAlignment = VerticalAlignment.Center };
+        private ReleaseInfo? _latest;
         private readonly Border _update = new() { IsVisible = false, CornerRadius = new CornerRadius(10), Padding = new Thickness(14) };
         private bool _closingForReal;
 
@@ -78,7 +80,11 @@ namespace IpDeskCtrl.UI
             title.Children.Add(new TextBlock { Text = "IP-DESK-CTRL", FontSize = 20, FontWeight = FontWeight.Bold, VerticalAlignment = VerticalAlignment.Center });
             if (!Platform.IsMobile) title.Children.Add(new TextBlock { Text = "desktop remoto cifrato · " + AppVersion.Text, VerticalAlignment = VerticalAlignment.Center, Classes = { "sub" } });
             var head = new DockPanel { Margin = new Thickness(20, 14, 20, 6) };
-            var ledBox = Ui.Row(8, _led, _netStatus);
+            // avviso di nuova versione, in alto a destra accanto allo stato
+            _newVersion.Classes.Add("accent");
+            _newVersion.IsVisible = false;
+            _newVersion.Click += (_, _) => { if (_latest != null) ShowUpdatePopup(_latest, auto: false); };
+            var ledBox = Ui.Row(10, _newVersion, Ui.Row(8, _led, _netStatus));
             DockPanel.SetDock(ledBox, Dock.Right);
             head.Children.Add(ledBox);
             head.Children.Add(title);
@@ -248,6 +254,7 @@ namespace IpDeskCtrl.UI
                 Chk("Chi si collega può adattare la risoluzione di questo PC alla sua finestra", _s.AllowResize, v => _s.AllowResize = v),
                 Chk("Chi si collega può montare qui una sua cartella come disco", _s.AllowDrive, v => _s.AllowDrive = v),
                 Chk("Chi si collega può aprire tunnel di porte attraverso questo PC (rigctld, flrig, web della radio…)", _s.AllowTunnel, v => _s.AllowTunnel = v),
+                Chk("Aggiornamenti automatici: ogni 30 minuti cerca una nuova versione e la installa da sola (i collegamenti riprendono)", _s.AutoUpdate, v => _s.AutoUpdate = v),
                 Chk("Mentre uno comanda, altri possono chiedere di guardare (solo visione, al massimo 4)", _s.AllowObservers, v => _s.AllowObservers = v),
                 VideoRow(),
                 Ui.Row(10, new TextBlock { Text = "Tema", VerticalAlignment = VerticalAlignment.Center }, theme),
@@ -610,7 +617,7 @@ namespace IpDeskCtrl.UI
         /// Popup della nuova versione con il programma aperto: scarica, controlla e installa da solo; prima avvisa
         /// gli altri PC collegati, così i collegamenti riprendono dopo il riavvio del programma.
         /// </summary>
-        private void ShowUpdatePopup(ReleaseInfo r)
+        private void ShowUpdatePopup(ReleaseInfo r, bool auto)
         {
             if (_updateDialog != null) return;
             var kind = Updater.Detect();
@@ -624,6 +631,7 @@ namespace IpDeskCtrl.UI
             var go = Ui.Btn(kind == Updater.Kind.Android ? "Scarica l'APK" : "Aggiorna ora", true);
             var later = Ui.Btn("Più tardi");
             var notes = Ui.Btn("Novità");
+            var countdown = Ui.Sub("", 12);
             var content = Ui.Col(10,
                 Ui.H1($"È uscita IP-DESK-CTRL {r.Version}"),
                 Ui.Sub($"Ora hai la {AppVersion.Text}. " + (kind == Updater.Kind.Android
@@ -631,12 +639,21 @@ namespace IpDeskCtrl.UI
                     : "La scarico e la installo da solo: il programma si chiude e si riapre." +
                       (sessions > 0 ? $" I collegamenti aperti ({sessions}) riprendono da soli entro qualche decina di secondi." : ""))),
                 Ui.Sub(Updater.HowItGoes(kind, service), 12),
+                countdown,
                 bar, status,
                 Ui.Row(10, go, later, notes));
             _updateDialog = Shell.Current.ShowDialog("IP-DESK-CTRL · aggiornamento", content, 480, false);
             _updateDialog.Closed += () => _updateDialog = null;
             notes.Click += (_, _) => OpenPath(r.PageUrl);
-            later.Click += (_, _) => { _updateCts?.Cancel(); _updateDialog?.Close(); _updateDialog = null; };
+            DispatcherTimer? timer = null;
+            later.Click += (_, _) =>
+            {
+                timer?.Stop();
+                // «Più tardi» su un'installazione automatica: per questa versione non riparte da sola, resta l'avviso in alto
+                if (auto) { _s.SkipAutoVersion = r.Version; _s.Save(); }
+                _updateCts?.Cancel(); _updateDialog?.Close(); _updateDialog = null;
+            };
+            _updateDialog.Closed += () => timer?.Stop();
             go.Click += async (_, _) =>
             {
                 if (kind == Updater.Kind.Android) { OpenPath(asset.Url); _updateDialog?.Close(); _updateDialog = null; return; }
@@ -672,11 +689,45 @@ namespace IpDeskCtrl.UI
                 await Task.Delay(400);
                 if (Quit != null) Quit(); else Environment.Exit(0);
             };
+
+            if (auto && kind != Updater.Kind.Android)
+            {
+                // installazione automatica: un minuto per fermarla con «Più tardi»
+                int left = 60;
+                countdown.Text = $"Aggiornamento automatico: parte da solo tra {left} s.";
+                timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
+                timer.Tick += (_, _) =>
+                {
+                    left--;
+                    if (left > 0) { countdown.Text = $"Aggiornamento automatico: parte da solo tra {left} s."; return; }
+                    timer.Stop();
+                    countdown.Text = "Aggiornamento automatico in corso.";
+                    SessionLog.Write($"AGGIORNAMENTI installazione automatica della {r.Version}");
+                    if (go.IsEnabled) go.RaiseEvent(new Avalonia.Interactivity.RoutedEventArgs(Button.ClickEvent));
+                };
+                timer.Start();
+            }
         }
 
         private void ShowUpdate(ReleaseInfo r)
         {
-            ShowUpdatePopup(r);
+            bool newOne = _latest?.Version != r.Version;
+            _latest = r;
+            _newVersion.Content = $"Nuova versione {r.Version}";
+            ToolTip.SetTip(_newVersion, $"È uscita IP-DESK-CTRL {r.Version} (questa è la {AppVersion.Text}). Clic per aggiornare.");
+            _newVersion.IsVisible = true;
+
+            var kind = Updater.Detect();
+            bool canInstall = kind != Updater.Kind.None && Updater.FindAsset(r) != null;
+            if (canInstall)
+            {
+                _update.IsVisible = false;
+                bool auto = _s.AutoUpdate && kind != Updater.Kind.Android && _s.SkipAutoVersion != r.Version;
+                // con l'aggiornamento automatico ci si riprova a ogni controllo; senza, il riquadro compare una volta per versione
+                if (auto || newOne) ShowUpdatePopup(r, auto);
+                return;
+            }
+            if (!newOne) return;
             bool apk = Platform.IsMobile && r.ApkUrl.Length > 0;
             var open = Ui.Btn(apk ? "Scarica l'APK" : "Vai allo scaricamento", true);
             open.Click += (_, _) => OpenPath(apk ? r.ApkUrl : r.PageUrl);
