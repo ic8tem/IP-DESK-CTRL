@@ -46,12 +46,6 @@ apt installa da solo anche ffmpeg (video compresso), xrandr (risoluzione adatta)
 
 Per ogni architettura c'è anche la versione portatile `…-portatile.tar.gz`.
 
-### Sistemi che non ci sono
-
-- **Linux i686 (32 bit su PC)**: il motore .NET su cui è scritto IP-DESK-CTRL non esiste per Linux a 32 bit Intel, quindi non si può compilare. Sui PC a 32 bit si può usare Windows 32 bit.
-- **FreeBSD**: .NET c'è solo come porting della comunità (`lang/dotnet`) e la grafica Avalonia non è supportata (manca la libreria HarfBuzzSharp per FreeBSD): per ora nessun pacchetto.
-- **OpenBSD**: non esiste .NET per OpenBSD.
-
 ## macOS
 
 | Mac | File |

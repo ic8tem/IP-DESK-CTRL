@@ -93,8 +93,6 @@ Gli installatori sono nella pagina **Releases**:
 | macOS Intel | `…-osx-x64.dmg` |
 | Android 8.0 e successivi | `…-android.apk` |
 
-Non disponibili, perché il motore .NET non c'è o non è pronto: **Linux i686** (32 bit), **FreeBSD** (solo porting della comunità, grafica non supportata), **OpenBSD**. Dettagli nella [wiki](https://github.com/ic8tem/IP-DESK-CTRL/wiki/Installazione).
-
 L'installatore di Windows ha l'opzione per l'avvio automatico all'accesso, nascosto con la sola icona vicino all'orologio.
 Per ogni sistema c'è anche una versione portatile.
 
@@ -110,7 +108,7 @@ Nella cartella dei dati (Impostazioni › Apri cartella dati): `errori.log` e `s
 Le versioni con protocollo diverso non si collegano tra loro: aggiorna tutti i dispositivi alla stessa versione principale (la 0.4.1 si collega con la 0.4.0; la 0.5 si collega con la 0.4).
 
 ### 0.5.6 — 12 novembre 2026
-- **Più distribuzioni**: Windows ARM64 (PC con Snapdragon, con installatore e servizio), pacchetti **.rpm** per Fedora e openSUSE (x86_64, aarch64, armv7hl) e pacchetti **Slackware** (.txz) per Slackware ARM64, anche su Raspberry Pi, e Slackware64. Anche questi si aggiornano da soli (dnf, zypper o upgradepkg). Su Windows ARM64 ffmpeg si scarica nella versione ARM. Linux i686, FreeBSD e OpenBSD restano esclusi: .NET non c'è o non è pronto.
+- **Più distribuzioni**: Windows ARM64 (PC con Snapdragon, con installatore e servizio), pacchetti **.rpm** per Fedora e openSUSE (x86_64, aarch64, armv7hl) e pacchetti **Slackware** (.txz) per Slackware ARM64, anche su Raspberry Pi, e Slackware64. Anche questi si aggiornano da soli (dnf, zypper o upgradepkg). Su Windows ARM64 ffmpeg si scarica nella versione ARM.
 
 ### 0.5.5 — 12 novembre 2026
 - **L'aggiornamento automatico non interrompe i collegamenti**: se esce una versione nuova mentre comandi un PC o qualcuno comanda il tuo, compare solo il pulsante «Nuova versione» in alto a destra e l'installazione parte da sola appena si chiude l'ultimo collegamento (dopo il solito minuto per fermarla). «Aggiorna ora» la fa subito, con circa 45 secondi di interruzione e ripresa automatica.

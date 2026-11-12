@@ -197,8 +197,6 @@ jobs:
             | macOS Intel | `IP-DESK-CTRL-…-osx-x64.dmg` |
             | Android 8.0 e successivi | `IP-DESK-CTRL-…-android.apk` |
 
-            Non ci sono (il motore .NET non esiste o non è pronto per quei sistemi): Linux i686 a 32 bit, FreeBSD, OpenBSD. Dettagli nella wiki, pagina Installazione.
-
             macOS: al primo avvio clic destro › Apri. Android: consenti l'installazione da origini sconosciute; per farti comandare dal PC attiva il servizio in Impostazioni › Accessibilità › IP-DESK-CTRL.
 
             Linux e Raspberry: `sudo apt install ./ip-desk-ctrl_…deb` · Fedora `sudo dnf install ./ip-desk-ctrl-…rpm` · openSUSE `sudo zypper install --allow-unsigned-rpm ./ip-desk-ctrl-…rpm` · Slackware `installpkg ip-desk-ctrl-…txz` (con la sessione Wayland riavvia dopo l'installazione: serve la regola per mouse e tastiera).
