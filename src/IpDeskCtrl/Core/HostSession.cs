@@ -413,6 +413,19 @@ namespace IpDeskCtrl.Core
         protected override void OnFilesReceived(TransferPurpose purpose, string folder, List<string> topLevel, bool onClipboard)
         {
             string what = topLevel.Count == 1 ? "1 elemento" : $"{topLevel.Count} elementi";
+            // file messi negli appunti da noi: non vanno riannunciati al visore (tornerebbero indietro)
+            if (onClipboard) _clipFiles = new List<string>(topLevel);
+            if (purpose == TransferPurpose.PasteKeys && onClipboard && _input != null && _allowInput && !Platform.IsMobile)
+            {
+                try
+                {
+                    int mod = OperatingSystem.IsMacOS() ? Input.KeyMap.LeftMeta : Input.KeyMap.LeftCtrl;
+                    _input.Key(mod, true); _input.Key(47, true); _input.Key(47, false); _input.Key(mod, false);
+                    Note($"{what} copiati sul PC remoto (in {folder}) e incollati.");
+                    return;
+                }
+                catch { }
+            }
             if (purpose == TransferPurpose.Drop && onClipboard && _input != null && _allowInput && !Platform.IsMobile)
             {
                 try
@@ -444,7 +457,7 @@ namespace IpDeskCtrl.Core
                 try
                 {
                     var files = await clip.GetFilesAsync();
-                    if (files.SequenceEqual(_clipFiles)) continue;
+                    if (SamePaths(files, _clipFiles)) continue;
                     _clipFiles = files;
                     var items = files.Count > 0 ? FromPaths(files) : new List<TransferItem>();
                     string first = files.Count > 0 ? System.IO.Path.GetFileName(files[0].TrimEnd('/', '\\')) : "";
@@ -453,6 +466,11 @@ namespace IpDeskCtrl.Core
                 catch { }
             }
         }
+
+        internal static bool SamePaths(List<string> a, List<string> b) =>
+            a.Count == b.Count && a.Select(Norm).OrderBy(x => x).SequenceEqual(b.Select(Norm).OrderBy(x => x));
+
+        private static string Norm(string p) => p.Replace('\\', '/').TrimEnd('/').ToLowerInvariant();
 
         private async Task SendClipboardFilesAsync()
         {

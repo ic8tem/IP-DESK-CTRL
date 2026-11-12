@@ -514,7 +514,23 @@ namespace IpDeskCtrl.Screen
         }
     }
 
-    /// <summary>Servizio: appunti dell'utente attraverso il processo di supporto (solo testo).</summary>
+    /// <summary>
+    /// Programma su Windows: testo con Avalonia, file con le funzioni di Windows (CF_HDROP), perché gli appunti
+    /// di Avalonia su Windows non leggono e non scrivono in modo affidabile i file copiati in Esplora file.
+    /// </summary>
+    [SupportedOSPlatform("windows")]
+    public sealed class WindowsClipboard : IClipboardBridge
+    {
+        private readonly IClipboardBridge _text;
+        public WindowsClipboard(IClipboardBridge text) { _text = text; }
+
+        public Task<string?> GetTextAsync() => _text.GetTextAsync();
+        public Task SetTextAsync(string text) => _text.SetTextAsync(text);
+        public Task<List<string>> GetFilesAsync() => Task.Run(() => { try { return WinClip.GetFiles(); } catch { return new List<string>(); } });
+        public Task<bool> SetFilesAsync(List<string> paths) => Task.Run(() => { try { return paths.Count > 0 && WinClip.SetFiles(paths); } catch { return false; } });
+    }
+
+    /// <summary>Servizio: appunti dell'utente attraverso il processo di supporto (testo e file).</summary>
     public sealed class HelperClipboard : IClipboardBridge
     {
         public Task<string?> GetTextAsync() => Task.Run(() =>

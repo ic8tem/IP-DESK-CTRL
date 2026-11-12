@@ -25,7 +25,9 @@ namespace IpDeskCtrl.UI
             WindowStartupLocation = WindowStartupLocation.CenterScreen;
             try { Icon = new WindowIcon(Avalonia.Platform.AssetLoader.Open(new Uri("avares://IpDeskCtrl/Assets/icon.png"))); } catch { }
             Shell.Current = new DesktopShell(this);
-            Platform.Clipboard = new AvaloniaClipboard(() => this);
+            Platform.Clipboard = OperatingSystem.IsWindows()
+                ? new Screen.WindowsClipboard(new AvaloniaClipboard(() => this))
+                : new AvaloniaClipboard(() => this);
             _view = new MainView(s);
             _view.TitleChanged += t => { Title = t; TitleUpdated?.Invoke(t); };
             Content = _view;

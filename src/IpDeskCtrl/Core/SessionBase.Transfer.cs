@@ -17,7 +17,8 @@ namespace IpDeskCtrl.Core
     {
         Drop = 0,        // trascinati sulla finestra del visore: di là si incollano dove sono stati lasciati
         Paste = 1,       // copiati negli appunti di qua e mandati con il pulsante della plancia
-        Fetch = 2        // chiesti dall'altro PC (i file che ho negli appunti)
+        Fetch = 2,       // chiesti dall'altro PC (i file che ho negli appunti)
+        PasteKeys = 3    // Ctrl+V nella finestra del visore con file negli appunti di qua: di là si incollano subito
     }
 
     /// <summary>Avanzamento di un trasferimento, per l'interfaccia.</summary>

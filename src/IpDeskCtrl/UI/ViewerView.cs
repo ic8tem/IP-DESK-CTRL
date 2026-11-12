@@ -92,6 +92,15 @@ namespace IpDeskCtrl.UI
         private DateTime _hideToolbarAt = DateTime.MaxValue;
         private readonly DispatcherTimer _timer = new() { Interval = TimeSpan.FromMilliseconds(500) };
 
+        // ---- file negli appunti, nei due versi, come con il testo
+        /// <summary>Oltre questa dimensione i file copiati sul PC remoto non arrivano da soli: si prendono dal menu File.</summary>
+        private const long AutoFetchMax = 2L << 30;
+        private List<string> _localClipFiles = new();      // file negli appunti di questo PC (letti ogni 1,5 s)
+        private List<string> _exchangedFiles = new();      // ultimi file passati da un PC all'altro: non si rimandano
+        private bool _clipPolling;
+        private bool _remoteFilesSeen;                     // il primo annuncio (file già copiati prima di collegarsi) non si scarica da solo
+        private DateTime _nextClipPoll;
+
         public event Action? HistoryChanged;
         /// <summary>La vista è stata chiusa (finestra chiusa o Disconnetti).</summary>
         public event Action? Ended;
@@ -121,7 +130,8 @@ namespace IpDeskCtrl.UI
             _viewHost.SizeChanged += (_, _) => { if (_fitRes.IsChecked == true) { _resizeTimer.Stop(); _resizeTimer.Start(); } };
             Content = Build();
             SetZoom(peer.S.ZoomPercent);
-            _timer.Tick += (_, _) => Tick();
+            _timer.Tick += (_, _) => { Tick(); PollLocalClipFiles(); };
+            _view.PasteFilter = PasteLocalFiles;
             PointerMoved += (_, e) =>
             {
                 if (Shell.Current.IsFullScreen(this) && e.GetPosition(this).Y < 8) ShowToolbar(true);
@@ -542,6 +552,60 @@ namespace IpDeskCtrl.UI
             var files = await clip.GetFilesAsync();
             if (files.Count == 0) { ShowNote("Negli appunti di questo PC non ci sono file: copiali prima (Ctrl+C in Esplora file o nel Finder)."); return; }
             await Task.Run(() => s.SendFilesAsync(SessionBase.FromPaths(files), TransferPurpose.Paste));
+        }
+
+        /// <summary>File copiati sul PC remoto: arrivano da soli negli appunti di qua (fino a 2 GB).</summary>
+        private void AutoFetch(ViewerSession s, int count, long bytes, string first)
+        {
+            bool first = !_remoteFilesSeen;
+            _remoteFilesSeen = true;
+            if (count <= 0 || Platform.IsMobile || !s.InputAllowed || s.State != AcceptState.Accepted) return;
+            if (first)
+            {
+                ShowNote($"Sul PC remoto erano già copiati {count} elementi: se ti servono, File › «Prendi qui i file copiati sul PC remoto».");
+                return;
+            }
+            if (bytes > AutoFetchMax)
+            {
+                ShowNote($"Sul PC remoto hai copiato {count} elementi ({Size(bytes)}): troppi per portarli qui da soli, usa File › «Prendi qui i file copiati sul PC remoto».", true);
+                return;
+            }
+            SessionLog.Write($"FILE copiati sul PC remoto ({count}, {Size(bytes)}): li porto negli appunti di qua");
+            s.FetchRemoteFiles();
+        }
+
+        /// <summary>Ogni 1,5 s legge quali file ci sono negli appunti di questo PC (serve a Ctrl+V nella finestra).</summary>
+        private void PollLocalClipFiles()
+        {
+            if (Platform.IsMobile || _clipPolling || DateTime.UtcNow < _nextClipPoll) return;
+            var s = _session;
+            var clip = Platform.Clipboard;
+            if (s == null || clip == null || s.State != AcceptState.Accepted || !s.InputAllowed) return;
+            _nextClipPoll = DateTime.UtcNow.AddSeconds(1.5);
+            _clipPolling = true;
+            _ = Task.Run(async () =>
+            {
+                try { var f = await clip.GetFilesAsync(); Dispatcher.UIThread.Post(() => _localClipFiles = f); }
+                catch { }
+                finally { _clipPolling = false; }
+            });
+        }
+
+        /// <summary>
+        /// Ctrl+V nella finestra: se negli appunti di qua ci sono file nuovi (copiati in Esplora file, nel Finder…)
+        /// li manda e di là si incollano appena arrivano; altrimenti il Ctrl+V passa normalmente.
+        /// </summary>
+        private bool PasteLocalFiles()
+        {
+            var s = _session;
+            if (s == null || s.State != AcceptState.Accepted || !s.InputAllowed || Platform.IsMobile) return false;
+            var files = _localClipFiles;
+            if (files.Count == 0 || HostSession.SamePaths(files, _exchangedFiles)) return false;
+            _exchangedFiles = new List<string>(files);
+            SessionLog.Write($"FILE Ctrl+V nella finestra: mando {files.Count} elementi copiati qui");
+            ShowNote(files.Count == 1 ? "Mando il file copiato qui: di là si incolla appena arriva." : $"Mando i {files.Count} elementi copiati qui: di là si incollano appena arrivano.");
+            _ = Task.Run(() => s.SendFilesAsync(SessionBase.FromPaths(files), TransferPurpose.PasteKeys));
+            return true;
         }
 
         private async Task PickAndSendAsync()
@@ -1027,9 +1091,13 @@ namespace IpDeskCtrl.UI
                 s.CursorMoved += () => Dispatcher.UIThread.Post(() => _view.InvalidateVisual());
                 s.NoteChanged += () => Dispatcher.UIThread.Post(() => ShowNote(s.Note));
                 s.TransferChanged += t => Dispatcher.UIThread.Post(() => OnTransfer(t));
+                s.RemoteFilesChanged += (count, bytes, first) => Dispatcher.UIThread.Post(() => AutoFetch(s, count, bytes, first));
                 s.FilesReceived += (folder, items, onClip) => Dispatcher.UIThread.Post(() =>
+                {
+                    if (onClip) { _exchangedFiles = new List<string>(items); _localClipFiles = new List<string>(items); }
                     ShowNote((items.Count == 1 ? "1 elemento ricevuto" : $"{items.Count} elementi ricevuti") + $" in {folder}" +
-                             (onClip ? (Platform.IsMobile ? "." : ": sono negli appunti, incollali con Ctrl+V dove vuoi.") : "."), true));
+                             (onClip ? (Platform.IsMobile ? "." : ": sono negli appunti, incollali con Ctrl+V dove vuoi.") : "."), true);
+                });
                 s.TunnelMessage += m => Dispatcher.UIThread.Post(() => ShowNote(m));
                 s.DriveChanged += (on, where) => Dispatcher.UIThread.Post(() =>
                     ShowNote(on ? $"Cartella condivisa: sul PC remoto è il disco {where}."

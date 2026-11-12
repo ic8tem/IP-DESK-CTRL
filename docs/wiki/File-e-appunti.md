@@ -2,17 +2,21 @@
 
 ## Copia e incolla
 
-Il testo copiato su un dispositivo si incolla sull'altro, **nei due versi**, senza fare niente di particolare: copia con Ctrl+C da una parte e incolla con Ctrl+V dall'altra.
+Testi **e file** copiati su un PC si incollano sull'altro, **nei due versi**, con i soliti Ctrl+C e Ctrl+V (Cmd sul Mac).
 
 ## File dal tuo PC al PC remoto
 
-- **Trascina** file o cartelle sulla finestra del PC remoto: vengono incollati lì dove li lasci (sul desktop, in una cartella aperta…).
-- Oppure copia i file qui con Ctrl+C e scegli **File ▾ › Manda i file copiati su questo PC**.
-- Oppure **File ▾ › Scegli file da mandare…**.
+- Copia file o cartelle **da qualsiasi posizione** di questo PC (Esplora file, desktop, Finder…) con Ctrl+C, poi clicca nella finestra del PC remoto dove vuoi incollarli e premi **Ctrl+V**: i file partono, e di là si incollano da soli appena arrivano.
+- Oppure **trascinali** sulla finestra del PC remoto: vengono incollati lì dove li lasci.
+- Oppure **File ▾ › Manda i file copiati su questo PC** o **File ▾ › Scegli file da mandare…**.
+
+Un secondo Ctrl+V degli stessi file non li rimanda: incolla di là la copia già arrivata.
 
 ## File dal PC remoto al tuo PC
 
-Sul PC remoto seleziona i file e premi **Ctrl+C**, poi sulla plancia scegli **File ▾ › Prendi qui i file copiati sul PC remoto**.
+Sul PC remoto seleziona file o cartelle **in qualsiasi posizione** e premi **Ctrl+C**: arrivano da soli (fino a 2 GB) in `Scaricati/IP-DESK-CTRL` e finiscono negli appunti di questo PC. Poi incollali dove vuoi con **Ctrl+V**. La barra in basso nella finestra mostra l'avanzamento.
+
+Sopra i 2 GB, o per file che erano già copiati prima di collegarti, usa **File ▾ › Prendi qui i file copiati sul PC remoto**.
 
 ## Cartella condivisa come disco
 

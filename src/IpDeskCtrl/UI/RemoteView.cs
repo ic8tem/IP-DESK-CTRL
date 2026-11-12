@@ -58,6 +58,9 @@ namespace IpDeskCtrl.UI
 
         /// <summary>Ctrl+Alt+Invio: passa da finestra a schermo intero (non va al PC remoto).</summary>
         public event Action? FullScreenToggleRequested;
+        /// <summary>Ctrl+V (Cmd+V su Mac) premuto qui: true se l'incolla l'ha preso il visore (file da mandare).</summary>
+        public Func<bool>? PasteFilter { get; set; }
+        private bool _swallowV;
         public PixelSize ImageSize => new(_w, _h);
 
         /// <summary>Copia l'ultima immagine decodificata nella bitmap (thread dell'interfaccia).</summary>
@@ -618,6 +621,14 @@ namespace IpDeskCtrl.UI
                 return;
             }
             if (!CanInput) { base.OnKeyDown(e); return; }
+            if (e.Key == Key.V && (e.KeyModifiers.HasFlag(KeyModifiers.Control) || e.KeyModifiers.HasFlag(KeyModifiers.Meta))
+                && PasteFilter?.Invoke() == true)
+            {
+                // file negli appunti di qua: il visore li manda e di là si incollano appena arrivano
+                _swallowV = true;
+                e.Handled = true;
+                return;
+            }
             int k = KeyMap.ToEvdev(e.PhysicalKey.ToString(), e.Key.ToString());
             if (k > 0) { _session!.Key(k, true); e.Handled = true; }
             else base.OnKeyDown(e);
@@ -626,6 +637,7 @@ namespace IpDeskCtrl.UI
         protected override void OnKeyUp(KeyEventArgs e)
         {
             if (!CanInput) { base.OnKeyUp(e); return; }
+            if (_swallowV && e.Key == Key.V) { _swallowV = false; e.Handled = true; return; }
             int k = KeyMap.ToEvdev(e.PhysicalKey.ToString(), e.Key.ToString());
             if (k > 0) { _session!.Key(k, false); e.Handled = true; }
             else base.OnKeyUp(e);

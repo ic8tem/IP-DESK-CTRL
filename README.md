@@ -107,6 +107,9 @@ Nella cartella dei dati (Impostazioni › Apri cartella dati): `errori.log` e `s
 
 Le versioni con protocollo diverso non si collegano tra loro: aggiorna tutti i dispositivi alla stessa versione principale (la 0.4.1 si collega con la 0.4.0; la 0.5 si collega con la 0.4).
 
+### 0.5.7 — 12 novembre 2026
+- **Copia e incolla di file da qualsiasi posizione, nei due versi**: su Windows gli appunti dei file si leggono e si scrivono con le funzioni di Windows (prima passavano da Avalonia, che con i file copiati in Esplora file non funzionava). I file copiati sul PC remoto con Ctrl+C arrivano da soli negli appunti di qua (fino a 2 GB); i file copiati qui si mandano con Ctrl+V nella finestra del PC remoto e di là si incollano appena arrivano. Niente rimbalzi: i file appena passati non tornano indietro.
+
 ### 0.5.6 — 12 novembre 2026
 - **Più distribuzioni**: Windows ARM64 (PC con Snapdragon, con installatore e servizio), pacchetti **.rpm** per Fedora e openSUSE (x86_64, aarch64, armv7hl) e pacchetti **Slackware** (.txz) per Slackware ARM64, anche su Raspberry Pi, e Slackware64. Anche questi si aggiornano da soli (dnf, zypper o upgradepkg). Su Windows ARM64 ffmpeg si scarica nella versione ARM.
 
