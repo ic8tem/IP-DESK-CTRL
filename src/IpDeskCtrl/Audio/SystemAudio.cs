@@ -195,7 +195,7 @@ namespace IpDeskCtrl.Audio
                 _retry = new System.Threading.Timer(_ =>
                 {
                     if (_cap != null || _disposed) return;
-                    if (TryOpen(out _))
+                    if (TryOpen(out string _))
                     {
                         Note = "";
                         Core.SessionLog.Write("AUDIO uscita trovata: cattura dell'audio partita");
