@@ -124,11 +124,71 @@ namespace IpDeskCtrl.Screen
             Platform.Clipboard = new HelperClipboard();
         }
 
+        /// <summary>
+        /// Thread che sta sul desktop che riceve mouse e tastiera. SetThreadDesktop riesce solo su un thread senza
+        /// finestre né hook, quindi quando il desktop cambia (Default ⇄ Winlogon per UAC, blocco, Ctrl+Alt+Canc)
+        /// si chiude il thread vecchio e se ne apre uno nuovo, con cattura e input nuovi.
+        /// </summary>
+        private sealed class DeskThread : IDisposable
+        {
+            private Thread? _thread;
+            private System.Collections.Concurrent.BlockingCollection<Action>? _queue;
+            private string _name = "";
+            public WindowsScreen Screen { get; private set; } = new() { FollowInputDesktop = true };
+            public WindowsInput Input { get; private set; } = new();
+
+            private void Check()
+            {
+                string now = Win32.InputDesktopName();
+                if (_thread != null && (now.Length == 0 || now.Equals(_name, StringComparison.OrdinalIgnoreCase))) return;
+                var oldQ = _queue;
+                var oldScreen = Screen;
+                if (oldQ != null) { oldQ.Add(() => oldScreen.Dispose()); oldQ.CompleteAdding(); }
+                _queue = new System.Collections.Concurrent.BlockingCollection<Action>();
+                var q = _queue;
+                Screen = new WindowsScreen { FollowInputDesktop = true };
+                Input = new WindowsInput();
+                _name = now;
+                _thread = new Thread(() =>
+                {
+                    Win32.FollowInputDesktop();
+                    foreach (var a in q.GetConsumingEnumerable()) a();
+                }) { IsBackground = true, Name = "desktop " + now };
+                _thread.Start();
+            }
+
+            public T Run<T>(Func<T> f)
+            {
+                Check();
+                T result = default!;
+                Exception? error = null;
+                using var done = new ManualResetEventSlim();
+                _queue!.Add(() =>
+                {
+                    try { Win32.FollowInputDesktop(); result = f(); }
+                    catch (Exception ex) { error = ex; }
+                    finally { done.Set(); }
+                });
+                if (!done.Wait(5000)) throw new TimeoutException("Il thread del desktop non risponde");
+                if (error != null) throw new InvalidOperationException(error.Message, error);
+                return result;
+            }
+
+            public void Do(Action a) => Run(() => { a(); return 0; });
+
+            public void Dispose()
+            {
+                var q = _queue;
+                var sc = Screen;
+                if (q != null) { q.Add(() => sc.Dispose()); q.CompleteAdding(); }
+            }
+        }
+
         // ================================================================== processo di supporto
 
         /// <summary>
         /// Corpo del processo «--helper &lt;pipe&gt; &lt;SID dell'utente&gt;», avviato dal servizio come SYSTEM nella
-        /// sessione dell'utente. Tutto gira su un solo thread, che segue il desktop attivo.
+        /// sessione dell'utente. Cattura e input girano su un thread che segue il desktop attivo.
         /// </summary>
         public static int RunHelper(string pipe, string userSid)
         {
@@ -143,8 +203,9 @@ namespace IpDeskCtrl.Screen
                 if (!wait.Wait(20000)) return 2;
                 if (!SameExecutable(ClientPid(server))) { SessionLog.Write("AIUTO collegamento rifiutato: non viene da IP-DESK-CTRL"); return 3; }
 
-                var screen = new WindowsScreen { FollowInputDesktop = true };
-                var input = new WindowsInput();
+                // cattura, mouse e tastiera girano su un thread a parte, rifatto nuovo a ogni cambio di desktop
+                // (UAC, blocco, Ctrl+Alt+Canc): Windows sposta su un altro desktop solo un thread «pulito»
+                using var desk = new DeskThread();
                 var frame = new Frame();
                 var br = new BinaryReader(server);
                 var bw = new BinaryWriter(server);
@@ -153,7 +214,6 @@ namespace IpDeskCtrl.Screen
                     byte cmd = br.ReadByte();
                     int len = br.ReadInt32();
                     byte[] data = len > 0 ? br.ReadBytes(len) : Array.Empty<byte>();
-                    Win32.FollowInputDesktop();
                     var r = new BinaryReader(new MemoryStream(data));
                     switch (cmd)
                     {
@@ -161,7 +221,7 @@ namespace IpDeskCtrl.Screen
                         {
                             var ms = new MemoryStream();
                             var w = new BinaryWriter(ms);
-                            var list = screen.Monitors();
+                            var list = desk.Run(() => desk.Screen.Monitors());
                             w.Write(list.Count);
                             foreach (var m in list) { w.Write(m.Name); w.Write(m.X); w.Write(m.Y); w.Write(m.W); w.Write(m.H); w.Write(m.Primary); }
                             Reply(bw, 0, ms.ToArray());
@@ -170,7 +230,8 @@ namespace IpDeskCtrl.Screen
                         case CmdCapture:
                         {
                             var area = new MonitorInfo(r.ReadString(), r.ReadInt32(), r.ReadInt32(), r.ReadInt32(), r.ReadInt32(), false);
-                            if (screen.Capture(area, frame))
+                            string note = "";
+                            if (desk.Run(() => { bool ok = desk.Screen.Capture(area, frame); note = desk.Screen.Note; return ok; }))
                             {
                                 bw.Write((byte)0);
                                 bw.Write(8 + frame.Data.Length);
@@ -178,23 +239,23 @@ namespace IpDeskCtrl.Screen
                                 bw.Write(frame.Data);
                                 bw.Flush();
                             }
-                            else Reply(bw, 1, Encoding.UTF8.GetBytes(screen.Note));
+                            else Reply(bw, 1, Encoding.UTF8.GetBytes(note));
                             break;
                         }
                         case CmdCursor:
                         {
-                            var c = screen.Cursor();
+                            var c = desk.Run(() => desk.Screen.Cursor());
                             var ms = new MemoryStream();
                             var w = new BinaryWriter(ms);
                             w.Write(c != null); w.Write(c?.x ?? 0); w.Write(c?.y ?? 0);
                             Reply(bw, 0, ms.ToArray());
                             break;
                         }
-                        case CmdMove: input.MoveTo(r.ReadInt32(), r.ReadInt32()); break;
-                        case CmdButton: input.Button(r.ReadInt32(), r.ReadBoolean()); break;
-                        case CmdWheel: input.Wheel(r.ReadInt32(), r.ReadInt32()); break;
-                        case CmdKey: input.Key(r.ReadInt32(), r.ReadBoolean()); break;
-                        case CmdText: input.Text(r.ReadString()); break;
+                        case CmdMove: { int x = r.ReadInt32(), y = r.ReadInt32(); desk.Do(() => desk.Input.MoveTo(x, y)); break; }
+                        case CmdButton: { int b = r.ReadInt32(); bool d = r.ReadBoolean(); desk.Do(() => desk.Input.Button(b, d)); break; }
+                        case CmdWheel: { int x = r.ReadInt32(), y = r.ReadInt32(); desk.Do(() => desk.Input.Wheel(x, y)); break; }
+                        case CmdKey: { int k = r.ReadInt32(); bool d = r.ReadBoolean(); desk.Do(() => desk.Input.Key(k, d)); break; }
+                        case CmdText: { string t = r.ReadString(); desk.Do(() => desk.Input.Text(t)); break; }
                         case CmdClipGet:
                         {
                             string? t = WinClip.GetText();

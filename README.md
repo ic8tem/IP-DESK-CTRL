@@ -93,6 +93,9 @@ Nella cartella dei dati (Impostazioni › Apri cartella dati): `errori.log` e `s
 
 Le versioni con protocollo diverso non si collegano tra loro: aggiorna tutti i dispositivi alla stessa versione principale (la 0.4.1 si collega con la 0.4.0; la 0.5 si collega con la 0.4).
 
+### 0.5.3 — 12 novembre 2026
+- **Finestre UAC con il servizio di Windows**: quando compariva la richiesta UAC l'immagine diventava nera («Cattura dello schermo non riuscita (BitBlt, errore 6)») e non si poteva rispondere. Ora cattura, mouse e tastiera girano su un thread che, a ogni cambio di desktop (UAC, schermata di blocco, Ctrl+Alt+Canc), viene rifatto nuovo e spostato sul desktop attivo: la finestra UAC si vede e si comanda. Nel registro delle sessioni compaiono le righe «AIUTO desktop attivo: Winlogon» / «Default».
+
 ### 0.5.2 — 11 novembre 2026
 - **Porte sul router** (come IP-TRX-CTRL 0.2.8): il router si cerca prima con UPnP e solo dopo con NAT-PMP. Alcuni router rispondono a NAT-PMP ma rifiutano tutte le porte («Failed to create portmap», «overflow» oltre la porta 32767): ora, dopo 5 rifiuti, si prova l'altro protocollo, e con NAT-PMP le porte restano sotto 32768. Così si aprono anche 443, 80, 8443, 8080 per i visori su reti che fanno uscire solo quelle.
 - **Copia/incolla di testi e file con i PC che hanno il servizio di Windows**: dalla 0.4 i collegamenti in arrivo li riceve il servizio, che non vede gli appunti dell'utente; ora testi e file passano dal processo di supporto, nei due versi, e i file ricevuti finiscono in Scaricati/IP-DESK-CTRL dell'utente.

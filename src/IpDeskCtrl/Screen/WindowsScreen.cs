@@ -41,8 +41,8 @@ namespace IpDeskCtrl.Screen
         [DllImport("user32.dll")] public static extern int ReleaseDC(IntPtr hwnd, IntPtr hdc);
         [DllImport("user32.dll")] public static extern bool GetCursorPos(out POINT p);
         [DllImport("user32.dll")] public static extern int GetSystemMetrics(int index);
-        [DllImport("user32.dll")] public static extern IntPtr OpenInputDesktop(uint flags, bool inherit, uint access);
-        [DllImport("user32.dll")] public static extern bool SetThreadDesktop(IntPtr desktop);
+        [DllImport("user32.dll", SetLastError = true)] public static extern IntPtr OpenInputDesktop(uint flags, bool inherit, uint access);
+        [DllImport("user32.dll", SetLastError = true)] public static extern bool SetThreadDesktop(IntPtr desktop);
         [DllImport("user32.dll")] public static extern bool CloseDesktop(IntPtr desktop);
         [DllImport("user32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
         public static extern bool GetUserObjectInformation(IntPtr obj, int index, System.Text.StringBuilder? info, int length, out int needed);
@@ -75,7 +75,11 @@ namespace IpDeskCtrl.Screen
             string name = InputDesktopName();
             if (name.Length == 0 || name == _threadDeskName) return name;
             IntPtr d = OpenInputDesktop(0, false, 0x10000000 /* GENERIC_ALL */);
-            if (d == IntPtr.Zero) return name;
+            if (d == IntPtr.Zero)
+            {
+                Core.SessionLog.Write($"AIUTO desktop {name} non apribile (errore {System.Runtime.InteropServices.Marshal.GetLastWin32Error()})");
+                return name;
+            }
             if (SetThreadDesktop(d))
             {
                 if (_threadDesk != IntPtr.Zero) CloseDesktop(_threadDesk);
@@ -83,9 +87,16 @@ namespace IpDeskCtrl.Screen
                 _threadDeskName = name;
                 Core.SessionLog.Write("AIUTO desktop attivo: " + name);
             }
-            else CloseDesktop(d);
+            else
+            {
+                Core.SessionLog.Write($"AIUTO passaggio al desktop {name} non riuscito (errore {System.Runtime.InteropServices.Marshal.GetLastWin32Error()})");
+                CloseDesktop(d);
+            }
             return name;
         }
+
+        /// <summary>Desktop su cui si trova ora il thread chiamante ("" se non è mai stato spostato).</summary>
+        public static string ThreadDesktopName => _threadDeskName ?? "";
 
         public const string LockedNote = "Il PC remoto è bloccato (schermata di blocco o di accesso) oppure mostra una finestra di sicurezza (UAC, Ctrl+Alt+Canc): " +
                                          "Windows non la lascia vedere né comandare. Sbloccalo e l'immagine torna da sola.";
@@ -168,7 +179,24 @@ namespace IpDeskCtrl.Screen
                     _old = Win32.SelectObject(_memDc, _dib);
                     _w = w; _h = h;
                 }
-                if (!Win32.BitBlt(_memDc, 0, 0, w, h, screen, area.X, area.Y, Win32.SRCCOPY))
+                bool ok = Win32.BitBlt(_memDc, 0, 0, w, h, screen, area.X, area.Y, Win32.SRCCOPY);
+                if (!ok && FollowInputDesktop)
+                {
+                    // dopo un cambio di desktop (UAC, blocco) si rifà tutto da capo una volta
+                    FreeDib();
+                    _memDc = Win32.CreateCompatibleDC(screen);
+                    var bmi = new Win32.BITMAPINFOHEADER
+                    {
+                        biSize = (uint)Marshal.SizeOf<Win32.BITMAPINFOHEADER>(),
+                        biWidth = w, biHeight = -h, biPlanes = 1, biBitCount = 32, biCompression = 0
+                    };
+                    _dib = Win32.CreateDIBSection(screen, ref bmi, 0, out _bits, IntPtr.Zero, 0);
+                    if (_dib == IntPtr.Zero) { FreeDib(); return false; }
+                    _old = Win32.SelectObject(_memDc, _dib);
+                    _w = w; _h = h;
+                    ok = Win32.BitBlt(_memDc, 0, 0, w, h, screen, area.X, area.Y, Win32.SRCCOPY);
+                }
+                if (!ok)
                 {
                     Note = $"Cattura dello schermo non riuscita (BitBlt, errore {Marshal.GetLastWin32Error()}) sull'area {area.X},{area.Y} {w}×{h}";
                     return false;
