@@ -20,6 +20,7 @@ jobs:
         include:
           - { os: windows-latest, rid: win-x64, arch: x64 }
           - { os: windows-latest, rid: win-x86, arch: x86 }
+          - { os: windows-latest, rid: win-arm64, arch: arm64 }
           - { os: ubuntu-latest,  rid: linux-x64 }
           - { os: ubuntu-latest,  rid: linux-arm64 }
           - { os: ubuntu-latest,  rid: linux-arm }
@@ -60,13 +61,16 @@ jobs:
           Copy-Item LICENSE dist/${{ matrix.rid }}/LICENSE.txt
           Compress-Archive -Path dist/${{ matrix.rid }}/IP-DESK-CTRL.exe, dist/${{ matrix.rid }}/THIRD-PARTY-NOTICES.txt, dist/${{ matrix.rid }}/LICENSE.txt -DestinationPath "out/IP-DESK-CTRL-$env:VERSION-${{ matrix.rid }}-portatile.zip"
 
-      # ---------------------------------------------------------------- Linux e Raspberry: .deb + tar.gz portatile
+      # ---------------------------------------------------------------- Linux e Raspberry: .deb, .rpm, Slackware .txz, tar.gz portatile
       - name: Pacchetti Linux
         if: startsWith(matrix.rid, 'linux')
         shell: bash
         run: |
-          chmod +x packaging/linux/make-deb.sh
+          chmod +x packaging/linux/*.sh
           packaging/linux/make-deb.sh ${{ matrix.rid }} "$VERSION" dist/${{ matrix.rid }} out
+          sudo apt-get install -y -qq rpm >/dev/null
+          packaging/linux/make-rpm.sh ${{ matrix.rid }} "$VERSION" dist/${{ matrix.rid }} out
+          if [ "${{ matrix.rid }}" != "linux-arm" ]; then packaging/linux/make-slackpkg.sh ${{ matrix.rid }} "$VERSION" dist/${{ matrix.rid }} out; fi
           mkdir -p pkg/IP-DESK-CTRL
           cp dist/${{ matrix.rid }}/IP-DESK-CTRL pkg/IP-DESK-CTRL/
           chmod +x pkg/IP-DESK-CTRL/IP-DESK-CTRL
@@ -176,16 +180,31 @@ jobs:
           overwrite_files: true
           files: artifacts/*
           body: |
-            **Windows 64 bit**: `IP-DESK-CTRL-…-win-x64-setup.exe` · **Windows 32 bit**: `…-win-x86-setup.exe`
-            **Linux 64 bit**: `ip-desk-ctrl_…_amd64.deb`
-            **Raspberry Pi**: `ip-desk-ctrl_…_arm64.deb` (Raspberry Pi OS 64 bit) · `ip-desk-ctrl_…_armhf.deb` (32 bit)
-            **macOS**: `IP-DESK-CTRL-…-osx-arm64.dmg` (Apple Silicon) · `…-osx-x64.dmg` (Intel); al primo avvio clic destro › Apri
-            **Android** (8.0 e successivi): `IP-DESK-CTRL-…-android.apk`; consenti l'installazione da origini sconosciute. Per farti comandare dal PC attiva il servizio in Impostazioni › Accessibilità › IP-DESK-CTRL.
+            | Sistema | File |
+            |---|---|
+            | Windows 64 bit | `IP-DESK-CTRL-…-win-x64-setup.exe` (portatile: `…-win-x64-portatile.zip`) |
+            | Windows 32 bit | `…-win-x86-setup.exe` (portatile: `…-win-x86-portatile.zip`) |
+            | Windows ARM64 (PC con Snapdragon) | `…-win-arm64-setup.exe` (portatile: `…-win-arm64-portatile.zip`) |
+            | Debian / Ubuntu / Mint | `ip-desk-ctrl_…_amd64.deb` · `…_arm64.deb` · `…_armhf.deb` |
+            | Fedora / openSUSE | `ip-desk-ctrl-…-1.x86_64.rpm` · `…-1.aarch64.rpm` · `…-1.armv7hl.rpm` |
+            | Raspberry Pi OS 64 bit (arm64) | `ip-desk-ctrl_…_arm64.deb` |
+            | Raspberry Pi OS 32 bit (armhf) | `ip-desk-ctrl_…_armhf.deb` |
+            | Slackware ARM64 (anche Raspberry Pi) · Slackware64 | `ip-desk-ctrl-…-aarch64-1_ic8tem.txz` · `…-x86_64-1_ic8tem.txz` |
+            | Linux x86_64 (qualsiasi distribuzione) | `IP-DESK-CTRL-…-linux-x64-portatile.tar.gz` |
+            | Linux aarch64 (PC e mini-PC non Raspberry) | `IP-DESK-CTRL-…-linux-arm64-portatile.tar.gz` |
+            | Linux armv7l | `IP-DESK-CTRL-…-linux-arm-portatile.tar.gz` |
+            | macOS Apple Silicon (M1-M4) | `IP-DESK-CTRL-…-osx-arm64.dmg` |
+            | macOS Intel | `IP-DESK-CTRL-…-osx-x64.dmg` |
+            | Android 8.0 e successivi | `IP-DESK-CTRL-…-android.apk` |
 
-            Linux e Raspberry: `sudo apt install ./ip-desk-ctrl_…deb` (con la sessione Wayland riavvia dopo l'installazione: serve la regola per mouse e tastiera).
+            Non ci sono (il motore .NET non esiste o non è pronto per quei sistemi): Linux i686 a 32 bit, FreeBSD, OpenBSD. Dettagli nella wiki, pagina Installazione.
+
+            macOS: al primo avvio clic destro › Apri. Android: consenti l'installazione da origini sconosciute; per farti comandare dal PC attiva il servizio in Impostazioni › Accessibilità › IP-DESK-CTRL.
+
+            Linux e Raspberry: `sudo apt install ./ip-desk-ctrl_…deb` · Fedora `sudo dnf install ./ip-desk-ctrl-…rpm` · openSUSE `sudo zypper install --allow-unsigned-rpm ./ip-desk-ctrl-…rpm` · Slackware `installpkg ip-desk-ctrl-…txz` (con la sessione Wayland riavvia dopo l'installazione: serve la regola per mouse e tastiera).
             macOS: concedi «Registrazione schermo» e «Accessibilità» in Impostazioni di Sistema › Privacy e sicurezza; per l'audio installa BlackHole 2ch.
             Le versioni *portatile* non richiedono installazione.
-            Video compresso H.264/H.265/AV1: serve ffmpeg su tutti e due i PC (Windows: Impostazioni › Scarica ffmpeg; Linux: sudo apt install ffmpeg; Mac: brew install ffmpeg).
+            Video compresso H.264/H.265/AV1: serve ffmpeg su tutti e due i PC (Windows: Impostazioni › Scarica ffmpeg; Linux: sudo apt install ffmpeg o sudo dnf install ffmpeg-free; Mac: brew install ffmpeg).
             La X della finestra nasconde soltanto: IP-DESK-CTRL resta attivo con l'icona vicino all'orologio; per uscire clic destro sull'icona › «Esci da IP-DESK-CTRL».
 
             **Compatibilità**: la 0.5 si collega con la 0.4 (protocollo 3); microfono, volume, risoluzione adatta e cartella condivisa servono la 0.5 da entrambe le parti.

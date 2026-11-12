@@ -10,6 +10,7 @@ Tutti i file sono nella pagina **[Releases](https://github.com/ic8tem/IP-DESK-CT
 |---|---|
 | Windows 64 bit | `IP-DESK-CTRL-…-win-x64-setup.exe` |
 | Windows 32 bit | `IP-DESK-CTRL-…-win-x86-setup.exe` |
+| Windows ARM64 (PC con Snapdragon) | `IP-DESK-CTRL-…-win-arm64-setup.exe` |
 
 1. Avvia l'installatore e accetta la richiesta di Windows (serve l'amministratore).
 2. Lascia attiva l'opzione **Accesso completo**: installa il [servizio di Windows](Servizio-di-Windows), che permette di vedere e comandare le finestre UAC, la schermata di blocco e i programmi da amministratore, e rende il PC raggiungibile appena acceso.
@@ -23,15 +24,20 @@ Windows SmartScreen può avvisare che il programma non è riconosciuto: clic su 
 
 | Sistema | File |
 |---|---|
-| Linux 64 bit (PC) | `ip-desk-ctrl_…_amd64.deb` |
-| Raspberry Pi OS 64 bit | `ip-desk-ctrl_…_arm64.deb` |
-| Raspberry Pi OS 32 bit | `ip-desk-ctrl_…_armhf.deb` |
+| Distribuzione | File | Installazione |
+|---|---|---|
+| Debian / Ubuntu / Mint (PC) | `ip-desk-ctrl_…_amd64.deb` | `sudo apt install ./ip-desk-ctrl_…deb` |
+| Raspberry Pi OS 64 bit (arm64) | `ip-desk-ctrl_…_arm64.deb` | come sopra |
+| Raspberry Pi OS 32 bit (armhf) | `ip-desk-ctrl_…_armhf.deb` | come sopra |
+| Fedora (x86_64, aarch64, armv7hl) | `ip-desk-ctrl-…-1.x86_64.rpm` · `…aarch64.rpm` · `…armv7hl.rpm` | `sudo dnf install ./ip-desk-ctrl-…rpm` |
+| openSUSE | gli stessi `.rpm` | `sudo zypper install --allow-unsigned-rpm ./ip-desk-ctrl-…rpm` |
+| Slackware ARM64 (anche Raspberry Pi) | `ip-desk-ctrl-…-aarch64-1_ic8tem.txz` | `installpkg ip-desk-ctrl-…txz` (da root) |
+| Slackware64 | `ip-desk-ctrl-…-x86_64-1_ic8tem.txz` | come sopra |
+| Linux x86_64, qualsiasi distribuzione | `IP-DESK-CTRL-…-linux-x64-portatile.tar.gz` | si scompatta e si avvia `IP-DESK-CTRL` |
+| Linux aarch64 (PC e mini-PC non Raspberry) | `IP-DESK-CTRL-…-linux-arm64-portatile.tar.gz` | come sopra |
+| Linux armv7l | `IP-DESK-CTRL-…-linux-arm-portatile.tar.gz` | come sopra |
 
-```
-sudo apt install ./ip-desk-ctrl_…deb
-```
-
-apt installa da solo anche ffmpeg (video compresso), xrandr (risoluzione adatta) e gio (cartella condivisa).
+apt installa da solo anche ffmpeg (video compresso), xrandr (risoluzione adatta) e gio (cartella condivisa); dnf e zypper li propongono come consigliati (su Fedora ffmpeg si chiama `ffmpeg-free`). Su Slackware e con le versioni portatili installali tu, se mancano.
 
 - Con **X11** funziona tutto.
 - Con **Wayland** (Raspberry Pi OS Bookworm, Sway…) lo schermo si cattura con `grim` (pochi fotogrammi al secondo) e mouse e tastiera passano da `/dev/uinput`: il pacchetto installa la regola necessaria, ma **devi riavviare** dopo l'installazione.
@@ -39,6 +45,12 @@ apt installa da solo anche ffmpeg (video compresso), xrandr (risoluzione adatta)
 - L'audio passa da PulseAudio o PipeWire (`parec`/`pacat`).
 
 Per ogni architettura c'è anche la versione portatile `…-portatile.tar.gz`.
+
+### Sistemi che non ci sono
+
+- **Linux i686 (32 bit su PC)**: il motore .NET su cui è scritto IP-DESK-CTRL non esiste per Linux a 32 bit Intel, quindi non si può compilare. Sui PC a 32 bit si può usare Windows 32 bit.
+- **FreeBSD**: .NET c'è solo come porting della comunità (`lang/dotnet`) e la grafica Avalonia non è supportata (manca la libreria HarfBuzzSharp per FreeBSD): per ora nessun pacchetto.
+- **OpenBSD**: non esiste .NET per OpenBSD.
 
 ## macOS
 
@@ -74,7 +86,7 @@ L'aggiornamento:
 | Windows con il servizio | Installazione senza domande, anche se il PC è comandato da remoto |
 | Windows senza servizio | Windows chiede il permesso di amministratore (UAC): risponde chi è al PC |
 | Windows portatile | Sostituisce i file nella cartella del programma |
-| Linux (.deb) | Chiede la password di amministratore |
+| Linux (.deb, .rpm, Slackware) | Chiede la password di amministratore |
 | Linux portatile | Sostituisce i file nella cartella del programma |
 | macOS | Sostituisce l'app (se serve, chiede la password) |
 | Android | Apre il browser per scaricare l'APK, da installare sopra |

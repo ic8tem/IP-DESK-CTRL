@@ -1,5 +1,5 @@
 ; Installatore Windows di IP-DESK-CTRL (Inno Setup 6)
-; Uso: ISCC /DAppVersion=0.1.0 /DArch=x64|x86 /DSourceDir=<cartella con IP-DESK-CTRL.exe> /DOutDir=<uscita> IP-DESK-CTRL.iss
+; Uso: ISCC /DAppVersion=0.1.0 /DArch=x64|x86|arm64 /DSourceDir=<cartella con IP-DESK-CTRL.exe> /DOutDir=<uscita> IP-DESK-CTRL.iss
 
 #ifndef AppVersion
   #define AppVersion "0.1.0"
@@ -31,6 +31,10 @@ InfoBeforeFile=..\..\THIRD-PARTY-NOTICES.txt
 #if Arch == "x64"
 ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
+#endif
+#if Arch == "arm64"
+ArchitecturesAllowed=arm64
+ArchitecturesInstallIn64BitMode=arm64
 #endif
 
 [Languages]

@@ -2,7 +2,7 @@
 
 [![Sostieni il progetto su Ko-fi](https://img.shields.io/badge/Ko--fi-Sostieni%20il%20progetto-FF5E5B?logo=ko-fi&logoColor=white)](https://ko-fi.com/ic8tem)
 
-Desktop remoto cifrato tra Windows (64 e 32 bit), macOS (Apple Silicon e Intel), Linux 64 bit, Raspberry Pi (64 e 32 bit) e **Android**. Un unico programma: ogni PC è insieme **host** (si fa vedere e comandare) e **visore** (vede e comanda gli altri), senza che l'utente scelga niente.
+Desktop remoto cifrato tra Windows (64 bit, 32 bit e ARM64), macOS (Apple Silicon e Intel), Linux (x86_64, aarch64, armv7l: .deb, .rpm, Slackware), Raspberry Pi (64 e 32 bit) e **Android**. Un unico programma: ogni PC è insieme **host** (si fa vedere e comandare) e **visore** (vede e comanda gli altri), senza che l'utente scelga niente.
 
 Ogni PC ha un **numero fisso di 10 cifre** (es. `482 913 0675`) che non cambia mai: per collegarti a un PC scrivi il suo numero e premi **Collegati**. Sull'altro PC compare la richiesta da accettare.
 
@@ -76,10 +76,26 @@ Senza UPnP su nessuno dei due router di solito si arriva al collegamento **solo 
 
 Gli installatori sono nella pagina **Releases**:
 
-- Windows 64 / 32 bit: `…-win-x64-setup.exe` / `…-win-x86-setup.exe` (opzione per l'avvio automatico all'accesso, nascosto con la sola icona vicino all'orologio);
-- Linux 64 bit e Raspberry Pi: `ip-desk-ctrl_…_amd64.deb`, `…_arm64.deb`, `…_armhf.deb` (`sudo apt install ./<file>.deb`);
-- macOS: `…-osx-arm64.dmg` / `…-osx-x64.dmg` (al primo avvio clic destro › Apri).
+| Distribuzione | File |
+|---|---|
+| Windows 64 bit | `…-win-x64-setup.exe` |
+| Windows 32 bit | `…-win-x86-setup.exe` |
+| Windows ARM64 (PC con Snapdragon) | `…-win-arm64-setup.exe` |
+| Linux x86_64 (64 bit) | `…-linux-x64-portatile.tar.gz` |
+| Linux aarch64 (ARM 64 bit, PC e mini-PC non Raspberry) | `…-linux-arm64-portatile.tar.gz` |
+| Debian / Ubuntu / Mint | `ip-desk-ctrl_…_amd64.deb` (`sudo apt install ./<file>.deb`) |
+| Fedora / openSUSE | `ip-desk-ctrl-…-1.x86_64.rpm`, `…aarch64.rpm`, `…armv7hl.rpm` (`sudo dnf install ./<file>.rpm`) |
+| Raspberry Pi OS 32 bit (armhf) | `ip-desk-ctrl_…_armhf.deb` |
+| Raspberry Pi OS 64 bit (arm64) | `ip-desk-ctrl_…_arm64.deb` |
+| Raspberry Pi Slackware ARM64 | `ip-desk-ctrl-…-aarch64-1_ic8tem.txz` (`installpkg`) |
+| Linux armv7l | `…-linux-arm-portatile.tar.gz` |
+| macOS Apple Silicon (M1-M4) | `…-osx-arm64.dmg` (al primo avvio clic destro › Apri) |
+| macOS Intel | `…-osx-x64.dmg` |
+| Android 8.0 e successivi | `…-android.apk` |
 
+Non disponibili, perché il motore .NET non c'è o non è pronto: **Linux i686** (32 bit), **FreeBSD** (solo porting della comunità, grafica non supportata), **OpenBSD**. Dettagli nella [wiki](https://github.com/ic8tem/IP-DESK-CTRL/wiki/Installazione).
+
+L'installatore di Windows ha l'opzione per l'avvio automatico all'accesso, nascosto con la sola icona vicino all'orologio.
 Per ogni sistema c'è anche una versione portatile.
 
 ## Registri
@@ -92,6 +108,9 @@ Nella cartella dei dati (Impostazioni › Apri cartella dati): `errori.log` e `s
 ## Storia delle versioni
 
 Le versioni con protocollo diverso non si collegano tra loro: aggiorna tutti i dispositivi alla stessa versione principale (la 0.4.1 si collega con la 0.4.0; la 0.5 si collega con la 0.4).
+
+### 0.5.6 — 12 novembre 2026
+- **Più distribuzioni**: Windows ARM64 (PC con Snapdragon, con installatore e servizio), pacchetti **.rpm** per Fedora e openSUSE (x86_64, aarch64, armv7hl) e pacchetti **Slackware** (.txz) per Slackware ARM64, anche su Raspberry Pi, e Slackware64. Anche questi si aggiornano da soli (dnf, zypper o upgradepkg). Su Windows ARM64 ffmpeg si scarica nella versione ARM. Linux i686, FreeBSD e OpenBSD restano esclusi: .NET non c'è o non è pronto.
 
 ### 0.5.5 — 12 novembre 2026
 - **L'aggiornamento automatico non interrompe i collegamenti**: se esce una versione nuova mentre comandi un PC o qualcuno comanda il tuo, compare solo il pulsante «Nuova versione» in alto a destra e l'installazione parte da sola appena si chiude l'ultimo collegamento (dopo il solito minuto per fermarla). «Aggiorna ora» la fa subito, con circa 45 secondi di interruzione e ripresa automatica.

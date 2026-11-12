@@ -25,7 +25,7 @@ namespace IpDeskCtrl.Core
     /// </summary>
     public static class Updater
     {
-        public enum Kind { None, WindowsSetup, WindowsPortable, LinuxDeb, LinuxPortable, MacApp, Android }
+        public enum Kind { None, WindowsSetup, WindowsPortable, LinuxDeb, LinuxRpm, LinuxSlackware, LinuxPortable, MacApp, Android }
 
         public const string AfterUpdateArg = "--dopo-aggiornamento";
 
@@ -36,7 +36,15 @@ namespace IpDeskCtrl.Core
             string dir = AppContext.BaseDirectory;
             if (OperatingSystem.IsWindows()) return File.Exists(Path.Combine(dir, "unins000.exe")) ? Kind.WindowsSetup : Kind.WindowsPortable;
             if (OperatingSystem.IsMacOS()) return exe.Contains(".app/Contents/MacOS/") ? Kind.MacApp : Kind.None;
-            if (OperatingSystem.IsLinux()) return exe.StartsWith("/opt/ip-desk-ctrl/") ? Kind.LinuxDeb : Kind.LinuxPortable;
+            if (OperatingSystem.IsLinux())
+            {
+                if (!exe.StartsWith("/opt/ip-desk-ctrl/")) return Kind.LinuxPortable;
+                // installato da pacchetto: quale gestore lo ha messo lì
+                if (Directory.Exists("/var/lib/dpkg/info") && File.Exists("/var/lib/dpkg/info/ip-desk-ctrl.list")) return Kind.LinuxDeb;
+                if (Directory.Exists("/var/log/packages") && Directory.EnumerateFiles("/var/log/packages", "ip-desk-ctrl-*").Any()) return Kind.LinuxSlackware;
+                if (File.Exists("/usr/bin/rpm") || File.Exists("/bin/rpm")) return Kind.LinuxRpm;
+                return Kind.LinuxDeb;
+            }
             return Kind.None;
         }
 
@@ -54,9 +62,11 @@ namespace IpDeskCtrl.Core
             string rid = Rid();
             return k switch
             {
-                Kind.WindowsSetup => $"IP-DESK-CTRL-{ver}-win-{(rid == "x86" ? "x86" : "x64")}-setup.exe",
-                Kind.WindowsPortable => $"IP-DESK-CTRL-{ver}-win-{(rid == "x86" ? "x86" : "x64")}-portatile.zip",
+                Kind.WindowsSetup => $"IP-DESK-CTRL-{ver}-win-{(rid is "x86" or "arm64" ? rid : "x64")}-setup.exe",
+                Kind.WindowsPortable => $"IP-DESK-CTRL-{ver}-win-{(rid is "x86" or "arm64" ? rid : "x64")}-portatile.zip",
                 Kind.LinuxDeb => $"ip-desk-ctrl_{ver}_{(rid == "arm64" ? "arm64" : rid == "arm" ? "armhf" : "amd64")}.deb",
+                Kind.LinuxRpm => $"ip-desk-ctrl-{ver}-1.{(rid == "arm64" ? "aarch64" : rid == "arm" ? "armv7hl" : "x86_64")}.rpm",
+                Kind.LinuxSlackware => $"ip-desk-ctrl-{ver}-{(rid == "arm64" ? "aarch64" : rid == "arm" ? "arm" : "x86_64")}-1_ic8tem.txz",
                 Kind.LinuxPortable => $"IP-DESK-CTRL-{ver}-linux-{rid}-portatile.tar.gz",
                 Kind.MacApp => $"IP-DESK-CTRL-{ver}-osx-{(rid == "arm64" ? "arm64" : "x64")}.dmg",
                 Kind.Android => $"IP-DESK-CTRL-{ver}-android.apk",
@@ -73,7 +83,7 @@ namespace IpDeskCtrl.Core
             Kind.WindowsSetup => service
                 ? "Il servizio di IP-DESK-CTRL installa la nuova versione senza chiedere nulla, anche se il PC è comandato da remoto."
                 : "Windows chiederà il permesso di amministratore (UAC): chi è al PC deve rispondere sì.",
-            Kind.LinuxDeb => "Il sistema chiederà la password di amministratore per installare il pacchetto.",
+            Kind.LinuxDeb or Kind.LinuxRpm or Kind.LinuxSlackware => "Il sistema chiederà la password di amministratore per installare il pacchetto.",
             Kind.MacApp => "Se l'app è in Applicazioni e serve, macOS chiederà la password.",
             Kind.Android => "Si apre il browser per scaricare l'APK: poi toccalo per installarlo sopra questa versione.",
             _ => "",
@@ -170,6 +180,20 @@ Start-Process -FilePath '{Q(exe)}' -ArgumentList '{AfterUpdateArg}'
                         return RunScript($@"
 while kill -0 {pid} 2>/dev/null; do sleep 0.3; done
 pkexec apt-get install -y --allow-downgrades '{S(file)}' || pkexec dpkg -i '{S(file)}'
+nohup /opt/ip-desk-ctrl/IP-DESK-CTRL {AfterUpdateArg} >/dev/null 2>&1 &
+");
+                    case Kind.LinuxRpm:
+                        return RunScript($@"
+while kill -0 {pid} 2>/dev/null; do sleep 0.3; done
+if command -v dnf >/dev/null 2>&1; then pkexec dnf install -y '{S(file)}'
+elif command -v zypper >/dev/null 2>&1; then pkexec zypper --non-interactive install --allow-unsigned-rpm '{S(file)}'
+else pkexec rpm -Uvh --replacepkgs '{S(file)}'; fi
+nohup /opt/ip-desk-ctrl/IP-DESK-CTRL {AfterUpdateArg} >/dev/null 2>&1 &
+");
+                    case Kind.LinuxSlackware:
+                        return RunScript($@"
+while kill -0 {pid} 2>/dev/null; do sleep 0.3; done
+pkexec /sbin/upgradepkg --install-new --reinstall '{S(file)}'
 nohup /opt/ip-desk-ctrl/IP-DESK-CTRL {AfterUpdateArg} >/dev/null 2>&1 &
 ");
                     case Kind.LinuxPortable:

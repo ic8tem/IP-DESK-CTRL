@@ -161,16 +161,18 @@ namespace IpDeskCtrl.Screen
             return usable.FirstOrDefault(e => e.Codec == "h264");
         }
 
-        // ------------------------------------------------------------------ scaricamento (Windows 64 bit)
+        // ------------------------------------------------------------------ scaricamento (Windows 64 bit e ARM64)
 
-        public const string WindowsBuildUrl = "https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-win64-gpl.zip";
+        public static string WindowsBuildUrl =>
+            "https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-" +
+            (System.Runtime.InteropServices.RuntimeInformation.OSArchitecture == System.Runtime.InteropServices.Architecture.Arm64 ? "winarm64" : "win64") + "-gpl.zip";
 
         public static bool CanDownload => OperatingSystem.IsWindows() && Environment.Is64BitOperatingSystem;
 
         /// <summary>Scarica ffmpeg.exe nella cartella dati (circa 150 MB da GitHub, una volta sola). "" = fatto.</summary>
         public static async Task<string> DownloadAsync(Action<string> progress, CancellationToken ct)
         {
-            if (!CanDownload) return "Lo scaricamento automatico c'è solo su Windows a 64 bit.";
+            if (!CanDownload) return "Lo scaricamento automatico c'è solo su Windows a 64 bit (x64 o ARM64).";
             string tmp = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "ipdesk-ffmpeg.zip");
             try
             {

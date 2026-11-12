@@ -3,6 +3,9 @@
 
 Le versioni con protocollo diverso non si collegano tra loro: aggiorna tutti i dispositivi alla stessa versione principale (la 0.4.1 si collega con la 0.4.0; la 0.5 si collega con la 0.4).
 
+## 0.5.6 — 12 novembre 2026
+- **Più distribuzioni**: Windows ARM64 (PC con Snapdragon, con installatore e servizio), pacchetti **.rpm** per Fedora e openSUSE (x86_64, aarch64, armv7hl) e pacchetti **Slackware** (.txz) per Slackware ARM64, anche su Raspberry Pi, e Slackware64. Anche questi si aggiornano da soli (dnf, zypper o upgradepkg). Su Windows ARM64 ffmpeg si scarica nella versione ARM. Linux i686, FreeBSD e OpenBSD restano esclusi: .NET non c'è o non è pronto.
+
 ## 0.5.5 — 12 novembre 2026
 - **L'aggiornamento automatico non interrompe i collegamenti**: se esce una versione nuova mentre comandi un PC o qualcuno comanda il tuo, compare solo il pulsante «Nuova versione» in alto a destra e l'installazione parte da sola appena si chiude l'ultimo collegamento (dopo il solito minuto per fermarla). «Aggiorna ora» la fa subito, con circa 45 secondi di interruzione e ripresa automatica.
 
