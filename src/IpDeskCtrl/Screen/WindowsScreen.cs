@@ -54,6 +54,7 @@ namespace IpDeskCtrl.Screen
         public static string InputDesktopName()
         {
             IntPtr d = OpenInputDesktop(0, false, 0x0001 /* DESKTOP_READOBJECTS */);
+            if (d == IntPtr.Zero) d = OpenInputDesktop(0, false, 0x02000000 /* MAXIMUM_ALLOWED */);
             if (d == IntPtr.Zero) return "";
             try
             {

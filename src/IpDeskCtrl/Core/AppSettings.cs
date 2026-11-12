@@ -222,7 +222,18 @@ namespace IpDeskCtrl.Core
                 {
                     var fi = new FileInfo(FilePath);
                     if (fi.Exists && fi.Length > 5_000_000) File.Move(FilePath, FilePath + ".1", true);
-                    File.AppendAllText(FilePath, $"{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}Z | {line}{Environment.NewLine}");
+                    // il servizio e il processo di supporto scrivono nello stesso file: se è occupato si riprova
+                    byte[] data = System.Text.Encoding.UTF8.GetBytes($"{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}Z | {line}{Environment.NewLine}");
+                    for (int i = 0; i < 20; i++)
+                    {
+                        try
+                        {
+                            using var fs = new FileStream(FilePath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite | FileShare.Delete);
+                            fs.Write(data, 0, data.Length);
+                            break;
+                        }
+                        catch (IOException) { System.Threading.Thread.Sleep(15); }
+                    }
                 }
                 catch { }
             }

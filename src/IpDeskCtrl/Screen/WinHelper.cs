@@ -134,13 +134,15 @@ namespace IpDeskCtrl.Screen
             private Thread? _thread;
             private System.Collections.Concurrent.BlockingCollection<Action>? _queue;
             private string _name = "";
+            private bool _reset;
             public WindowsScreen Screen { get; private set; } = new() { FollowInputDesktop = true };
             public WindowsInput Input { get; private set; } = new();
 
             private void Check()
             {
                 string now = Win32.InputDesktopName();
-                if (_thread != null && (now.Length == 0 || now.Equals(_name, StringComparison.OrdinalIgnoreCase))) return;
+                if (_thread != null && !_reset && (now.Length == 0 || now.Equals(_name, StringComparison.OrdinalIgnoreCase))) return;
+                _reset = false;
                 var oldQ = _queue;
                 var oldScreen = Screen;
                 if (oldQ != null) { oldQ.Add(() => oldScreen.Dispose()); oldQ.CompleteAdding(); }
@@ -175,6 +177,9 @@ namespace IpDeskCtrl.Screen
             }
 
             public void Do(Action a) => Run(() => { a(); return 0; });
+
+            /// <summary>Alla prossima richiesta il thread si rifà nuovo, anche se Windows non dice che il desktop è cambiato.</summary>
+            public void Reset() => _reset = true;
 
             public void Dispose()
             {
@@ -231,7 +236,15 @@ namespace IpDeskCtrl.Screen
                         {
                             var area = new MonitorInfo(r.ReadString(), r.ReadInt32(), r.ReadInt32(), r.ReadInt32(), r.ReadInt32(), false);
                             string note = "";
-                            if (desk.Run(() => { bool ok = desk.Screen.Capture(area, frame); note = desk.Screen.Note; return ok; }))
+                            bool captured = desk.Run(() => { bool ok = desk.Screen.Capture(area, frame); note = desk.Screen.Note; return ok; });
+                            if (!captured && note.Contains("BitBlt"))
+                            {
+                                // il desktop è cambiato senza che Windows lo dicesse: thread nuovo e si riprova
+                                SessionLog.Write("AIUTO " + note + $" · desktop attivo «{Win32.InputDesktopName()}», rifaccio il thread");
+                                desk.Reset();
+                                captured = desk.Run(() => { bool ok = desk.Screen.Capture(area, frame); note = desk.Screen.Note; return ok; });
+                            }
+                            if (captured)
                             {
                                 bw.Write((byte)0);
                                 bw.Write(8 + frame.Data.Length);
