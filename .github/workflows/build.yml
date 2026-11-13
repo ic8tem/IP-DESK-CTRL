@@ -22,7 +22,7 @@ jobs:
           - { os: windows-latest, rid: win-x86, arch: x86 }
           - { os: windows-latest, rid: win-arm64, arch: arm64 }
           - { os: ubuntu-latest,  rid: linux-x64 }
-          - { os: ubuntu-latest,  rid: linux-arm64 }
+          - { os: ubuntu-24.04-arm, rid: linux-arm64 }
           - { os: ubuntu-latest,  rid: linux-arm }
           - { os: macos-latest,   rid: osx-arm64 }
           - { os: macos-latest,   rid: osx-x64 }
@@ -77,6 +77,23 @@ jobs:
           cp THIRD-PARTY-NOTICES.txt LICENSE src/IpDeskCtrl/Assets/icon.png pkg/IP-DESK-CTRL/
           tar -czf "out/IP-DESK-CTRL-$VERSION-${{ matrix.rid }}-portatile.tar.gz" -C pkg IP-DESK-CTRL
           dpkg-deb --info out/*.deb | head -20
+
+      # ---------------------------------------------------------------- AppImage, Arch Linux (.pkg.tar.zst), Snap
+      - name: AppImage e Arch Linux
+        if: matrix.rid == 'linux-x64' || matrix.rid == 'linux-arm64'
+        shell: bash
+        run: |
+          sudo apt-get install -y -qq libfuse2t64 >/dev/null 2>&1 || sudo apt-get install -y -qq libfuse2 >/dev/null 2>&1 || true
+          packaging/linux/make-appimage.sh ${{ matrix.rid }} "$VERSION" dist/${{ matrix.rid }} out
+          packaging/linux/make-arch.sh ${{ matrix.rid }} "$VERSION" "$(ls out/*.deb | head -n 1)" out
+
+      - name: Snap
+        if: matrix.rid == 'linux-x64' || matrix.rid == 'linux-arm64'
+        continue-on-error: true
+        shell: bash
+        run: |
+          sudo snap install snapcraft --classic
+          packaging/linux/make-snap.sh ${{ matrix.rid }} "$VERSION" dist/${{ matrix.rid }} out
 
       # ---------------------------------------------------------------- macOS: .dmg + .app zip
       - name: Pacchetti macOS
@@ -157,9 +174,49 @@ jobs:
           path: out/*
 
   # Pubblica (o aggiorna) la release della versione scritta nel file VERSION a ogni push su main.
+  # ---------------------------------------------------------------- Alpine Linux e altre distribuzioni con musl
+  alpine:
+    name: ${{ matrix.rid }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: ubuntu-latest,    rid: linux-musl-x64 }
+          - { os: ubuntu-24.04-arm, rid: linux-musl-arm64 }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Versione
+        shell: bash
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then V="${GITHUB_REF#refs/tags/v}"; else V="$(tr -d '[:space:]' < VERSION)"; fi
+          echo "VERSION=$V" >> "$GITHUB_ENV"
+      - name: Compila ${{ matrix.rid }}
+        shell: bash
+        run: dotnet publish src/IpDeskCtrl.Desktop/IpDeskCtrl.Desktop.csproj -c Release -r ${{ matrix.rid }} -p:Version=$VERSION -o dist/${{ matrix.rid }}
+      - name: Pacchetto portatile
+        shell: bash
+        run: |
+          mkdir -p out pkg/IP-DESK-CTRL
+          cp dist/${{ matrix.rid }}/IP-DESK-CTRL pkg/IP-DESK-CTRL/
+          chmod +x pkg/IP-DESK-CTRL/IP-DESK-CTRL
+          cp THIRD-PARTY-NOTICES.txt LICENSE src/IpDeskCtrl/Assets/icon.png pkg/IP-DESK-CTRL/
+          tar -czf "out/IP-DESK-CTRL-$VERSION-${{ matrix.rid }}-portatile.tar.gz" -C pkg IP-DESK-CTRL
+      - name: Prova in un contenitore Alpine (le librerie si caricano)
+        shell: bash
+        run: |
+          docker run --rm -v "$PWD/pkg/IP-DESK-CTRL:/p" alpine:latest sh -c "apk add -q libstdc++ libgcc fontconfig libx11 >/dev/null; cd /p && timeout 20 ./IP-DESK-CTRL --version 2>&1 | head -5; ldd ./IP-DESK-CTRL | head -10" || true
+      - uses: actions/upload-artifact@v4
+        with:
+          name: IP-DESK-CTRL-${{ matrix.rid }}
+          path: out/*
+
   release:
     if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v'))
-    needs: [build, android]
+    needs: [build, android, alpine]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -193,13 +250,19 @@ jobs:
             | Linux x86_64 (qualsiasi distribuzione) | `IP-DESK-CTRL-…-linux-x64-portatile.tar.gz` |
             | Linux aarch64 (PC e mini-PC non Raspberry) | `IP-DESK-CTRL-…-linux-arm64-portatile.tar.gz` |
             | Linux armv7l | `IP-DESK-CTRL-…-linux-arm-portatile.tar.gz` |
+            | Arch / Manjaro / EndeavourOS / Arch Linux ARM | `ip-desk-ctrl-…-1-x86_64.pkg.tar.zst` · `…-aarch64.pkg.tar.zst` |
+            | Qualsiasi Linux, un solo file (AppImage) | `IP-DESK-CTRL-…-x86_64.AppImage` · `…-aarch64.AppImage` |
+            | Snap | `ip-desk-ctrl_…_amd64.snap` · `…_arm64.snap` |
+            | Alpine Linux (musl) | `IP-DESK-CTRL-…-linux-musl-x64-portatile.tar.gz` · `…-linux-musl-arm64-portatile.tar.gz` |
+            | Chromebook | l'APK Android, oppure il `.deb` nel Linux del Chromebook |
             | macOS Apple Silicon (M1-M4) | `IP-DESK-CTRL-…-osx-arm64.dmg` |
             | macOS Intel | `IP-DESK-CTRL-…-osx-x64.dmg` |
             | Android 8.0 e successivi | `IP-DESK-CTRL-…-android.apk` |
 
             macOS: al primo avvio clic destro › Apri. Android: consenti l'installazione da origini sconosciute; per farti comandare dal PC attiva il servizio in Impostazioni › Accessibilità › IP-DESK-CTRL.
 
-            Linux e Raspberry: `sudo apt install ./ip-desk-ctrl_…deb` · Fedora `sudo dnf install ./ip-desk-ctrl-…rpm` · openSUSE `sudo zypper install --allow-unsigned-rpm ./ip-desk-ctrl-…rpm` · Slackware `installpkg ip-desk-ctrl-…txz` (con la sessione Wayland riavvia dopo l'installazione: serve la regola per mouse e tastiera).
+            Linux e Raspberry: `sudo apt install ./ip-desk-ctrl_…deb` · Fedora `sudo dnf install ./ip-desk-ctrl-…rpm` · openSUSE `sudo zypper install --allow-unsigned-rpm ./ip-desk-ctrl-…rpm` · Slackware `installpkg ip-desk-ctrl-…txz` · Arch `sudo pacman -U ./ip-desk-ctrl-…pkg.tar.zst` · AppImage: rendilo eseguibile e avvialo · Snap `sudo snap install --dangerous --classic ./ip-desk-ctrl_…snap` · Alpine: `apk add libstdc++ fontconfig libx11`, poi scompatta e avvia (con la sessione Wayland riavvia dopo l'installazione: serve la regola per mouse e tastiera).
+            macOS con Homebrew: `brew tap ic8tem/ip-desk-ctrl https://github.com/ic8tem/IP-DESK-CTRL` e poi `brew install --cask ip-desk-ctrl`.
             macOS: concedi «Registrazione schermo» e «Accessibilità» in Impostazioni di Sistema › Privacy e sicurezza; per l'audio installa BlackHole 2ch.
             Le versioni *portatile* non richiedono installazione.
             Video compresso H.264/H.265/AV1: serve ffmpeg su tutti e due i PC (Windows: Impostazioni › Scarica ffmpeg; Linux: sudo apt install ffmpeg o sudo dnf install ffmpeg-free; Mac: brew install ffmpeg).
@@ -210,6 +273,22 @@ jobs:
             Guida: https://github.com/ic8tem/IP-DESK-CTRL/wiki · Novità di ogni versione: https://github.com/ic8tem/IP-DESK-CTRL/wiki/Storia-delle-versioni
 
             IP-DESK-CTRL è gratuito e senza pubblicità: se ti è utile puoi sostenerlo su [Ko-fi](https://ko-fi.com/ic8tem) ♥
+
+      # Homebrew: aggiorna Casks/ip-desk-ctrl.rb con la versione nuova e le impronte dei .dmg
+      - name: Homebrew
+        shell: bash
+        run: |
+          A=$(sha256sum artifacts/IP-DESK-CTRL-$VERSION-osx-arm64.dmg | cut -d' ' -f1)
+          I=$(sha256sum artifacts/IP-DESK-CTRL-$VERSION-osx-x64.dmg | cut -d' ' -f1)
+          sed -i -E "s/^  version \".*\"/  version \"$VERSION\"/; s/^  sha256 arm: .*/  sha256 arm:   \"$A\",/; s/^         intel: .*/         intel: \"$I\"/" Casks/ip-desk-ctrl.rb
+          cat Casks/ip-desk-ctrl.rb
+          if ! git diff --quiet; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898341+github-actions[bot]@users.noreply.github.com"
+            git add Casks/ip-desk-ctrl.rb
+            git commit -m "Homebrew: IP-DESK-CTRL $VERSION [skip ci]"
+            git fetch -q origin main && git rebase -q origin/main && git push -q origin HEAD:main || echo "::warning::Casks non aggiornato"
+          fi
 
   # Pubblica le pagine di docs/wiki nella wiki di GitHub a ogni push su main.
   wiki:

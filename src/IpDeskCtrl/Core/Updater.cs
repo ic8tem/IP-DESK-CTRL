@@ -25,7 +25,7 @@ namespace IpDeskCtrl.Core
     /// </summary>
     public static class Updater
     {
-        public enum Kind { None, WindowsSetup, WindowsPortable, LinuxDeb, LinuxRpm, LinuxSlackware, LinuxPortable, MacApp, Android }
+        public enum Kind { None, WindowsSetup, WindowsPortable, LinuxDeb, LinuxRpm, LinuxSlackware, LinuxArch, LinuxAppImage, LinuxSnap, LinuxPortable, MacApp, Android }
 
         public const string AfterUpdateArg = "--dopo-aggiornamento";
 
@@ -38,10 +38,13 @@ namespace IpDeskCtrl.Core
             if (OperatingSystem.IsMacOS()) return exe.Contains(".app/Contents/MacOS/") ? Kind.MacApp : Kind.None;
             if (OperatingSystem.IsLinux())
             {
+                if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("APPIMAGE"))) return Kind.LinuxAppImage;
+                if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("SNAP")) && exe.StartsWith("/snap/")) return Kind.LinuxSnap;
                 if (!exe.StartsWith("/opt/ip-desk-ctrl/")) return Kind.LinuxPortable;
                 // installato da pacchetto: quale gestore lo ha messo lì
                 if (Directory.Exists("/var/lib/dpkg/info") && File.Exists("/var/lib/dpkg/info/ip-desk-ctrl.list")) return Kind.LinuxDeb;
                 if (Directory.Exists("/var/log/packages") && Directory.EnumerateFiles("/var/log/packages", "ip-desk-ctrl-*").Any()) return Kind.LinuxSlackware;
+                if (Directory.Exists("/var/lib/pacman/local") && Directory.EnumerateDirectories("/var/lib/pacman/local", "ip-desk-ctrl-*").Any()) return Kind.LinuxArch;
                 if (File.Exists("/usr/bin/rpm") || File.Exists("/bin/rpm")) return Kind.LinuxRpm;
                 return Kind.LinuxDeb;
             }
@@ -67,7 +70,11 @@ namespace IpDeskCtrl.Core
                 Kind.LinuxDeb => $"ip-desk-ctrl_{ver}_{(rid == "arm64" ? "arm64" : rid == "arm" ? "armhf" : "amd64")}.deb",
                 Kind.LinuxRpm => $"ip-desk-ctrl-{ver}-1.{(rid == "arm64" ? "aarch64" : rid == "arm" ? "armv7hl" : "x86_64")}.rpm",
                 Kind.LinuxSlackware => $"ip-desk-ctrl-{ver}-{(rid == "arm64" ? "aarch64" : rid == "arm" ? "arm" : "x86_64")}-1_ic8tem.txz",
-                Kind.LinuxPortable => $"IP-DESK-CTRL-{ver}-linux-{rid}-portatile.tar.gz",
+                Kind.LinuxArch => $"ip-desk-ctrl-{ver.Replace('-', '_')}-1-{(rid == "arm64" ? "aarch64" : "x86_64")}.pkg.tar.zst",
+                Kind.LinuxAppImage => $"IP-DESK-CTRL-{ver}-{(rid == "arm64" ? "aarch64" : "x86_64")}.AppImage",
+                Kind.LinuxSnap => $"ip-desk-ctrl_{ver}_{(rid == "arm64" ? "arm64" : "amd64")}.snap",
+                // Alpine e le altre distribuzioni con musl hanno il loro eseguibile
+                Kind.LinuxPortable => $"IP-DESK-CTRL-{ver}-linux-{(RuntimeInformation.RuntimeIdentifier.Contains("musl") ? "musl-" : "")}{rid}-portatile.tar.gz",
                 Kind.MacApp => $"IP-DESK-CTRL-{ver}-osx-{(rid == "arm64" ? "arm64" : "x64")}.dmg",
                 Kind.Android => $"IP-DESK-CTRL-{ver}-android.apk",
                 _ => "",
@@ -83,7 +90,8 @@ namespace IpDeskCtrl.Core
             Kind.WindowsSetup => service
                 ? "Il servizio di IP-DESK-CTRL installa la nuova versione senza chiedere nulla, anche se il PC è comandato da remoto."
                 : "Windows chiederà il permesso di amministratore (UAC): chi è al PC deve rispondere sì.",
-            Kind.LinuxDeb or Kind.LinuxRpm or Kind.LinuxSlackware => "Il sistema chiederà la password di amministratore per installare il pacchetto.",
+            Kind.LinuxDeb or Kind.LinuxRpm or Kind.LinuxSlackware or Kind.LinuxArch or Kind.LinuxSnap => "Il sistema chiederà la password di amministratore per installare il pacchetto.",
+            Kind.LinuxAppImage => "Il file .AppImage viene sostituito con quello nuovo.",
             Kind.MacApp => "Se l'app è in Applicazioni e serve, macOS chiederà la password.",
             Kind.Android => "Si apre il browser per scaricare l'APK: poi toccalo per installarlo sopra questa versione.",
             _ => "",
@@ -196,6 +204,27 @@ while kill -0 {pid} 2>/dev/null; do sleep 0.3; done
 pkexec /sbin/upgradepkg --install-new --reinstall '{S(file)}'
 nohup /opt/ip-desk-ctrl/IP-DESK-CTRL {AfterUpdateArg} >/dev/null 2>&1 &
 ");
+                    case Kind.LinuxArch:
+                        return RunScript($@"
+while kill -0 {pid} 2>/dev/null; do sleep 0.3; done
+pkexec pacman -U --noconfirm '{S(file)}'
+nohup /opt/ip-desk-ctrl/IP-DESK-CTRL {AfterUpdateArg} >/dev/null 2>&1 &
+");
+                    case Kind.LinuxSnap:
+                        return RunScript($@"
+while kill -0 {pid} 2>/dev/null; do sleep 0.3; done
+pkexec snap install --dangerous --classic '{S(file)}'
+nohup /snap/bin/ip-desk-ctrl {AfterUpdateArg} >/dev/null 2>&1 &
+");
+                    case Kind.LinuxAppImage:
+                    {
+                        string img = Environment.GetEnvironmentVariable("APPIMAGE") ?? "";
+                        return RunScript($@"
+while kill -0 {pid} 2>/dev/null; do sleep 0.3; done
+cp -f '{S(file)}' '{S(img)}.nuovo' && chmod +x '{S(img)}.nuovo' && mv -f '{S(img)}.nuovo' '{S(img)}'
+nohup '{S(img)}' {AfterUpdateArg} >/dev/null 2>&1 &
+");
+                    }
                     case Kind.LinuxPortable:
                         return RunScript($@"
 while kill -0 {pid} 2>/dev/null; do sleep 0.3; done

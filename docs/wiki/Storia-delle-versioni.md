@@ -3,6 +3,9 @@
 
 Le versioni con protocollo diverso non si collegano tra loro: aggiorna tutti i dispositivi alla stessa versione principale (la 0.4.1 si collega con la 0.4.0; la 0.5 si collega con la 0.4).
 
+## 0.5.10 — 13 novembre 2026
+- **Altre distribuzioni**: pacchetti per **Arch, Manjaro, EndeavourOS e Arch Linux ARM** (`.pkg.tar.zst`, x86_64 e aarch64), **AppImage** (un solo file per qualsiasi Linux, x86_64 e aarch64), **Snap** (amd64 e arm64), **Alpine Linux** e altre distribuzioni con musl (x64 e arm64), **Homebrew** sul Mac (`brew install --cask ip-desk-ctrl` dopo il `brew tap`). Anche questi si aggiornano da soli (pacman, snap, file AppImage sostituito, Homebrew aggiornato a ogni release). Nella guida c'è anche il Chromebook (APK Android o `.deb` nel Linux interno).
+
 ## 0.5.9 — 13 novembre 2026
 - **Plancia del collegamento in alto, a sinistra o a destra** (Impostazioni › «Plancia del collegamento»): sotto resta la fascia arancione degli avvisi. La plancia è **sempre a scomparsa**: compare passando sulla linguetta o sul bordo scelto e si nasconde da sola, ma non mentre un suo menu è aperto. Di lato i comandi stanno in colonna e la linguetta col numero è scritta in verticale. Le finestre già aperte si spostano subito.
 - **Guida e Ko-fi in alto** nella finestra principale, accanto allo stato «In linea». La guida apre la wiki.

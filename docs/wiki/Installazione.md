@@ -36,6 +36,14 @@ Windows SmartScreen può avvisare che il programma non è riconosciuto: clic su 
 | Linux x86_64, qualsiasi distribuzione | `IP-DESK-CTRL-…-linux-x64-portatile.tar.gz` | si scompatta e si avvia `IP-DESK-CTRL` |
 | Linux aarch64 (PC e mini-PC non Raspberry) | `IP-DESK-CTRL-…-linux-arm64-portatile.tar.gz` | come sopra |
 | Linux armv7l | `IP-DESK-CTRL-…-linux-arm-portatile.tar.gz` | come sopra |
+| Arch / Manjaro / EndeavourOS / Arch Linux ARM | `ip-desk-ctrl-…-1-x86_64.pkg.tar.zst` · `…-aarch64.pkg.tar.zst` | `sudo pacman -U ./ip-desk-ctrl-…pkg.tar.zst` |
+| Qualsiasi Linux (AppImage) | `IP-DESK-CTRL-…-x86_64.AppImage` · `…-aarch64.AppImage` | `chmod +x` sul file e avvialo; si aggiorna da solo sostituendo il file |
+| Snap | `ip-desk-ctrl_…_amd64.snap` · `…_arm64.snap` | `sudo snap install --dangerous --classic ./ip-desk-ctrl_…snap` |
+| Alpine Linux (musl), x64 e arm64 | `IP-DESK-CTRL-…-linux-musl-x64-portatile.tar.gz` · `…-linux-musl-arm64-portatile.tar.gz` | `sudo apk add libstdc++ fontconfig libx11 libxtst libxrandr`, poi si scompatta e si avvia |
+
+### Chromebook
+
+Sui Chromebook con Google Play installa l'**APK Android** (per comandare altri PC dal Chromebook). Se hai attivato l'ambiente Linux del Chromebook, puoi usare anche il **`.deb`** (`amd64` o `arm64` secondo il processore): `sudo apt install ./ip-desk-ctrl_…deb`.
 
 apt installa da solo anche ffmpeg (video compresso), xrandr (risoluzione adatta) e gio (cartella condivisa); dnf e zypper li propongono come consigliati (su Fedora ffmpeg si chiama `ffmpeg-free`). Su Slackware e con le versioni portatili installali tu, se mancano.
 
@@ -52,6 +60,13 @@ Per ogni architettura c'è anche la versione portatile `…-portatile.tar.gz`.
 |---|---|
 | Apple Silicon (M1, M2…) | `IP-DESK-CTRL-…-osx-arm64.dmg` |
 | Intel | `IP-DESK-CTRL-…-osx-x64.dmg` |
+
+Con **Homebrew** (sceglie da solo la versione giusta per il tuo Mac):
+
+```
+brew tap ic8tem/ip-desk-ctrl https://github.com/ic8tem/IP-DESK-CTRL
+brew install --cask ip-desk-ctrl
+```
 
 1. Apri il `.dmg` e trascina IP-DESK-CTRL in Applicazioni.
 2. Al primo avvio: **clic destro › Apri** (il programma non è firmato da Apple).
@@ -80,7 +95,8 @@ L'aggiornamento:
 | Windows con il servizio | Installazione senza domande, anche se il PC è comandato da remoto |
 | Windows senza servizio | Windows chiede il permesso di amministratore (UAC): risponde chi è al PC |
 | Windows portatile | Sostituisce i file nella cartella del programma |
-| Linux (.deb, .rpm, Slackware) | Chiede la password di amministratore |
+| Linux (.deb, .rpm, Slackware, Arch, Snap) | Chiede la password di amministratore |
+| AppImage | Sostituisce il file .AppImage con quello nuovo |
 | Linux portatile | Sostituisce i file nella cartella del programma |
 | macOS | Sostituisce l'app (se serve, chiede la password) |
 | Android | Apre il browser per scaricare l'APK, da installare sopra |

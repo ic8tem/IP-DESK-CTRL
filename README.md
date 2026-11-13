@@ -89,8 +89,14 @@ Gli installatori sono nella pagina **Releases**:
 | Raspberry Pi OS 64 bit (arm64) | `ip-desk-ctrl_…_arm64.deb` |
 | Raspberry Pi Slackware ARM64 | `ip-desk-ctrl-…-aarch64-1_ic8tem.txz` (`installpkg`) |
 | Linux armv7l | `…-linux-arm-portatile.tar.gz` |
+| Arch / Manjaro / EndeavourOS / Arch Linux ARM | `ip-desk-ctrl-…-1-x86_64.pkg.tar.zst` · `…-aarch64.pkg.tar.zst` (`sudo pacman -U ./<file>`) |
+| Qualsiasi Linux, un solo file (AppImage) | `…-x86_64.AppImage` · `…-aarch64.AppImage` |
+| Snap | `ip-desk-ctrl_…_amd64.snap` · `…_arm64.snap` (`sudo snap install --dangerous --classic ./<file>`) |
+| Alpine Linux (musl) | `…-linux-musl-x64-portatile.tar.gz` · `…-linux-musl-arm64-portatile.tar.gz` |
+| Chromebook | l'APK Android, oppure il `.deb` nel Linux del Chromebook |
 | macOS Apple Silicon (M1-M4) | `…-osx-arm64.dmg` (al primo avvio clic destro › Apri) |
 | macOS Intel | `…-osx-x64.dmg` |
+| macOS con Homebrew | `brew tap ic8tem/ip-desk-ctrl https://github.com/ic8tem/IP-DESK-CTRL` poi `brew install --cask ip-desk-ctrl` |
 | Android 8.0 e successivi | `…-android.apk` |
 
 L'installatore di Windows ha l'opzione per l'avvio automatico all'accesso, nascosto con la sola icona vicino all'orologio.
@@ -106,6 +112,9 @@ Nella cartella dei dati (Impostazioni › Apri cartella dati): `errori.log` e `s
 ## Storia delle versioni
 
 Le versioni con protocollo diverso non si collegano tra loro: aggiorna tutti i dispositivi alla stessa versione principale (la 0.4.1 si collega con la 0.4.0; la 0.5 si collega con la 0.4).
+
+### 0.5.10 — 13 novembre 2026
+- **Altre distribuzioni**: pacchetti per **Arch, Manjaro, EndeavourOS e Arch Linux ARM** (`.pkg.tar.zst`, x86_64 e aarch64), **AppImage** (un solo file per qualsiasi Linux, x86_64 e aarch64), **Snap** (amd64 e arm64), **Alpine Linux** e altre distribuzioni con musl (x64 e arm64), **Homebrew** sul Mac (`brew install --cask ip-desk-ctrl` dopo il `brew tap`). Anche questi si aggiornano da soli (pacman, snap, file AppImage sostituito, Homebrew aggiornato a ogni release). Nella guida c'è anche il Chromebook (APK Android o `.deb` nel Linux interno).
 
 ### 0.5.9 — 13 novembre 2026
 - **Plancia del collegamento in alto, a sinistra o a destra** (Impostazioni › «Plancia del collegamento»): sotto resta la fascia arancione degli avvisi. La plancia è **sempre a scomparsa**: compare passando sulla linguetta o sul bordo scelto e si nasconde da sola, ma non mentre un suo menu è aperto. Di lato i comandi stanno in colonna e la linguetta col numero è scritta in verticale. Le finestre già aperte si spostano subito.
