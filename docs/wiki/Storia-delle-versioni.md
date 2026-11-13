@@ -3,6 +3,11 @@
 
 Le versioni con protocollo diverso non si collegano tra loro: aggiorna tutti i dispositivi alla stessa versione principale (la 0.4.1 si collega con la 0.4.0; la 0.5 si collega con la 0.4).
 
+## 0.5.9 — 13 novembre 2026
+- **Plancia del collegamento in alto, a sinistra o a destra** (Impostazioni › «Plancia del collegamento»): sotto resta la fascia arancione degli avvisi. La plancia è **sempre a scomparsa**: compare passando sulla linguetta o sul bordo scelto e si nasconde da sola, ma non mentre un suo menu è aperto. Di lato i comandi stanno in colonna e la linguetta col numero è scritta in verticale. Le finestre già aperte si spostano subito.
+- **Guida e Ko-fi in alto** nella finestra principale, accanto allo stato «In linea». La guida apre la wiki.
+- Controllo delle nuove versioni: ogni 30 minuti (come dalla 0.5.4).
+
 ## 0.5.8 — 12 novembre 2026
 - **Audio del PC comandato senza uscita predefinita**: invece dell'errore «Audio di Windows non catturabile: Impossibile trovare elemento (0x80070490)» la cattura prova la prima uscita attiva; se il PC non ne ha (casse o cuffie scollegate o disattivate) lo dice chiaramente e riprova ogni 5 secondi, così l'audio parte da solo appena colleghi qualcosa. Se l'uscita sparisce durante il collegamento si riapre da sola.
 

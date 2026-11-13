@@ -12,6 +12,7 @@ using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
+using Avalonia.VisualTree;
 using IpDeskCtrl.Core;
 using IpDeskCtrl.Input;
 using IpDeskCtrl.Net;
@@ -86,10 +87,17 @@ namespace IpDeskCtrl.UI
         private readonly ToggleButton _ctrl = new() { Content = "Ctrl" }, _alt = new() { Content = "Alt" }, _win = new() { Content = "Win" }, _shift = new() { Content = "Maiusc" };
         private bool _kbdBusy;
 
-        private bool _toolbarPinned = true;
+        private bool _toolbarPinned;                     // la plancia è sempre a scomparsa
+        private WrapPanel? _bar;
+        private Button? _hideBtn;
+        private string _dock = "sopra";
+
+        /// <summary>Cambiata la posizione della plancia nelle impostazioni: le finestre aperte si adeguano.</summary>
+        public static event Action? DockChanged;
+        public static void RaiseDockChanged() => DockChanged?.Invoke();
         private bool _updatingMonitors;
         private int _framePosted;
-        private DateTime _hideToolbarAt = DateTime.MaxValue;
+        private DateTime _hideToolbarAt = DateTime.UtcNow.AddSeconds(6);   // all'inizio si vede, poi si nasconde
         private readonly DispatcherTimer _timer = new() { Interval = TimeSpan.FromMilliseconds(500) };
 
         // ---- file negli appunti, nei due versi, come con il testo
@@ -134,7 +142,7 @@ namespace IpDeskCtrl.UI
             _view.PasteFilter = PasteLocalFiles;
             PointerMoved += (_, e) =>
             {
-                if (Shell.Current.IsFullScreen(this) && e.GetPosition(this).Y < 8) ShowToolbar(true);
+                if (!_toolbar.IsVisible && AtDockEdge(e.GetPosition(this))) ShowToolbar(true);
             };
         }
 
@@ -323,8 +331,10 @@ namespace IpDeskCtrl.UI
             close.Click += (_, _) => Disconnect();
             var hide = Small("▲", "Nascondi la plancia");
             hide.Click += (_, _) => { _toolbarPinned = false; ShowToolbar(false); };
+            _hideBtn = hide;
 
             var bar = new WrapPanel { HorizontalAlignment = HorizontalAlignment.Center };
+            _bar = bar;
             foreach (var c in new Control[] { _fullBtn, minus, _zoom, plus, _monitor, _quality, _codec, _fitRes, _audio, _mic, keyboard, gestures, keys, _files, _tunnelBtn, _radio, refresh, _stats, close, hide })
             {
                 c.VerticalAlignment = VerticalAlignment.Center;
@@ -356,7 +366,7 @@ namespace IpDeskCtrl.UI
             _toolbar.HorizontalAlignment = HorizontalAlignment.Center;
             _toolbar.VerticalAlignment = VerticalAlignment.Top;
             _toolbar.PointerEntered += (_, _) => _hideToolbarAt = DateTime.MaxValue;
-            _toolbar.PointerExited += (_, _) => { if (!_toolbarPinned || Shell.Current.IsFullScreen(this)) _hideToolbarAt = DateTime.UtcNow.AddSeconds(1.5); };
+            _toolbar.PointerExited += (_, _) => _hideToolbarAt = DateTime.UtcNow.AddSeconds(1.5);
             grid.Children.Add(_toolbar);
 
             // linguetta quando la plancia è nascosta
@@ -369,8 +379,11 @@ namespace IpDeskCtrl.UI
             _tab.IsVisible = false;
             _tab.Cursor = new Cursor(StandardCursorType.Hand);
             _tab.PointerEntered += (_, _) => { if (!Platform.IsMobile) ShowToolbar(true); };
-            _tab.PointerPressed += (_, _) => { _toolbarPinned = true; ShowToolbar(true); };
+            _tab.PointerPressed += (_, _) => ShowToolbar(true);
             grid.Children.Add(_tab);
+            ApplyDock();
+            DockChanged += OnDockChanged;
+            DetachedFromVisualTree += (_, _) => DockChanged -= OnDockChanged;
 
             // ---- barra dei tasti speciali sopra la tastiera del telefono
             grid.Children.Add(_kbd);
@@ -473,8 +486,71 @@ namespace IpDeskCtrl.UI
             Shell.Current.SetFullScreen(this, on);
             _fullBtn.Content = on ? "Finestra" : "Schermo intero";
             if (on) { ShowToolbar(true); _hideToolbarAt = DateTime.UtcNow.AddSeconds(3); }
-            else { _toolbarPinned = true; ShowToolbar(true); }
+            else ShowToolbar(true);
             _view.Focus();
+        }
+
+        // ------------------------------------------------------------------ posizione della plancia
+
+        private void OnDockChanged() => Dispatcher.UIThread.Post(ApplyDock);
+
+        /// <summary>Plancia sopra, a sinistra o a destra (sotto c'è la fascia arancione degli avvisi); sempre a scomparsa.</summary>
+        private void ApplyDock()
+        {
+            _dock = Platform.IsMobile ? "sopra" : (_peer.S.ToolbarDock is "sinistra" or "destra" ? _peer.S.ToolbarDock : "sopra");
+            bool side = _dock != "sopra";
+            bool left = _dock == "sinistra";
+            if (_bar != null && !Platform.IsMobile)
+            {
+                // di lato i comandi vanno in colonna, con lo scorrimento se la finestra è bassa
+                if (side)
+                {
+                    var col = new StackPanel { Orientation = Orientation.Vertical, Spacing = 0 };
+                    foreach (var c in _bar.Children.ToList()) { _bar.Children.Remove(c); c.HorizontalAlignment = HorizontalAlignment.Stretch; col.Children.Add(c); }
+                    _toolbar.Child = new ScrollViewer { Content = col, VerticalScrollBarVisibility = ScrollBarVisibility.Auto, HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled };
+                }
+                else if (_toolbar.Child is ScrollViewer sv && sv.Content is StackPanel col)
+                {
+                    foreach (var c in col.Children.ToList()) { col.Children.Remove(c); c.HorizontalAlignment = HorizontalAlignment.Left; _bar.Children.Add(c); }
+                    _toolbar.Child = _bar;
+                }
+            }
+            if (_hideBtn != null) _hideBtn.Content = _dock == "sinistra" ? "◀" : _dock == "destra" ? "▶" : "▲";
+            _toolbar.HorizontalAlignment = side ? (left ? HorizontalAlignment.Left : HorizontalAlignment.Right) : (Platform.IsMobile ? HorizontalAlignment.Stretch : HorizontalAlignment.Center);
+            _toolbar.VerticalAlignment = side ? VerticalAlignment.Stretch : VerticalAlignment.Top;
+            _toolbar.MaxWidth = side ? 260 : double.PositiveInfinity;
+            _toolbar.BorderThickness = side ? (left ? new Thickness(0, 1, 1, 1) : new Thickness(1, 1, 0, 1)) : new Thickness(1, 0, 1, 1);
+            _toolbar.CornerRadius = side ? (left ? new CornerRadius(0, 12, 12, 0) : new CornerRadius(12, 0, 0, 12)) : new CornerRadius(0, 0, 12, 12);
+
+            // linguetta: in alto al centro, o lungo il bordo scelto con la scritta in verticale
+            string label = Identity.Format(_number);
+            var text = new TextBlock { Text = (_dock == "sinistra" ? "▶  " : _dock == "destra" ? "◀  " : "▼  ") + label, Foreground = Brushes.White, FontSize = 12 };
+            _tab.Child = side
+                ? new LayoutTransformControl { LayoutTransform = new RotateTransform(left ? 90 : -90), Child = text }
+                : text;
+            _tab.HorizontalAlignment = side ? (left ? HorizontalAlignment.Left : HorizontalAlignment.Right) : HorizontalAlignment.Center;
+            _tab.VerticalAlignment = side ? VerticalAlignment.Center : VerticalAlignment.Top;
+            _tab.CornerRadius = side ? (left ? new CornerRadius(0, 8, 8, 0) : new CornerRadius(8, 0, 0, 8)) : new CornerRadius(0, 0, 8, 8);
+            _tab.Padding = side ? new Thickness(2, 14, 4, 14) : new Thickness(14, Platform.IsMobile ? 8 : 2, 14, Platform.IsMobile ? 8 : 4);
+        }
+
+        /// <summary>Puntatore sul bordo dove sta la plancia (per farla comparire anche senza la linguetta).</summary>
+        private bool AtDockEdge(Point p) => _dock switch
+        {
+            "sinistra" => p.X < 6,
+            "destra" => p.X > Bounds.Width - 6,
+            _ => p.Y < 6,
+        };
+
+        /// <summary>Un menu o un elenco della plancia è aperto: la plancia non si nasconde sotto il menu.</summary>
+        private bool MenuOpen()
+        {
+            foreach (var c in _toolbar.GetVisualDescendants())
+            {
+                if (c is Button b && b.Flyout is Avalonia.Controls.Primitives.FlyoutBase f && f.IsOpen) return true;
+                if (c is ComboBox cb && cb.IsDropDownOpen) return true;
+            }
+            return false;
         }
 
         private void ShowToolbar(bool show)
@@ -487,7 +563,7 @@ namespace IpDeskCtrl.UI
 
         private void Tick()
         {
-            if (_toolbar.IsVisible && DateTime.UtcNow > _hideToolbarAt && !_toolbar.IsPointerOver)
+            if (_toolbar.IsVisible && DateTime.UtcNow > _hideToolbarAt && !_toolbar.IsPointerOver && !MenuOpen())
             {
                 _hideToolbarAt = DateTime.MaxValue;
                 ShowToolbar(false);
@@ -674,6 +750,7 @@ namespace IpDeskCtrl.UI
         private void RebuildKeysBar()
         {
             var bar = new WrapPanel { HorizontalAlignment = HorizontalAlignment.Center };
+            _bar = bar;
             foreach (string id in _peer.S.TouchInput.Keys)
             {
                 if (!SpecialKeys.ById.TryGetValue(id, out var k)) continue;

@@ -1,6 +1,6 @@
 # Plancia di comando
 
-Nella finestra del PC remoto, **in alto al centro**, c'è una piccola plancia di comando.
+Nella finestra del PC remoto c'è una piccola plancia di comando: **in alto al centro**, oppure **a sinistra** o **a destra** se lo scegli in Impostazioni › «Plancia del collegamento» (sotto c'è la fascia arancione degli avvisi). È sempre **a scomparsa**: dopo qualche secondo si riduce a una linguetta col numero del PC remoto e ricompare passando col mouse sulla linguetta o sul bordo scelto. Mentre un suo menu è aperto non si nasconde.
 
 | Comando | Cosa fa |
 |---|---|
@@ -18,7 +18,7 @@ Nella finestra del PC remoto, **in alto al centro**, c'è una piccola plancia di
 | **File ▾** | Prendi i file copiati sul PC remoto, manda quelli copiati qui, scegli file da mandare (vedi [File e appunti](File-e-appunti)). |
 | **Radio (IP-TRX-CTRL)** | Se sul PC remoto c'è IP-TRX-CTRL, lo avvia lì (e anche qui, se installato). |
 | **⟳** | Aggiorna l'immagine (richiede di nuovo l'intero schermo). |
-| **▲** | Nasconde la plancia. |
+| **▲** (◀ / ▶ di lato) | Nasconde subito la plancia. |
 | **Disconnetti** | Chiude il collegamento. |
 
 La plancia mostra anche la **strada** del collegamento: **TCP**, **UDP + TCP** o **solo UDP** (vedi [Rete e porte](Rete-e-porte)).
@@ -39,7 +39,7 @@ Con **Risoluzione adatta** il PC remoto passa, tra le risoluzioni che il suo mon
 
 ## Schermo intero
 
-A schermo intero la plancia si riduce a una **linguetta**: ricompare portando il mouse sul bordo alto dello schermo.
+Anche a schermo intero la plancia ricompare portando il mouse sul bordo dove l'hai messa.
 
 ## Ctrl+Alt+Canc
 

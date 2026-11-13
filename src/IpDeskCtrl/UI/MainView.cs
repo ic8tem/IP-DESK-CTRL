@@ -90,7 +90,17 @@ namespace IpDeskCtrl.UI
             _newVersion.Classes.Add("accent");
             _newVersion.IsVisible = false;
             _newVersion.Click += (_, _) => { if (_latest != null) ShowUpdatePopup(_latest, auto: false); };
-            var ledBox = Ui.Row(10, _newVersion, Ui.Row(8, _led, _netStatus));
+            // in alto: guida e Ko-fi
+            var help = Ui.Btn("? Guida");
+            help.Click += (_, _) => OpenPath(AppVersion.HelpUrl);
+            ToolTip.SetTip(help, "Apre la guida di IP-DESK-CTRL (wiki su GitHub)");
+            var kofi = Ui.Btn("♥ Ko-fi");
+            kofi.Click += (_, _) => OpenPath(AppVersion.SupportUrl);
+            ToolTip.SetTip(kofi, "IP-DESK-CTRL è gratuito e senza pubblicità. Se ti è utile, puoi offrirmi un caffè su Ko-fi.");
+            help.Padding = kofi.Padding = new Thickness(10, 4);
+            if (Platform.IsMobile) { help.Content = "?"; kofi.Content = "♥"; }
+            help.VerticalAlignment = kofi.VerticalAlignment = VerticalAlignment.Center;
+            var ledBox = Ui.Row(10, help, kofi, _newVersion, Ui.Row(8, _led, _netStatus));
             DockPanel.SetDock(ledBox, Dock.Right);
             head.Children.Add(ledBox);
             head.Children.Add(title);
@@ -246,9 +256,6 @@ namespace IpDeskCtrl.UI
             quit.Click += (_, _) => Quit?.Invoke();
             quit.IsVisible = Quit != null;
             ToolTip.SetTip(quit, "Chiude davvero IP-DESK-CTRL: questo PC non sarà più raggiungibile finché non lo riavvii. La X della finestra invece lo nasconde soltanto.");
-            var support = Ui.Btn("♥ Sostieni il progetto");
-            support.Click += (_, _) => OpenPath(AppVersion.SupportUrl);
-            ToolTip.SetTip(support, "IP-DESK-CTRL è gratuito e senza pubblicità. Se ti è utile, puoi offrirmi un caffè su Ko-fi.");
             return Ui.Col(8,
                 Ui.H2("IMPOSTAZIONI"),
                 Chk("Accetta richieste di collegamento a questo PC", _s.AcceptIncoming, v => _s.AcceptIncoming = v),
@@ -260,12 +267,13 @@ namespace IpDeskCtrl.UI
                 Chk("Chi si collega può adattare la risoluzione di questo PC alla sua finestra", _s.AllowResize, v => _s.AllowResize = v),
                 Chk("Chi si collega può montare qui una sua cartella come disco", _s.AllowDrive, v => _s.AllowDrive = v),
                 Chk("Chi si collega può aprire tunnel di porte attraverso questo PC (rigctld, flrig, web della radio…)", _s.AllowTunnel, v => _s.AllowTunnel = v),
+                DockRow(),
                 Chk("Aggiornamenti automatici: ogni 30 minuti cerca una nuova versione e la installa da sola (i collegamenti riprendono)", _s.AutoUpdate, v => _s.AutoUpdate = v),
                 Chk("Mentre uno comanda, altri possono chiedere di guardare (solo visione, al massimo 4)", _s.AllowObservers, v => _s.AllowObservers = v),
                 VideoRow(),
                 Ui.Row(10, new TextBlock { Text = "Tema", VerticalAlignment = VerticalAlignment.Center }, theme),
                 Ui.Sub("File ricevuti dagli altri PC: " + Platform.Received, 12),
-                Wrap(password, touch, folder, received, about, support, quit));
+                Wrap(password, touch, folder, received, about, quit));
         }
 
         /// <summary>Video compresso: stato di ffmpeg e, su Windows 64 bit, scaricamento con un clic.</summary>
@@ -720,6 +728,28 @@ namespace IpDeskCtrl.UI
                 };
                 timer.Start();
             }
+        }
+
+        /// <summary>Dove sta la plancia nella finestra del collegamento (sotto c'è la fascia arancione degli avvisi).</summary>
+        private Control DockRow()
+        {
+            string[] keys = { "sopra", "sinistra", "destra" };
+            var box = new ComboBox
+            {
+                ItemsSource = new[] { "In alto", "A sinistra", "A destra" },
+                SelectedIndex = Math.Max(0, Array.IndexOf(keys, _s.ToolbarDock)),
+                MinWidth = 140
+            };
+            box.SelectionChanged += (_, _) =>
+            {
+                if (box.SelectedIndex < 0) return;
+                _s.ToolbarDock = keys[box.SelectedIndex];
+                _s.Save();
+                ViewerView.RaiseDockChanged();
+            };
+            var row = Ui.Row(10, new TextBlock { Text = "Plancia del collegamento (sempre a scomparsa):", VerticalAlignment = VerticalAlignment.Center, TextWrapping = TextWrapping.Wrap }, box);
+            row.IsVisible = !Platform.IsMobile;
+            return row;
         }
 
         private void ShowUpdate(ReleaseInfo r)

@@ -59,6 +59,7 @@ namespace IpDeskCtrl.Core
 
         /// <summary>Pagina per sostenere il progetto (pulsante «Sostieni il progetto»).</summary>
         public const string SupportUrl = "https://ko-fi.com/ic8tem";
+        public const string HelpUrl = "https://github.com/ic8tem/IP-DESK-CTRL/wiki";
 
         public static (int proto, string version) Parse(string? tag)
         {
