@@ -568,5 +568,9 @@
  "Tutti gli schermi": "كل الشاشات",
  "Collegamento terminato": "انتهى الاتصال",
  "Ricollegati": "إعادة الاتصال",
- "Il PC remoto è bloccato (schermata di blocco o di accesso) oppure mostra una finestra di sicurezza (UAC, Ctrl+Alt+Canc): ": "الحاسوب البعيد مقفل (شاشة القفل أو تسجيل الدخول) أو يعرض نافذة أمان (UAC، Ctrl+Alt+Del): "
+ "Il PC remoto è bloccato (schermata di blocco o di accesso) oppure mostra una finestra di sicurezza (UAC, Ctrl+Alt+Canc): ": "الحاسوب البعيد مقفل (شاشة القفل أو تسجيل الدخول) أو يعرض نافذة أمان (UAC، Ctrl+Alt+Del): ",
+ "dispositivo": "الجهاز",
+ "Si installa senza password: il pacchetto nuovo lo scarica e lo verifica il sistema da GitHub.": "يُثبَّت دون كلمة مرور: يُنزّل النظام نفسه الحزمة الجديدة من GitHub ويتحقق منها.",
+ "Si aggiorna con Scoop, senza permessi di amministratore.": "يُحدَّث عبر Scoop، دون صلاحيات المسؤول.",
+ "Flatpak installa il pacchetto nuovo; se il programma è installato per tutti gli utenti può chiedere la password.": "يثبّت Flatpak الحزمة الجديدة؛ إن كان البرنامج مثبتًا لجميع المستخدمين فقد يطلب كلمة المرور."
 }

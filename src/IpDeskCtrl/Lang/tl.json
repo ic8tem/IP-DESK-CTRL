@@ -568,5 +568,9 @@
  "Tutti gli schermi": "Lahat ng screen",
  "Collegamento terminato": "Natapos ang koneksyon",
  "Ricollegati": "Kumonekta muli",
- "Il PC remoto è bloccato (schermata di blocco o di accesso) oppure mostra una finestra di sicurezza (UAC, Ctrl+Alt+Canc): ": "Naka-lock ang malayong computer (lock o login screen) o nagpapakita ng security window (UAC, Ctrl+Alt+Del): "
+ "Il PC remoto è bloccato (schermata di blocco o di accesso) oppure mostra una finestra di sicurezza (UAC, Ctrl+Alt+Canc): ": "Naka-lock ang malayong computer (lock o login screen) o nagpapakita ng security window (UAC, Ctrl+Alt+Del): ",
+ "dispositivo": "device",
+ "Si installa senza password: il pacchetto nuovo lo scarica e lo verifica il sistema da GitHub.": "Nag-i-install nang walang password: ang system mismo ang nagda-download ng bagong package mula sa GitHub at sumusuri rito.",
+ "Si aggiorna con Scoop, senza permessi di amministratore.": "Nag-a-update gamit ang Scoop, nang walang pahintulot ng administrator.",
+ "Flatpak installa il pacchetto nuovo; se il programma è installato per tutti gli utenti può chiedere la password.": "Ini-install ng Flatpak ang bagong package; kung naka-install ang programa para sa lahat ng user, maaaring humingi ito ng password."
 }

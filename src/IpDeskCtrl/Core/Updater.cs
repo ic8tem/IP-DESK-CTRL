@@ -25,7 +25,7 @@ namespace IpDeskCtrl.Core
     /// </summary>
     public static class Updater
     {
-        public enum Kind { None, WindowsSetup, WindowsPortable, LinuxDeb, LinuxRpm, LinuxSlackware, LinuxArch, LinuxAppImage, LinuxSnap, LinuxPortable, MacApp, Android }
+        public enum Kind { None, WindowsSetup, WindowsPortable, WindowsScoop, LinuxFlatpak, LinuxDeb, LinuxRpm, LinuxSlackware, LinuxArch, LinuxAppImage, LinuxSnap, LinuxPortable, MacApp, Android }
 
         public const string AfterUpdateArg = "--dopo-aggiornamento";
 
@@ -34,10 +34,12 @@ namespace IpDeskCtrl.Core
             if (Platform.IsMobile) return Kind.Android;
             string exe = Environment.ProcessPath ?? "";
             string dir = AppContext.BaseDirectory;
+            if (OperatingSystem.IsWindows() && dir.Contains(@"\scoop\apps\ip-desk-ctrl\", StringComparison.OrdinalIgnoreCase)) return Kind.WindowsScoop;
             if (OperatingSystem.IsWindows()) return File.Exists(Path.Combine(dir, "unins000.exe")) ? Kind.WindowsSetup : Kind.WindowsPortable;
             if (OperatingSystem.IsMacOS()) return exe.Contains(".app/Contents/MacOS/") ? Kind.MacApp : Kind.None;
             if (OperatingSystem.IsLinux())
             {
+                if (IsFlatpak) return Kind.LinuxFlatpak;
                 if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("APPIMAGE"))) return Kind.LinuxAppImage;
                 if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("SNAP")) && exe.StartsWith("/snap/")) return Kind.LinuxSnap;
                 if (!exe.StartsWith("/opt/ip-desk-ctrl/")) return CanWrite(dir) ? Kind.LinuxPortable : Kind.None;
@@ -51,10 +53,13 @@ namespace IpDeskCtrl.Core
             return Kind.None;
         }
 
-        /// <summary>La cartella del programma è scrivibile (una portatile in una cartella di sistema non lo è: solo avviso).</summary>
+        public const string FlatpakId = "io.github.ic8tem.IpDeskCtrl";
+        private static bool IsFlatpak => Environment.GetEnvironmentVariable("FLATPAK_ID") == FlatpakId;
+
         /// <summary>Script di aggiornamento dei pacchetti Linux che polkit lascia girare senza password.</summary>
         public const string RootHelper = "/opt/ip-desk-ctrl/aggiorna-root.sh";
 
+        /// <summary>La cartella del programma è scrivibile (una portatile in una cartella di sistema non lo è: solo avviso).</summary>
         private static bool CanWrite(string dir)
         {
             try
@@ -82,12 +87,13 @@ namespace IpDeskCtrl.Core
             return k switch
             {
                 Kind.WindowsSetup => string.Format(System.Globalization.CultureInfo.InvariantCulture, "IP-DESK-CTRL-{0}-win-{1}-setup.exe", ver, (rid is "x86" or "arm64" ? rid : "x64")),
-                Kind.WindowsPortable => string.Format(System.Globalization.CultureInfo.InvariantCulture, "IP-DESK-CTRL-{0}-win-{1}-portatile.zip", ver, (rid is "x86" or "arm64" ? rid : "x64")),
+                Kind.WindowsPortable or Kind.WindowsScoop => string.Format(System.Globalization.CultureInfo.InvariantCulture, "IP-DESK-CTRL-{0}-win-{1}-portatile.zip", ver, (rid is "x86" or "arm64" ? rid : "x64")),
                 Kind.LinuxDeb => $"ip-desk-ctrl_{ver}_{(rid == "arm64" ? "arm64" : rid == "arm" ? "armhf" : "amd64")}.deb",
                 Kind.LinuxRpm => $"ip-desk-ctrl-{ver}-1.{(rid == "arm64" ? "aarch64" : rid == "arm" ? "armv7hl" : "x86_64")}.rpm",
                 Kind.LinuxSlackware => $"ip-desk-ctrl-{ver}-{(rid == "arm64" ? "aarch64" : rid == "arm" ? "arm" : "x86_64")}-1_ic8tem.txz",
                 Kind.LinuxArch => $"ip-desk-ctrl-{ver.Replace('-', '_')}-1-{(rid == "arm64" ? "aarch64" : "x86_64")}.pkg.tar.zst",
                 Kind.LinuxAppImage => string.Format(System.Globalization.CultureInfo.InvariantCulture, "IP-DESK-CTRL-{0}-{1}.AppImage", ver, (rid == "arm64" ? "aarch64" : "x86_64")),
+                Kind.LinuxFlatpak => string.Format(System.Globalization.CultureInfo.InvariantCulture, "IP-DESK-CTRL-{0}-{1}.flatpak", ver, (rid == "arm64" ? "aarch64" : "x86_64")),
                 Kind.LinuxSnap => $"ip-desk-ctrl_{ver}_{(rid == "arm64" ? "arm64" : "amd64")}.snap",
                 // Alpine e le altre distribuzioni con musl hanno il loro eseguibile
                 Kind.LinuxPortable => $"IP-DESK-CTRL-{ver}-linux-{(RuntimeInformation.RuntimeIdentifier.Contains("musl") ? "musl-" : "")}{rid}-portatile.tar.gz",
@@ -106,7 +112,9 @@ namespace IpDeskCtrl.Core
             Kind.WindowsSetup => service
                 ? L.T("Il servizio di IP-DESK-CTRL installa la nuova versione senza chiedere nulla, anche se il PC è comandato da remoto.")
                 : L.T("Windows chiederà il permesso di amministratore (UAC): chi è al PC deve rispondere sì."),
-            Kind.LinuxDeb or Kind.LinuxRpm or Kind.LinuxSlackware or Kind.LinuxArch when File.Exists(RootHelper) => "Si installa senza password: il pacchetto nuovo lo scarica e lo verifica il sistema da GitHub.",
+            Kind.LinuxDeb or Kind.LinuxRpm or Kind.LinuxSlackware or Kind.LinuxArch when File.Exists(RootHelper) => L.T("Si installa senza password: il pacchetto nuovo lo scarica e lo verifica il sistema da GitHub."),
+            Kind.WindowsScoop => L.T("Si aggiorna con Scoop, senza permessi di amministratore."),
+            Kind.LinuxFlatpak => L.T("Flatpak installa il pacchetto nuovo; se il programma è installato per tutti gli utenti può chiedere la password."),
             Kind.LinuxDeb or Kind.LinuxRpm or Kind.LinuxSlackware or Kind.LinuxArch or Kind.LinuxSnap => L.T("Il sistema chiederà la password di amministratore per installare il pacchetto."),
             Kind.LinuxAppImage => L.T("Il file .AppImage viene sostituito con quello nuovo."),
             Kind.MacApp => L.T("Se l'app è in Applicazioni e serve, macOS chiederà la password."),
@@ -116,7 +124,10 @@ namespace IpDeskCtrl.Core
 
         // ------------------------------------------------------------------ scaricamento con controllo SHA-256
 
-        public static string DownloadFolder => Path.Combine(Path.GetTempPath(), "ip-desk-ctrl-aggiornamento");
+        // Flatpak: la /tmp della sandbox non si vede da fuori, la cache dell'app sì (~/.var/app/<id>/cache)
+        public static string DownloadFolder => Path.Combine(
+            IsFlatpak && Environment.GetEnvironmentVariable("XDG_CACHE_HOME") is { Length: > 0 } c ? c : Path.GetTempPath(),
+            "ip-desk-ctrl-aggiornamento");
 
         /// <summary>Scarica il file e controlla l'impronta. (percorso, sha256 esadecimale, errore).</summary>
         public static async Task<(string path, string sha, string error)> DownloadAsync(ReleaseAsset a, Action<double, string> progress, CancellationToken ct)
@@ -199,6 +210,46 @@ Copy-Item -Path (Join-Path $src '*') -Destination '{Q(dir)}' -Recurse -Force
 Start-Process -FilePath '{Q(exe)}' -ArgumentList '{AfterUpdateArg}'
 ", new UTF8Encoding(true));
                         Process.Start(new ProcessStartInfo("powershell.exe", $"-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File \"{ps}\"") { UseShellExecute = false, CreateNoWindow = true });
+                        return "";
+                    }
+                    case Kind.WindowsScoop:
+                    {
+                        // ...\scoop\apps\ip-desk-ctrl\<versione o current>\ : Scoop aggiorna da solo dal bucket del repository;
+                        // se il bucket non ha ancora la versione nuova, si scompatta lo zip in «current» come la portatile
+                        int a = dir.IndexOf(@"\apps\ip-desk-ctrl\", StringComparison.OrdinalIgnoreCase);
+                        string root = dir[..a], app = dir[..(a + @"\apps\ip-desk-ctrl".Length)];
+                        string ps = Path.Combine(DownloadFolder, "aggiorna.ps1");
+                        File.WriteAllText(ps, $@"
+$ErrorActionPreference = 'SilentlyContinue'
+while (Get-Process -Id {pid}) {{ Start-Sleep -Milliseconds 300 }}
+& '{Q(root)}\shims\scoop.cmd' update
+& '{Q(root)}\shims\scoop.cmd' update ip-desk-ctrl
+if (-not (Test-Path '{Q(app)}\{Q(version)}\IP-DESK-CTRL.exe')) {{
+  $tmp = Join-Path $env:TEMP 'ip-desk-ctrl-nuovo'
+  Remove-Item $tmp -Recurse -Force
+  Expand-Archive -Path '{Q(file)}' -DestinationPath $tmp -Force
+  $src = (Get-ChildItem $tmp -Recurse -Filter 'IP-DESK-CTRL.exe' | Select-Object -First 1).DirectoryName
+  Copy-Item -Path (Join-Path $src '*') -Destination '{Q(app)}\current' -Recurse -Force
+}}
+Start-Process -FilePath '{Q(app)}\current\IP-DESK-CTRL.exe' -ArgumentList '{AfterUpdateArg}'
+", new UTF8Encoding(true));
+                        Process.Start(new ProcessStartInfo("powershell.exe", $"-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File \"{ps}\"") { UseShellExecute = false, CreateNoWindow = true });
+                        return "";
+                    }
+                    case Kind.LinuxFlatpak:
+                    {
+                        // tutto gira fuori dalla sandbox (flatpak-spawn --host): quando questo programma si chiude la sandbox
+                        // muore, lo script sul sistema no. Installazione per l'utente o per tutti, come quella di adesso.
+                        string info = File.Exists("/.flatpak-info") ? File.ReadAllText("/.flatpak-info") : "";
+                        string scope = info.Contains("/.local/share/flatpak/") ? "--user" : "--system";
+                        string host = $@"
+for i in $(seq 1 100); do flatpak ps --columns=application 2>/dev/null | grep -qx '{FlatpakId}' || break; sleep 0.3; done
+flatpak install {scope} --noninteractive -y --reinstall '{S(file)}'
+nohup flatpak run {FlatpakId} {AfterUpdateArg} >/dev/null 2>&1 &
+";
+                        var psi = new ProcessStartInfo("flatpak-spawn") { UseShellExecute = false };
+                        foreach (var x in new[] { "--host", "sh", "-c", host.Replace("\r", "") }) psi.ArgumentList.Add(x);
+                        Process.Start(psi);
                         return "";
                     }
                     // pacchetti di sistema con lo script verificato: senza password (regola polkit del pacchetto)

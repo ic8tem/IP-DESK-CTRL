@@ -568,5 +568,9 @@
  "Tutti gli schermi": "Усі екрани",
  "Collegamento terminato": "З'єднання завершено",
  "Ricollegati": "Перепідключитися",
- "Il PC remoto è bloccato (schermata di blocco o di accesso) oppure mostra una finestra di sicurezza (UAC, Ctrl+Alt+Canc): ": "Віддалений комп'ютер заблоковано (екран блокування або входу) або він показує вікно безпеки (UAC, Ctrl+Alt+Del): "
+ "Il PC remoto è bloccato (schermata di blocco o di accesso) oppure mostra una finestra di sicurezza (UAC, Ctrl+Alt+Canc): ": "Віддалений комп'ютер заблоковано (екран блокування або входу) або він показує вікно безпеки (UAC, Ctrl+Alt+Del): ",
+ "dispositivo": "пристрою",
+ "Si installa senza password: il pacchetto nuovo lo scarica e lo verifica il sistema da GitHub.": "Встановлюється без пароля: система сама завантажує новий пакет із GitHub і перевіряє його.",
+ "Si aggiorna con Scoop, senza permessi di amministratore.": "Оновлюється через Scoop, без прав адміністратора.",
+ "Flatpak installa il pacchetto nuovo; se il programma è installato per tutti gli utenti può chiedere la password.": "Flatpak встановлює новий пакет; якщо програму встановлено для всіх користувачів, може запитати пароль."
 }

@@ -18,6 +18,12 @@ Tutti i file sono nella pagina **[Releases](https://github.com/ic8tem/IP-DESK-CT
 
 Esiste anche la versione **portatile** (`…-portatile.zip`), che non si installa: in quel caso il servizio non c'è, quindi UAC e schermata di blocco restano nere e il PC è raggiungibile solo con il programma aperto.
 
+### Con Scoop, Chocolatey o winget
+
+- **Scoop** (senza amministratore, versione portatile): `scoop bucket add ip-desk-ctrl https://github.com/ic8tem/IP-DESK-CTRL` e poi `scoop install ip-desk-ctrl`. Il programma si aggiorna da solo con `scoop update`.
+- **Chocolatey**: il pacchetto `ip-desk-ctrl.<versione>.nupkg` è allegato a ogni release; scaricalo e, dalla stessa cartella, `choco install ip-desk-ctrl -s .` (installa il setup ufficiale, con il servizio).
+- **winget**: i manifesti sono nel repository (`packaging/winget`); il pacchetto `ic8tem.IP-DESK-CTRL` sarà nel catalogo di winget quando verrà accettato.
+
 Windows SmartScreen può avvisare che il programma non è riconosciuto: clic su **Ulteriori informazioni › Esegui comunque**.
 
 ## Linux e Raspberry Pi
@@ -39,6 +45,7 @@ Windows SmartScreen può avvisare che il programma non è riconosciuto: clic su 
 | Arch / Manjaro / EndeavourOS / Arch Linux ARM | `ip-desk-ctrl-…-1-x86_64.pkg.tar.zst` · `…-aarch64.pkg.tar.zst` | `sudo pacman -U ./ip-desk-ctrl-…pkg.tar.zst` |
 | Qualsiasi Linux (AppImage) | `IP-DESK-CTRL-…-x86_64.AppImage` · `…-aarch64.AppImage` | `chmod +x` sul file e avvialo; si aggiorna da solo sostituendo il file |
 | Snap | `ip-desk-ctrl_…_amd64.snap` · `…_arm64.snap` | `sudo snap install --dangerous --classic ./ip-desk-ctrl_…snap` |
+| Flatpak (sessioni X11) | `IP-DESK-CTRL-…-x86_64.flatpak` · `…-aarch64.flatpak` | `flatpak install --user ./IP-DESK-CTRL-…flatpak`; la sandbox è aperta su schermo, dispositivi e cartella home, perché il programma deve vedere e comandare il PC |
 | Alpine Linux (musl), x64 e arm64 | `IP-DESK-CTRL-…-linux-musl-x64-portatile.tar.gz` · `…-linux-musl-arm64-portatile.tar.gz` | `sudo apk add libstdc++ fontconfig libx11 libxtst libxrandr`, poi si scompatta e si avvia |
 
 ### Chromebook
@@ -95,10 +102,13 @@ L'aggiornamento:
 | Windows con il servizio (installatore) | **Sì, senza domande** | Installa anche se il PC è comandato da remoto e nessuno è davanti |
 | Windows senza servizio (installatore) | Sì, con conferma | Windows chiede il permesso di amministratore (UAC): risponde chi è al PC, anche da remoto |
 | Windows portatile (.zip) | **Sì, senza domande** | Sostituisce l'eseguibile nella sua cartella |
+| Windows con Scoop | **Sì, senza domande** | Lancia `scoop update ip-desk-ctrl`; se il bucket non ha ancora la versione nuova, sostituisce l'eseguibile |
+| Windows con Chocolatey o winget | come l'installatore | Usano il setup ufficiale, quindi si aggiorna come sopra |
 | macOS (.dmg, app.zip, Homebrew) | **Sì** | Sostituisce l'app; se è in Applicazioni e serve, chiede la password |
 | AppImage | **Sì, senza domande** | Sostituisce il file .AppImage |
 | Linux portatile e Alpine (.tar.gz) | **Sì, senza domande** | Sostituisce i file nella cartella, se è una cartella tua (non di sistema) |
 | Debian/Ubuntu/Mint/Raspberry (.deb), Fedora/openSUSE (.rpm), Arch (.pkg.tar.zst), Slackware (.txz) | **Sì, senza password** | Il pacchetto installa una regola polkit che permette solo allo script di aggiornamento di girare senza password: lo script scarica il pacchetto dalla release su GitHub, ne controlla l'impronta SHA-256 e accetta solo versioni più nuove |
+| Flatpak | **Sì** | Installa il nuovo .flatpak con `flatpak install`; senza domande se è installato per l'utente (`--user`), con la password se è per tutti |
 | Snap | Sì, con la password | snap chiede la password di amministratore: se nessuno la scrive, l'aggiornamento resta in attesa |
 | Android e Chromebook (APK) | **No, solo avviso** | Android non permette a un'app di installarsi da sola: si apre lo scaricamento dell'APK, da toccare per installarlo sopra |
 

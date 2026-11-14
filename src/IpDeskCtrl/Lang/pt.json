@@ -568,5 +568,9 @@
  "Tutti gli schermi": "Todos os ecrãs",
  "Collegamento terminato": "Ligação terminada",
  "Ricollegati": "Voltar a ligar",
- "Il PC remoto è bloccato (schermata di blocco o di accesso) oppure mostra una finestra di sicurezza (UAC, Ctrl+Alt+Canc): ": "O PC remoto está bloqueado (ecrã de bloqueio ou de início de sessão) ou mostra uma janela de segurança (UAC, Ctrl+Alt+Del): "
+ "Il PC remoto è bloccato (schermata di blocco o di accesso) oppure mostra una finestra di sicurezza (UAC, Ctrl+Alt+Canc): ": "O PC remoto está bloqueado (ecrã de bloqueio ou de início de sessão) ou mostra uma janela de segurança (UAC, Ctrl+Alt+Del): ",
+ "dispositivo": "dispositivo",
+ "Si installa senza password: il pacchetto nuovo lo scarica e lo verifica il sistema da GitHub.": "Instala-se sem palavra-passe: o próprio sistema descarrega o novo pacote do GitHub e verifica-o.",
+ "Si aggiorna con Scoop, senza permessi di amministratore.": "Atualiza-se com o Scoop, sem permissões de administrador.",
+ "Flatpak installa il pacchetto nuovo; se il programma è installato per tutti gli utenti può chiedere la password.": "O Flatpak instala o novo pacote; se o programa estiver instalado para todos os utilizadores, pode pedir a palavra-passe."
 }

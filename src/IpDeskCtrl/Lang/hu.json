@@ -568,5 +568,9 @@
  "Tutti gli schermi": "Minden képernyő",
  "Collegamento terminato": "Kapcsolat befejezve",
  "Ricollegati": "Újracsatlakozás",
- "Il PC remoto è bloccato (schermata di blocco o di accesso) oppure mostra una finestra di sicurezza (UAC, Ctrl+Alt+Canc): ": "A távoli számítógép zárolva van (zárolási vagy bejelentkezési képernyő), vagy biztonsági ablakot mutat (UAC, Ctrl+Alt+Del): "
+ "Il PC remoto è bloccato (schermata di blocco o di accesso) oppure mostra una finestra di sicurezza (UAC, Ctrl+Alt+Canc): ": "A távoli számítógép zárolva van (zárolási vagy bejelentkezési képernyő), vagy biztonsági ablakot mutat (UAC, Ctrl+Alt+Del): ",
+ "dispositivo": "eszköz",
+ "Si installa senza password: il pacchetto nuovo lo scarica e lo verifica il sistema da GitHub.": "Jelszó nélkül települ: a rendszer maga tölti le az új csomagot a GitHubról, és ellenőrzi.",
+ "Si aggiorna con Scoop, senza permessi di amministratore.": "A Scoopon keresztül frissül, rendszergazdai jogok nélkül.",
+ "Flatpak installa il pacchetto nuovo; se il programma è installato per tutti gli utenti può chiedere la password.": "A Flatpak telepíti az új csomagot; ha a program minden felhasználónak telepítve van, jelszót kérhet."
 }

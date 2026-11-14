@@ -31,7 +31,7 @@ namespace IpDeskCtrl.UI
                 {
                     Text = info.Observer
                         ? L.F("{0} vuole guardare lo schermo di questo PC (solo visione) mentre lo comanda {1}.", who, Identity.Format(info.Controller))
-                        : L.F("{0} vuole vedere lo schermo di questo {1}.", who, (Platform.IsMobile ? "dispositivo" : "PC")),
+                        : L.F("{0} vuole vedere lo schermo di questo {1}.", who, (Platform.IsMobile ? L.T("dispositivo") : "PC")),
                     TextWrapping = TextWrapping.Wrap, FontSize = 15
                 },
                 Ui.Sub(details, 12),

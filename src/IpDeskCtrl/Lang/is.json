@@ -568,5 +568,9 @@
  "Tutti gli schermi": "Allir skjáir",
  "Collegamento terminato": "Tengingu lokið",
  "Ricollegati": "Tengjast aftur",
- "Il PC remoto è bloccato (schermata di blocco o di accesso) oppure mostra una finestra di sicurezza (UAC, Ctrl+Alt+Canc): ": "Fjartölvan er læst (lásskjár eða innskráningarskjár) eða sýnir öryggisglugga (UAC, Ctrl+Alt+Del): "
+ "Il PC remoto è bloccato (schermata di blocco o di accesso) oppure mostra una finestra di sicurezza (UAC, Ctrl+Alt+Canc): ": "Fjartölvan er læst (lásskjár eða innskráningarskjár) eða sýnir öryggisglugga (UAC, Ctrl+Alt+Del): ",
+ "dispositivo": "tæki",
+ "Si installa senza password: il pacchetto nuovo lo scarica e lo verifica il sistema da GitHub.": "Sett upp án lykilorðs: kerfið sækir sjálft nýja pakkann frá GitHub og staðfestir hann.",
+ "Si aggiorna con Scoop, senza permessi di amministratore.": "Uppfært með Scoop, án stjórnandaréttinda.",
+ "Flatpak installa il pacchetto nuovo; se il programma è installato per tutti gli utenti può chiedere la password.": "Flatpak setur upp nýja pakkann; ef forritið er sett upp fyrir alla notendur getur það beðið um lykilorðið."
 }

@@ -568,5 +568,9 @@
  "Tutti gli schermi": "Kõik ekraanid",
  "Collegamento terminato": "Ühendus lõpetatud",
  "Ricollegati": "Ühenda uuesti",
- "Il PC remoto è bloccato (schermata di blocco o di accesso) oppure mostra una finestra di sicurezza (UAC, Ctrl+Alt+Canc): ": "Kaugarvuti on lukus (lukustus- või sisselogimiskuva) või näitab turvaakent (UAC, Ctrl+Alt+Del): "
+ "Il PC remoto è bloccato (schermata di blocco o di accesso) oppure mostra una finestra di sicurezza (UAC, Ctrl+Alt+Canc): ": "Kaugarvuti on lukus (lukustus- või sisselogimiskuva) või näitab turvaakent (UAC, Ctrl+Alt+Del): ",
+ "dispositivo": "seade",
+ "Si installa senza password: il pacchetto nuovo lo scarica e lo verifica il sistema da GitHub.": "Paigaldub ilma paroolita: süsteem laadib uue paketi ise GitHubist alla ja kontrollib seda.",
+ "Si aggiorna con Scoop, senza permessi di amministratore.": "Uueneb Scoopi kaudu, ilma administraatori õigusteta.",
+ "Flatpak installa il pacchetto nuovo; se il programma è installato per tutti gli utenti può chiedere la password.": "Flatpak paigaldab uue paketi; kui programm on paigaldatud kõigile kasutajatele, võib see küsida parooli."
 }

@@ -568,5 +568,9 @@
  "Tutti gli schermi": "Visi ekrāni",
  "Collegamento terminato": "Savienojums beidzies",
  "Ricollegati": "Savienoties atkārtoti",
- "Il PC remoto è bloccato (schermata di blocco o di accesso) oppure mostra una finestra di sicurezza (UAC, Ctrl+Alt+Canc): ": "Attālais dators ir bloķēts (bloķēšanas vai pieteikšanās ekrāns) vai rāda drošības logu (UAC, Ctrl+Alt+Del): "
+ "Il PC remoto è bloccato (schermata di blocco o di accesso) oppure mostra una finestra di sicurezza (UAC, Ctrl+Alt+Canc): ": "Attālais dators ir bloķēts (bloķēšanas vai pieteikšanās ekrāns) vai rāda drošības logu (UAC, Ctrl+Alt+Del): ",
+ "dispositivo": "ierīce",
+ "Si installa senza password: il pacchetto nuovo lo scarica e lo verifica il sistema da GitHub.": "Instalējas bez paroles: sistēma pati lejupielādē jauno pakotni no GitHub un to pārbauda.",
+ "Si aggiorna con Scoop, senza permessi di amministratore.": "Atjauninās ar Scoop, bez administratora tiesībām.",
+ "Flatpak installa il pacchetto nuovo; se il programma è installato per tutti gli utenti può chiedere la password.": "Flatpak instalē jauno pakotni; ja programma instalēta visiem lietotājiem, tā var prasīt paroli."
 }

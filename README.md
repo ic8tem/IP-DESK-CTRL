@@ -82,6 +82,8 @@ Gli installatori sono nella pagina **Releases**:
 | Windows 64 bit | `…-win-x64-setup.exe` |
 | Windows 32 bit | `…-win-x86-setup.exe` |
 | Windows ARM64 (PC con Snapdragon) | `…-win-arm64-setup.exe` |
+| Windows con Scoop | `scoop bucket add ip-desk-ctrl https://github.com/ic8tem/IP-DESK-CTRL` poi `scoop install ip-desk-ctrl` |
+| Windows con Chocolatey | `ip-desk-ctrl.…nupkg` allegato alla release, poi `choco install ip-desk-ctrl -s .` |
 | Linux x86_64 (64 bit) | `…-linux-x64-portatile.tar.gz` |
 | Linux aarch64 (ARM 64 bit, PC e mini-PC non Raspberry) | `…-linux-arm64-portatile.tar.gz` |
 | Debian / Ubuntu / Mint | `ip-desk-ctrl_…_amd64.deb` (`sudo apt install ./<file>.deb`) |
@@ -93,6 +95,7 @@ Gli installatori sono nella pagina **Releases**:
 | Arch / Manjaro / EndeavourOS / Arch Linux ARM | `ip-desk-ctrl-…-1-x86_64.pkg.tar.zst` · `…-aarch64.pkg.tar.zst` (`sudo pacman -U ./<file>`) |
 | Qualsiasi Linux, un solo file (AppImage) | `…-x86_64.AppImage` · `…-aarch64.AppImage` |
 | Snap | `ip-desk-ctrl_…_amd64.snap` · `…_arm64.snap` (`sudo snap install --dangerous --classic ./<file>`) |
+| Flatpak (sessioni X11) | `…-x86_64.flatpak` · `…-aarch64.flatpak` (`flatpak install --user ./<file>`) |
 | Alpine Linux (musl) | `…-linux-musl-x64-portatile.tar.gz` · `…-linux-musl-arm64-portatile.tar.gz` |
 | Chromebook | l'APK Android, oppure il `.deb` nel Linux del Chromebook |
 | macOS Apple Silicon (M1-M4) | `…-osx-arm64.dmg` (al primo avvio clic destro › Apri) |
@@ -113,7 +116,7 @@ L'aggiornamento automatico c'è **per tutte le distribuzioni**, con queste eccez
 - **Snap**: si aggiorna da solo ma il sistema **chiede la password di amministratore**. I pacchetti .deb, .rpm, Arch e Slackware invece si aggiornano **senza password** (regola polkit per il solo script di aggiornamento, che scarica e verifica il pacchetto da GitHub).
 - **Versioni portatili in una cartella di sistema** (non scrivibile dall'utente): solo l'avviso.
 
-Del tutto senza domande: Windows con il servizio, Windows portatile, .deb, .rpm, Arch, Slackware, AppImage, Linux portatile e Alpine, macOS (salvo la password se l'app è in una cartella protetta). Dettagli nella [wiki](https://github.com/ic8tem/IP-DESK-CTRL/wiki/Installazione#aggiornamenti).
+Del tutto senza domande: Windows con il servizio, Windows portatile, Scoop, Flatpak per l'utente, .deb, .rpm, Arch, Slackware, AppImage, Linux portatile e Alpine, macOS (salvo la password se l'app è in una cartella protetta). Dettagli nella [wiki](https://github.com/ic8tem/IP-DESK-CTRL/wiki/Installazione#aggiornamenti).
 
 ## Registri
 
@@ -130,6 +133,8 @@ Le versioni con protocollo diverso non si collegano tra loro: aggiorna tutti i d
 - **36 lingue** (Impostazioni › «Lingua»): italiano, inglese, tedesco, francese, spagnolo, portoghese (anche brasiliano), olandese, svedese, norvegese, danese, islandese, estone, lettone, lituano, polacco, ceco, ungherese, rumeno, greco, russo, ucraino, turco, afrikaans, arabo, ebraico, urdu, hindi, bengalese, thailandese, indonesiano, filippino, cinese semplificato e tradizionale, giapponese, coreano. «Automatico» segue la lingua del sistema; la nuova lingua vale dal riavvio (pulsante «Riavvia ora»). Arabo, ebraico e urdu si leggono da destra a sinistra; lo schermo del PC remoto resta com'è.
 - **Pacchetti Linux aggiornati senza password**: .deb, .rpm, Arch e Slackware installano una regola di sistema (polkit) che lascia girare senza password solo lo script di aggiornamento di IP-DESK-CTRL. Lo script non installa file passati dal programma: scarica da solo il pacchetto dalla release ufficiale su GitHub, ne controlla l'impronta SHA-256 e accetta solo versioni più nuove. Vale per l'utente della sessione attiva (anche quando il PC è comandato da IP-DESK-CTRL). Lo Snap chiede ancora la password.
 - **Broker MQTT a scelta** (Impostazioni › «Broker MQTT»): uno per riga, anche cifrati con TLS (`mqtts://host:8883` o la porta 8883). Valgono subito, senza riavviare; con il servizio di Windows li usa anche lui. «Predefiniti» rimette hivemq, mosquitto ed emqx.
+- **Nuovi modi di installare**: **Scoop** (bucket in questo repository: `scoop bucket add ip-desk-ctrl https://github.com/ic8tem/IP-DESK-CTRL`, poi `scoop install ip-desk-ctrl`), **Chocolatey** (pacchetto `.nupkg` allegato alla release), **Flatpak** (`.flatpak` per x86_64 e aarch64, sessioni X11) e i manifesti per **winget** (nel catalogo quando Microsoft li accetterà). Tutti si aggiornano da soli come le altre versioni.
+- Su Android le frasi con «dispositivo» ora si traducono anche loro.
 
 ### 0.5.11 — 14 novembre 2026
 - **Tunnel per la radio**: il modello rigctld usa di qua la porta **4542** (arriva alla 4532 del PC remoto), perché la 4532 di qua è spesso già occupata da un rigctld locale (IP-TRX-CTRL, WSJT-X…); scegliendolo compare l'avviso con l'indirizzo da impostare.

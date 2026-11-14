@@ -568,5 +568,9 @@
  "Tutti gli schermi": "सभी स्क्रीन",
  "Collegamento terminato": "कनेक्शन समाप्त",
  "Ricollegati": "फिर जुड़ें",
- "Il PC remoto è bloccato (schermata di blocco o di accesso) oppure mostra una finestra di sicurezza (UAC, Ctrl+Alt+Canc): ": "रिमोट कंप्यूटर लॉक है (लॉक या लॉगिन स्क्रीन) या सुरक्षा विंडो दिखा रहा है (UAC, Ctrl+Alt+Del): "
+ "Il PC remoto è bloccato (schermata di blocco o di accesso) oppure mostra una finestra di sicurezza (UAC, Ctrl+Alt+Canc): ": "रिमोट कंप्यूटर लॉक है (लॉक या लॉगिन स्क्रीन) या सुरक्षा विंडो दिखा रहा है (UAC, Ctrl+Alt+Del): ",
+ "dispositivo": "डिवाइस",
+ "Si installa senza password: il pacchetto nuovo lo scarica e lo verifica il sistema da GitHub.": "बिना पासवर्ड इंस्टॉल होता है: नया पैकेज सिस्टम खुद GitHub से डाउनलोड करके जाँचता है।",
+ "Si aggiorna con Scoop, senza permessi di amministratore.": "Scoop से अपडेट होता है, व्यवस्थापक अधिकारों के बिना।",
+ "Flatpak installa il pacchetto nuovo; se il programma è installato per tutti gli utenti può chiedere la password.": "Flatpak नया पैकेज इंस्टॉल करता है; अगर प्रोग्राम सभी उपयोगकर्ताओं के लिए इंस्टॉल है तो पासवर्ड माँग सकता है।"
 }

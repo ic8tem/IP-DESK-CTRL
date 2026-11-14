@@ -568,5 +568,9 @@
  "Tutti gli schermi": "Tous les écrans",
  "Collegamento terminato": "Connexion terminée",
  "Ricollegati": "Se reconnecter",
- "Il PC remoto è bloccato (schermata di blocco o di accesso) oppure mostra una finestra di sicurezza (UAC, Ctrl+Alt+Canc): ": "Le PC distant est verrouillé (écran de verrouillage ou de connexion) ou affiche une fenêtre de sécurité (UAC, Ctrl+Alt+Suppr) : "
+ "Il PC remoto è bloccato (schermata di blocco o di accesso) oppure mostra una finestra di sicurezza (UAC, Ctrl+Alt+Canc): ": "Le PC distant est verrouillé (écran de verrouillage ou de connexion) ou affiche une fenêtre de sécurité (UAC, Ctrl+Alt+Suppr) : ",
+ "dispositivo": "appareil",
+ "Si installa senza password: il pacchetto nuovo lo scarica e lo verifica il sistema da GitHub.": "L'installation se fait sans mot de passe : le système télécharge lui-même le nouveau paquet depuis GitHub et le vérifie.",
+ "Si aggiorna con Scoop, senza permessi di amministratore.": "La mise à jour passe par Scoop, sans droits d'administrateur.",
+ "Flatpak installa il pacchetto nuovo; se il programma è installato per tutti gli utenti può chiedere la password.": "Flatpak installe le nouveau paquet ; si le programme est installé pour tous les utilisateurs, il peut demander le mot de passe."
 }

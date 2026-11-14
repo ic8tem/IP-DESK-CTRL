@@ -568,5 +568,9 @@
  "Tutti gli schermi": "Alle skærme",
  "Collegamento terminato": "Forbindelsen afsluttet",
  "Ricollegati": "Forbind igen",
- "Il PC remoto è bloccato (schermata di blocco o di accesso) oppure mostra una finestra di sicurezza (UAC, Ctrl+Alt+Canc): ": "Fjern-pc'en er låst (låseskærm eller logonskærm) eller viser et sikkerhedsvindue (UAC, Ctrl+Alt+Del): "
+ "Il PC remoto è bloccato (schermata di blocco o di accesso) oppure mostra una finestra di sicurezza (UAC, Ctrl+Alt+Canc): ": "Fjern-pc'en er låst (låseskærm eller logonskærm) eller viser et sikkerhedsvindue (UAC, Ctrl+Alt+Del): ",
+ "dispositivo": "enhed",
+ "Si installa senza password: il pacchetto nuovo lo scarica e lo verifica il sistema da GitHub.": "Installeres uden adgangskode: systemet henter selv den nye pakke fra GitHub og kontrollerer den.",
+ "Si aggiorna con Scoop, senza permessi di amministratore.": "Opdateres med Scoop, uden administratorrettigheder.",
+ "Flatpak installa il pacchetto nuovo; se il programma è installato per tutti gli utenti può chiedere la password.": "Flatpak installerer den nye pakke; hvis programmet er installeret for alle brugere, kan det bede om adgangskoden."
 }

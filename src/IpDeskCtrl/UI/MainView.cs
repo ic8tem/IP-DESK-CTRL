@@ -150,7 +150,7 @@ namespace IpDeskCtrl.UI
             col.Children.Add(Ui.Panel(Ui.Col(6,
                 Ui.H2(Platform.IsMobile ? L.T("IL NUMERO DI QUESTO DISPOSITIVO") : L.T("IL NUMERO DI QUESTO PC")),
                 numRow,
-                Ui.Sub(L.F("Dallo a chi deve collegarsi a questo {0}: non cambia mai. Ogni volta ti verrà chiesto se accettare.", (Platform.IsMobile ? "dispositivo" : "PC"))),
+                Ui.Sub(L.F("Dallo a chi deve collegarsi a questo {0}: non cambia mai. Ogni volta ti verrà chiesto se accettare.", (Platform.IsMobile ? L.T("dispositivo") : "PC"))),
                 _netDetail,
                 _incomingBanner)));
 

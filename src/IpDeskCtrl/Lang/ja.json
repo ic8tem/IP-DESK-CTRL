@@ -568,5 +568,9 @@
  "Tutti gli schermi": "すべての画面",
  "Collegamento terminato": "接続が終了しました",
  "Ricollegati": "再接続",
- "Il PC remoto è bloccato (schermata di blocco o di accesso) oppure mostra una finestra di sicurezza (UAC, Ctrl+Alt+Canc): ": "リモートのパソコンがロックされている（ロック画面またはサインイン画面）か、セキュリティ ウィンドウ（UAC、Ctrl+Alt+Del）を表示しています: "
+ "Il PC remoto è bloccato (schermata di blocco o di accesso) oppure mostra una finestra di sicurezza (UAC, Ctrl+Alt+Canc): ": "リモートのパソコンがロックされている（ロック画面またはサインイン画面）か、セキュリティ ウィンドウ（UAC、Ctrl+Alt+Del）を表示しています: ",
+ "dispositivo": "デバイス",
+ "Si installa senza password: il pacchetto nuovo lo scarica e lo verifica il sistema da GitHub.": "パスワードなしでインストールされます: 新しいパッケージはシステム自身が GitHub からダウンロードして検証します。",
+ "Si aggiorna con Scoop, senza permessi di amministratore.": "Scoop で更新されます。管理者権限は不要です。",
+ "Flatpak installa il pacchetto nuovo; se il programma è installato per tutti gli utenti può chiedere la password.": "Flatpak が新しいパッケージをインストールします。すべてのユーザー向けにインストールされている場合はパスワードを求められることがあります。"
 }

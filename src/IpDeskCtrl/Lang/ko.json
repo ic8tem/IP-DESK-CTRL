@@ -568,5 +568,9 @@
  "Tutti gli schermi": "모든 화면",
  "Collegamento terminato": "연결 종료됨",
  "Ricollegati": "다시 연결",
- "Il PC remoto è bloccato (schermata di blocco o di accesso) oppure mostra una finestra di sicurezza (UAC, Ctrl+Alt+Canc): ": "원격 컴퓨터가 잠겨 있거나(잠금 또는 로그인 화면) 보안 창(UAC, Ctrl+Alt+Del)을 표시하고 있습니다: "
+ "Il PC remoto è bloccato (schermata di blocco o di accesso) oppure mostra una finestra di sicurezza (UAC, Ctrl+Alt+Canc): ": "원격 컴퓨터가 잠겨 있거나(잠금 또는 로그인 화면) 보안 창(UAC, Ctrl+Alt+Del)을 표시하고 있습니다: ",
+ "dispositivo": "기기",
+ "Si installa senza password: il pacchetto nuovo lo scarica e lo verifica il sistema da GitHub.": "비밀번호 없이 설치됩니다: 새 패키지는 시스템이 직접 GitHub에서 내려받아 확인합니다.",
+ "Si aggiorna con Scoop, senza permessi di amministratore.": "Scoop으로 업데이트되며 관리자 권한이 필요 없습니다.",
+ "Flatpak installa il pacchetto nuovo; se il programma è installato per tutti gli utenti può chiedere la password.": "Flatpak이 새 패키지를 설치합니다. 프로그램이 모든 사용자용으로 설치되어 있으면 비밀번호를 물을 수 있습니다."
 }

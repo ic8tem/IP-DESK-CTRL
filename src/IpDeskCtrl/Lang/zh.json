@@ -568,5 +568,9 @@
  "Tutti gli schermi": "所有屏幕",
  "Collegamento terminato": "连接已结束",
  "Ricollegati": "重新连接",
- "Il PC remoto è bloccato (schermata di blocco o di accesso) oppure mostra una finestra di sicurezza (UAC, Ctrl+Alt+Canc): ": "远程电脑已锁定（锁屏或登录界面），或正显示安全窗口（UAC、Ctrl+Alt+Del）："
+ "Il PC remoto è bloccato (schermata di blocco o di accesso) oppure mostra una finestra di sicurezza (UAC, Ctrl+Alt+Canc): ": "远程电脑已锁定（锁屏或登录界面），或正显示安全窗口（UAC、Ctrl+Alt+Del）：",
+ "dispositivo": "设备",
+ "Si installa senza password: il pacchetto nuovo lo scarica e lo verifica il sistema da GitHub.": "无需密码即可安装：系统会自己从 GitHub 下载新软件包并进行校验。",
+ "Si aggiorna con Scoop, senza permessi di amministratore.": "通过 Scoop 更新，无需管理员权限。",
+ "Flatpak installa il pacchetto nuovo; se il programma è installato per tutti gli utenti può chiedere la password.": "Flatpak 会安装新软件包；如果程序是为所有用户安装的，可能会要求输入密码。"
 }

@@ -568,5 +568,9 @@
  "Tutti gli schermi": "Alle skerms",
  "Collegamento terminato": "Verbinding beëindig",
  "Ricollegati": "Herkoppel",
- "Il PC remoto è bloccato (schermata di blocco o di accesso) oppure mostra una finestra di sicurezza (UAC, Ctrl+Alt+Canc): ": "Die afgeleë rekenaar is gesluit (sluit- of aanmeldskerm) of wys ’n sekuriteitsvenster (UAC, Ctrl+Alt+Del): "
+ "Il PC remoto è bloccato (schermata di blocco o di accesso) oppure mostra una finestra di sicurezza (UAC, Ctrl+Alt+Canc): ": "Die afgeleë rekenaar is gesluit (sluit- of aanmeldskerm) of wys ’n sekuriteitsvenster (UAC, Ctrl+Alt+Del): ",
+ "dispositivo": "toestel",
+ "Si installa senza password: il pacchetto nuovo lo scarica e lo verifica il sistema da GitHub.": "Installeer sonder wagwoord: die stelsel laai self die nuwe pakket van GitHub af en kontroleer dit.",
+ "Si aggiorna con Scoop, senza permessi di amministratore.": "Werk by met Scoop, sonder administrateurregte.",
+ "Flatpak installa il pacchetto nuovo; se il programma è installato per tutti gli utenti può chiedere la password.": "Flatpak installeer die nuwe pakket; as die program vir alle gebruikers geïnstalleer is, kan dit die wagwoord vra."
 }

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- La compilazione sostituisce VERSIONE; il pacchetto installa il setup ufficiale dalla release di GitHub. -->
+<package xmlns="http://schemas.microsoft.com/packaging/2015/06/nuspec.xsd">
+  <metadata>
+    <id>ip-desk-ctrl</id>
+    <version>VERSIONE</version>
+    <title>IP-DESK-CTRL</title>
+    <authors>Costantino IC8TEM</authors>
+    <owners>ic8tem</owners>
+    <projectUrl>https://github.com/ic8tem/IP-DESK-CTRL</projectUrl>
+    <projectSourceUrl>https://github.com/ic8tem/IP-DESK-CTRL</projectSourceUrl>
+    <docsUrl>https://github.com/ic8tem/IP-DESK-CTRL/wiki</docsUrl>
+    <bugTrackerUrl>https://github.com/ic8tem/IP-DESK-CTRL/issues</bugTrackerUrl>
+    <licenseUrl>https://github.com/ic8tem/IP-DESK-CTRL/blob/main/LICENSE</licenseUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <iconUrl>https://raw.githubusercontent.com/ic8tem/IP-DESK-CTRL/main/src/IpDeskCtrl/Assets/icon.png</iconUrl>
+    <tags>remote-desktop desktop-remoto ham-radio rigctld admin</tags>
+    <summary>Desktop remoto cifrato con numero fisso di 10 cifre</summary>
+    <description>Vedi e comanda un altro PC (Windows, macOS, Linux, Raspberry Pi, Android) con cifratura AES-256-GCM. Ritrovo sui broker MQTT, porte aperte con UPnP, collegamento inverso e UDP. Il programma si aggiorna da solo.</description>
+    <releaseNotes>https://github.com/ic8tem/IP-DESK-CTRL/wiki/Storia-delle-versioni</releaseNotes>
+  </metadata>
+  <files>
+    <file src="tools\**" target="tools" />
+  </files>
+</package>

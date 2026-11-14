@@ -568,5 +568,9 @@
  "Tutti gli schermi": "Όλες οι οθόνες",
  "Collegamento terminato": "Η σύνδεση τερματίστηκε",
  "Ricollegati": "Επανασύνδεση",
- "Il PC remoto è bloccato (schermata di blocco o di accesso) oppure mostra una finestra di sicurezza (UAC, Ctrl+Alt+Canc): ": "Ο απομακρυσμένος υπολογιστής είναι κλειδωμένος (οθόνη κλειδώματος ή σύνδεσης) ή δείχνει παράθυρο ασφαλείας (UAC, Ctrl+Alt+Del): "
+ "Il PC remoto è bloccato (schermata di blocco o di accesso) oppure mostra una finestra di sicurezza (UAC, Ctrl+Alt+Canc): ": "Ο απομακρυσμένος υπολογιστής είναι κλειδωμένος (οθόνη κλειδώματος ή σύνδεσης) ή δείχνει παράθυρο ασφαλείας (UAC, Ctrl+Alt+Del): ",
+ "dispositivo": "συσκευής",
+ "Si installa senza password: il pacchetto nuovo lo scarica e lo verifica il sistema da GitHub.": "Εγκαθίσταται χωρίς κωδικό: το ίδιο το σύστημα κατεβάζει το νέο πακέτο από το GitHub και το ελέγχει.",
+ "Si aggiorna con Scoop, senza permessi di amministratore.": "Ενημερώνεται μέσω Scoop, χωρίς δικαιώματα διαχειριστή.",
+ "Flatpak installa il pacchetto nuovo; se il programma è installato per tutti gli utenti può chiedere la password.": "Το Flatpak εγκαθιστά το νέο πακέτο· αν το πρόγραμμα είναι εγκατεστημένο για όλους τους χρήστες, μπορεί να ζητήσει τον κωδικό."
 }

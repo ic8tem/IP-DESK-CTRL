@@ -568,5 +568,9 @@
  "Tutti gli schermi": "Wszystkie ekrany",
  "Collegamento terminato": "Połączenie zakończone",
  "Ricollegati": "Połącz ponownie",
- "Il PC remoto è bloccato (schermata di blocco o di accesso) oppure mostra una finestra di sicurezza (UAC, Ctrl+Alt+Canc): ": "Zdalny komputer jest zablokowany (ekran blokady lub logowania) albo pokazuje okno zabezpieczeń (UAC, Ctrl+Alt+Del): "
+ "Il PC remoto è bloccato (schermata di blocco o di accesso) oppure mostra una finestra di sicurezza (UAC, Ctrl+Alt+Canc): ": "Zdalny komputer jest zablokowany (ekran blokady lub logowania) albo pokazuje okno zabezpieczeń (UAC, Ctrl+Alt+Del): ",
+ "dispositivo": "urządzenie",
+ "Si installa senza password: il pacchetto nuovo lo scarica e lo verifica il sistema da GitHub.": "Instaluje się bez hasła: system sam pobiera nowy pakiet z GitHuba i go sprawdza.",
+ "Si aggiorna con Scoop, senza permessi di amministratore.": "Aktualizuje się przez Scoop, bez uprawnień administratora.",
+ "Flatpak installa il pacchetto nuovo; se il programma è installato per tutti gli utenti può chiedere la password.": "Flatpak instaluje nowy pakiet; jeśli program jest zainstalowany dla wszystkich użytkowników, może poprosić o hasło."
 }

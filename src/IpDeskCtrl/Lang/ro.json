@@ -568,5 +568,9 @@
  "Tutti gli schermi": "Toate ecranele",
  "Collegamento terminato": "Conexiune terminată",
  "Ricollegati": "Reconectează",
- "Il PC remoto è bloccato (schermata di blocco o di accesso) oppure mostra una finestra di sicurezza (UAC, Ctrl+Alt+Canc): ": "PC-ul la distanță este blocat (ecran de blocare sau de autentificare) sau afișează o fereastră de securitate (UAC, Ctrl+Alt+Del): "
+ "Il PC remoto è bloccato (schermata di blocco o di accesso) oppure mostra una finestra di sicurezza (UAC, Ctrl+Alt+Canc): ": "PC-ul la distanță este blocat (ecran de blocare sau de autentificare) sau afișează o fereastră de securitate (UAC, Ctrl+Alt+Del): ",
+ "dispositivo": "dispozitiv",
+ "Si installa senza password: il pacchetto nuovo lo scarica e lo verifica il sistema da GitHub.": "Se instalează fără parolă: sistemul descarcă singur noul pachet de pe GitHub și îl verifică.",
+ "Si aggiorna con Scoop, senza permessi di amministratore.": "Se actualizează prin Scoop, fără drepturi de administrator.",
+ "Flatpak installa il pacchetto nuovo; se il programma è installato per tutti gli utenti può chiedere la password.": "Flatpak instalează noul pachet; dacă programul este instalat pentru toți utilizatorii, poate cere parola."
 }

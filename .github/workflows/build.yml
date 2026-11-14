@@ -95,6 +95,14 @@ jobs:
           sudo snap install snapcraft --classic
           packaging/linux/make-snap.sh ${{ matrix.rid }} "$VERSION" dist/${{ matrix.rid }} out
 
+      - name: Flatpak
+        if: matrix.rid == 'linux-x64' || matrix.rid == 'linux-arm64'
+        continue-on-error: true
+        shell: bash
+        run: |
+          sudo apt-get install -y -qq flatpak flatpak-builder >/dev/null
+          packaging/linux/make-flatpak.sh ${{ matrix.rid }} "$VERSION" dist/${{ matrix.rid }} out
+
       # ---------------------------------------------------------------- macOS: .dmg + .app zip
       - name: Pacchetti macOS
         if: startsWith(matrix.rid, 'osx')
@@ -253,6 +261,7 @@ jobs:
             | Arch / Manjaro / EndeavourOS / Arch Linux ARM | `ip-desk-ctrl-…-1-x86_64.pkg.tar.zst` · `…-aarch64.pkg.tar.zst` |
             | Qualsiasi Linux, un solo file (AppImage) | `IP-DESK-CTRL-…-x86_64.AppImage` · `…-aarch64.AppImage` |
             | Snap | `ip-desk-ctrl_…_amd64.snap` · `…_arm64.snap` |
+            | Flatpak (sessioni X11) | `IP-DESK-CTRL-…-x86_64.flatpak` · `…-aarch64.flatpak` |
             | Alpine Linux (musl) | `IP-DESK-CTRL-…-linux-musl-x64-portatile.tar.gz` · `…-linux-musl-arm64-portatile.tar.gz` |
             | Chromebook | l'APK Android, oppure il `.deb` nel Linux del Chromebook |
             | macOS Apple Silicon (M1-M4) | `IP-DESK-CTRL-…-osx-arm64.dmg` |
@@ -266,7 +275,9 @@ jobs:
             macOS: concedi «Registrazione schermo» e «Accessibilità» in Impostazioni di Sistema › Privacy e sicurezza; per l'audio installa BlackHole 2ch.
             Le versioni *portatile* non richiedono installazione.
 
-            **Aggiornamenti automatici** per tutte le distribuzioni (controllo ogni 30 minuti, installazione quando nessuno è collegato), tranne: Android e Chromebook (solo avviso, l'APK si installa a mano); i pacchetti di sistema Linux (.deb, .rpm, Arch, Slackware, Snap) si aggiornano da soli ma chiedono la password di amministratore.
+            **Aggiornamenti automatici** per tutte le distribuzioni (controllo ogni 30 minuti, installazione quando nessuno è collegato), tranne Android e Chromebook (solo avviso, l'APK si installa a mano). I pacchetti .deb, .rpm, Arch e Slackware si aggiornano senza password; lo Snap chiede la password di amministratore.
+            Windows con Scoop: `scoop bucket add ip-desk-ctrl https://github.com/ic8tem/IP-DESK-CTRL` e poi `scoop install ip-desk-ctrl`. Chocolatey: il pacchetto `ip-desk-ctrl.…nupkg` è allegato qui (`choco install ip-desk-ctrl -s .`). Flatpak: `flatpak install --user ./IP-DESK-CTRL-…flatpak`.
+            Lingue: 36, in Impostazioni › «Lingua».
             Video compresso H.264/H.265/AV1: serve ffmpeg su tutti e due i PC (Windows: Impostazioni › Scarica ffmpeg; Linux: sudo apt install ffmpeg o sudo dnf install ffmpeg-free; Mac: brew install ffmpeg).
             La X della finestra nasconde soltanto: IP-DESK-CTRL resta attivo con l'icona vicino all'orologio; per uscire clic destro sull'icona › «Esci da IP-DESK-CTRL».
 
@@ -276,21 +287,57 @@ jobs:
 
             IP-DESK-CTRL è gratuito e senza pubblicità: se ti è utile puoi sostenerlo su [Ko-fi](https://ko-fi.com/ic8tem) ♥
 
-      # Homebrew: aggiorna Casks/ip-desk-ctrl.rb con la versione nuova e le impronte dei .dmg
-      - name: Homebrew
+      # Homebrew, Scoop e winget: i file nel repository prendono la versione nuova e le impronte
+      - name: Homebrew, Scoop, winget
         shell: bash
         run: |
           A=$(sha256sum artifacts/IP-DESK-CTRL-$VERSION-osx-arm64.dmg | cut -d' ' -f1)
           I=$(sha256sum artifacts/IP-DESK-CTRL-$VERSION-osx-x64.dmg | cut -d' ' -f1)
           sed -i -E "s/^  version \".*\"/  version \"$VERSION\"/; s/^  sha256 arm: .*/  sha256 arm:   \"$A\",/; s/^         intel: .*/         intel: \"$I\"/" Casks/ip-desk-ctrl.rb
-          cat Casks/ip-desk-ctrl.rb
-          if ! git diff --quiet; then
+          python3 - <<'PY'
+          import json, hashlib, os
+          v = os.environ["VERSION"]; f = "bucket/ip-desk-ctrl.json"; m = json.load(open(f))
+          m["version"] = v
+          for arch, rid in (("64bit", "x64"), ("32bit", "x86"), ("arm64", "arm64")):
+              n = f"IP-DESK-CTRL-{v}-win-{rid}-portatile.zip"
+              m["architecture"][arch]["url"] = f"https://github.com/ic8tem/IP-DESK-CTRL/releases/download/v{v}/{n}"
+              m["architecture"][arch]["hash"] = hashlib.sha256(open("artifacts/" + n, "rb").read()).hexdigest()
+          json.dump(m, open(f, "w"), indent=4, ensure_ascii=False); open(f, "a").write("\n")
+          PY
+          rm -rf packaging/winget/ic8tem.IP-DESK-CTRL
+          packaging/winget/make-winget.sh "$VERSION" artifacts packaging/winget/ic8tem.IP-DESK-CTRL
+          if [ -n "$(git status --porcelain Casks bucket packaging/winget)" ]; then
             git config user.name "github-actions[bot]"
             git config user.email "41898341+github-actions[bot]@users.noreply.github.com"
-            git add Casks/ip-desk-ctrl.rb
-            git commit -m "Homebrew: IP-DESK-CTRL $VERSION [skip ci]"
-            git fetch -q origin main && git rebase -q origin/main && git push -q origin HEAD:main || echo "::warning::Casks non aggiornato"
+            git add Casks bucket packaging/winget
+            git commit -m "Homebrew, Scoop, winget: IP-DESK-CTRL $VERSION [skip ci]"
+            git fetch -q origin main && git rebase -q origin/main && git push -q origin HEAD:main || echo "::warning::manifesti non aggiornati"
           fi
+
+  # Chocolatey: pacchetto .nupkg allegato alla release; si pubblica su chocolatey.org solo se c'è il segreto CHOCOLATEY_API_KEY
+  chocolatey:
+    needs: release
+    runs-on: windows-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - name: Pacchetto Chocolatey
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CHOCO_KEY: ${{ secrets.CHOCOLATEY_API_KEY }}
+        run: |
+          $v = (Get-Content VERSION -Raw).Trim()
+          New-Item -ItemType Directory -Force setup | Out-Null
+          gh release download "v$v" -p "*-setup.exe" -D setup
+          $h = @{}; foreach ($r in 'x86','x64','arm64') { $h[$r] = (Get-FileHash "setup/IP-DESK-CTRL-$v-win-$r-setup.exe" -Algorithm SHA256).Hash.ToLower() }
+          $n = 'packaging/chocolatey/ip-desk-ctrl.nuspec'; (Get-Content $n -Raw).Replace('VERSIONE', $v) | Set-Content $n
+          $p = 'packaging/chocolatey/tools/chocolateyinstall.ps1'
+          (Get-Content $p -Raw).Replace('VERSIONE', $v).Replace('SHA_X86', $h['x86']).Replace('SHA_X64', $h['x64']).Replace('SHA_ARM64', $h['arm64']) | Set-Content $p
+          choco pack $n --outputdirectory .
+          gh release upload "v$v" "ip-desk-ctrl.$v.nupkg" --clobber
+          if ($env:CHOCO_KEY) { choco push "ip-desk-ctrl.$v.nupkg" --source https://push.chocolatey.org/ --api-key $env:CHOCO_KEY }
+          else { Write-Host "CHOCOLATEY_API_KEY non impostato: il pacchetto resta solo nella release" }
 
   # Pubblica le pagine di docs/wiki nella wiki di GitHub a ogni push su main.
   wiki:

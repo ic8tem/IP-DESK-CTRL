@@ -568,5 +568,9 @@
  "Tutti gli schermi": "כל המסכים",
  "Collegamento terminato": "החיבור הסתיים",
  "Ricollegati": "התחבר מחדש",
- "Il PC remoto è bloccato (schermata di blocco o di accesso) oppure mostra una finestra di sicurezza (UAC, Ctrl+Alt+Canc): ": "המחשב המרוחק נעול (מסך נעילה או כניסה) או מציג חלון אבטחה (UAC, Ctrl+Alt+Del): "
+ "Il PC remoto è bloccato (schermata di blocco o di accesso) oppure mostra una finestra di sicurezza (UAC, Ctrl+Alt+Canc): ": "המחשב המרוחק נעול (מסך נעילה או כניסה) או מציג חלון אבטחה (UAC, Ctrl+Alt+Del): ",
+ "dispositivo": "מכשיר",
+ "Si installa senza password: il pacchetto nuovo lo scarica e lo verifica il sistema da GitHub.": "מותקן בלי סיסמה: המערכת עצמה מורידה את החבילה החדשה מ-GitHub ובודקת אותה.",
+ "Si aggiorna con Scoop, senza permessi di amministratore.": "מתעדכן דרך Scoop, בלי הרשאות מנהל.",
+ "Flatpak installa il pacchetto nuovo; se il programma è installato per tutti gli utenti può chiedere la password.": "Flatpak מתקין את החבילה החדשה; אם התוכנה מותקנת לכל המשתמשים, ייתכן שתתבקש סיסמה."
 }

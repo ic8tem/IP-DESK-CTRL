@@ -568,5 +568,9 @@
  "Tutti gli schermi": "ทุกหน้าจอ",
  "Collegamento terminato": "การเชื่อมต่อสิ้นสุด",
  "Ricollegati": "เชื่อมต่อใหม่",
- "Il PC remoto è bloccato (schermata di blocco o di accesso) oppure mostra una finestra di sicurezza (UAC, Ctrl+Alt+Canc): ": "คอมพิวเตอร์ระยะไกลถูกล็อก (หน้าจอล็อกหรือเข้าสู่ระบบ) หรือแสดงหน้าต่างความปลอดภัย (UAC, Ctrl+Alt+Del): "
+ "Il PC remoto è bloccato (schermata di blocco o di accesso) oppure mostra una finestra di sicurezza (UAC, Ctrl+Alt+Canc): ": "คอมพิวเตอร์ระยะไกลถูกล็อก (หน้าจอล็อกหรือเข้าสู่ระบบ) หรือแสดงหน้าต่างความปลอดภัย (UAC, Ctrl+Alt+Del): ",
+ "dispositivo": "อุปกรณ์",
+ "Si installa senza password: il pacchetto nuovo lo scarica e lo verifica il sistema da GitHub.": "ติดตั้งได้โดยไม่ต้องใช้รหัสผ่าน: ระบบดาวน์โหลดแพ็กเกจใหม่จาก GitHub และตรวจสอบเอง",
+ "Si aggiorna con Scoop, senza permessi di amministratore.": "อัปเดตผ่าน Scoop โดยไม่ต้องใช้สิทธิ์ผู้ดูแลระบบ",
+ "Flatpak installa il pacchetto nuovo; se il programma è installato per tutti gli utenti può chiedere la password.": "Flatpak ติดตั้งแพ็กเกจใหม่ หากติดตั้งโปรแกรมไว้สำหรับผู้ใช้ทุกคนอาจขอรหัสผ่าน"
 }
