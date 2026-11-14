@@ -36,7 +36,7 @@ namespace IpDeskCtrl.UI
                 combos[key] = (box, actions);
                 gestures.Children.Add(new Grid
                 {
-                    ColumnDefinitions = new ColumnDefinitions(L.T("*,Auto")),
+                    ColumnDefinitions = new ColumnDefinitions("*,Auto"),
                     Children =
                     {
                         new TextBlock { Text = label, VerticalAlignment = VerticalAlignment.Center, TextWrapping = TextWrapping.Wrap },
@@ -166,7 +166,7 @@ namespace IpDeskCtrl.UI
         private static Control Row(string label, Control slider, Control value) =>
             new Grid
             {
-                ColumnDefinitions = new ColumnDefinitions(L.T("*,2*,Auto")),
+                ColumnDefinitions = new ColumnDefinitions("*,2*,Auto"),
                 Children =
                 {
                     new TextBlock { Text = label, VerticalAlignment = VerticalAlignment.Center, TextWrapping = TextWrapping.Wrap },
