@@ -111,6 +111,13 @@ namespace IpDeskCtrl.Input
         /// <summary>Scancode di Windows (0xE0xx per i tasti estesi); -1 se non c'è.</summary>
         public static int ToWindows(int evdev) => ByEvdev.TryGetValue(evdev, out var k) ? k.Win : -1;
 
+        /// <summary>Evdev dallo scancode di Windows (0xE0xx per i tasti estesi); 0 = sconosciuto.</summary>
+        public static int FromWindows(int scan)
+        {
+            foreach (var k in ByEvdev.Values) if (k.Win == scan) return k.Evdev;
+            return 0;
+        }
+
         /// <summary>Codice virtuale di macOS; -1 se non c'è.</summary>
         public static int ToMac(int evdev) => ByEvdev.TryGetValue(evdev, out var k) ? k.Mac : -1;
 

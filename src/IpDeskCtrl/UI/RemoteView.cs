@@ -644,9 +644,24 @@ namespace IpDeskCtrl.UI
             else base.OnKeyUp(e);
         }
 
+        protected override void OnGotFocus(GotFocusEventArgs e)
+        {
+            base.OnGotFocus(e);
+            // Windows: Win+R, Win+E… vanno al PC remoto e non aprono niente su questo
+            if (OperatingSystem.IsWindows() && TopLevel.GetTopLevel(this)?.TryGetPlatformHandle()?.Handle is IntPtr h && h != IntPtr.Zero)
+                WinKeyHook.Start(h, (k, down) => { if (CanInput) _session!.Key(k, down); });
+        }
+
+        protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+        {
+            WinKeyHook.Stop();
+            base.OnDetachedFromVisualTree(e);
+        }
+
         protected override void OnLostFocus(Avalonia.Interactivity.RoutedEventArgs e)
         {
             base.OnLostFocus(e);
+            WinKeyHook.Stop();
             // tasti rimasti premuti di qua (per esempio Alt+Tab): di là vanno rilasciati
             if (CanInput) _session!.ReleaseAll();
         }

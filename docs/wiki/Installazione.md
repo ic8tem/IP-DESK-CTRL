@@ -6,6 +6,8 @@ Tutti i file sono nella pagina **[Releases](https://github.com/ic8tem/IP-DESK-CT
 
 ## Windows
 
+Serve **Windows 10 o 11** (anche la versione portatile): su Windows 7 e 8 il programma non parte, perché .NET 8 non li supporta.
+
 | Sistema | File |
 |---|---|
 | Windows 64 bit | `IP-DESK-CTRL-…-win-x64-setup.exe` |

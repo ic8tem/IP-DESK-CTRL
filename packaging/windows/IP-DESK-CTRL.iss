@@ -9,6 +9,8 @@
 #endif
 
 [Setup]
+; .NET 8 non parte su Windows 7/8/8.1 (manca GetSystemTimePreciseAsFileTime in KERNEL32): l'installatore si ferma prima
+MinVersion=10.0
 AppId={{3E8B1C55-9A2D-4C71-B0F4-6D2E5A7C9B13}
 AppName=IP-DESK-CTRL
 AppVersion={#AppVersion}

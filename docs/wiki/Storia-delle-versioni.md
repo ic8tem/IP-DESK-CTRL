@@ -3,6 +3,10 @@
 
 Le versioni con protocollo diverso non si collegano tra loro: aggiorna tutti i dispositivi alla stessa versione principale (la 0.4.1 si collega con la 0.4.0; la 0.5 si collega con la 0.4).
 
+## 0.5.14 — 14 novembre 2026
+- **Tasto Windows e le sue combinazioni** (Win+R, Win+E, Win+D, Win+X…): con la finestra del PC remoto in primo piano ora vanno al PC remoto invece di aprire «Esegui» o il menu Start su questo. Restano a questo PC solo Win+L e Ctrl+Alt+Canc, che Windows non lascia intercettare (Ctrl+Alt+Canc si manda dal menu «Tasti»).
+- **Windows 7 e 8**: l'installatore ora si ferma subito con un avviso («serve Windows 10 o successivo») invece di installare un programma che poi non parte con l'errore «GetSystemTimePreciseAsFileTime».
+
 ## 0.5.13 — 14 novembre 2026
 - **Video compresso (H.264, H.265, AV1) che non partiva**: il visore buttava il primo fotogramma intero mentre riconosceva il flusso, quindi non decodificava niente e il PC comandato ripartiva ogni 4 secondi. Ora il primo fotogramma arriva; e se il visore non restituisce fotogrammi per due volte di fila, si torna da soli ai riquadri JPEG con un avviso.
 - **Lingua automatica giusta**: con «Automatico» il programma per PC sceglieva sempre l'inglese; ora legge la lingua di Windows, di Linux (LANG/LANGUAGE) e di macOS.
