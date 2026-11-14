@@ -265,6 +265,8 @@ jobs:
             macOS con Homebrew: `brew tap ic8tem/ip-desk-ctrl https://github.com/ic8tem/IP-DESK-CTRL` e poi `brew install --cask ip-desk-ctrl`.
             macOS: concedi «Registrazione schermo» e «Accessibilità» in Impostazioni di Sistema › Privacy e sicurezza; per l'audio installa BlackHole 2ch.
             Le versioni *portatile* non richiedono installazione.
+
+            **Aggiornamenti automatici** per tutte le distribuzioni (controllo ogni 30 minuti, installazione quando nessuno è collegato), tranne: Android e Chromebook (solo avviso, l'APK si installa a mano); i pacchetti di sistema Linux (.deb, .rpm, Arch, Slackware, Snap) si aggiornano da soli ma chiedono la password di amministratore.
             Video compresso H.264/H.265/AV1: serve ffmpeg su tutti e due i PC (Windows: Impostazioni › Scarica ffmpeg; Linux: sudo apt install ffmpeg o sudo dnf install ffmpeg-free; Mac: brew install ffmpeg).
             La X della finestra nasconde soltanto: IP-DESK-CTRL resta attivo con l'icona vicino all'orologio; per uscire clic destro sull'icona › «Esci da IP-DESK-CTRL».
 

@@ -90,15 +90,15 @@ L'aggiornamento:
 3. lo installa, si chiude e **si riapre da solo**;
 4. i **collegamenti aperti riprendono**: il PC comandato lascia rientrare senza conferma, per 5 minuti, chi era collegato; il visore si ricollega appena l'altro torna.
 
-| Sistema | Cosa succede |
-|---|---|
-| Windows con il servizio | Installazione senza domande, anche se il PC è comandato da remoto |
-| Windows senza servizio | Windows chiede il permesso di amministratore (UAC): risponde chi è al PC |
-| Windows portatile | Sostituisce i file nella cartella del programma |
-| Linux (.deb, .rpm, Slackware, Arch, Snap) | Chiede la password di amministratore |
-| AppImage | Sostituisce il file .AppImage con quello nuovo |
-| Linux portatile | Sostituisce i file nella cartella del programma |
-| macOS | Sostituisce l'app (se serve, chiede la password) |
-| Android | Apre il browser per scaricare l'APK, da installare sopra |
+| Sistema / pacchetto | Aggiornamento automatico | Cosa succede |
+|---|---|---|
+| Windows con il servizio (installatore) | **Sì, senza domande** | Installa anche se il PC è comandato da remoto e nessuno è davanti |
+| Windows senza servizio (installatore) | Sì, con conferma | Windows chiede il permesso di amministratore (UAC): risponde chi è al PC, anche da remoto |
+| Windows portatile (.zip) | **Sì, senza domande** | Sostituisce l'eseguibile nella sua cartella |
+| macOS (.dmg, app.zip, Homebrew) | **Sì** | Sostituisce l'app; se è in Applicazioni e serve, chiede la password |
+| AppImage | **Sì, senza domande** | Sostituisce il file .AppImage |
+| Linux portatile e Alpine (.tar.gz) | **Sì, senza domande** | Sostituisce i file nella cartella, se è una cartella tua (non di sistema) |
+| Debian/Ubuntu/Mint/Raspberry (.deb), Fedora/openSUSE (.rpm), Arch (.pkg.tar.zst), Slackware (.txz), Snap | Sì, con la password | Il pacchetto si installa col gestore del sistema, che **chiede la password di amministratore**: se nessuno la scrive, l'aggiornamento resta in attesa |
+| Android e Chromebook (APK) | **No, solo avviso** | Android non permette a un'app di installarsi da sola: si apre lo scaricamento dell'APK, da toccare per installarlo sopra |
 
 Si può sempre aggiornare anche a mano installando sopra la versione precedente: numero, storico e impostazioni restano.

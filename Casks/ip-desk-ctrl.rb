@@ -13,6 +13,9 @@ cask "ip-desk-ctrl" do
   desc "Desktop remoto cifrato con numero fisso di 10 cifre"
   homepage "https://github.com/ic8tem/IP-DESK-CTRL"
 
+  # l'app si aggiorna da sola: Homebrew non la sostituisce con brew upgrade
+  auto_updates true
+
   app "IP-DESK-CTRL.app"
 
   zap trash: "~/.config/IP-DESK-CTRL"

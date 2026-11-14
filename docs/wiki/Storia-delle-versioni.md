@@ -3,7 +3,8 @@
 
 Le versioni con protocollo diverso non si collegano tra loro: aggiorna tutti i dispositivi alla stessa versione principale (la 0.4.1 si collega con la 0.4.0; la 0.5 si collega con la 0.4).
 
-## 0.5.10 — 13 novembre 2026
+## 0.5.10 — 14 novembre 2026
+- **Aggiornamenti automatici spiegati** nel README, nella wiki e nella pagina della release: ci sono per tutte le distribuzioni, tranne Android/Chromebook (solo avviso); i pacchetti di sistema Linux chiedono la password di amministratore.
 - **Altre distribuzioni**: pacchetti per **Arch, Manjaro, EndeavourOS e Arch Linux ARM** (`.pkg.tar.zst`, x86_64 e aarch64), **AppImage** (un solo file per qualsiasi Linux, x86_64 e aarch64), **Snap** (amd64 e arm64), **Alpine Linux** e altre distribuzioni con musl (x64 e arm64), **Homebrew** sul Mac (`brew install --cask ip-desk-ctrl` dopo il `brew tap`). Anche questi si aggiornano da soli (pacman, snap, file AppImage sostituito, Homebrew aggiornato a ogni release). Nella guida c'è anche il Chromebook (APK Android o `.deb` nel Linux interno).
 
 ## 0.5.9 — 13 novembre 2026

@@ -102,6 +102,18 @@ Gli installatori sono nella pagina **Releases**:
 L'installatore di Windows ha l'opzione per l'avvio automatico all'accesso, nascosto con la sola icona vicino all'orologio.
 Per ogni sistema c'è anche una versione portatile.
 
+## Aggiornamenti automatici
+
+IP-DESK-CTRL controlla all'avvio e ogni 30 minuti se su GitHub c'è una versione nuova: in alto a destra compare **Nuova versione x.y.z** e, con l'opzione **Aggiornamenti automatici** (attiva di serie), dopo un minuto si scarica, si verifica (SHA-256) e si installa da sola, aspettando che non ci siano collegamenti aperti. Il programma si riapre e i collegamenti riprendono.
+
+L'aggiornamento automatico c'è **per tutte le distribuzioni**, con queste eccezioni:
+
+- **Android e Chromebook (APK)**: solo l'avviso; Android non lascia installare un'app da sola, l'APK si tocca a mano.
+- **Pacchetti di sistema Linux** (.deb, .rpm, Arch, Slackware, Snap): si aggiornano da soli ma il sistema **chiede la password di amministratore**; senza qualcuno che la scriva l'aggiornamento resta in attesa.
+- **Versioni portatili in una cartella di sistema** (non scrivibile dall'utente): solo l'avviso.
+
+Del tutto senza domande: Windows con il servizio, Windows portatile, AppImage, Linux portatile e Alpine, macOS (salvo la password se l'app è in una cartella protetta). Dettagli nella [wiki](https://github.com/ic8tem/IP-DESK-CTRL/wiki/Installazione#aggiornamenti).
+
 ## Registri
 
 Nella cartella dei dati (Impostazioni › Apri cartella dati): `errori.log` e `sessioni.log` (collegamenti, porte, broker, UDP).
@@ -113,7 +125,8 @@ Nella cartella dei dati (Impostazioni › Apri cartella dati): `errori.log` e `s
 
 Le versioni con protocollo diverso non si collegano tra loro: aggiorna tutti i dispositivi alla stessa versione principale (la 0.4.1 si collega con la 0.4.0; la 0.5 si collega con la 0.4).
 
-### 0.5.10 — 13 novembre 2026
+### 0.5.10 — 14 novembre 2026
+- **Aggiornamenti automatici spiegati** nel README, nella wiki e nella pagina della release: ci sono per tutte le distribuzioni, tranne Android/Chromebook (solo avviso); i pacchetti di sistema Linux chiedono la password di amministratore.
 - **Altre distribuzioni**: pacchetti per **Arch, Manjaro, EndeavourOS e Arch Linux ARM** (`.pkg.tar.zst`, x86_64 e aarch64), **AppImage** (un solo file per qualsiasi Linux, x86_64 e aarch64), **Snap** (amd64 e arm64), **Alpine Linux** e altre distribuzioni con musl (x64 e arm64), **Homebrew** sul Mac (`brew install --cask ip-desk-ctrl` dopo il `brew tap`). Anche questi si aggiornano da soli (pacman, snap, file AppImage sostituito, Homebrew aggiornato a ogni release). Nella guida c'è anche il Chromebook (APK Android o `.deb` nel Linux interno).
 
 ### 0.5.9 — 13 novembre 2026

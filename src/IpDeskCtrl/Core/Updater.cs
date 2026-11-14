@@ -40,7 +40,7 @@ namespace IpDeskCtrl.Core
             {
                 if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("APPIMAGE"))) return Kind.LinuxAppImage;
                 if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("SNAP")) && exe.StartsWith("/snap/")) return Kind.LinuxSnap;
-                if (!exe.StartsWith("/opt/ip-desk-ctrl/")) return Kind.LinuxPortable;
+                if (!exe.StartsWith("/opt/ip-desk-ctrl/")) return CanWrite(dir) ? Kind.LinuxPortable : Kind.None;
                 // installato da pacchetto: quale gestore lo ha messo lì
                 if (Directory.Exists("/var/lib/dpkg/info") && File.Exists("/var/lib/dpkg/info/ip-desk-ctrl.list")) return Kind.LinuxDeb;
                 if (Directory.Exists("/var/log/packages") && Directory.EnumerateFiles("/var/log/packages", "ip-desk-ctrl-*").Any()) return Kind.LinuxSlackware;
@@ -49,6 +49,19 @@ namespace IpDeskCtrl.Core
                 return Kind.LinuxDeb;
             }
             return Kind.None;
+        }
+
+        /// <summary>La cartella del programma è scrivibile (una portatile in una cartella di sistema non lo è: solo avviso).</summary>
+        private static bool CanWrite(string dir)
+        {
+            try
+            {
+                string t = Path.Combine(dir, ".prova-scrittura-" + Environment.ProcessId);
+                File.WriteAllText(t, "");
+                File.Delete(t);
+                return true;
+            }
+            catch { return false; }
         }
 
         private static string Rid() => RuntimeInformation.ProcessArchitecture switch
