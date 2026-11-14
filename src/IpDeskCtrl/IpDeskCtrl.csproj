@@ -34,6 +34,7 @@
     <AvaloniaResource Include="Assets\**" />
     <EmbeddedResource Include="..\..\THIRD-PARTY-NOTICES.txt" LogicalName="notices/THIRD-PARTY-NOTICES.txt" />
     <EmbeddedResource Include="..\..\LICENSE" LogicalName="notices/LICENSE" />
+    <EmbeddedResource Include="Lang\*.json" LogicalName="lang/%(Filename).json" />
   </ItemGroup>
 
 </Project>

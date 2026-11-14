@@ -31,23 +31,23 @@ namespace IpDeskCtrl.Core
                 {
                     string script = action == Mute
                         ? "set volume output muted not (output muted of (get volume settings))"
-                        : $"set volume output volume ((output volume of (get volume settings)) {(action == Up ? "+" : "-")} 6)";
+                        : string.Format(System.Globalization.CultureInfo.InvariantCulture, "set volume output volume ((output volume of (get volume settings)) {0} 6)", (action == Up ? "+" : "-"));
                     return Run("osascript", "-e \"" + script.Replace("\"", "\\\"") + "\"");
                 }
-                if (!Screen.WaylandScreen.Which("pactl")) return "Per il volume serve «pactl» (sudo apt install pulseaudio-utils)";
+                if (!Screen.WaylandScreen.Which("pactl")) return L.T("Per il volume serve «pactl» (sudo apt install pulseaudio-utils)");
                 return action == Mute
                     ? Run("pactl", "set-sink-mute @DEFAULT_SINK@ toggle")
                     : Run("pactl", $"set-sink-volume @DEFAULT_SINK@ {(action == Up ? "+5%" : "-5%")}");
             }
-            catch (Exception ex) { return "Volume non cambiato: " + ex.Message; }
+            catch (Exception ex) { return L.T("Volume non cambiato: ") + ex.Message; }
         }
 
         private static string Run(string exe, string args)
         {
             using var p = Process.Start(new ProcessStartInfo(exe, args) { UseShellExecute = false, CreateNoWindow = true, RedirectStandardError = true });
-            if (p == null) return exe + " non avviabile";
+            if (p == null) return exe + L.T(" non avviabile");
             p.WaitForExit(3000);
-            return p.HasExited && p.ExitCode == 0 ? "" : "Volume non cambiato: " + p.StandardError.ReadToEnd().Trim();
+            return p.HasExited && p.ExitCode == 0 ? "" : L.T("Volume non cambiato: ") + p.StandardError.ReadToEnd().Trim();
         }
 
         [DllImport("user32.dll")] private static extern void keybd_event(byte vk, byte scan, uint flags, UIntPtr extra);

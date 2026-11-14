@@ -44,7 +44,7 @@ namespace IpDeskCtrl.Android
                     send.SetType("text/plain");
                     send.PutExtra(Intent.ExtraSubject, subject);
                     send.PutExtra(Intent.ExtraText, text);
-                    var chooser = Intent.CreateChooser(send, "Condividi il registro");
+                    var chooser = Intent.CreateChooser(send, L.T("Condividi il registro"));
                     chooser!.AddFlags(ActivityFlags.NewTask);
                     a.StartActivity(chooser);
                 }
@@ -56,12 +56,12 @@ namespace IpDeskCtrl.Android
                 try
                 {
                     var am = (AudioManager?)a.GetSystemService(Context.AudioService);
-                    if (am == null) return "Volume non disponibile";
+                    if (am == null) return L.T("Volume non disponibile");
                     var adj = action == IpDeskCtrl.Core.VolumeControl.Up ? Adjust.Raise : action == IpDeskCtrl.Core.VolumeControl.Down ? Adjust.Lower : Adjust.ToggleMute;
                     am.AdjustStreamVolume(global::Android.Media.Stream.Music, adj, VolumeNotificationFlags.ShowUi);
                     return "";
                 }
-                catch (Exception ex) { return "Volume non cambiato: " + ex.Message; }
+                catch (Exception ex) { return L.T("Volume non cambiato: ") + ex.Message; }
             };
             Platform.PrepareHost = PrepareHostAsync;
             Platform.HostEnded = () =>
@@ -87,7 +87,7 @@ namespace IpDeskCtrl.Android
                     });
                     return;
                 }
-                act.RunOnUiThread(() => Toast.MakeText(act, "File in: " + path, ToastLength.Long)?.Show());
+                act.RunOnUiThread(() => Toast.MakeText(act, L.T("File in: ") + path, ToastLength.Long)?.Show());
             };
         }
 
@@ -97,22 +97,22 @@ namespace IpDeskCtrl.Android
         private static async Task<string> PrepareHostAsync()
         {
             var act = MainActivity.Current;
-            if (act == null) return "Sul telefono l'app non è in primo piano: aprila e riprova.";
+            if (act == null) return L.T("Sul telefono l'app non è in primo piano: aprila e riprova.");
             if (Build.VERSION.SdkInt >= BuildVersionCodes.Q) await act.RequestAudioPermissionAsync();
             var (code, data) = await act.RequestCaptureAsync();
-            if (code != Result.Ok || data == null) return "L'utente del telefono non ha autorizzato la cattura dello schermo.";
+            if (code != Result.Ok || data == null) return L.T("L'utente del telefono non ha autorizzato la cattura dello schermo.");
             var mp = await CaptureService.StartAsync(act, code, data);
-            if (mp == null) return "Sul telefono la cattura dello schermo non è partita.";
+            if (mp == null) return L.T("Sul telefono la cattura dello schermo non è partita.");
             act.KeepAwake(true);
             if (InputService.Current == null)
             {
                 act.RunOnUiThread(() =>
                 {
                     try { act.StartActivity(new Intent(global::Android.Provider.Settings.ActionAccessibilitySettings)); } catch { }
-                    Toast.MakeText(act, "Attiva «IP-DESK-CTRL» tra i servizi di Accessibilità, poi torna all'app", ToastLength.Long)?.Show();
+                    Toast.MakeText(act, L.T("Attiva «IP-DESK-CTRL» tra i servizi di Accessibilità, poi torna all'app"), ToastLength.Long)?.Show();
                 });
-                return "Sul telefono è spento il servizio di Accessibilità di IP-DESK-CTRL: tocchi e testo arriveranno appena l'utente lo attiva " +
-                       "(Impostazioni › Accessibilità › App installate › IP-DESK-CTRL).";
+                return L.T("Sul telefono è spento il servizio di Accessibilità di IP-DESK-CTRL: tocchi e testo arriveranno appena l'utente lo attiva ") +
+                       L.T("(Impostazioni › Accessibilità › App installate › IP-DESK-CTRL).");
             }
             return "";
         }
@@ -154,7 +154,7 @@ namespace IpDeskCtrl.Android
         public List<MonitorInfo> Monitors()
         {
             var (w, h, _) = AndroidPlatform.ScreenSize();
-            return new List<MonitorInfo> { new("Schermo", 0, 0, w, h, true) };
+            return new List<MonitorInfo> { new(L.T("Schermo"), 0, 0, w, h, true) };
         }
 
         public bool Capture(MonitorInfo area, Frame into)
@@ -162,7 +162,7 @@ namespace IpDeskCtrl.Android
             lock (_lock)
             {
                 var mp = CaptureService.Projection;
-                if (mp == null) { Note = "Sul telefono la cattura dello schermo è ferma (non autorizzata o interrotta)."; return false; }
+                if (mp == null) { Note = L.T("Sul telefono la cattura dello schermo è ferma (non autorizzata o interrotta)."); return false; }
                 var (rw, rh, dpi) = AndroidPlatform.ScreenSize();
                 double k = Math.Min(1.0, 1280.0 / Math.Max(rw, rh));
                 int tw = Math.Max(2, (int)(rw * k) & ~1), th = Math.Max(2, (int)(rh * k) & ~1);
@@ -185,7 +185,7 @@ namespace IpDeskCtrl.Android
                         _last = null;
                     }
                 }
-                catch (Exception ex) { Note = "Cattura dello schermo non disponibile: " + ex.Message; return false; }
+                catch (Exception ex) { Note = L.T("Cattura dello schermo non disponibile: ") + ex.Message; return false; }
 
                 for (int wait = 0; wait < 10; wait++)
                 {
@@ -293,7 +293,7 @@ namespace IpDeskCtrl.Android
         private InputService? Svc()
         {
             var s = InputService.Current;
-            Note = s == null ? "Sul telefono il servizio di Accessibilità di IP-DESK-CTRL è spento: tocchi e testo non arrivano." : "";
+            Note = s == null ? L.T("Sul telefono il servizio di Accessibilità di IP-DESK-CTRL è spento: tocchi e testo non arrivano.") : "";
             return s;
         }
 
@@ -376,7 +376,7 @@ namespace IpDeskCtrl.Android
         private void EditText(InputService s, Func<string, string> change)
         {
             var n = Focused(s);
-            if (n == null || !n.Editable) { Note = "Sul telefono non c'è un campo di testo selezionato: toccalo prima."; return; }
+            if (n == null || !n.Editable) { Note = L.T("Sul telefono non c'è un campo di testo selezionato: toccalo prima."); return; }
             string cur = n.Text?.ToString() ?? "";
             if (n.ShowingHintText) cur = "";
             var args = new Bundle();
@@ -399,9 +399,9 @@ namespace IpDeskCtrl.Android
 
         public bool Start(Action<short[]> onFrame)
         {
-            if (Build.VERSION.SdkInt < BuildVersionCodes.Q) { Note = "Per mandare l'audio del telefono serve Android 10 o successivo."; return false; }
+            if (Build.VERSION.SdkInt < BuildVersionCodes.Q) { Note = L.T("Per mandare l'audio del telefono serve Android 10 o successivo."); return false; }
             var mp = CaptureService.Projection;
-            if (mp == null) { Note = "Audio del telefono non disponibile (cattura non autorizzata)."; return false; }
+            if (mp == null) { Note = L.T("Audio del telefono non disponibile (cattura non autorizzata)."); return false; }
             try
             {
                 var cfg = new AudioPlaybackCaptureConfiguration.Builder(mp)
@@ -436,13 +436,13 @@ namespace IpDeskCtrl.Android
                         }
                         if (_run) onFrame((short[])buf.Clone());
                     }
-                }) { IsBackground = true, Name = "audio telefono" };
+                }) { IsBackground = true, Name = L.T("audio telefono") };
                 _t.Start();
                 return true;
             }
             catch (Exception ex)
             {
-                Note = "Audio del telefono non catturabile (serve il permesso Microfono): " + ex.Message;
+                Note = L.T("Audio del telefono non catturabile (serve il permesso Microfono): ") + ex.Message;
                 return false;
             }
         }
@@ -469,14 +469,14 @@ namespace IpDeskCtrl.Android
             if (act != null && act.CheckSelfPermission(global::Android.Manifest.Permission.RecordAudio) != global::Android.Content.PM.Permission.Granted)
             {
                 _ = act.RequestAudioPermissionAsync();
-                Note = "Concedi a IP-DESK-CTRL il permesso «Microfono», poi riaccendi il microfono.";
+                Note = L.T("Concedi a IP-DESK-CTRL il permesso «Microfono», poi riaccendi il microfono.");
                 return false;
             }
             try
             {
                 int min = AudioRecord.GetMinBufferSize(Adpcm.Rate, ChannelIn.Mono, Encoding.Pcm16bit);
                 _rec = new AudioRecord(AudioSource.VoiceCommunication, Adpcm.Rate, ChannelIn.Mono, Encoding.Pcm16bit, Math.Max(min, Adpcm.FrameSamples * 2 * 8));
-                if (_rec.State != global::Android.Media.State.Initialized) { Note = "Microfono del telefono non disponibile."; _rec.Release(); _rec = null; return false; }
+                if (_rec.State != global::Android.Media.State.Initialized) { Note = L.T("Microfono del telefono non disponibile."); _rec.Release(); _rec = null; return false; }
                 _rec.StartRecording();
                 _run = true;
                 var rec = _rec;
@@ -500,7 +500,7 @@ namespace IpDeskCtrl.Android
                 }) { IsBackground = true, Name = "microfono" }.Start();
                 return true;
             }
-            catch (Exception ex) { Note = "Microfono del telefono non disponibile: " + ex.Message; return false; }
+            catch (Exception ex) { Note = L.T("Microfono del telefono non disponibile: ") + ex.Message; return false; }
         }
 
         public void Dispose()
@@ -534,9 +534,9 @@ namespace IpDeskCtrl.Android
                 new Thread(() =>
                 {
                     try { foreach (var f in _q.GetConsumingEnumerable()) t.Write(f, 0, f.Length); } catch { }
-                }) { IsBackground = true, Name = "audio remoto" }.Start();
+                }) { IsBackground = true, Name = L.T("audio remoto") }.Start();
             }
-            catch (Exception ex) { Note = "Uscita audio non disponibile: " + ex.Message; }
+            catch (Exception ex) { Note = L.T("Uscita audio non disponibile: ") + ex.Message; }
         }
 
         public void Play(short[] s)

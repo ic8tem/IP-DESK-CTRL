@@ -155,7 +155,7 @@ namespace IpDeskCtrl.Android
                 {
                     var intent = new Intent("com.google.zxing.client.android.SCAN");
                     intent.PutExtra("SCAN_MODE", "QR_CODE_MODE");
-                    intent.PutExtra("PROMPT_MESSAGE", "Inquadra il QR del numero di IP-DESK-CTRL");
+                    intent.PutExtra("PROMPT_MESSAGE", L.T("Inquadra il QR del numero di IP-DESK-CTRL"));
                     StartActivityForResult(intent, RequestScan);
                 }
                 catch (ActivityNotFoundException)
@@ -185,7 +185,7 @@ namespace IpDeskCtrl.Android
                 {
                     var intent = new Intent(global::Android.Speech.RecognizerIntent.ActionRecognizeSpeech);
                     intent.PutExtra(global::Android.Speech.RecognizerIntent.ExtraLanguageModel, global::Android.Speech.RecognizerIntent.LanguageModelFreeForm);
-                    intent.PutExtra(global::Android.Speech.RecognizerIntent.ExtraPrompt, "Parla: il testo va al PC remoto");
+                    intent.PutExtra(global::Android.Speech.RecognizerIntent.ExtraPrompt, L.T("Parla: il testo va al PC remoto"));
                     StartActivityForResult(intent, RequestSpeech);
                 }
                 catch (ActivityNotFoundException) { tcs.TrySetResult(null); }

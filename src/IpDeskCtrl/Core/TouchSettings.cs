@@ -56,15 +56,15 @@ namespace IpDeskCtrl.Core
 
         public static readonly (string key, string label, bool hold, bool slide)[] All =
         {
-            (Tap, "Tocco", false, false),
-            (DoubleLeft, "Doppio tocco, metà sinistra", false, false),
-            (DoubleRight, "Doppio tocco, metà destra", false, false),
-            (TwoTap, "Tocco con due dita", false, false),
-            (ThreeTap, "Tocco con tre dita", false, false),
-            (LongPress, "Pressione lunga", true, false),
-            (TapHold, "Tocca e poi tieni premuto", true, false),
-            (Slide1, "Un dito che scorre", false, true),
-            (Slide2, "Due dita che scorrono", false, true),
+            (Tap, L.T("Tocco"), false, false),
+            (DoubleLeft, L.T("Doppio tocco, metà sinistra"), false, false),
+            (DoubleRight, L.T("Doppio tocco, metà destra"), false, false),
+            (TwoTap, L.T("Tocco con due dita"), false, false),
+            (ThreeTap, L.T("Tocco con tre dita"), false, false),
+            (LongPress, L.T("Pressione lunga"), true, false),
+            (TapHold, L.T("Tocca e poi tieni premuto"), true, false),
+            (Slide1, L.T("Un dito che scorre"), false, true),
+            (Slide2, L.T("Due dita che scorrono"), false, true),
         };
     }
 
@@ -79,9 +79,9 @@ namespace IpDeskCtrl.Core
 
         public static readonly Dictionary<string, string> Labels = new()
         {
-            [None] = "Niente", [Left] = "Clic", [Right] = "Clic destro", [Middle] = "Clic centrale", [Double] = "Doppio clic",
-            [Drag] = "Trascina (tasto tenuto)", [Enter] = "Invio", [Escape] = "Esc", [Keyboard] = "Apri/chiudi la tastiera",
-            [Dictation] = "Dettatura", [Shortcuts] = "Pannello scorciatoie", [Move] = "Muovi il puntatore", [Scroll] = "Scorri (rotella)",
+            [None] = L.T("Niente"), [Left] = L.T("Clic"), [Right] = L.T("Clic destro"), [Middle] = L.T("Clic centrale"), [Double] = L.T("Doppio clic"),
+            [Drag] = L.T("Trascina (tasto tenuto)"), [Enter] = L.T("Invio"), [Escape] = L.T("Esc"), [Keyboard] = L.T("Apri/chiudi la tastiera"),
+            [Dictation] = L.T("Dettatura"), [Shortcuts] = L.T("Pannello scorciatoie"), [Move] = L.T("Muovi il puntatore"), [Scroll] = L.T("Scorri (rotella)"),
         };
 
         /// <summary>Azioni che ha senso dare a ogni tipo di gesto.</summary>
@@ -95,10 +95,10 @@ namespace IpDeskCtrl.Core
     {
         public static readonly Dictionary<string, string> Names = new()
         {
-            ["sofatap"] = "Sofatap: doppio tocco a destra = clic destro, pressione = scorciatoie",
-            ["touchpad"] = "Abitudini da touchpad: due dita = clic destro, pressione = trascina",
-            ["scorciatoie"] = "Pressione per il clic destro: due dita = Invio, tre dita = tastiera",
-            ["classico"] = "Come la 0.4: dito fermo = clic destro, due tocchi e trascina",
+            ["sofatap"] = L.T("Sofatap: doppio tocco a destra = clic destro, pressione = scorciatoie"),
+            ["touchpad"] = L.T("Abitudini da touchpad: due dita = clic destro, pressione = trascina"),
+            ["scorciatoie"] = L.T("Pressione per il clic destro: due dita = Invio, tre dita = tastiera"),
+            ["classico"] = L.T("Come la 0.4: dito fermo = clic destro, due tocchi e trascina"),
         };
 
         public static Dictionary<string, string> Get(string preset)
@@ -150,40 +150,40 @@ namespace IpDeskCtrl.Core
 
         public static readonly SpecialKey[] All =
         {
-            new("ctrl", "Ctrl", new[] { Ctrl }, false, "mod"),
-            new("alt", "Alt", new[] { Alt }, false, "mod"),
-            new("win", "Win", new[] { Meta }, false, "mod"),
-            new("shift", "Maiusc", new[] { Shift }, false, "mod"),
-            new("esc", "Esc", new[] { 1 }),
-            new("tab", "Tab", new[] { 15 }, true),
+            new("ctrl", L.T("Ctrl"), new[] { Ctrl }, false, "mod"),
+            new("alt", L.T("Alt"), new[] { Alt }, false, "mod"),
+            new("win", L.T("Win"), new[] { Meta }, false, "mod"),
+            new("shift", L.T("Maiusc"), new[] { Shift }, false, "mod"),
+            new("esc", L.T("Esc"), new[] { 1 }),
+            new("tab", L.T("Tab"), new[] { 15 }, true),
             new("left", "←", new[] { 105 }, true),
             new("up", "↑", new[] { 103 }, true),
             new("down", "↓", new[] { 108 }, true),
             new("right", "→", new[] { 106 }, true),
             new("bksp", "⌫", new[] { 14 }, true),
-            new("del", "Canc", new[] { 111 }, true),
-            new("enter", "Invio", new[] { 28 }, true),
-            new("space", "Spazio", new[] { 57 }, true),
-            new("home", "Home", new[] { 102 }),
-            new("end", "Fine", new[] { 107 }),
-            new("pgup", "Pag↑", new[] { 104 }, true),
-            new("pgdn", "Pag↓", new[] { 109 }, true),
-            new("ins", "Ins", new[] { 110 }),
-            new("prtsc", "Stamp", new[] { 99 }),
+            new("del", L.T("Canc"), new[] { 111 }, true),
+            new("enter", L.T("Invio"), new[] { 28 }, true),
+            new("space", L.T("Spazio"), new[] { 57 }, true),
+            new("home", L.T("Home"), new[] { 102 }),
+            new("end", L.T("Fine"), new[] { 107 }),
+            new("pgup", L.T("Pag↑"), new[] { 104 }, true),
+            new("pgdn", L.T("Pag↓"), new[] { 109 }, true),
+            new("ins", L.T("Ins"), new[] { 110 }),
+            new("prtsc", L.T("Stamp"), new[] { 99 }),
             new("f1", "F1", new[] { 59 }), new("f2", "F2", new[] { 60 }), new("f3", "F3", new[] { 61 }), new("f4", "F4", new[] { 62 }),
             new("f5", "F5", new[] { 63 }), new("f6", "F6", new[] { 64 }), new("f7", "F7", new[] { 65 }), new("f8", "F8", new[] { 66 }),
             new("f9", "F9", new[] { 67 }), new("f10", "F10", new[] { 68 }), new("f11", "F11", new[] { 87 }), new("f12", "F12", new[] { 88 }),
-            new("copy", "Copia", new[] { Ctrl, 46 }, false, "combo"),
-            new("paste", "Incolla", new[] { Ctrl, 47 }, false, "combo"),
-            new("cut", "Taglia", new[] { Ctrl, 45 }, false, "combo"),
-            new("undo", "Annulla", new[] { Ctrl, 44 }, true, "combo"),
-            new("selall", "Seleziona tutto", new[] { Ctrl, 30 }, false, "combo"),
-            new("alttab", "Alt+Tab", new[] { Alt, 15 }, false, "combo"),
-            new("altf4", "Alt+F4", new[] { Alt, 62 }, false, "combo"),
-            new("volup", "Volume +", Array.Empty<int>(), true, "vol+"),
-            new("voldn", "Volume −", Array.Empty<int>(), true, "vol-"),
-            new("mute", "Muto", Array.Empty<int>(), false, "mute"),
-            new("dict", "🎤 Detta", Array.Empty<int>(), false, "dict"),
+            new("copy", L.T("Copia"), new[] { Ctrl, 46 }, false, "combo"),
+            new("paste", L.T("Incolla"), new[] { Ctrl, 47 }, false, "combo"),
+            new("cut", L.T("Taglia"), new[] { Ctrl, 45 }, false, "combo"),
+            new("undo", L.T("Annulla"), new[] { Ctrl, 44 }, true, "combo"),
+            new("selall", L.T("Seleziona tutto"), new[] { Ctrl, 30 }, false, "combo"),
+            new("alttab", L.T("Alt+Tab"), new[] { Alt, 15 }, false, "combo"),
+            new("altf4", L.T("Alt+F4"), new[] { Alt, 62 }, false, "combo"),
+            new("volup", L.T("Volume +"), Array.Empty<int>(), true, "vol+"),
+            new("voldn", L.T("Volume −"), Array.Empty<int>(), true, "vol-"),
+            new("mute", L.T("Muto"), Array.Empty<int>(), false, "mute"),
+            new("dict", L.T("🎤 Detta"), Array.Empty<int>(), false, "dict"),
         };
 
         public static readonly Dictionary<string, SpecialKey> ById = All.ToDictionary(k => k.Id);

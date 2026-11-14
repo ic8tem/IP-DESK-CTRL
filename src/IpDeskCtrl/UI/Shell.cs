@@ -160,7 +160,8 @@ namespace IpDeskCtrl.UI
             {
                 Title = title, Width = width, SizeToContent = SizeToContent.Height, CanResize = false,
                 Topmost = topmost, WindowStartupLocation = topmost ? WindowStartupLocation.CenterScreen : WindowStartupLocation.CenterOwner,
-                Content = new Border { Padding = new Thickness(22), Child = content }
+                Content = new Border { Padding = new Thickness(22), Child = content },
+                FlowDirection = L.IsRtl ? FlowDirection.RightToLeft : FlowDirection.LeftToRight
             };
             var h = new WinHandle(w);
             // con la finestra principale nascosta il dialogo non può averla come proprietaria
@@ -172,7 +173,7 @@ namespace IpDeskCtrl.UI
         {
             var w = new Window
             {
-                Title = "IP-DESK-CTRL · collegamento attivo", SizeToContent = SizeToContent.WidthAndHeight, CanResize = false,
+                Title = L.T("IP-DESK-CTRL · collegamento attivo"), SizeToContent = SizeToContent.WidthAndHeight, CanResize = false,
                 Topmost = true, ShowActivated = false, SystemDecorations = SystemDecorations.BorderOnly, Content = content
             };
             w.Opened += (_, _) =>

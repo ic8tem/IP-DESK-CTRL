@@ -59,11 +59,11 @@ namespace IpDeskCtrl.Android
             {
                 var nm = (NotificationManager?)GetSystemService(NotificationService);
                 if (Build.VERSION.SdkInt >= BuildVersionCodes.O)
-                    nm?.CreateNotificationChannel(new NotificationChannel(Channel, "Collegamento attivo", NotificationImportance.Low));
+                    nm?.CreateNotificationChannel(new NotificationChannel(Channel, L.T("Collegamento attivo"), NotificationImportance.Low));
                 var open = PendingIntent.GetActivity(this, 0, new Intent(this, typeof(MainActivity)), PendingIntentFlags.Immutable);
                 var b = Build.VERSION.SdkInt >= BuildVersionCodes.O ? new Notification.Builder(this, Channel) : new Notification.Builder(this);
-                var n = b.SetContentTitle("IP-DESK-CTRL: collegamento attivo")
-                    .SetContentText("Un PC vede questo dispositivo. Apri l'app per disconnetterlo.")
+                var n = b.SetContentTitle(L.T("IP-DESK-CTRL: collegamento attivo"))
+                    .SetContentText(L.T("Un PC vede questo dispositivo. Apri l'app per disconnetterlo."))
                     .SetSmallIcon(Resource.Drawable.icon)
                     .SetOngoing(true)
                     .SetContentIntent(open)

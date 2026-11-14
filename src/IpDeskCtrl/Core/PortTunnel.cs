@@ -36,7 +36,7 @@ namespace IpDeskCtrl.Core
             new(4533, "127.0.0.1", 4533, "rotctld (rotore, Hamlib)"),
             new(12345, "127.0.0.1", 12345, "flrig"),
             new(7362, "127.0.0.1", 7362, "fldigi (XML-RPC)"),
-            new(8080, "192.168.1.1", 80, "Interfaccia web (radio, router…)"),
+            new(8080, "192.168.1.1", 80, L.T("Interfaccia web (radio, router…)")),
         };
     }
 

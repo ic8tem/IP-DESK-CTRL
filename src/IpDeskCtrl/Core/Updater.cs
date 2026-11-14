@@ -81,18 +81,18 @@ namespace IpDeskCtrl.Core
             string rid = Rid();
             return k switch
             {
-                Kind.WindowsSetup => $"IP-DESK-CTRL-{ver}-win-{(rid is "x86" or "arm64" ? rid : "x64")}-setup.exe",
-                Kind.WindowsPortable => $"IP-DESK-CTRL-{ver}-win-{(rid is "x86" or "arm64" ? rid : "x64")}-portatile.zip",
+                Kind.WindowsSetup => string.Format(System.Globalization.CultureInfo.InvariantCulture, "IP-DESK-CTRL-{0}-win-{1}-setup.exe", ver, (rid is "x86" or "arm64" ? rid : "x64")),
+                Kind.WindowsPortable => string.Format(System.Globalization.CultureInfo.InvariantCulture, "IP-DESK-CTRL-{0}-win-{1}-portatile.zip", ver, (rid is "x86" or "arm64" ? rid : "x64")),
                 Kind.LinuxDeb => $"ip-desk-ctrl_{ver}_{(rid == "arm64" ? "arm64" : rid == "arm" ? "armhf" : "amd64")}.deb",
                 Kind.LinuxRpm => $"ip-desk-ctrl-{ver}-1.{(rid == "arm64" ? "aarch64" : rid == "arm" ? "armv7hl" : "x86_64")}.rpm",
                 Kind.LinuxSlackware => $"ip-desk-ctrl-{ver}-{(rid == "arm64" ? "aarch64" : rid == "arm" ? "arm" : "x86_64")}-1_ic8tem.txz",
                 Kind.LinuxArch => $"ip-desk-ctrl-{ver.Replace('-', '_')}-1-{(rid == "arm64" ? "aarch64" : "x86_64")}.pkg.tar.zst",
-                Kind.LinuxAppImage => $"IP-DESK-CTRL-{ver}-{(rid == "arm64" ? "aarch64" : "x86_64")}.AppImage",
+                Kind.LinuxAppImage => string.Format(System.Globalization.CultureInfo.InvariantCulture, "IP-DESK-CTRL-{0}-{1}.AppImage", ver, (rid == "arm64" ? "aarch64" : "x86_64")),
                 Kind.LinuxSnap => $"ip-desk-ctrl_{ver}_{(rid == "arm64" ? "arm64" : "amd64")}.snap",
                 // Alpine e le altre distribuzioni con musl hanno il loro eseguibile
                 Kind.LinuxPortable => $"IP-DESK-CTRL-{ver}-linux-{(RuntimeInformation.RuntimeIdentifier.Contains("musl") ? "musl-" : "")}{rid}-portatile.tar.gz",
-                Kind.MacApp => $"IP-DESK-CTRL-{ver}-osx-{(rid == "arm64" ? "arm64" : "x64")}.dmg",
-                Kind.Android => $"IP-DESK-CTRL-{ver}-android.apk",
+                Kind.MacApp => string.Format(System.Globalization.CultureInfo.InvariantCulture, "IP-DESK-CTRL-{0}-osx-{1}.dmg", ver, (rid == "arm64" ? "arm64" : "x64")),
+                Kind.Android => string.Format(System.Globalization.CultureInfo.InvariantCulture, "IP-DESK-CTRL-{0}-android.apk", ver),
                 _ => "",
             };
         }
@@ -104,13 +104,13 @@ namespace IpDeskCtrl.Core
         public static string HowItGoes(Kind k, bool service) => k switch
         {
             Kind.WindowsSetup => service
-                ? "Il servizio di IP-DESK-CTRL installa la nuova versione senza chiedere nulla, anche se il PC è comandato da remoto."
-                : "Windows chiederà il permesso di amministratore (UAC): chi è al PC deve rispondere sì.",
+                ? L.T("Il servizio di IP-DESK-CTRL installa la nuova versione senza chiedere nulla, anche se il PC è comandato da remoto.")
+                : L.T("Windows chiederà il permesso di amministratore (UAC): chi è al PC deve rispondere sì."),
             Kind.LinuxDeb or Kind.LinuxRpm or Kind.LinuxSlackware or Kind.LinuxArch when File.Exists(RootHelper) => "Si installa senza password: il pacchetto nuovo lo scarica e lo verifica il sistema da GitHub.",
-            Kind.LinuxDeb or Kind.LinuxRpm or Kind.LinuxSlackware or Kind.LinuxArch or Kind.LinuxSnap => "Il sistema chiederà la password di amministratore per installare il pacchetto.",
-            Kind.LinuxAppImage => "Il file .AppImage viene sostituito con quello nuovo.",
-            Kind.MacApp => "Se l'app è in Applicazioni e serve, macOS chiederà la password.",
-            Kind.Android => "Si apre il browser per scaricare l'APK: poi toccalo per installarlo sopra questa versione.",
+            Kind.LinuxDeb or Kind.LinuxRpm or Kind.LinuxSlackware or Kind.LinuxArch or Kind.LinuxSnap => L.T("Il sistema chiederà la password di amministratore per installare il pacchetto."),
+            Kind.LinuxAppImage => L.T("Il file .AppImage viene sostituito con quello nuovo."),
+            Kind.MacApp => L.T("Se l'app è in Applicazioni e serve, macOS chiederà la password."),
+            Kind.Android => L.T("Si apre il browser per scaricare l'APK: poi toccalo per installarlo sopra questa versione."),
             _ => "",
         };
 
@@ -142,7 +142,7 @@ namespace IpDeskCtrl.Core
                         await dst.WriteAsync(buf.AsMemory(0, n), ct);
                         sha.TransformBlock(buf, 0, n, null, 0);
                         done += n;
-                        progress(total > 0 ? (double)done / total : 0, $"{done >> 20} / {total >> 20} MB");
+                        progress(total > 0 ? (double)done / total : 0, L.F("{0} / {1} MB", done >> 20, total >> 20));
                     }
                 }
                 sha.TransformFinalBlock(Array.Empty<byte>(), 0, 0);
@@ -150,13 +150,13 @@ namespace IpDeskCtrl.Core
                 if (a.Digest.StartsWith("sha256:", StringComparison.OrdinalIgnoreCase) && !a.Digest[7..].Equals(hex, StringComparison.OrdinalIgnoreCase))
                 {
                     File.Delete(path);
-                    return ("", "", "il file scaricato non corrisponde a quello pubblicato (impronta SHA-256 diversa): riprova più tardi");
+                    return ("", "", L.T("il file scaricato non corrisponde a quello pubblicato (impronta SHA-256 diversa): riprova più tardi"));
                 }
                 SessionLog.Write($"AGGIORNAMENTI scaricato {a.Name} (sha256 {hex}" + (a.Digest.Length > 0 ? ", uguale a quella di GitHub)" : ")"));
                 return (path, hex, "");
             }
-            catch (OperationCanceledException) { return ("", "", "scaricamento annullato"); }
-            catch (Exception ex) { return ("", "", "scaricamento non riuscito: " + ex.Message); }
+            catch (OperationCanceledException) { return ("", "", L.T("scaricamento annullato")); }
+            catch (Exception ex) { return ("", "", L.T("scaricamento non riuscito: ") + ex.Message); }
         }
 
         // ------------------------------------------------------------------ installazione
@@ -184,7 +184,7 @@ namespace IpDeskCtrl.Core
                             Process.Start(new ProcessStartInfo(file, "/VERYSILENT /SUPPRESSMSGBOXES /NORESTART /AGGIORNA") { UseShellExecute = true, Verb = "runas" });
                             return "";
                         }
-                        catch (System.ComponentModel.Win32Exception) { return "permesso di amministratore non concesso: aggiornamento annullato"; }
+                        catch (System.ComponentModel.Win32Exception) { return L.T("permesso di amministratore non concesso: aggiornamento annullato"); }
                     case Kind.WindowsPortable:
                     {
                         string ps = Path.Combine(DownloadFolder, "aggiorna.ps1");
@@ -277,9 +277,9 @@ open '{S(bundle)}' --args {AfterUpdateArg}
 ");
                     }
                 }
-                return "aggiornamento automatico non disponibile per questa installazione";
+                return L.T("aggiornamento automatico non disponibile per questa installazione");
             }
-            catch (Exception ex) { return "installazione non avviata: " + ex.Message; }
+            catch (Exception ex) { return L.T("installazione non avviata: ") + ex.Message; }
         }
 
         private static string Q(string s) => s.Replace("'", "''");                 // PowerShell

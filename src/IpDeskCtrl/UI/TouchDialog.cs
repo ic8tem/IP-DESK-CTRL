@@ -20,7 +20,7 @@ namespace IpDeskCtrl.UI
             var t = s.TouchInput;
             t.Normalize();
 
-            var mode = new ComboBox { ItemsSource = new[] { "Touchpad: il dito sposta il puntatore", "Tocco diretto: si clicca dove si tocca" }, SelectedIndex = t.Mode == "diretto" ? 1 : 0 };
+            var mode = new ComboBox { ItemsSource = new[] { L.T("Touchpad: il dito sposta il puntatore"), L.T("Tocco diretto: si clicca dove si tocca") }, SelectedIndex = t.Mode == "diretto" ? 1 : 0 };
 
             var presetKeys = TouchPresets.Names.Keys.ToList();
             var preset = new ComboBox { ItemsSource = presetKeys.Select(k => TouchPresets.Names[k]).ToList(), SelectedIndex = Math.Max(0, presetKeys.IndexOf(t.Preset)) };
@@ -36,7 +36,7 @@ namespace IpDeskCtrl.UI
                 combos[key] = (box, actions);
                 gestures.Children.Add(new Grid
                 {
-                    ColumnDefinitions = new ColumnDefinitions("*,Auto"),
+                    ColumnDefinitions = new ColumnDefinitions(L.T("*,Auto")),
                     Children =
                     {
                         new TextBlock { Text = label, VerticalAlignment = VerticalAlignment.Center, TextWrapping = TextWrapping.Wrap },
@@ -71,8 +71,8 @@ namespace IpDeskCtrl.UI
             var speedText = new TextBlock { MinWidth = 70 };
             void Texts()
             {
-                holdText.Text = $"{hold.Value:F0} ms";
-                dblText.Text = $"{dbl.Value:F0} ms";
+                holdText.Text = L.F("{0:F0} ms", hold.Value);
+                dblText.Text = L.F("{0:F0} ms", dbl.Value);
                 speedText.Text = $"{speed.Value:F2}×";
             }
             hold.ValueChanged += (_, _) => Texts();
@@ -91,9 +91,9 @@ namespace IpDeskCtrl.UI
                 Load();
             };
 
-            var natural = new CheckBox { Content = "Scorrimento naturale (dita in giù = si torna su, come sul telefono)", IsChecked = t.NaturalScroll };
-            var strip = new CheckBox { Content = "Striscia di scorrimento lungo il bordo destro", IsChecked = t.ScrollStrip };
-            var pinch = new CheckBox { Content = "Zoom con due dita e spostamento dell'immagine ingrandita", IsChecked = t.PinchZoom };
+            var natural = new CheckBox { Content = L.T("Scorrimento naturale (dita in giù = si torna su, come sul telefono)"), IsChecked = t.NaturalScroll };
+            var strip = new CheckBox { Content = L.T("Striscia di scorrimento lungo il bordo destro"), IsChecked = t.ScrollStrip };
+            var pinch = new CheckBox { Content = L.T("Zoom con due dita e spostamento dell'immagine ingrandita"), IsChecked = t.PinchZoom };
 
             // tasti della barra sopra la tastiera del telefono
             var keys = new WrapPanel();
@@ -106,31 +106,31 @@ namespace IpDeskCtrl.UI
                 keys.Children.Add(c);
             }
 
-            var save = Ui.Btn("Salva", true);
-            var reset = Ui.Btn("Profilo pronto");
-            var cancel = Ui.Btn("Annulla");
+            var save = Ui.Btn(L.T("Salva"), true);
+            var reset = Ui.Btn(L.T("Profilo pronto"));
+            var cancel = Ui.Btn(L.T("Annulla"));
             var content = new ScrollViewer
             {
                 MaxHeight = 640,
                 HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled,
                 Content = Ui.Col(10,
-                    Ui.H1("Tocco e gesti"),
-                    Ui.Sub("Valgono quando comandi un PC dal telefono, dal tablet o da uno schermo touch."),
-                    Ui.Lbl("MODO DEL DITO"), mode,
+                    Ui.H1(L.T("Tocco e gesti")),
+                    Ui.Sub(L.T("Valgono quando comandi un PC dal telefono, dal tablet o da uno schermo touch.")),
+                    Ui.Lbl(L.T("MODO DEL DITO")), mode,
                     Ui.Lbl("PROFILO"), preset,
                     Ui.Lbl("GESTI"), gestures,
-                    Ui.Sub("Pannello scorciatoie: tieni il dito, scorri a destra o a sinistra per scegliere il tasto e solleva per mandarlo; scorri in su o in giù per annullare. Se lo apri con un tocco, scegli il tasto toccandolo.", 12),
-                    Ui.Lbl("TEMPI E VELOCITÀ"),
-                    Row("Pressione lunga", hold, holdText),
-                    Row("Intervallo del doppio tocco", dbl, dblText),
-                    Row("Velocità del puntatore", speed, speedText),
+                    Ui.Sub(L.T("Pannello scorciatoie: tieni il dito, scorri a destra o a sinistra per scegliere il tasto e solleva per mandarlo; scorri in su o in giù per annullare. Se lo apri con un tocco, scegli il tasto toccandolo."), 12),
+                    Ui.Lbl(L.T("TEMPI E VELOCITÀ")),
+                    Row(L.T("Pressione lunga"), hold, holdText),
+                    Row(L.T("Intervallo del doppio tocco"), dbl, dblText),
+                    Row(L.T("Velocità del puntatore"), speed, speedText),
                     natural, strip, pinch,
-                    Ui.Lbl("BARRA DEI TASTI SOPRA LA TASTIERA"),
-                    Ui.Sub("Frecce, Canc, Invio, Tab, Pag↑/Pag↓, Annulla e il volume si ripetono tenendoli premuti.", 12),
+                    Ui.Lbl(L.T("BARRA DEI TASTI SOPRA LA TASTIERA")),
+                    Ui.Sub(L.T("Frecce, Canc, Invio, Tab, Pag↑/Pag↓, Annulla e il volume si ripetono tenendoli premuti."), 12),
                     keys,
                     Ui.Row(10, save, reset, cancel))
             };
-            var h = Shell.Current.ShowDialog("IP-DESK-CTRL · tocco e gesti", content, 560, false);
+            var h = Shell.Current.ShowDialog(L.T("IP-DESK-CTRL · tocco e gesti"), content, 560, false);
             cancel.Click += (_, _) => h.Close();
             reset.Click += (_, _) =>
             {
@@ -166,7 +166,7 @@ namespace IpDeskCtrl.UI
         private static Control Row(string label, Control slider, Control value) =>
             new Grid
             {
-                ColumnDefinitions = new ColumnDefinitions("*,2*,Auto"),
+                ColumnDefinitions = new ColumnDefinitions(L.T("*,2*,Auto")),
                 Children =
                 {
                     new TextBlock { Text = label, VerticalAlignment = VerticalAlignment.Center, TextWrapping = TextWrapping.Wrap },

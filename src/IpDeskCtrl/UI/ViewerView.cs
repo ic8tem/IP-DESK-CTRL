@@ -38,7 +38,7 @@ namespace IpDeskCtrl.UI
         private CancellationTokenSource _cts = new();
         private bool _ended;
         private CancellationTokenSource? _rebootCts;     // attesa del PC remoto dopo il riavvio
-        private readonly Button _radio = new() { Content = "Radio (IP-TRX-CTRL)" };
+        private readonly Button _radio = new() { Content = L.T("Radio (IP-TRX-CTRL)") };
 
         private readonly RemoteView _view = new();
         private readonly ScrollViewer _scroll = new() { HorizontalScrollBarVisibility = ScrollBarVisibility.Auto, VerticalScrollBarVisibility = ScrollBarVisibility.Auto };
@@ -51,7 +51,7 @@ namespace IpDeskCtrl.UI
         private readonly StackPanel _overlayButtons = new() { Orientation = Orientation.Horizontal, Spacing = 10, HorizontalAlignment = HorizontalAlignment.Center };
         private readonly Border _note = new() { IsVisible = false };
         private readonly TextBlock _noteText = new() { TextWrapping = TextWrapping.Wrap, Foreground = Brushes.White, MaxWidth = 700 };
-        private readonly Button _noteOpen = new() { Content = "Apri cartella", IsVisible = false, Margin = new Thickness(0, 6, 0, 0) };
+        private readonly Button _noteOpen = new() { Content = L.T("Apri cartella"), IsVisible = false, Margin = new Thickness(0, 6, 0, 0) };
         private readonly Border _transfer = new() { IsVisible = false };
         private readonly TextBlock _transferText = new() { Foreground = Brushes.White, FontSize = 12, TextWrapping = TextWrapping.Wrap, MaxWidth = 360 };
         private readonly ProgressBar _transferBar = new() { Width = 300, Minimum = 0, Maximum = 100 };
@@ -60,13 +60,13 @@ namespace IpDeskCtrl.UI
         private readonly ComboBox _zoom = new() { MinWidth = 100 };
         private readonly ComboBox _monitor = new() { MinWidth = 140, MaxWidth = 260, IsVisible = false };   // visibile quando arrivano i monitor
         private readonly ComboBox _quality = new() { MinWidth = 120 };
-        private readonly ToggleButton _audio = new() { Content = "Audio" };
-        private readonly ToggleButton _mic = new() { Content = "Microfono" };
+        private readonly ToggleButton _audio = new() { Content = L.T("Audio") };
+        private readonly ToggleButton _mic = new() { Content = L.T("Microfono") };
         private readonly ComboBox _codec = new() { MinWidth = 120 };
         private static readonly string[] CodecKeys = { "auto", "h264", "hevc", "av1", "jpeg" };
-        private static readonly string[] CodecLabels = { "Video automatico", "H.264", "H.265", "AV1", "Riquadri JPEG" };
-        private readonly Button _tunnelBtn = new() { Content = "Tunnel ▾" };
-        private readonly ToggleButton _fitRes = new() { Content = "Risoluzione adatta" };
+        private static readonly string[] CodecLabels = { L.T("Video automatico"), "H.264", "H.265", "AV1", L.T("Riquadri JPEG") };
+        private readonly Button _tunnelBtn = new() { Content = L.T("Tunnel ▾") };
+        private readonly ToggleButton _fitRes = new() { Content = L.T("Risoluzione adatta") };
         private readonly DispatcherTimer _resizeTimer = new() { Interval = TimeSpan.FromSeconds(1.2) };
         private readonly DispatcherTimer _visibleTimer = new() { Interval = TimeSpan.FromSeconds(1) };
         private (int w, int h) _lastResize;
@@ -78,13 +78,13 @@ namespace IpDeskCtrl.UI
         private int _panelIndex, _panelStart;
         private bool _panelHold, _panelCancel;
         private static int _panelLast;
-        private readonly Button _files = new() { Content = "File ▾" };
+        private readonly Button _files = new() { Content = L.T("File ▾") };
         private readonly TextBlock _stats = new() { FontSize = 11, VerticalAlignment = VerticalAlignment.Center, Foreground = Brushes.Gainsboro, MinWidth = 150 };
 
         // tastiera del telefono
         private readonly TextBox _kbd = new() { Width = 2, Height = 2, Opacity = 0.01, Text = Sentinel, AcceptsReturn = false, HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Bottom };
         private readonly Border _keysBar = new() { IsVisible = false };
-        private readonly ToggleButton _ctrl = new() { Content = "Ctrl" }, _alt = new() { Content = "Alt" }, _win = new() { Content = "Win" }, _shift = new() { Content = "Maiusc" };
+        private readonly ToggleButton _ctrl = new() { Content = L.T("Ctrl") }, _alt = new() { Content = L.T("Alt") }, _win = new() { Content = L.T("Win") }, _shift = new() { Content = L.T("Maiusc") };
         private bool _kbdBusy;
 
         private bool _toolbarPinned;                     // la plancia è sempre a scomparsa
@@ -115,6 +115,7 @@ namespace IpDeskCtrl.UI
 
         public ViewerView(Peer peer, string number, string alias)
         {
+            FlowDirection = L.IsRtl ? FlowDirection.RightToLeft : FlowDirection.LeftToRight;   // arabo, ebraico, urdu
             _peer = peer;
             _number = number;
             _alias = alias;
@@ -162,7 +163,7 @@ namespace IpDeskCtrl.UI
             _visibleTimer.Stop();
             _rebootCts?.Cancel();
             _cts.Cancel();
-            _session?.Close("chiuso dall'altro PC");
+            _session?.Close(L.T("chiuso dall'altro PC"));
             Shell.Current.CloseViewer(this);
         }
 
@@ -175,14 +176,14 @@ namespace IpDeskCtrl.UI
             _visibleTimer.Stop();
             _rebootCts?.Cancel();
             _cts.Cancel();
-            _session?.Close("finestra chiusa sull'altro PC");
+            _session?.Close(L.T("finestra chiusa sull'altro PC"));
             Ended?.Invoke();
         }
 
         public void RefreshTitle()
         {
             _alias = _peer.S.Find(_number)?.Alias ?? _alias;
-            Shell.Current.SetViewerTitle(this, (_alias.Length > 0 ? _alias + " · " : "") + Identity.Format(_number) + " · IP-DESK-CTRL");
+            Shell.Current.SetViewerTitle(this, (_alias.Length > 0 ? _alias + " · " : "") + Identity.Format(_number) + L.T(" · IP-DESK-CTRL"));
         }
 
         // =================================================================== costruzione
@@ -199,14 +200,14 @@ namespace IpDeskCtrl.UI
             _view.AddHandler(DragDrop.DropEvent, (_, e) => OnDrop(e));
 
             // ---- plancia di comando, in alto al centro
-            _fullBtn.Content = "Schermo intero";
+            _fullBtn.Content = L.T("Schermo intero");
             _fullBtn.Click += (_, _) => ToggleFullScreen();
 
-            _zoom.ItemsSource = Zooms.Select(z => z == 0 ? "Adatta" : z + " %").ToList();
+            _zoom.ItemsSource = Zooms.Select(z => z == 0 ? L.T("Adatta") : z + " %").ToList();
             _zoom.SelectionChanged += (_, _) => { if (_zoom.SelectedIndex >= 0) SetZoom(Zooms[_zoom.SelectedIndex], fromCombo: true); };
-            var minus = Small("−", "Riduci");
+            var minus = Small("−", L.T("Riduci"));
             minus.Click += (_, _) => StepZoom(-1);
-            var plus = Small("+", "Ingrandisci");
+            var plus = Small("+", L.T("Ingrandisci"));
             plus.Click += (_, _) => StepZoom(+1);
 
             _monitor.SelectionChanged += (_, _) =>
@@ -215,7 +216,7 @@ namespace IpDeskCtrl.UI
                 int n = _session.Monitors.Count;
                 _session.SelectMonitor(_monitor.SelectedIndex >= n ? -1 : _monitor.SelectedIndex);
             };
-            ToolTip.SetTip(_monitor, "Quale schermo del PC remoto vedere");
+            ToolTip.SetTip(_monitor, L.T("Quale schermo del PC remoto vedere"));
 
             _quality.ItemsSource = Quality.Names.ToList();
             _quality.SelectedIndex = Math.Max(0, Array.IndexOf(Quality.Keys, _peer.S.Quality));
@@ -226,16 +227,16 @@ namespace IpDeskCtrl.UI
                 _peer.S.Save();
                 _session?.SetQuality(_peer.S.Quality);
             };
-            ToolTip.SetTip(_quality, "Automatica: si adatta alla velocità della connessione");
+            ToolTip.SetTip(_quality, L.T("Automatica: si adatta alla velocità della connessione"));
 
             _audio.IsChecked = _peer.S.PlayAudio;
             _audio.IsCheckedChanged += (_, _) => _session?.SetAudio(_audio.IsChecked == true);
-            ToolTip.SetTip(_audio, "Ascolta l'audio del PC remoto");
+            ToolTip.SetTip(_audio, L.T("Ascolta l'audio del PC remoto"));
 
             _mic.IsChecked = false;
             _mic.IsVisible = false;
             _mic.IsCheckedChanged += (_, _) => ToggleMic();
-            ToolTip.SetTip(_mic, "Manda il microfono di qui al PC remoto (per parlare nei suoi programmi, anche con la radio)");
+            ToolTip.SetTip(_mic, L.T("Manda il microfono di qui al PC remoto (per parlare nei suoi programmi, anche con la radio)"));
 
             _fitRes.IsVisible = false;
             _fitRes.IsCheckedChanged += (_, _) =>
@@ -244,7 +245,7 @@ namespace IpDeskCtrl.UI
                 if (_fitRes.IsChecked == true) SendResize();
                 else { _lastResize = (0, 0); _session?.RequestResize(0, 0); }
             };
-            ToolTip.SetTip(_fitRes, "Il PC remoto passa alla risoluzione più adatta a questa finestra (a fine collegamento torna com'era)");
+            ToolTip.SetTip(_fitRes, L.T("Il PC remoto passa alla risoluzione più adatta a questa finestra (a fine collegamento torna com'era)"));
 
             _codec.ItemsSource = CodecLabels;
             _codec.SelectedIndex = Math.Max(0, Array.IndexOf(CodecKeys, _peer.S.VideoCodec));
@@ -256,17 +257,17 @@ namespace IpDeskCtrl.UI
                 _peer.S.Save();
                 _session?.SetCodec(_peer.S.VideoCodec);
             };
-            ToolTip.SetTip(_codec, "Video compresso (H.264, H.265, AV1 con ffmpeg, meglio se con la scheda video) oppure riquadri JPEG. Automatico: il migliore che hanno tutti e due i PC.");
+            ToolTip.SetTip(_codec, L.T("Video compresso (H.264, H.265, AV1 con ffmpeg, meglio se con la scheda video) oppure riquadri JPEG. Automatico: il migliore che hanno tutti e due i PC."));
 
             _tunnelBtn.IsVisible = false;
             _tunnelBtn.Click += (_, _) => ShowTunnels();
-            ToolTip.SetTip(_tunnelBtn, "Tunnel di porte: rigctld, flrig, l'interfaccia web della radio… del PC remoto raggiungibili da qui");
+            ToolTip.SetTip(_tunnelBtn, L.T("Tunnel di porte: rigctld, flrig, l'interfaccia web della radio… del PC remoto raggiungibili da qui"));
 
-            var gestures = Small("Gesti", "Tocco e gesti: modo del dito, gesti, velocità, barra dei tasti");
+            var gestures = Small(L.T("Gesti"), L.T("Tocco e gesti: modo del dito, gesti, velocità, barra dei tasti"));
             gestures.IsVisible = Platform.IsMobile;
             gestures.Click += (_, _) => TouchDialog.Show(_peer.S, RebuildKeysBar);
 
-            var keys = new Button { Content = "Tasti ▾" };
+            var keys = new Button { Content = L.T("Tasti ▾") };
             var menu = new MenuFlyout();
             void Item(string text, params int[] combo)
             {
@@ -274,14 +275,14 @@ namespace IpDeskCtrl.UI
                 mi.Click += (_, _) => { _session?.Combo(combo); _view.Focus(); };
                 menu.Items.Add(mi);
             }
-            Item("Ctrl+Alt+Canc", KeyMap.LeftCtrl, KeyMap.LeftAlt, KeyMap.Delete);
-            Item("Alt+Tab", KeyMap.LeftAlt, KeyMap.Tab);
-            Item("Tasto Windows / Cmd", KeyMap.LeftMeta);
-            Item("Alt+F4", KeyMap.LeftAlt, KeyMap.F4);
-            Item("Ctrl+C", KeyMap.LeftCtrl, 46);
-            Item("Ctrl+V", KeyMap.LeftCtrl, 47);
-            Item("Stamp", KeyMap.PrintScreen);
-            Item("Esc", KeyMap.Escape);
+            Item(L.T("Ctrl+Alt+Canc"), KeyMap.LeftCtrl, KeyMap.LeftAlt, KeyMap.Delete);
+            Item(L.T("Alt+Tab"), KeyMap.LeftAlt, KeyMap.Tab);
+            Item(L.T("Tasto Windows / Cmd"), KeyMap.LeftMeta);
+            Item(L.T("Alt+F4"), KeyMap.LeftAlt, KeyMap.F4);
+            Item(L.T("Ctrl+C"), KeyMap.LeftCtrl, 46);
+            Item(L.T("Ctrl+V"), KeyMap.LeftCtrl, 47);
+            Item(L.T("Stamp"), KeyMap.PrintScreen);
+            Item(L.T("Esc"), KeyMap.Escape);
             menu.Items.Add(new Separator());
             void Vol(string text, int action)
             {
@@ -289,47 +290,47 @@ namespace IpDeskCtrl.UI
                 mi.Click += (_, _) => { _session?.Volume(action); _view.Focus(); };
                 menu.Items.Add(mi);
             }
-            Vol("Volume del PC remoto +", VolumeControl.Up);
-            Vol("Volume del PC remoto −", VolumeControl.Down);
-            Vol("Volume del PC remoto: muto sì/no", VolumeControl.Mute);
-            var panelItem = new MenuItem { Header = "Pannello scorciatoie" };
+            Vol(L.T("Volume del PC remoto +"), VolumeControl.Up);
+            Vol(L.T("Volume del PC remoto −"), VolumeControl.Down);
+            Vol(L.T("Volume del PC remoto: muto sì/no"), VolumeControl.Mute);
+            var panelItem = new MenuItem { Header = L.T("Pannello scorciatoie") };
             panelItem.Click += (_, _) => OpenPanel(false);
             menu.Items.Add(panelItem);
             menu.Items.Add(new Separator());
-            var reboot = new MenuItem { Header = "Riavvia il PC remoto…" };
+            var reboot = new MenuItem { Header = L.T("Riavvia il PC remoto…") };
             reboot.Click += (_, _) => AskReboot();
             menu.Items.Add(reboot);
             keys.Flyout = menu;
-            ToolTip.SetTip(keys, "Combinazioni che il tuo sistema non lascerebbe passare. Ctrl+Alt+Canc su Windows richiede il servizio «accesso completo» sul PC remoto.");
+            ToolTip.SetTip(keys, L.T("Combinazioni che il tuo sistema non lascerebbe passare. Ctrl+Alt+Canc su Windows richiede il servizio «accesso completo» sul PC remoto."));
 
             _files.Click += (_, _) => ShowFilesMenu();
-            ToolTip.SetTip(_files, "Manda file al PC remoto o prendi quelli copiati lì. Puoi anche trascinarli sulla finestra.");
+            ToolTip.SetTip(_files, L.T("Manda file al PC remoto o prendi quelli copiati lì. Puoi anche trascinarli sulla finestra."));
 
-            var keyboard = new Button { Content = "Tastiera" };
+            var keyboard = new Button { Content = L.T("Tastiera") };
             keyboard.Click += (_, _) => ToggleKeyboard();
             keyboard.IsVisible = Platform.IsMobile;
 
             _radio.IsVisible = false;
-            ToolTip.SetTip(_radio, "Avvia IP-TRX-CTRL sul PC remoto e, se c'è, anche su questo");
+            ToolTip.SetTip(_radio, L.T("Avvia IP-TRX-CTRL sul PC remoto e, se c'è, anche su questo"));
             _radio.Click += (_, _) =>
             {
                 var s = _session;
                 if (s == null) return;
                 s.StartTrx();
-                if (Platform.IsMobile || !TrxCtrl.Installed) ShowNote("Chiesto l'avvio di IP-TRX-CTRL sul PC remoto.");
+                if (Platform.IsMobile || !TrxCtrl.Installed) ShowNote(L.T("Chiesto l'avvio di IP-TRX-CTRL sul PC remoto."));
                 else
                 {
                     string err = TrxCtrl.Launch();
-                    ShowNote(err.Length == 0 ? "IP-TRX-CTRL avviato sul PC remoto e su questo." : "IP-TRX-CTRL chiesto sul PC remoto; su questo: " + err);
+                    ShowNote(err.Length == 0 ? L.T("IP-TRX-CTRL avviato sul PC remoto e su questo.") : L.T("IP-TRX-CTRL chiesto sul PC remoto; su questo: ") + err);
                 }
             };
 
-            var refresh = Small("⟳", "Aggiorna l'immagine");
+            var refresh = Small("⟳", L.T("Aggiorna l'immagine"));
             refresh.Click += (_, _) => _session?.Refresh();
-            var close = new Button { Content = "Disconnetti" };
+            var close = new Button { Content = L.T("Disconnetti") };
             close.Classes.Add("accent");
             close.Click += (_, _) => Disconnect();
-            var hide = Small("▲", "Nascondi la plancia");
+            var hide = Small("▲", L.T("Nascondi la plancia"));
             hide.Click += (_, _) => { _toolbarPinned = false; ShowToolbar(false); };
             _hideBtn = hide;
 
@@ -484,7 +485,7 @@ namespace IpDeskCtrl.UI
         {
             bool on = !Shell.Current.IsFullScreen(this);
             Shell.Current.SetFullScreen(this, on);
-            _fullBtn.Content = on ? "Finestra" : "Schermo intero";
+            _fullBtn.Content = on ? L.T("Finestra") : L.T("Schermo intero");
             if (on) { ShowToolbar(true); _hideToolbarAt = DateTime.UtcNow.AddSeconds(3); }
             else ShowToolbar(true);
             _view.Focus();
@@ -571,13 +572,13 @@ namespace IpDeskCtrl.UI
             var s = _session;
             if (s != null && s.State == AcceptState.Accepted && !s.IsClosed)
             {
-                string rtt = double.IsNaN(s.RttMs) ? "—" : $"{s.RttMs:F0} ms";
+                string rtt = double.IsNaN(s.RttMs) ? "—" : L.F("{0:F0} ms", s.RttMs);
                 var img = _view.ImageSize;
-                _stats.Text = $"{s.Fps:F0} fps · {s.KbitPerSecond / 1000:F1} Mbit/s · {rtt} · {s.Route}\n{img.Width}×{img.Height} · {(s.VideoInfo.Length > 0 ? s.VideoInfo : "riquadri")}" + (s.InputAllowed ? "" : " · solo visione");
+                _stats.Text = L.F("{0:F0} fps · {1:F1} Mbit/s · {2} · {3}\n{4}×{5} · {6}", s.Fps, s.KbitPerSecond / 1000, rtt, s.Route, img.Width, img.Height, (s.VideoInfo.Length > 0 ? s.VideoInfo : "riquadri")) + (s.InputAllowed ? "" : L.T(" · solo visione"));
                 int tc = s.ActiveTunnels.Count;
-                _tunnelBtn.Content = tc > 0 ? $"Tunnel ▾ ({tc})" : "Tunnel ▾";
+                _tunnelBtn.Content = tc > 0 ? L.F("Tunnel ▾ ({0})", tc) : L.T("Tunnel ▾");
                 var rf = s.RemoteFiles;
-                _files.Content = rf.count > 0 ? $"File ▾ ({rf.count})" : "File ▾";
+                _files.Content = rf.count > 0 ? L.F("File ▾ ({0})", rf.count) : L.T("File ▾");
             }
         }
 
@@ -596,29 +597,29 @@ namespace IpDeskCtrl.UI
             }
             var rf = s.RemoteFiles;
             Add(rf.count > 0
-                    ? $"Prendi qui i file copiati sul PC remoto ({rf.count}{(rf.count == 1 ? ": " + rf.first : "")}, {Size(rf.bytes)})"
-                    : "Prendi qui i file copiati sul PC remoto (copiali prima con Ctrl+C)",
+                    ? L.F("Prendi qui i file copiati sul PC remoto ({0}{1}, {2})", rf.count, (rf.count == 1 ? ": " + rf.first : ""), Size(rf.bytes))
+                    : L.T("Prendi qui i file copiati sul PC remoto (copiali prima con Ctrl+C)"),
                 rf.count > 0 && s.InputAllowed, () => s.FetchRemoteFiles());
             if (!Platform.IsMobile)
-                Add("Manda i file copiati su questo PC (incollali di là con Ctrl+V)", s.InputAllowed, () => _ = SendLocalClipboardAsync());
-            Add("Scegli file da mandare…", s.InputAllowed, () => _ = PickAndSendAsync());
-            if (!Platform.IsMobile) Add("Apri la cartella dei file ricevuti", true, () => MainView.OpenPath(Platform.Received));
+                Add(L.T("Manda i file copiati su questo PC (incollali di là con Ctrl+V)"), s.InputAllowed, () => _ = SendLocalClipboardAsync());
+            Add(L.T("Scegli file da mandare…"), s.InputAllowed, () => _ = PickAndSendAsync());
+            if (!Platform.IsMobile) Add(L.T("Apri la cartella dei file ricevuti"), true, () => MainView.OpenPath(Platform.Received));
             if (s.PeerHas("drive"))
             {
                 menu.Items.Add(new Separator());
                 if (s.SharedFolder.Length > 0)
-                    Add($"Togli la cartella condivisa ({System.IO.Path.GetFileName(s.SharedFolder.TrimEnd('/', '\\'))}{(s.DriveMounted.Length > 0 ? " → " + s.DriveMounted : "")})", true, () => s.StopSharing());
+                    Add(L.F("Togli la cartella condivisa ({0}{1})", System.IO.Path.GetFileName(s.SharedFolder.TrimEnd('/', '\\')), (s.DriveMounted.Length > 0 ? " → " + s.DriveMounted : "")), true, () => s.StopSharing());
                 else
                 {
-                    Add("Condividi una cartella come disco del PC remoto…", s.InputAllowed, () => _ = ShareFolderAsync(false));
-                    Add("Condividi una cartella in sola lettura…", s.InputAllowed, () => _ = ShareFolderAsync(true));
+                    Add(L.T("Condividi una cartella come disco del PC remoto…"), s.InputAllowed, () => _ = ShareFolderAsync(false));
+                    Add(L.T("Condividi una cartella in sola lettura…"), s.InputAllowed, () => _ = ShareFolderAsync(true));
                 }
             }
-            if (!s.InputAllowed) Add("(solo visione: i file non sono permessi)", false, () => { });
+            if (!s.InputAllowed) Add(L.T("(solo visione: i file non sono permessi)"), false, () => { });
             menu.ShowAt(_files);
         }
 
-        private static string Size(long b) => b >= 1 << 30 ? $"{b / (double)(1 << 30):F1} GB" : b >= 1 << 20 ? $"{b / (double)(1 << 20):F1} MB" : $"{Math.Max(1, b / 1024)} kB";
+        private static string Size(long b) => b >= 1 << 30 ? $"{b / (double)(1 << 30):F1} GB" : b >= 1 << 20 ? $"{b / (double)(1 << 20):F1} MB" : L.F("{0} kB", Math.Max(1, b / 1024));
 
         private async Task SendLocalClipboardAsync()
         {
@@ -626,7 +627,7 @@ namespace IpDeskCtrl.UI
             var clip = Platform.Clipboard;
             if (s == null || clip == null) return;
             var files = await clip.GetFilesAsync();
-            if (files.Count == 0) { ShowNote("Negli appunti di questo PC non ci sono file: copiali prima (Ctrl+C in Esplora file o nel Finder)."); return; }
+            if (files.Count == 0) { ShowNote(L.T("Negli appunti di questo PC non ci sono file: copiali prima (Ctrl+C in Esplora file o nel Finder).")); return; }
             await Task.Run(() => s.SendFilesAsync(SessionBase.FromPaths(files), TransferPurpose.Paste));
         }
 
@@ -638,12 +639,12 @@ namespace IpDeskCtrl.UI
             if (count <= 0 || Platform.IsMobile || !s.InputAllowed || s.State != AcceptState.Accepted) return;
             if (firstSeen)
             {
-                ShowNote($"Sul PC remoto erano già copiati {count} elementi: se ti servono, File › «Prendi qui i file copiati sul PC remoto».");
+                ShowNote(L.F("Sul PC remoto erano già copiati {0} elementi: se ti servono, File › «Prendi qui i file copiati sul PC remoto».", count));
                 return;
             }
             if (bytes > AutoFetchMax)
             {
-                ShowNote($"Sul PC remoto hai copiato {count} elementi ({Size(bytes)}): troppi per portarli qui da soli, usa File › «Prendi qui i file copiati sul PC remoto».", true);
+                ShowNote(L.F("Sul PC remoto hai copiato {0} elementi ({1}): troppi per portarli qui da soli, usa File › «Prendi qui i file copiati sul PC remoto».", count, Size(bytes)), true);
                 return;
             }
             SessionLog.Write($"FILE copiati sul PC remoto ({count}, {Size(bytes)}): li porto negli appunti di qua");
@@ -679,7 +680,7 @@ namespace IpDeskCtrl.UI
             if (files.Count == 0 || HostSession.SamePaths(files, _exchangedFiles)) return false;
             _exchangedFiles = new List<string>(files);
             SessionLog.Write($"FILE Ctrl+V nella finestra: mando {files.Count} elementi copiati qui");
-            ShowNote(files.Count == 1 ? "Mando il file copiato qui: di là si incolla appena arriva." : $"Mando i {files.Count} elementi copiati qui: di là si incollano appena arrivano.");
+            ShowNote(files.Count == 1 ? L.T("Mando il file copiato qui: di là si incolla appena arriva.") : L.F("Mando i {0} elementi copiati qui: di là si incollano appena arrivano.", files.Count));
             _ = Task.Run(() => s.SendFilesAsync(SessionBase.FromPaths(files), TransferPurpose.PasteKeys));
             return true;
         }
@@ -689,7 +690,7 @@ namespace IpDeskCtrl.UI
             var s = _session;
             var top = TopLevel.GetTopLevel(this);
             if (s == null || top == null) return;
-            var picked = await top.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions { AllowMultiple = true, Title = "File da mandare al PC remoto" });
+            var picked = await top.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions { AllowMultiple = true, Title = L.T("File da mandare al PC remoto") });
             if (picked.Count == 0) return;
             var items = new List<TransferItem>();
             foreach (var f in picked)
@@ -771,7 +772,7 @@ namespace IpDeskCtrl.UI
                 b.Click += (_, _) => { SendSpecial(key); _kbd.Focus(); };
                 bar.Children.Add(b);
             }
-            var done = new Button { Content = "Chiudi tastiera", Margin = new Thickness(2) };
+            var done = new Button { Content = L.T("Chiudi tastiera"), Margin = new Thickness(2) };
             done.Click += (_, _) => ToggleKeyboard();
             bar.Children.Add(done);
             _keysBar.Child = bar;
@@ -810,9 +811,9 @@ namespace IpDeskCtrl.UI
         {
             var s = _session;
             if (s == null) return;
-            if (Platform.Dictate == null) { ShowNote("La dettatura c'è solo sul telefono: qui usa la tastiera."); return; }
+            if (Platform.Dictate == null) { ShowNote(L.T("La dettatura c'è solo sul telefono: qui usa la tastiera.")); return; }
             string? text = await Platform.Dictate();
-            if (string.IsNullOrWhiteSpace(text)) { ShowNote("Dettatura annullata o nessun servizio di riconoscimento vocale sul telefono."); return; }
+            if (string.IsNullOrWhiteSpace(text)) { ShowNote(L.T("Dettatura annullata o nessun servizio di riconoscimento vocale sul telefono.")); return; }
             s.Text(text);
             _view.Focus();
         }
@@ -950,11 +951,11 @@ namespace IpDeskCtrl.UI
                 list.Children.Clear();
                 var saved = SavedTunnels();
                 var active = s.ActiveTunnels;
-                if (saved.Count == 0) list.Children.Add(Ui.Sub("Nessun tunnel. Aggiungine uno qui sotto: un programma di qui che si collega a 127.0.0.1:porta locale raggiunge l'indirizzo indicato, visto dal PC remoto."));
+                if (saved.Count == 0) list.Children.Add(Ui.Sub(L.T("Nessun tunnel. Aggiungine uno qui sotto: un programma di qui che si collega a 127.0.0.1:porta locale raggiunge l'indirizzo indicato, visto dal PC remoto.")));
                 foreach (var t in saved)
                 {
                     bool on = active.Any(a => a.LocalPort == t.LocalPort);
-                    var onOff = Ui.Btn(on ? "Ferma" : "Avvia");
+                    var onOff = Ui.Btn(on ? L.T("Ferma") : L.T("Avvia"));
                     var spec = t;
                     onOff.Click += (_, _) =>
                     {
@@ -962,7 +963,7 @@ namespace IpDeskCtrl.UI
                         else { string err = s.StartTunnel(spec); if (err.Length > 0) ShowNote(err); }
                         Refresh();
                     };
-                    var del = Ui.Btn("Togli");
+                    var del = Ui.Btn(L.T("Togli"));
                     del.Click += (_, _) =>
                     {
                         s.StopTunnel(spec.LocalPort);
@@ -981,11 +982,11 @@ namespace IpDeskCtrl.UI
             }
             Refresh();
 
-            var preset = new ComboBox { ItemsSource = new[] { "Scegli un modello…" }.Concat(TunnelSpec.Presets.Select(p => $"{p.Name}: {p.Host}:{p.Port}")).ToList(), SelectedIndex = 0, MinWidth = 260 };
-            var local = new TextBox { Watermark = "Porta di qui", Width = 110 };
-            var host = new TextBox { Watermark = "Indirizzo dal PC remoto", Text = "127.0.0.1", Width = 190 };
-            var port = new TextBox { Watermark = "Porta", Width = 90 };
-            var name = new TextBox { Watermark = "Nome (facoltativo)", Width = 190 };
+            var preset = new ComboBox { ItemsSource = new[] { L.T("Scegli un modello…") }.Concat(TunnelSpec.Presets.Select(p => $"{p.Name}: {p.Host}:{p.Port}")).ToList(), SelectedIndex = 0, MinWidth = 260 };
+            var local = new TextBox { Watermark = L.T("Porta di qui"), Width = 110 };
+            var host = new TextBox { Watermark = L.T("Indirizzo dal PC remoto"), Text = "127.0.0.1", Width = 190 };
+            var port = new TextBox { Watermark = L.T("Porta"), Width = 90 };
+            var name = new TextBox { Watermark = L.T("Nome (facoltativo)"), Width = 190 };
             preset.SelectionChanged += (_, _) =>
             {
                 if (preset.SelectedIndex <= 0) return;
@@ -993,13 +994,13 @@ namespace IpDeskCtrl.UI
                 local.Text = p.LocalPort.ToString(); host.Text = p.Host; port.Text = p.Port.ToString(); name.Text = p.Name;
                 if (p.LocalPort != p.Port)
                     ShowNote($"{p.Name}: di qua la porta è {p.LocalPort} (la {p.Port} di solito è già occupata da un {p.Name.Split(' ')[0]} locale). " +
-                             $"Nel programma di qua (WSJT-X, log…) imposta 127.0.0.1:{p.LocalPort}; arriva alla {p.Port} del PC remoto.", true);
+                             L.F("Nel programma di qua (WSJT-X, log…) imposta 127.0.0.1:{0}; arriva alla {1} del PC remoto.", p.LocalPort, p.Port), true);
             };
-            var add = Ui.Btn("Aggiungi e avvia", true);
+            var add = Ui.Btn(L.T("Aggiungi e avvia"), true);
             add.Click += (_, _) =>
             {
                 if (!int.TryParse(local.Text, out int lp) || lp is <= 0 or > 65535 || !int.TryParse(port.Text, out int rp) || rp is <= 0 or > 65535 || string.IsNullOrWhiteSpace(host.Text))
-                { ShowNote("Scrivi la porta di qui, l'indirizzo e la porta (1–65535)."); return; }
+                { ShowNote(L.T("Scrivi la porta di qui, l'indirizzo e la porta (1–65535).")); return; }
                 var spec = new TunnelSpec(lp, host.Text!.Trim(), rp, (name.Text ?? "").Trim().Replace("|", " "));
                 var saved = SavedTunnels().Where(x => x.LocalPort != lp).ToList();
                 saved.Add(spec);
@@ -1008,24 +1009,24 @@ namespace IpDeskCtrl.UI
                 if (err.Length > 0) ShowNote(err);
                 Refresh();
             };
-            var auto = new CheckBox { Content = "Avvia questi tunnel da soli a ogni collegamento con questo PC", IsChecked = Entry?.TunnelsAuto ?? true };
+            var auto = new CheckBox { Content = L.T("Avvia questi tunnel da soli a ogni collegamento con questo PC"), IsChecked = Entry?.TunnelsAuto ?? true };
             auto.IsCheckedChanged += (_, _) => { var e = Entry; if (e != null) { e.TunnelsAuto = auto.IsChecked == true; _peer.S.Save(); } };
-            var close = Ui.Btn("Chiudi");
+            var close = Ui.Btn(L.T("Chiudi"));
             var content = new ScrollViewer
             {
                 MaxHeight = 620,
                 Content = Ui.Col(10,
-                    Ui.H1("Tunnel di porte"),
-                    Ui.Sub("Per la radio: un programma di qui (WSJT-X, log, rotore…) si collega a 127.0.0.1:porta e arriva a rigctld, flrig o all'interfaccia web della radio del PC remoto. Tutto passa nel collegamento cifrato.", 12),
+                    Ui.H1(L.T("Tunnel di porte")),
+                    Ui.Sub(L.T("Per la radio: un programma di qui (WSJT-X, log, rotore…) si collega a 127.0.0.1:porta e arriva a rigctld, flrig o all'interfaccia web della radio del PC remoto. Tutto passa nel collegamento cifrato."), 12),
                     list,
-                    Ui.Lbl("NUOVO TUNNEL"),
+                    Ui.Lbl(L.T("NUOVO TUNNEL")),
                     preset,
                     new WrapPanel { Children = { local, new TextBlock { Text = " → ", VerticalAlignment = VerticalAlignment.Center }, host, new TextBlock { Text = " : ", VerticalAlignment = VerticalAlignment.Center }, port } },
                     name,
                     auto,
                     Ui.Row(10, add, close))
             };
-            var h = Shell.Current.ShowDialog("IP-DESK-CTRL · tunnel di porte", content, 620, false);
+            var h = Shell.Current.ShowDialog(L.T("IP-DESK-CTRL · tunnel di porte"), content, 620, false);
             close.Click += (_, _) => h.Close();
         }
 
@@ -1038,7 +1039,7 @@ namespace IpDeskCtrl.UI
             if (Platform.IsMobile) path = Platform.Received;       // su Android: la cartella dei file ricevuti
             else
             {
-                var picked = await top.StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions { Title = "Cartella da far vedere al PC remoto come disco", AllowMultiple = false });
+                var picked = await top.StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions { Title = L.T("Cartella da far vedere al PC remoto come disco"), AllowMultiple = false });
                 path = picked.Count > 0 ? picked[0].TryGetLocalPath() : null;
             }
             if (string.IsNullOrEmpty(path)) return;
@@ -1046,7 +1047,7 @@ namespace IpDeskCtrl.UI
             _peer.S.SharedReadOnly = readOnly;
             _peer.S.Save();
             s.ShareFolder(path, readOnly);
-            ShowNote("Monto la cartella sul PC remoto…");
+            ShowNote(L.T("Monto la cartella sul PC remoto…"));
         }
 
         private void ToggleKeyboard()
@@ -1151,8 +1152,8 @@ namespace IpDeskCtrl.UI
             _cts = new CancellationTokenSource();
             var ct = _cts.Token;
             string who = (_alias.Length > 0 ? _alias + " · " : "") + Identity.Format(_number);
-            if (quiet) _overlayText.Text = "Il PC remoto è tornato in linea: mi ricollego…";
-            else Overlay("Collegamento a " + who, "Avvio…", ("Annulla", false, Disconnect));
+            if (quiet) _overlayText.Text = L.T("Il PC remoto è tornato in linea: mi ricollego…");
+            else Overlay(L.T("Collegamento a ") + who, L.T("Avvio…"), (L.T("Annulla"), false, Disconnect));
             try
             {
                 var link = await _peer.ConnectAsync(_number, msg => Dispatcher.UIThread.Post(() => { if (!ct.IsCancellationRequested) _overlayText.Text = msg; }), ct);
@@ -1175,15 +1176,15 @@ namespace IpDeskCtrl.UI
                 s.FilesReceived += (folder, items, onClip) => Dispatcher.UIThread.Post(() =>
                 {
                     if (onClip) { _exchangedFiles = new List<string>(items); _localClipFiles = new List<string>(items); }
-                    ShowNote((items.Count == 1 ? "1 elemento ricevuto" : $"{items.Count} elementi ricevuti") + $" in {folder}" +
-                             (onClip ? (Platform.IsMobile ? "." : ": sono negli appunti, incollali con Ctrl+V dove vuoi.") : "."), true);
+                    ShowNote((items.Count == 1 ? L.T("1 elemento ricevuto") : L.F("{0} elementi ricevuti", items.Count)) + L.F(" in {0}", folder) +
+                             (onClip ? (Platform.IsMobile ? "." : L.T(": sono negli appunti, incollali con Ctrl+V dove vuoi.")) : "."), true);
                 });
                 s.TunnelMessage += m => Dispatcher.UIThread.Post(() => ShowNote(m));
                 s.DriveChanged += (on, where) => Dispatcher.UIThread.Post(() =>
-                    ShowNote(on ? $"Cartella condivisa: sul PC remoto è il disco {where}."
-                        : where.Length > 0 ? "Cartella non montata sul PC remoto: " + where + "." : "Cartella condivisa tolta."));
+                    ShowNote(on ? L.F("Cartella condivisa: sul PC remoto è il disco {0}.", where)
+                        : where.Length > 0 ? L.T("Cartella non montata sul PC remoto: ") + where + "." : L.T("Cartella condivisa tolta.")));
                 s.Closed += reason => Dispatcher.UIThread.Post(() => OnClosed(s, reason));
-                _overlayText.Text = "Collegato con cifratura AES-256. Attendo che l'altro PC risponda…";
+                _overlayText.Text = L.T("Collegato con cifratura AES-256. Attendo che l'altro PC risponda…");
                 s.Run(ct);
                 return true;
             }
@@ -1192,7 +1193,7 @@ namespace IpDeskCtrl.UI
             catch (Exception ex)
             {
                 ErrorLog.Write(ex.ToString());
-                if (!quiet) Failed("Collegamento non riuscito: " + ex.Message);
+                if (!quiet) Failed(L.T("Collegamento non riuscito: ") + ex.Message);
             }
             return false;
         }
@@ -1202,20 +1203,20 @@ namespace IpDeskCtrl.UI
         private void AskPassword(ViewerSession s, PasswordChallenge c)
         {
             if (s != _session) return;
-            var box = new TextBox { PasswordChar = '•', Watermark = "Password", MinWidth = 240 };
-            var remember = new CheckBox { Content = "Ricorda per questo PC", IsChecked = true };
+            var box = new TextBox { PasswordChar = '•', Watermark = L.T("Password"), MinWidth = 240 };
+            var remember = new CheckBox { Content = L.T("Ricorda per questo PC"), IsChecked = true };
             void Submit()
             {
                 string pw = box.Text ?? "";
                 if (pw.Length == 0) return;
                 _overlayButtons.Children.Clear();
-                _overlayText.Text = "Controllo la password…";
+                _overlayText.Text = L.T("Controllo la password…");
                 _ = s.AnswerPasswordAsync(c, pw, remember.IsChecked == true);
             }
-            Overlay("Password richiesta",
-                c.Message.Length > 0 ? c.Message : "Questo PC chiede una password per entrare senza conferma. Con «Chiedi a chi è al PC» decide invece la persona davanti al PC remoto.",
-                ("Chiedi a chi è al PC", false, () => { _overlayButtons.Children.Clear(); _overlayText.Text = "Attendo…"; _ = s.AnswerPasswordAsync(c, null, false); }),
-                ("Entra", true, Submit));
+            Overlay(L.T("Password richiesta"),
+                c.Message.Length > 0 ? c.Message : L.T("Questo PC chiede una password per entrare senza conferma. Con «Chiedi a chi è al PC» decide invece la persona davanti al PC remoto."),
+                (L.T("Chiedi a chi è al PC"), false, () => { _overlayButtons.Children.Clear(); _overlayText.Text = L.T("Attendo…"); _ = s.AnswerPasswordAsync(c, null, false); }),
+                (L.T("Entra"), true, Submit));
             _overlayButtons.Children.Insert(0, new StackPanel { Spacing = 6, VerticalAlignment = VerticalAlignment.Center, Children = { box, remember } });
             box.KeyDown += (_, e) => { if (e.Key == Key.Enter) Submit(); };
             box.AttachedToVisualTree += (_, _) => box.Focus();
@@ -1228,28 +1229,28 @@ namespace IpDeskCtrl.UI
             var s = _session;
             if (s == null || s.State != AcceptState.Accepted) return;
             string who = (_alias.Length > 0 ? _alias + " · " : "") + Identity.Format(_number);
-            Overlay("Riavviare il PC remoto?",
-                $"{who} verrà riavviato: i programmi aperti lì si chiudono senza salvare. Appena il PC torna in linea mi ricollego da solo.",
-                ("Riavvia", true, () =>
+            Overlay(L.T("Riavviare il PC remoto?"),
+                L.F("{0} verrà riavviato: i programmi aperti lì si chiudono senza salvare. Appena il PC torna in linea mi ricollego da solo.", who),
+                (L.T("Riavvia"), true, () =>
                 {
                     _overlay.IsVisible = false;
                     s.Reboot();
-                    ShowNote("Riavvio chiesto: aspetto che il PC remoto si spenga…");
+                    ShowNote(L.T("Riavvio chiesto: aspetto che il PC remoto si spenga…"));
                 }),
-                ("Annulla", false, () => { _overlay.IsVisible = false; _view.Focus(); }));
+                (L.T("Annulla"), false, () => { _overlay.IsVisible = false; _view.Focus(); }));
         }
 
         /// <summary>Dopo il riavvio: controlla sui broker ogni 15 s (per 10 minuti) e si ricollega appena il PC ripubblica l'indirizzo.</summary>
         private async Task WaitRebootAsync(bool update = false)
         {
-            string title = update ? "Il PC remoto si aggiorna" : "Riavvio in corso";
-            string text = update ? "Il PC remoto installa la nuova versione: mi ricollego appena torna" : "Riavvio in corso, mi ricollego appena torna";
+            string title = update ? L.T("Il PC remoto si aggiorna") : L.T("Riavvio in corso");
+            string text = update ? L.T("Il PC remoto installa la nuova versione: mi ricollego appena torna") : L.T("Riavvio in corso, mi ricollego appena torna");
             _rebootCts?.Cancel();
             var cts = new CancellationTokenSource();
             _rebootCts = cts;
             var ct = cts.Token;
             var until = DateTime.UtcNow.AddMinutes(update ? 5 : 10);
-            Overlay(title, text + "…", ("Annulla", false, Disconnect));
+            Overlay(title, text + "…", (L.T("Annulla"), false, Disconnect));
             try
             {
                 // indirizzo di prima del riavvio (o nessuno, se il PC l'ha già tolto chiudendosi)
@@ -1261,7 +1262,7 @@ namespace IpDeskCtrl.UI
                     await Task.Delay(TimeSpan.FromSeconds(update ? 5 : 15), ct);
                     attempt++;
                     int left = Math.Max(0, (int)Math.Ceiling((until - DateTime.UtcNow).TotalMinutes));
-                    _overlayText.Text = $"{text} (controllo n. {attempt}, ancora {left} min)…";
+                    _overlayText.Text = L.F("{0} (controllo n. {1}, ancora {2} min)…", text, attempt, left);
                     var a = await ViewerRendezvous.LookupAsync(_number, _peer.S.MqttBrokers, null, ct);
                     if (a == null || a.Ticks <= beforeTicks || a.Age > TimeSpan.FromMinutes(5)) continue;
                     if (await ConnectAsync(true)) { _rebootCts = null; return; }
@@ -1272,12 +1273,12 @@ namespace IpDeskCtrl.UI
             catch (OperationCanceledException) { return; }
             catch (Exception ex) { ErrorLog.Write(ex.ToString()); }
             if (ct.IsCancellationRequested || _ended) return;
-            Overlay("Il PC remoto non è tornato", $"Dopo {(update ? 5 : 10)} minuti il PC remoto non risulta ancora in linea.",
-                ("Riprova", true, () => _ = ConnectAsync()), ("Chiudi", false, Disconnect));
+            Overlay(L.T("Il PC remoto non è tornato"), L.F("Dopo {0} minuti il PC remoto non risulta ancora in linea.", (update ? 5 : 10)),
+                (L.T("Riprova"), true, () => _ = ConnectAsync()), (L.T("Chiudi"), false, Disconnect));
         }
 
         private void Failed(string why) =>
-            Overlay("Collegamento non riuscito", why, ("Riprova", true, () => _ = ConnectAsync()), ("Chiudi", false, Disconnect));
+            Overlay(L.T("Collegamento non riuscito"), why, (L.T("Riprova"), true, () => _ = ConnectAsync()), (L.T("Chiudi"), false, Disconnect));
 
         private void OnState(ViewerSession s)
         {
@@ -1285,7 +1286,7 @@ namespace IpDeskCtrl.UI
             switch (s.State)
             {
                 case AcceptState.Waiting:
-                    Overlay("In attesa di conferma", "Sull'altro PC è comparsa la richiesta: aspetto che l'utente accetti (al massimo un minuto)…", ("Annulla", false, Disconnect));
+                    Overlay(L.T("In attesa di conferma"), L.T("Sull'altro PC è comparsa la richiesta: aspetto che l'utente accetti (al massimo un minuto)…"), (L.T("Annulla"), false, Disconnect));
                     break;
                 case AcceptState.Accepted:
                     _overlay.IsVisible = false;
@@ -1306,18 +1307,18 @@ namespace IpDeskCtrl.UI
                     RefreshTitle();
                     _view.Focus();
                     string verWarn = AppVersion.Compare(s.PeerVersion);
-                    if (!s.InputAllowed) ShowNote("L'altro PC ha concesso solo la visione: mouse, tastiera e file non arrivano.");
+                    if (!s.InputAllowed) ShowNote(L.T("L'altro PC ha concesso solo la visione: mouse, tastiera e file non arrivano."));
                     else if (verWarn.Length > 0) ShowNote(verWarn);
                     else if (Platform.IsMobile) ShowNote(_peer.S.TouchInput.Mode == "diretto"
-                        ? "Tocco diretto: si clicca dove tocchi. Due dita: rotella; allargale per ingrandire. Gesti e tasti: pulsante ✋."
-                        : "Il dito fa da touchpad. Gesti, tempi e velocità si cambiano col pulsante ✋; due dita allargate = zoom.");
+                        ? L.T("Tocco diretto: si clicca dove tocchi. Due dita: rotella; allargale per ingrandire. Gesti e tasti: pulsante ✋.")
+                        : L.T("Il dito fa da touchpad. Gesti, tempi e velocità si cambiano col pulsante ✋; due dita allargate = zoom."));
                     break;
                 case AcceptState.Rejected:
-                    Overlay("Collegamento rifiutato", s.StateText.Length > 0 ? s.StateText : "L'utente dell'altro PC non ha accettato.", ("Riprova", true, () => _ = ConnectAsync()), ("Chiudi", false, Disconnect));
+                    Overlay(L.T("Collegamento rifiutato"), s.StateText.Length > 0 ? s.StateText : L.T("L'utente dell'altro PC non ha accettato."), (L.T("Riprova"), true, () => _ = ConnectAsync()), (L.T("Chiudi"), false, Disconnect));
                     break;
                 case AcceptState.Busy:
                 case AcceptState.Disabled:
-                    Overlay("Collegamento non possibile", s.StateText, ("Riprova", true, () => _ = ConnectAsync()), ("Chiudi", false, Disconnect));
+                    Overlay(L.T("Collegamento non possibile"), s.StateText, (L.T("Riprova"), true, () => _ = ConnectAsync()), (L.T("Chiudi"), false, Disconnect));
                     break;
             }
         }
@@ -1327,7 +1328,7 @@ namespace IpDeskCtrl.UI
             if (s != _session) return;
             _updatingMonitors = true;
             var items = s.Monitors.Select((m, i) => m.Label(i)).ToList();
-            if (s.Monitors.Count > 1) items.Add("Tutti gli schermi");
+            if (s.Monitors.Count > 1) items.Add(L.T("Tutti gli schermi"));
             _monitor.ItemsSource = items;
             _monitor.IsVisible = items.Count > 1;
             _monitor.SelectedIndex = s.SelectedMonitor < 0 ? items.Count - 1 : Math.Min(s.SelectedMonitor, items.Count - 1);
@@ -1343,7 +1344,7 @@ namespace IpDeskCtrl.UI
             if (s.RebootRequested) { _ = WaitRebootAsync(); return; }
             if (s.UpdateRequested) { _ = WaitRebootAsync(true); return; }
             if (s.State == AcceptState.Accepted || s.State == AcceptState.Waiting)
-                Overlay("Collegamento terminato", reason, ("Ricollegati", true, () => _ = ConnectAsync()), ("Chiudi", false, Disconnect));
+                Overlay(L.T("Collegamento terminato"), reason, (L.T("Ricollegati"), true, () => _ = ConnectAsync()), (L.T("Chiudi"), false, Disconnect));
         }
     }
 }

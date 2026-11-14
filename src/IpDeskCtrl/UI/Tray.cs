@@ -68,9 +68,9 @@ namespace IpDeskCtrl.UI
         {
             try
             {
-                var open = new NativeMenuItem("Apri IP-DESK-CTRL");
+                var open = new NativeMenuItem(L.T("Apri IP-DESK-CTRL"));
                 open.Click += (_, _) => main.ShowMain();
-                var exit = new NativeMenuItem("Esci da IP-DESK-CTRL");
+                var exit = new NativeMenuItem(L.T("Esci da IP-DESK-CTRL"));
                 exit.Click += (_, _) => quit();
                 var menu = new NativeMenu();
                 menu.Items.Add(open);

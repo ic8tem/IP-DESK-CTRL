@@ -98,7 +98,7 @@ namespace IpDeskCtrl.Core
 
         public void Run(CancellationToken life)
         {
-            life.Register(() => Close("programma chiuso sull'altro PC"));
+            life.Register(() => Close(L.T("programma chiuso sull'altro PC")));
             _ = Task.Run(ReceiveLoopAsync);
             _ = Task.Run(StartAsync);
         }
@@ -108,11 +108,11 @@ namespace IpDeskCtrl.Core
             try
             {
                 await SendAsync(new MsgWriter(Msg.Hello).Str(AppVersion.Tag).Str(AppVersion.Os).Str(Environment.MachineName).Bool(TrxCtrl.Installed).Str(AppVersion.CapsNow()).Build());
-                if (await Task.WhenAny(_helloSeen.Task, Task.Delay(15000, Cts.Token)) != _helloSeen.Task) { Close("l'altro PC non si è presentato"); return; }
+                if (await Task.WhenAny(_helloSeen.Task, Task.Delay(15000, Cts.Token)) != _helloSeen.Task) { Close(L.T("l'altro PC non si è presentato")); return; }
                 var (proto, _) = AppVersion.Parse(PeerVersion);
-                if (proto != AppVersion.Protocol) { await Refuse(AcceptState.Rejected, $"versioni non compatibili ({PeerVersion} / {AppVersion.Tag})"); return; }
-                if (!P.S.AcceptIncoming) { await Refuse(AcceptState.Disabled, "su quel PC i collegamenti in arrivo sono disattivati"); return; }
-                if (_busy) { await Refuse(AcceptState.Busy, "quel PC è già comandato da un altro"); return; }
+                if (proto != AppVersion.Protocol) { await Refuse(AcceptState.Rejected, L.F("versioni non compatibili ({0} / {1})", PeerVersion, AppVersion.Tag)); return; }
+                if (!P.S.AcceptIncoming) { await Refuse(AcceptState.Disabled, L.T("su quel PC i collegamenti in arrivo sono disattivati")); return; }
+                if (_busy) { await Refuse(AcceptState.Busy, L.T("quel PC è già comandato da un altro")); return; }
 
                 var h = P.S.Find(PeerNumber);
                 string keyHex = Convert.ToHexString(Link.PeerKey);
@@ -139,14 +139,14 @@ namespace IpDeskCtrl.Core
                     if (pw == PwResult.Blocked)
                     {
                         int min = (int)Math.Ceiling((AccessPassword.BlockedFor(PeerNumber) ?? AccessPassword.BlockTime).TotalMinutes);
-                        await Refuse(AcceptState.Rejected, $"troppe password sbagliate: riprova tra {min} minuti");
+                        await Refuse(AcceptState.Rejected, L.F("troppe password sbagliate: riprova tra {0} minuti", min));
                         return;
                     }
                     if (pw == PwResult.Ok)
                     {
                         d = new IncomingDecision(true, P.S.AllowInput, true);
                         SessionLog.Write($"SESSIONE {Identity.Format(PeerNumber)} entra senza conferma (accesso consentito in precedenza" +
-                                         (P.S.PasswordHash.Length > 0 ? ", password giusta)" : ")"));
+                                         (P.S.PasswordHash.Length > 0 ? L.T(", password giusta)") : ")"));
                     }
                 }
                 if (d == null)
@@ -162,16 +162,16 @@ namespace IpDeskCtrl.Core
                     catch (OperationCanceledException) { d = new IncomingDecision(false, false, false); }
                 }
                 if (IsClosed || d == null) return;
-                if (!d.Accept) { await Refuse(AcceptState.Rejected, d.Why.Length > 0 ? d.Why : "richiesta rifiutata"); return; }
+                if (!d.Accept) { await Refuse(AcceptState.Rejected, d.Why.Length > 0 ? d.Why : L.T("richiesta rifiutata")); return; }
 
                 _allowInput = d.AllowInput && !Observer;
                 var entry = P.S.Touch(PeerNumber, false, keyHex, PeerOs);
                 entry.Version = PeerVersion;
                 if (d.AlwaysAllow && !entry.AllowUnattended) { entry.AllowUnattended = true; P.S.Save(); }
                 _accepted = true;
-                await SendAsync(new MsgWriter(Msg.Accept).U8((byte)AcceptState.Accepted).Str(_allowInput ? "" : "solo visione").Build());
+                await SendAsync(new MsgWriter(Msg.Accept).U8((byte)AcceptState.Accepted).Str(_allowInput ? "" : L.T("solo visione")).Build());
                 Activated?.Invoke();
-                if (Observer) Note($"Guardi soltanto: questo PC lo sta comandando {Identity.Format(ControllerNumber)}.");
+                if (Observer) Note(L.F("Guardi soltanto: questo PC lo sta comandando {0}.", Identity.Format(ControllerNumber)));
 
                 _didPrepare = true;
                 if (Interlocked.Increment(ref _prepared) == 1 && Platform.PrepareHost != null)
@@ -182,7 +182,7 @@ namespace IpDeskCtrl.Core
                 _screen = ScreenSources.Create();
                 if (_allowInput) _input = InputSinks.Create();
                 SendMonitors();
-                var capture = new Thread(CaptureLoop) { IsBackground = true, Name = "cattura schermo", Priority = ThreadPriority.AboveNormal };
+                var capture = new Thread(CaptureLoop) { IsBackground = true, Name = L.T("cattura schermo"), Priority = ThreadPriority.AboveNormal };
                 capture.Start();
                 _ = Task.Run(PingLoopAsync);
                 _ = Ffmpeg.EncodersAsync();          // prova dei codificatori video in sottofondo (una volta sola)
@@ -195,7 +195,7 @@ namespace IpDeskCtrl.Core
             catch (Exception ex) when (!IsClosed)
             {
                 ErrorLog.Write(ex.ToString());
-                Close("errore sul PC comandato: " + ex.Message);
+                Close(L.T("errore sul PC comandato: ") + ex.Message);
             }
             catch { }
         }
@@ -234,7 +234,7 @@ namespace IpDeskCtrl.Core
                 int left = AccessPassword.Fail(PeerNumber);
                 SessionLog.Write($"SESSIONE {Identity.Format(PeerNumber)} password sbagliata (tentativi rimasti: {left})");
                 if (left <= 0) return PwResult.Blocked;
-                msg = left == 1 ? "Password sbagliata: resta un solo tentativo." : $"Password sbagliata: restano {left} tentativi.";
+                msg = left == 1 ? L.T("Password sbagliata: resta un solo tentativo.") : L.F("Password sbagliata: restano {0} tentativi.", left);
             }
             return PwResult.Cancel;
         }
@@ -284,7 +284,7 @@ namespace IpDeskCtrl.Core
                 case Msg.Volume:
                 {
                     int a = r.U8();
-                    if (!_accepted || !_allowInput) { Note("Hai solo la visione di questo PC: il volume non si può cambiare."); break; }
+                    if (!_accepted || !_allowInput) { Note(L.T("Hai solo la visione di questo PC: il volume non si può cambiare.")); break; }
                     _ = Task.Run(() => { string err = VolumeControl.Change(a); if (err.Length > 0) Note(err); });
                     break;
                 }
@@ -382,28 +382,28 @@ namespace IpDeskCtrl.Core
                 }
                 if (sink.Note.Length > 0) Note(sink.Note);
             }
-            catch (Exception ex) { Note("Mouse e tastiera non disponibili: " + ex.Message); }
+            catch (Exception ex) { Note(L.T("Mouse e tastiera non disponibili: ") + ex.Message); }
         }
 
         protected override bool FilesAllowed => _accepted && _allowInput;
 
         private void StartTrx()
         {
-            if (!_accepted || !_allowInput) { Note("Hai solo la visione di questo PC: IP-TRX-CTRL non è stato avviato."); return; }
+            if (!_accepted || !_allowInput) { Note(L.T("Hai solo la visione di questo PC: IP-TRX-CTRL non è stato avviato.")); return; }
             string err = Platform.LaunchTrx != null ? Platform.LaunchTrx() : TrxCtrl.Launch();
             SessionLog.Write($"SESSIONE {Identity.Format(PeerNumber)} avvia IP-TRX-CTRL: " + (err.Length == 0 ? "avviato" : err));
-            Note(err.Length == 0 ? "IP-TRX-CTRL avviato sul PC remoto." : err);
+            Note(err.Length == 0 ? L.T("IP-TRX-CTRL avviato sul PC remoto.") : err);
         }
 
         /// <summary>Riavvio chiesto dal visore: solo se può comandare questo PC.</summary>
         private async Task RebootAsync()
         {
-            if (!_accepted || !_allowInput) { Note("Riavvio rifiutato: hai solo la visione di questo PC."); return; }
+            if (!_accepted || !_allowInput) { Note(L.T("Riavvio rifiutato: hai solo la visione di questo PC.")); return; }
             SessionLog.Write($"SESSIONE {Identity.Format(PeerNumber)} chiede il riavvio del PC");
             string err = Power.Reboot();
             if (err.Length > 0) { Note(err); SessionLog.Write("SESSIONE " + err); return; }
             await Task.Delay(500);
-            Close("riavvio del PC in corso");
+            Close(L.T("riavvio del PC in corso"));
         }
 
         /// <summary>
@@ -412,7 +412,7 @@ namespace IpDeskCtrl.Core
         /// </summary>
         protected override void OnFilesReceived(TransferPurpose purpose, string folder, List<string> topLevel, bool onClipboard)
         {
-            string what = topLevel.Count == 1 ? "1 elemento" : $"{topLevel.Count} elementi";
+            string what = topLevel.Count == 1 ? L.T("1 elemento") : L.F("{0} elementi", topLevel.Count);
             // file messi negli appunti da noi: non vanno riannunciati al visore (tornerebbero indietro)
             if (onClipboard) _clipFiles = new List<string>(topLevel);
             if (purpose == TransferPurpose.PasteKeys && onClipboard && _input != null && _allowInput && !Platform.IsMobile)
@@ -421,7 +421,7 @@ namespace IpDeskCtrl.Core
                 {
                     int mod = OperatingSystem.IsMacOS() ? Input.KeyMap.LeftMeta : Input.KeyMap.LeftCtrl;
                     _input.Key(mod, true); _input.Key(47, true); _input.Key(47, false); _input.Key(mod, false);
-                    Note($"{what} copiati sul PC remoto (in {folder}) e incollati.");
+                    Note(L.F("{0} copiati sul PC remoto (in {1}) e incollati.", what, folder));
                     return;
                 }
                 catch { }
@@ -435,12 +435,12 @@ namespace IpDeskCtrl.Core
                     Thread.Sleep(150);
                     int mod = OperatingSystem.IsMacOS() ? Input.KeyMap.LeftMeta : Input.KeyMap.LeftCtrl;
                     _input.Key(mod, true); _input.Key(47, true); _input.Key(47, false); _input.Key(mod, false);
-                    Note($"{what} copiati sul PC remoto (in {folder}) e incollati dove li hai lasciati.");
+                    Note(L.F("{0} copiati sul PC remoto (in {1}) e incollati dove li hai lasciati.", what, folder));
                     return;
                 }
                 catch { }
             }
-            Note($"{what} copiati sul PC remoto in {folder}" + (onClipboard ? ": sono negli appunti, incollali con Ctrl+V dove vuoi." : "."));
+            Note(L.F("{0} copiati sul PC remoto in {1}", what, folder) + (onClipboard ? L.T(": sono negli appunti, incollali con Ctrl+V dove vuoi.") : "."));
         }
 
         private List<string> _clipFiles = new();
@@ -477,7 +477,7 @@ namespace IpDeskCtrl.Core
             if (!FilesAllowed) return;
             var clip = Platform.Clipboard;
             var files = clip == null ? new List<string>() : await clip.GetFilesAsync();
-            if (files.Count == 0) { Note("Negli appunti del PC remoto non ci sono più file."); return; }
+            if (files.Count == 0) { Note(L.T("Negli appunti del PC remoto non ci sono più file.")); return; }
             await SendFilesAsync(FromPaths(files), TransferPurpose.Fetch);
         }
 
@@ -636,7 +636,7 @@ namespace IpDeskCtrl.Core
                     _statAt = Environment.TickCount64;
                     long vb = Interlocked.Exchange(ref _statBytesVideo, 0);
                     SessionLog.Write($"SCHERMO ultimo minuto: {_statFrames} fotogrammi, " + (_video != null ? $"video {Ffmpeg.CodecNames[_video.Codec]} {vb / 1024} kB" : $"{_statTiles} riquadri, {_statBytes / 1024} kB") +
-                                     $", {_statFail} catture non riuscite · ritardo {_ackMs:F0} ms · {Route}");
+                                     L.F(", {0} catture non riuscite · ritardo {1:F0} ms · {2}", _statFail, _ackMs, Route));
                     _statFrames = 0; _statTiles = 0; _statBytes = 0; _statFail = 0;
                 }
                 // monitor collegati o staccati
@@ -685,7 +685,7 @@ namespace IpDeskCtrl.Core
             _audio?.Dispose();
             lock (_micLock) { _mic?.Dispose(); _mic = null; }
             _resizer.Dispose();
-            CloseDrive("collegamento chiuso");
+            CloseDrive(L.T("collegamento chiuso"));
             _tunnels?.CloseAll();
             _video?.Dispose();
             _video = null;
@@ -695,7 +695,7 @@ namespace IpDeskCtrl.Core
             if (h != null) { h.LastSeconds = Duration(DateTime.UtcNow - Started); P.S.Save(); }
         }
 
-        public static string Duration(TimeSpan t) => t.TotalHours >= 1 ? $"{(int)t.TotalHours} h {t.Minutes} min" : t.TotalMinutes >= 1 ? $"{(int)t.TotalMinutes} min" : $"{t.Seconds} s";
+        public static string Duration(TimeSpan t) => t.TotalHours >= 1 ? L.F("{0} h {1} min", (int)t.TotalHours, t.Minutes) : t.TotalMinutes >= 1 ? L.F("{0} min", (int)t.TotalMinutes) : $"{t.Seconds} s";
 
         // ------------------------------------------------------------------ microfono del visore
 
@@ -707,7 +707,7 @@ namespace IpDeskCtrl.Core
                 {
                     _mic?.Dispose();
                     _mic = null;
-                    if (on) Note("Questo PC non accetta il microfono di chi si collega (Impostazioni).");
+                    if (on) Note(L.T("Questo PC non accetta il microfono di chi si collega (Impostazioni)."));
                     return;
                 }
                 if (_mic != null) return;
@@ -715,8 +715,8 @@ namespace IpDeskCtrl.Core
                 string dev = _mic.Device;
                 SessionLog.Write($"AUDIO microfono di {Identity.Format(PeerNumber)} su " + (dev.Length > 0 ? dev : "uscita predefinita"));
                 Note(_mic.Note.Length > 0 ? _mic.Note
-                    : dev.Length > 0 ? $"La tua voce arriva sul PC remoto nel microfono virtuale «{dev}»: sceglilo come microfono nei programmi di là."
-                    : "La tua voce si sente dalle casse del PC remoto. Per usarla come microfono nei programmi di là serve un cavo audio virtuale (VB-CABLE su Windows, BlackHole su Mac).");
+                    : dev.Length > 0 ? L.F("La tua voce arriva sul PC remoto nel microfono virtuale «{0}»: sceglilo come microfono nei programmi di là.", dev)
+                    : L.T("La tua voce si sente dalle casse del PC remoto. Per usarla come microfono nei programmi di là serve un cavo audio virtuale (VB-CABLE su Windows, BlackHole su Mac)."));
             }
         }
 
@@ -738,7 +738,7 @@ namespace IpDeskCtrl.Core
         {
             if (w > 0 && (!_allowInput || !P.S.AllowResize))
             {
-                Note(!_allowInput ? "Hai solo la visione di questo PC: la risoluzione resta quella di prima." : "Questo PC non permette di cambiargli la risoluzione (Impostazioni).");
+                Note(!_allowInput ? L.T("Hai solo la visione di questo PC: la risoluzione resta quella di prima.") : L.T("Questo PC non permette di cambiargli la risoluzione (Impostazioni)."));
                 return;
             }
             _fitW = Math.Clamp(w, 0, 8192);
@@ -767,12 +767,12 @@ namespace IpDeskCtrl.Core
             CloseDrive("");
             if (!_allowInput || !P.S.AllowDrive)
             {
-                Send(new MsgWriter(Msg.DriveState).Bool(false).Str(!_allowInput ? "hai solo la visione di questo PC" : "questo PC non accetta cartelle condivise (Impostazioni)").Build());
+                Send(new MsgWriter(Msg.DriveState).Bool(false).Str(!_allowInput ? L.T("hai solo la visione di questo PC") : L.T("questo PC non accetta cartelle condivise (Impostazioni)")).Build());
                 return;
             }
             if (Platform.IsMobile)
             {
-                Send(new MsgWriter(Msg.DriveState).Bool(false).Str("su Android la cartella condivisa non si può montare: usa «File ▾»").Build());
+                Send(new MsgWriter(Msg.DriveState).Bool(false).Str(L.T("su Android la cartella condivisa non si può montare: usa «File ▾»")).Build());
                 return;
             }
             try
@@ -802,9 +802,9 @@ namespace IpDeskCtrl.Core
 
         private async Task OpenTunnelAsync(int id, string host, int port)
         {
-            string why = !_allowInput ? "hai solo la visione di questo PC"
-                : !P.S.AllowTunnel ? "questo PC non accetta tunnel di porte (Impostazioni)"
-                : port is <= 0 or > 65535 ? "porta non valida" : "";
+            string why = !_allowInput ? L.T("hai solo la visione di questo PC")
+                : !P.S.AllowTunnel ? L.T("questo PC non accetta tunnel di porte (Impostazioni)")
+                : port is <= 0 or > 65535 ? L.T("porta non valida") : "";
             if (why.Length == 0)
             {
                 var c = new TcpClient();
@@ -821,7 +821,7 @@ namespace IpDeskCtrl.Core
                 catch (Exception ex)
                 {
                     c.Dispose();
-                    why = $"{host}:{port} non risponde dal PC remoto ({(ex is OperationCanceledException ? "tempo scaduto" : ex.Message)})";
+                    why = L.F("{0}:{1} non risponde dal PC remoto ({2})", host, port, (ex is OperationCanceledException ? L.T("tempo scaduto") : ex.Message));
                 }
             }
             SessionLog.Write($"TUNNEL {Identity.Format(PeerNumber)} → {host}:{port} rifiutato: {why}");
@@ -856,7 +856,7 @@ namespace IpDeskCtrl.Core
                 var enc = Ffmpeg.Choose(encTask.Result, can, _codecWanted);
                 if (enc == null)
                 {
-                    if (_codecWanted is "h264" or "hevc" or "av1") Note($"{Ffmpeg.CodecNames[_codecWanted]} non disponibile su uno dei due PC: uso i riquadri.");
+                    if (_codecWanted is "h264" or "hevc" or "av1") Note(L.F("{0} non disponibile su uno dei due PC: uso i riquadri.", Ffmpeg.CodecNames[_codecWanted]));
                     _videoOff = true;
                     return false;
                 }
@@ -874,7 +874,7 @@ namespace IpDeskCtrl.Core
                 }
                 catch (Exception ex)
                 {
-                    Note("Video compresso non avviabile: " + ex.Message);
+                    Note(L.T("Video compresso non avviabile: ") + ex.Message);
                     _videoOff = true;
                     return false;
                 }
@@ -922,7 +922,7 @@ namespace IpDeskCtrl.Core
             _allowInput = on;
             if (on && _input == null) _input = InputSinks.Create();
             if (!on && _input != null) _pressed.ReleaseAll(_input);
-            Note(on ? "" : "L'utente dell'altro PC ha disattivato mouse e tastiera: ora puoi solo guardare.");
+            Note(on ? "" : L.T("L'utente dell'altro PC ha disattivato mouse e tastiera: ora puoi solo guardare."));
         }
     }
 }

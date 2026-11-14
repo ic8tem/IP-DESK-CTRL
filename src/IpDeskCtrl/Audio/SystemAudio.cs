@@ -7,6 +7,8 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using IpDeskCtrl.Screen;
 
+using IpDeskCtrl.Core;
+
 namespace IpDeskCtrl.Audio
 {
     /// <summary>Cattura dell'audio che il PC comandato sta suonando (non del microfono).</summary>
@@ -107,9 +109,9 @@ namespace IpDeskCtrl.Audio
         {
             _onFrame = onFrame;
             if (TryOpen(out string err)) { Note = ""; return true; }
-            if (_mic) { Note = "Microfono di questo PC non disponibile: " + err; return false; }
+            if (_mic) { Note = L.T("Microfono di questo PC non disponibile: ") + err; return false; }
             // nessuna uscita (o è sparita): si riprova ogni 5 secondi, e l'audio parte appena ce n'è una
-            Note = err.Length > 0 && !NoDevice(err) ? "Audio di Windows non catturabile: " + err + " (riprovo ogni 5 s)" : NoOutput;
+            Note = err.Length > 0 && !NoDevice(err) ? L.T("Audio di Windows non catturabile: ") + err + L.T(" (riprovo ogni 5 s)") : NoOutput;
             Core.SessionLog.Write("AUDIO " + Note);
             ScheduleRetry();
             return true;
@@ -138,7 +140,7 @@ namespace IpDeskCtrl.Audio
                             // senza uscita predefinita si prova la prima uscita attiva
                             foreach (var d in en.EnumerateAudioEndPoints(NAudio.CoreAudioApi.DataFlow.Render, NAudio.CoreAudioApi.DeviceState.Active)) { dev = d; break; }
                         }
-                        if (dev == null) { err = "nessuna uscita audio attiva (0x80070490)"; return false; }
+                        if (dev == null) { err = L.T("nessuna uscita audio attiva (0x80070490)"); return false; }
                         cap = new NAudio.Wave.WasapiLoopbackCapture(dev);
                     }
                     var fmt = cap.WaveFormat;
@@ -317,8 +319,8 @@ namespace IpDeskCtrl.Audio
                     catch (Exception ex) { why = ex.Message; }
                 }
                 Note = OutDevices() == 0
-                    ? "Su questo PC non c'è un'uscita audio attiva (casse o cuffie scollegate o disattivate): l'audio del PC remoto partirà appena ne colleghi una."
-                    : "Uscita audio di questo PC non apribile (" + why + "): riprovo tra poco.";
+                    ? L.T("Su questo PC non c'è un'uscita audio attiva (casse o cuffie scollegate o disattivate): l'audio del PC remoto partirà appena ne colleghi una.")
+                    : L.T("Uscita audio di questo PC non apribile (") + why + L.T("): riprovo tra poco.");
                 Core.SessionLog.Write("AUDIO " + Note);
                 _retryAt = Environment.TickCount64 + 5000;
             }
@@ -391,7 +393,7 @@ namespace IpDeskCtrl.Audio
         {
             if (!WaylandScreen.Which("parec"))
             {
-                Note = "Per mandare l'audio serve «parec» (sudo apt install pulseaudio-utils)";
+                Note = L.T("Per mandare l'audio serve «parec» (sudo apt install pulseaudio-utils)");
                 return false;
             }
             try
@@ -430,7 +432,7 @@ namespace IpDeskCtrl.Audio
             }
             catch (Exception ex)
             {
-                Note = "Audio non catturabile: " + ex.Message;
+                Note = L.T("Audio non catturabile: ") + ex.Message;
                 return false;
             }
         }
@@ -457,10 +459,10 @@ namespace IpDeskCtrl.Audio
         {
             string exe, args;
             string dev = "";
-            if (virtualMic && WaylandScreen.Which("pactl") && LinuxVirtualMic.Load()) { dev = $" --device={LinuxVirtualMic.Sink}"; _virtual = true; Device = "IP-DESK-CTRL microfono"; }
+            if (virtualMic && WaylandScreen.Which("pactl") && LinuxVirtualMic.Load()) { dev = string.Format(System.Globalization.CultureInfo.InvariantCulture, " --device={0}", LinuxVirtualMic.Sink); _virtual = true; Device = "IP-DESK-CTRL microfono"; }
             if (WaylandScreen.Which("pacat")) { exe = "pacat"; args = $"--playback{dev} --format=s16le --rate={Adpcm.Rate} --channels=2 --latency-msec=80 --raw"; }
             else if (WaylandScreen.Which("aplay")) { exe = "aplay"; args = $"-q -t raw -f S16_LE -r {Adpcm.Rate} -c 2 -B 100000"; }
-            else { Note = "Per sentire l'audio serve «pacat» (sudo apt install pulseaudio-utils) o «aplay»"; return; }
+            else { Note = L.T("Per sentire l'audio serve «pacat» (sudo apt install pulseaudio-utils) o «aplay»"); return; }
             try
             {
                 _p = Process.Start(new ProcessStartInfo(exe, args)
@@ -485,7 +487,7 @@ namespace IpDeskCtrl.Audio
                 }) { IsBackground = true, Name = "pacat" };
                 _t.Start();
             }
-            catch (Exception ex) { Note = "Uscita audio non disponibile: " + ex.Message; }
+            catch (Exception ex) { Note = L.T("Uscita audio non disponibile: ") + ex.Message; }
         }
 
         public void Play(short[] s)
@@ -518,9 +520,9 @@ namespace IpDeskCtrl.Audio
             try
             {
                 if (_sinkModule.Length > 0) return true;
-                _sinkModule = Pactl($"load-module module-null-sink sink_name={Sink} sink_properties=device.description=IP-DESK-CTRL-voce-remota");
+                _sinkModule = Pactl(string.Format(System.Globalization.CultureInfo.InvariantCulture, "load-module module-null-sink sink_name={0} sink_properties=device.description=IP-DESK-CTRL-voce-remota", Sink));
                 if (_sinkModule.Length == 0) return false;
-                _sourceModule = Pactl($"load-module module-remap-source master={Sink}.monitor source_name=ipdesk_microfono source_properties=device.description=IP-DESK-CTRL-microfono");
+                _sourceModule = Pactl(string.Format(System.Globalization.CultureInfo.InvariantCulture, "load-module module-remap-source master={0}.monitor source_name=ipdesk_microfono source_properties=device.description=IP-DESK-CTRL-microfono", Sink));
                 Core.SessionLog.Write("AUDIO microfono virtuale «IP-DESK-CTRL-microfono» creato");
                 return true;
             }
@@ -670,13 +672,13 @@ namespace IpDeskCtrl.Audio
                     string? uid = _mic ? "" : FindLoopbackUid();
                     if (uid == null)
                     {
-                        Note = "Per mandare l'audio del Mac installa BlackHole 2ch (gratuito) e crea un «dispositivo a uscita multipla» con casse + BlackHole";
+                        Note = L.T("Per mandare l'audio del Mac installa BlackHole 2ch (gratuito) e crea un «dispositivo a uscita multipla» con casse + BlackHole");
                         return false;
                     }
                     _on = onFrame;
                     _cb = OnInput;
                     var fmt = Format();
-                    if (AudioQueueNewInput(ref fmt, _cb, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, 0, out _q) != 0) { Note = "Ingresso audio non apribile"; return false; }
+                    if (AudioQueueNewInput(ref fmt, _cb, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, 0, out _q) != 0) { Note = L.T("Ingresso audio non apribile"); return false; }
                     if (uid.Length > 0)
                     {
                         IntPtr cf = CFStringCreateWithCString(IntPtr.Zero, uid, Utf8);
@@ -685,7 +687,7 @@ namespace IpDeskCtrl.Audio
                     }
                     for (int i = 0; i < 4; i++)
                         if (AudioQueueAllocateBuffer(_q, FrameBytes, out IntPtr b) == 0) AudioQueueEnqueueBuffer(_q, b, 0, IntPtr.Zero);
-                    if (AudioQueueStart(_q, IntPtr.Zero) != 0) { Note = "Permesso «Microfono» negato per IP-DESK-CTRL"; return false; }
+                    if (AudioQueueStart(_q, IntPtr.Zero) != 0) { Note = L.T("Permesso «Microfono» negato per IP-DESK-CTRL"); return false; }
                     Note = "";
                     return true;
                 }
@@ -728,7 +730,7 @@ namespace IpDeskCtrl.Audio
                 try
                 {
                     var fmt = Format();
-                    if (AudioQueueNewOutput(ref fmt, _cb, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, 0, out _q) != 0) { Note = "Uscita audio non apribile"; return; }
+                    if (AudioQueueNewOutput(ref fmt, _cb, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, 0, out _q) != 0) { Note = L.T("Uscita audio non apribile"); return; }
                     string? uid = wanted != null ? FindLoopbackUid(wanted) : null;
                     if (uid != null)
                     {

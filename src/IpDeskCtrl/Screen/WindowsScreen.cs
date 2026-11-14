@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
+using IpDeskCtrl.Core;
+
 namespace IpDeskCtrl.Screen
 {
     internal static class Win32
@@ -100,7 +102,7 @@ namespace IpDeskCtrl.Screen
         public static string ThreadDesktopName => _threadDeskName ?? "";
 
         public const string LockedNote = "Il PC remoto è bloccato (schermata di blocco o di accesso) oppure mostra una finestra di sicurezza (UAC, Ctrl+Alt+Canc): " +
-                                         "Windows non la lascia vedere né comandare. Sbloccalo e l'immagine torna da sola.";
+                                         L.T("Windows non la lascia vedere né comandare. Sbloccalo e l'immagine torna da sola.");
         [DllImport("gdi32.dll")] public static extern IntPtr CreateCompatibleDC(IntPtr hdc);
         [DllImport("gdi32.dll")] public static extern bool DeleteDC(IntPtr hdc);
         [DllImport("gdi32.dll")] public static extern IntPtr SelectObject(IntPtr hdc, IntPtr obj);
@@ -134,7 +136,7 @@ namespace IpDeskCtrl.Screen
             {
                 var mi = new Win32.MONITORINFOEX { cbSize = Marshal.SizeOf<Win32.MONITORINFOEX>() };
                 bool primary = false;
-                string name = $"Schermo {++n}";
+                string name = L.F("Schermo {0}", ++n);
                 if (Win32.GetMonitorInfo(hMon, ref mi))
                 {
                     primary = (mi.dwFlags & 1) != 0;
@@ -145,7 +147,7 @@ namespace IpDeskCtrl.Screen
             }, IntPtr.Zero);
             if (list.Count == 0)
             {
-                list.Add(new MonitorInfo("Schermo", Win32.GetSystemMetrics(Win32.SM_XVIRTUALSCREEN), Win32.GetSystemMetrics(Win32.SM_YVIRTUALSCREEN),
+                list.Add(new MonitorInfo(L.T("Schermo"), Win32.GetSystemMetrics(Win32.SM_XVIRTUALSCREEN), Win32.GetSystemMetrics(Win32.SM_YVIRTUALSCREEN),
                     Win32.GetSystemMetrics(Win32.SM_CXVIRTUALSCREEN), Win32.GetSystemMetrics(Win32.SM_CYVIRTUALSCREEN), true));
             }
             return list;
@@ -157,13 +159,13 @@ namespace IpDeskCtrl.Screen
             string desktop = FollowInputDesktop ? Win32.FollowInputDesktop() : Win32.InputDesktopName();
             if (!FollowInputDesktop && (desktop.Length == 0 || !desktop.Equals("Default", StringComparison.OrdinalIgnoreCase)))
             {
-                Note = Win32.LockedNote + (desktop.Length > 0 ? $" (desktop attivo: {desktop})" : "");
+                Note = Win32.LockedNote + (desktop.Length > 0 ? L.F(" (desktop attivo: {0})", desktop) : "");
                 return false;
             }
 
             int w = Math.Max(1, area.W), h = Math.Max(1, area.H);
             IntPtr screen = Win32.GetDC(IntPtr.Zero);
-            if (screen == IntPtr.Zero) { Note = "Schermo non disponibile"; return false; }
+            if (screen == IntPtr.Zero) { Note = L.T("Schermo non disponibile"); return false; }
             try
             {
                 if (_memDc == IntPtr.Zero || w != _w || h != _h)
@@ -199,14 +201,14 @@ namespace IpDeskCtrl.Screen
                 }
                 if (!ok)
                 {
-                    Note = $"Cattura dello schermo non riuscita (BitBlt, errore {Marshal.GetLastWin32Error()}) sull'area {area.X},{area.Y} {w}×{h}";
+                    Note = L.F("Cattura dello schermo non riuscita (BitBlt, errore {0}) sull'area {1},{2} {3}×{4}", Marshal.GetLastWin32Error(), area.X, area.Y, w, h);
                     return false;
                 }
                 into.Ensure(w, h);
                 Marshal.Copy(_bits, into.Data, 0, into.Data.Length);
                 Note = AllBlack(into) && desktop.Equals("Default", StringComparison.OrdinalIgnoreCase)
-                    ? "Lo schermo del PC remoto è completamente nero: di solito è una sessione di Desktop remoto di Windows (RDP) rimasta scollegata, " +
-                      "che spegne lo schermo vero. Su quel PC accedi di nuovo dalla tastiera, oppure chiudi la sessione RDP."
+                    ? L.T("Lo schermo del PC remoto è completamente nero: di solito è una sessione di Desktop remoto di Windows (RDP) rimasta scollegata, ") +
+                      L.T("che spegne lo schermo vero. Su quel PC accedi di nuovo dalla tastiera, oppure chiudi la sessione RDP.")
                     : "";
                 return true;
             }

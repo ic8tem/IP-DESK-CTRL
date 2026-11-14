@@ -50,7 +50,7 @@ namespace IpDeskCtrl.Core
 
         public void Run(CancellationToken life)
         {
-            life.Register(() => Close("programma chiuso"));
+            life.Register(() => Close(L.T("programma chiuso")));
             _ = Task.Run(ReceiveLoopAsync);
             _ = Task.Run(async () =>
             {
@@ -95,7 +95,7 @@ namespace IpDeskCtrl.Core
                     int gen = r.I32();
                     var d = _vdec;
                     if (gen != _vgen || d == null) break;
-                    if (d.Failed) { VideoFailed("il decodificatore ffmpeg si è fermato"); break; }
+                    if (d.Failed) { VideoFailed(L.T("il decodificatore ffmpeg si è fermato")); break; }
                     d.Feed(r.Rest());
                     break;
                 }
@@ -266,10 +266,10 @@ namespace IpDeskCtrl.Core
                 Send(new MsgWriter(Msg.SetMic).Bool(false).Build());
                 return "";
             }
-            if (!PeerHas("mic")) return "Il PC remoto ha una versione che non riceve il microfono: aggiornalo alla 0.5.";
+            if (!PeerHas("mic")) return L.T("Il PC remoto ha una versione che non riceve il microfono: aggiornalo alla 0.5.");
             if (_micCap != null) return "";
             var cap = SystemAudio.CreateMic();
-            if (!cap.Start(OnMicFrame)) { string why = cap.Note; cap.Dispose(); return why.Length > 0 ? why : "Microfono non disponibile."; }
+            if (!cap.Start(OnMicFrame)) { string why = cap.Note; cap.Dispose(); return why.Length > 0 ? why : L.T("Microfono non disponibile."); }
             _micCap = cap;
             Send(new MsgWriter(Msg.SetMic).Bool(true).Build());
             return "";
@@ -312,7 +312,7 @@ namespace IpDeskCtrl.Core
             _vdec = null;
             _vgen = gen;
             _vframes = 0;
-            if (Screen.Ffmpeg.Path == null) { VideoFailed("ffmpeg non c'è su questo dispositivo"); return; }
+            if (Screen.Ffmpeg.Path == null) { VideoFailed(L.T("ffmpeg non c'è su questo dispositivo")); return; }
             try
             {
                 _vdec = new VideoDecoder(codec, w, h, frame =>
@@ -355,13 +355,13 @@ namespace IpDeskCtrl.Core
         /// <summary>Apre in ascolto 127.0.0.1:porta locale. "" = fatto, altrimenti il motivo.</summary>
         public string StartTunnel(TunnelSpec spec)
         {
-            if (!PeerHas("tunnel")) return "Il PC remoto ha una versione senza tunnel di porte: aggiornalo alla 0.5.";
-            if (!InputAllowed) return "Hai solo la visione del PC remoto: i tunnel non sono permessi.";
+            if (!PeerHas("tunnel")) return L.T("Il PC remoto ha una versione senza tunnel di porte: aggiornalo alla 0.5.");
+            if (!InputAllowed) return L.T("Hai solo la visione del PC remoto: i tunnel non sono permessi.");
             lock (_listeners)
             {
-                if (_listeners.Any(l => l.Spec.LocalPort == spec.LocalPort)) return $"La porta {spec.LocalPort} è già usata da un altro tunnel.";
+                if (_listeners.Any(l => l.Spec.LocalPort == spec.LocalPort)) return L.F("La porta {0} è già usata da un altro tunnel.", spec.LocalPort);
                 try { _listeners.Add(new TunnelListener(spec, OnTunnelClientAsync)); }
-                catch (Exception ex) { return $"La porta {spec.LocalPort} di questo dispositivo è occupata ({ex.Message}): scegline un'altra."; }
+                catch (Exception ex) { return L.F("La porta {0} di questo dispositivo è occupata ({1}): scegline un'altra.", spec.LocalPort, ex.Message); }
             }
             SessionLog.Write($"TUNNEL 127.0.0.1:{spec.LocalPort} → {spec.Host}:{spec.Port} sul PC remoto" + (spec.Name.Length > 0 ? $" ({spec.Name})" : ""));
             return "";
@@ -383,11 +383,11 @@ namespace IpDeskCtrl.Core
             await SendAsync(new MsgWriter(Msg.TunnelOpen).I32(id).Str(spec.Host).I32(spec.Port).Build());
             var done = await Task.WhenAny(tcs.Task, Task.Delay(TimeSpan.FromSeconds(12)));
             _tunnelWait.TryRemove(id, out _);
-            var (ok, why) = done == tcs.Task ? tcs.Task.Result : (false, "il PC remoto non ha risposto");
+            var (ok, why) = done == tcs.Task ? tcs.Task.Result : (false, L.T("il PC remoto non ha risposto"));
             if (!ok)
             {
                 client.Dispose();
-                TunnelMessage?.Invoke($"Tunnel {spec.LocalPort} → {spec.Host}:{spec.Port}: {why}.");
+                TunnelMessage?.Invoke(L.F("Tunnel {0} → {1}:{2}: {3}.", spec.LocalPort, spec.Host, spec.Port, why));
                 return;
             }
             _tunnelHub.Attach(id, client);

@@ -153,17 +153,17 @@ namespace IpDeskCtrl.Core
                         if (DateTime.UtcNow - last > TimeSpan.FromMilliseconds(300))
                         {
                             last = DateTime.UtcNow;
-                            Report(new TransferProgress(id, true, items.Count, done, total, false, $"Invio {items[k].RelPath}"));
+                            Report(new TransferProgress(id, true, items.Count, done, total, false, L.F("Invio {0}", items[k].RelPath)));
                         }
                     }
                 }
                 await Link.SendAsync(new MsgWriter(Msg.FileDone).I32(id).Build(), cts.Token);
-                Report(new TransferProgress(id, true, items.Count, total, total, true, items.Count == 1 ? $"Inviato {items[0].RelPath}" : $"Inviati {items.Count} file"));
+                Report(new TransferProgress(id, true, items.Count, total, total, true, items.Count == 1 ? L.F("Inviato {0}", items[0].RelPath) : L.F("Inviati {0} file", items.Count)));
             }
             catch (Exception ex)
             {
                 if (!IsClosed) { try { await SendAsync(new MsgWriter(Msg.FileCancel).I32(id).Str(ex.Message).Build()); } catch { } }
-                Report(new TransferProgress(id, true, items.Count, done, total, true, "Invio interrotto: " + ex.Message));
+                Report(new TransferProgress(id, true, items.Count, done, total, true, L.T("Invio interrotto: ") + ex.Message));
             }
             finally
             {
@@ -193,14 +193,14 @@ namespace IpDeskCtrl.Core
                     for (int i = 0; i < n; i++) inc.Files.Add((Safe(r.Str()), r.I64()));
                     if (!FilesAllowed)
                     {
-                        await SendAsync(new MsgWriter(Msg.FileCancel).I32(id).Str("su quel PC i file non sono permessi (solo visione)").Build());
+                        await SendAsync(new MsgWriter(Msg.FileCancel).I32(id).Str(L.T("su quel PC i file non sono permessi (solo visione)")).Build());
                         return;
                     }
                     inc.Total = inc.Files.Sum(f => f.size);
                     inc.Folder = Platform.Received;
                     _incoming[id] = inc;
                     SessionLog.Write($"FILE ricevo {n} file ({inc.Total / 1024} kB) da {Identity.Format(PeerNumber)} in {inc.Folder}");
-                    Report(new TransferProgress(id, false, n, 0, inc.Total, false, "Ricevo file…"));
+                    Report(new TransferProgress(id, false, n, 0, inc.Total, false, L.T("Ricevo file…")));
                     if (n == 0) { await FinishAsync(id, inc); }
                     break;
                 }
@@ -224,13 +224,13 @@ namespace IpDeskCtrl.Core
                         if (DateTime.UtcNow - inc.LastReport > TimeSpan.FromMilliseconds(300))
                         {
                             inc.LastReport = DateTime.UtcNow;
-                            Report(new TransferProgress(id, false, inc.Files.Count, inc.Done, inc.Total, false, "Ricevo " + inc.Files[idx].rel));
+                            Report(new TransferProgress(id, false, inc.Files.Count, inc.Done, inc.Total, false, L.T("Ricevo ") + inc.Files[idx].rel));
                         }
                     }
                     catch (Exception ex)
                     {
                         DropIncoming(id, ex.Message);
-                        await SendAsync(new MsgWriter(Msg.FileCancel).I32(id).Str("errore di scrittura: " + ex.Message).Build());
+                        await SendAsync(new MsgWriter(Msg.FileCancel).I32(id).Str(L.T("errore di scrittura: ") + ex.Message).Build());
                     }
                     break;
                 }
@@ -246,7 +246,7 @@ namespace IpDeskCtrl.Core
                     string why = r.Str();
                     if (_outgoing.TryGetValue(id, out var c)) c.Cancel();
                     DropIncoming(id, why);
-                    Report(new TransferProgress(id, false, 0, 0, 0, true, "Trasferimento annullato: " + why));
+                    Report(new TransferProgress(id, false, 0, 0, 0, true, L.T("Trasferimento annullato: ") + why));
                     break;
                 }
             }
@@ -278,7 +278,7 @@ namespace IpDeskCtrl.Core
             }
             SessionLog.Write($"FILE ricevuti {inc.Files.Count} file in {inc.Folder}" + (onClip ? " (negli appunti)" : ""));
             Report(new TransferProgress(id, false, inc.Files.Count, inc.Total, inc.Total, true,
-                (inc.Files.Count == 1 ? "Ricevuto 1 file" : $"Ricevuti {inc.Files.Count} file") + $" in {inc.Folder}" + (onClip ? " · negli appunti: Ctrl+V per incollarli" : "")));
+                (inc.Files.Count == 1 ? L.T("Ricevuto 1 file") : L.F("Ricevuti {0} file", inc.Files.Count)) + L.F(" in {0}", inc.Folder) + (onClip ? L.T(" · negli appunti: Ctrl+V per incollarli") : "")));
             OnFilesReceived(inc.Purpose, inc.Folder, top, onClip);
         }
 
@@ -322,7 +322,7 @@ namespace IpDeskCtrl.Core
         private void AbortTransfers()
         {
             foreach (var c in _outgoing.Values) { try { c.Cancel(); } catch { } }
-            foreach (var id in _incoming.Keys.ToList()) DropIncoming(id, "collegamento chiuso");
+            foreach (var id in _incoming.Keys.ToList()) DropIncoming(id, L.T("collegamento chiuso"));
         }
     }
 }

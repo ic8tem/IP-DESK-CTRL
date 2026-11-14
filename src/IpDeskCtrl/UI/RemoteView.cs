@@ -29,6 +29,7 @@ namespace IpDeskCtrl.UI
 
         public RemoteView()
         {
+            FlowDirection = FlowDirection.LeftToRight;   // lo schermo remoto non si specchia mai
             Focusable = true;
             ClipToBounds = true;
             Cursor = new Cursor(StandardCursorType.Arrow);

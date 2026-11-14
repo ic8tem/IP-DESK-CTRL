@@ -5,6 +5,8 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 
+using IpDeskCtrl.Core;
+
 namespace IpDeskCtrl.Screen
 {
     /// <summary>
@@ -29,13 +31,13 @@ namespace IpDeskCtrl.Screen
             lock (_lock)
             {
                 if (w <= 0 || h <= 0) { Restore(); return ""; }
-                if (!Supported) return OperatingSystem.IsMacOS() ? "Sul Mac la risoluzione non si adatta ancora alla finestra." : "Su questo sistema la risoluzione non si può adattare alla finestra.";
-                if (monitor == null || monitor.Name == "Tutti gli schermi") return "Per adattare la risoluzione scegli un solo schermo del PC remoto.";
+                if (!Supported) return OperatingSystem.IsMacOS() ? L.T("Sul Mac la risoluzione non si adatta ancora alla finestra.") : L.T("Su questo sistema la risoluzione non si può adattare alla finestra.");
+                if (monitor == null || monitor.Name == "Tutti gli schermi") return L.T("Per adattare la risoluzione scegli un solo schermo del PC remoto.");
                 try
                 {
                     return OperatingSystem.IsWindows() ? FitWindows(monitor, w, h) : FitLinux(monitor, w, h);
                 }
-                catch (Exception ex) { return "Risoluzione non cambiata: " + ex.Message; }
+                catch (Exception ex) { return L.T("Risoluzione non cambiata: ") + ex.Message; }
             }
         }
 
@@ -78,7 +80,7 @@ namespace IpDeskCtrl.Screen
             string dev = @"\\.\" + monitor.Name;
             if (_device != null && _device != dev) Restore();
             var cur = NewMode();
-            if (!EnumDisplaySettingsW(dev, ENUM_CURRENT_SETTINGS, ref cur)) return "Monitor " + monitor.Name + " non trovato.";
+            if (!EnumDisplaySettingsW(dev, ENUM_CURRENT_SETTINGS, ref cur)) return L.T("Monitor ") + monitor.Name + L.T(" non trovato.");
             var modes = new List<DEVMODE>();
             for (int i = 0; ; i++)
             {
@@ -86,7 +88,7 @@ namespace IpDeskCtrl.Screen
                 if (!EnumDisplaySettingsW(dev, i, ref m)) break;
                 if (m.dmBitsPerPel == cur.dmBitsPerPel && m.dmPelsWidth >= 640 && m.dmPelsHeight >= 480) modes.Add(m);
             }
-            if (modes.Count == 0) return "Il monitor non elenca altre risoluzioni.";
+            if (modes.Count == 0) return L.T("Il monitor non elenca altre risoluzioni.");
             // a parità di dimensione, la frequenza attuale (o la più alta)
             var best = modes
                 .OrderBy(m => Score(m.dmPelsWidth, m.dmPelsHeight, w, h))
@@ -96,7 +98,7 @@ namespace IpDeskCtrl.Screen
             if (best.dmPelsWidth == cur.dmPelsWidth && best.dmPelsHeight == cur.dmPelsHeight) return "";
             best.dmFields = DM_PELSWIDTH | DM_PELSHEIGHT | DM_BITSPERPEL | DM_DISPLAYFREQUENCY;
             int r = ChangeDisplaySettingsExW(dev, ref best, IntPtr.Zero, CDS_FULLSCREEN, IntPtr.Zero);
-            if (r != 0) return $"Risoluzione {best.dmPelsWidth}×{best.dmPelsHeight} non accettata dal monitor (codice {r}).";
+            if (r != 0) return L.F("Risoluzione {0}×{1} non accettata dal monitor (codice {2}).", best.dmPelsWidth, best.dmPelsHeight, r);
             _device = dev;
             Core.SessionLog.Write($"SCHERMO risoluzione di {monitor.Name} adattata alla finestra del visore: {best.dmPelsWidth}×{best.dmPelsHeight} (finestra {w}×{h})");
             return "";
@@ -126,15 +128,15 @@ namespace IpDeskCtrl.Screen
                 var m = Regex.Match(line, @"^\s+(\d+)x(\d+)");
                 if (m.Success) modes.Add((int.Parse(m.Groups[1].Value), int.Parse(m.Groups[2].Value)));
             }
-            if (output == null || current == null) return "Uscita video di " + monitor.Name + " non trovata con xrandr.";
+            if (output == null || current == null) return L.T("Uscita video di ") + monitor.Name + L.T(" non trovata con xrandr.");
             if (_device != null && _device != output) Restore();
             var best = modes.Where(m => m.w >= 640 && m.h >= 480).OrderBy(m => Score(m.w, m.h, w, h)).FirstOrDefault();
-            if (best.w == 0) return "Il monitor non elenca altre risoluzioni.";
+            if (best.w == 0) return L.T("Il monitor non elenca altre risoluzioni.");
             string target = $"{best.w}x{best.h}";
             if (target == current) return "";
             if (_device == null) _originalMode = current;
             string err = RunErr("xrandr", $"--output {output} --mode {target}");
-            if (err.Length > 0) return "Risoluzione non cambiata: " + err;
+            if (err.Length > 0) return L.T("Risoluzione non cambiata: ") + err;
             _device = output;
             Core.SessionLog.Write($"SCHERMO risoluzione di {output} adattata alla finestra del visore: {target} (finestra {w}×{h})");
             return "";

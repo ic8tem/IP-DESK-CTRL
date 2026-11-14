@@ -32,7 +32,11 @@ namespace IpDeskCtrl.Desktop
                 if (OperatingSystem.IsLinux()) Screen.ScreenSources.InitLinux();
                 if (OperatingSystem.IsWindows()) Screen.WinHelper.InstallHooks();
                 // già avviato (magari nascosto vicino all'orologio): gli si chiede di mostrare la finestra e si esce
-                if (!UI.SingleInstance.Acquire()) return;
+                bool restart = Array.IndexOf(args, "--riavvio") >= 0 || Array.IndexOf(args, Core.Updater.AfterUpdateArg) >= 0;
+                bool got = UI.SingleInstance.Acquire();
+                // riavvio (lingua cambiata, aggiornamento): si aspetta che il programma vecchio si chiuda
+                for (int i = 0; !got && restart && i < 40; i++) { System.Threading.Thread.Sleep(250); got = UI.SingleInstance.Acquire(); }
+                if (!got) return;
                 BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
             }
             catch (Exception ex)

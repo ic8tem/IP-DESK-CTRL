@@ -58,7 +58,7 @@ namespace IpDeskCtrl.Core
         private HostSession? _host;
         private readonly object _hostLock = new();
 
-        public string Status { get; private set; } = "Avvio…";
+        public string Status { get; private set; } = L.T("Avvio…");
         public string Detail { get; private set; } = "";
         public bool Ready { get; private set; }
         public int Brokers => _rdv?.ConnectedBrokers ?? 0;
@@ -131,7 +131,7 @@ namespace IpDeskCtrl.Core
                 SessionLog.Write($"AVVIO IP-DESK-CTRL {AppVersion.Text} · {AppVersion.Os} · numero {Identity.Format(Me.Number)}");
                 StartRendezvous(ct);
 
-                SetStatus("Apro la porta sul router…");
+                SetStatus(L.T("Apro la porta sul router…"));
                 await _portLock.WaitAsync(ct);
                 try { await OpenPortAsync(null, ct); }
                 finally { _portLock.Release(); }
@@ -149,18 +149,18 @@ namespace IpDeskCtrl.Core
             catch (Exception ex)
             {
                 ErrorLog.Write(ex.ToString());
-                SetStatus("Errore di rete: " + ex.Message);
+                SetStatus(L.T("Errore di rete: ") + ex.Message);
             }
         }
 
         private void ShowNetworkStatus()
         {
-            string where = _publicIp == null ? "IP pubblico sconosciuto" : $"IP {_publicIp}";
-            if (ViewerOnly) { SetStatus("Pronto: i collegamenti a questo PC li riceve il servizio di Windows", where); return; }
-            if (_extPort == 0) SetStatus("Pronto solo per collegarti ad altri PC", "nessuna porta in ascolto");
-            else if (_reachable) SetStatus("Pronto: raggiungibile da internet", $"{where} · porta {_extPort}" + (UpnpOk ? " (UPnP)" : ""));
-            else SetStatus("Pronto (porta non raggiungibile da internet: si useranno il collegamento inverso e la rete locale)",
-                           $"{where} · porta {_extPort}" + (UpnpOk ? " (UPnP)" : " · UPnP non disponibile sul router"));
+            string where = _publicIp == null ? L.T("IP pubblico sconosciuto") : $"IP {_publicIp}";
+            if (ViewerOnly) { SetStatus(L.T("Pronto: i collegamenti a questo PC li riceve il servizio di Windows"), where); return; }
+            if (_extPort == 0) SetStatus(L.T("Pronto solo per collegarti ad altri PC"), L.T("nessuna porta in ascolto"));
+            else if (_reachable) SetStatus(L.T("Pronto: raggiungibile da internet"), L.F("{0} · porta {1}", where, _extPort) + (UpnpOk ? L.T(" (UPnP)") : ""));
+            else SetStatus(L.T("Pronto (porta non raggiungibile da internet: si useranno il collegamento inverso e la rete locale)"),
+                           L.F("{0} · porta {1}", where, _extPort) + (UpnpOk ? L.T(" (UPnP)") : L.T(" · UPnP non disponibile sul router")));
         }
 
         /// <summary>Ogni 5 minuti controlla l'IP pubblico; se cambia lo ripubblica.</summary>
@@ -399,7 +399,7 @@ namespace IpDeskCtrl.Core
             try
             {
                 Log($"PORTE {Identity.Format(viewer)} chiede il collegamento inverso (giro {req.Round}): {req.ViewerIp}:{req.ViewerPort} · LAN {req.ViewerLan}"
-                    + (req.Restricted ? $" · la sua rete fa uscire solo le porte {string.Join(", ", req.OutboundPorts)}" : ""));
+                    + (req.Restricted ? L.F(" · la sua rete fa uscire solo le porte {0}", string.Join(", ", req.OutboundPorts)) : ""));
 
                 // rete del visore filtrata: riapro la mia porta su una di quelle che escono da lì
                 if (req.Restricted && req.OutboundPorts.Count > 0 && UpnpOk && !req.OutboundPorts.Contains(_extPort))
@@ -514,25 +514,25 @@ namespace IpDeskCtrl.Core
         /// </summary>
         public async Task<string> WakeAsync(HistoryEntry target, CancellationToken ct)
         {
-            if (target.Mac.Length != 12) return "Il MAC di quel PC non è noto: collegati una volta mentre è acceso con questa versione.";
+            if (target.Mac.Length != 12) return L.T("Il MAC di quel PC non è noto: collegati una volta mentre è acceso con questa versione.");
             if (_publicIp != null && target.PublicIp == _publicIp.ToString())
             {
                 WakeOnLan.Send(target.Mac, target.Broadcast);
                 Log($"WOL pacchetto magico per {Identity.Format(target.Number)} mandato sulla rete locale ({target.Mac})");
-                return "Pacchetto di accensione mandato sulla rete locale. Se il PC è predisposto si accende entro un minuto.";
+                return L.T("Pacchetto di accensione mandato sulla rete locale. Se il PC è predisposto si accende entro un minuto.");
             }
             var rdv = _rdv;
-            if (rdv == null || target.PublicIp.Length == 0) return "Non so in che rete si trova quel PC.";
+            if (rdv == null || target.PublicIp.Length == 0) return L.T("Non so in che rete si trova quel PC.");
             var others = S.History.Where(h => h.Number != target.Number && h.PublicIp == target.PublicIp).Take(10).ToList();
-            if (others.Count == 0) return "Nessun altro PC dello storico è nella stessa rete di quello da accendere: il pacchetto si può mandare solo da lì.";
+            if (others.Count == 0) return L.T("Nessun altro PC dello storico è nella stessa rete di quello da accendere: il pacchetto si può mandare solo da lì.");
             var looks = await Task.WhenAll(others.Select(h => ViewerRendezvous.LookupAsync(h.Number, S.MqttBrokers, null, ct)));
             var awake = looks.Where(a => a != null && a.Age < TimeSpan.FromMinutes(8) && a.PublicIp == target.PublicIp).Select(a => a!).ToList();
-            if (awake.Count == 0) return "Nessun PC acceso nella stessa rete di quello da accendere.";
+            if (awake.Count == 0) return L.T("Nessun PC acceso nella stessa rete di quello da accendere.");
             byte[] data = new MsgWriter(0).Str(target.Number).Str(target.Mac).Str(target.Broadcast).Build();
             foreach (var a in awake) await rdv.SendNoteAsync(a.Number, Note.WakeRequest, data, ct);
             Log($"WOL chiesto a {awake.Count} PC della stessa rete di accendere {Identity.Format(target.Number)}");
-            return $"Chiesto a {awake.Count} PC accesi della stessa rete di mandare il pacchetto di accensione " +
-                   "(lo fanno solo se questo PC può entrare lì senza conferma).";
+            return L.F("Chiesto a {0} PC accesi della stessa rete di mandare il pacchetto di accensione ", awake.Count) +
+                   L.T("(lo fanno solo se questo PC può entrare lì senza conferma).");
         }
 
         /// <summary>Un altro PC chiede di accendere un PC di questa rete: solo se è «senza conferma» qui.</summary>
@@ -627,7 +627,7 @@ namespace IpDeskCtrl.Core
         {
             var rdv = _rdv;
             if (rdv == null) return null;
-            progress("TCP non passa tra i due PC: provo il collegamento solo UDP (perforazione del NAT)…");
+            progress(L.T("TCP non passa tra i due PC: provo il collegamento solo UDP (perforazione del NAT)…"));
             UdpLink? link = null;
             string? key = null;
             try
@@ -651,13 +651,13 @@ namespace IpDeskCtrl.Core
                 var ans = tcs.Task.Result;
                 Log($"UDP candidati dell'altro PC: {ans.Candidates} · passo NAT {ans.Delta}");
                 link.SetKey(UdpKeyFrom(eph, ans.EphemeralKey, nonce));
-                progress("Perforazione UDP in corso…");
+                progress(L.T("Perforazione UDP in corso…"));
                 if (!await link.PunchAsync(ans.Endpoints(), ans.Delta, TimeSpan.FromSeconds(12), ct))
                 {
                     link.Dispose();
                     return null;
                 }
-                progress("Canale UDP aperto: handshake cifrato…");
+                progress(L.T("Canale UDP aperto: handshake cifrato…"));
                 var sl = await SecureLink.HandshakeAsync(link, Me, LinkRole.Viewer, number, ct);
                 link = null;
                 Log($"UDP collegamento solo UDP riuscito verso {Identity.Format(number)} ({sl.Remote})");
@@ -666,7 +666,7 @@ namespace IpDeskCtrl.Core
             catch (CryptographicException ex)
             {
                 link?.Dispose();
-                throw new PeerException("Collegamento rifiutato per motivi di sicurezza: " + ex.Message);
+                throw new PeerException(L.T("Collegamento rifiutato per motivi di sicurezza: ") + ex.Message);
             }
             catch (Exception ex) when (!ct.IsCancellationRequested)
             {
@@ -695,27 +695,27 @@ namespace IpDeskCtrl.Core
         public async Task<SecureLink> ConnectAsync(string number, Action<string> progress, CancellationToken ct)
         {
             number = Identity.Clean(number);
-            if (!Identity.IsValidNumber(number)) throw new PeerException("Il numero deve avere 10 cifre.");
-            if (number == Me.Number) throw new PeerException("Questo è il numero di questo PC.");
+            if (!Identity.IsValidNumber(number)) throw new PeerException(L.T("Il numero deve avere 10 cifre."));
+            if (number == Me.Number) throw new PeerException(L.T("Questo è il numero di questo PC."));
             for (int w = 0; !Ready && w < 60 && !ct.IsCancellationRequested; w++)
             {
-                if (w == 0) progress("Preparo la rete di questo PC…");
+                if (w == 0) progress(L.T("Preparo la rete di questo PC…"));
                 await Task.Delay(500, ct);
             }
 
-            progress("Cerco " + Identity.Format(number) + " sui broker MQTT…");
+            progress(L.T("Cerco ") + Identity.Format(number) + L.T(" sui broker MQTT…"));
             var a = await ViewerRendezvous.LookupAsync(number, S.MqttBrokers, Log, ct);
             if (a != null) { _lastSeen[number] = a; ViewerRendezvous.Versions[number] = a.Version; }
             if (a == null)
-                throw new PeerException($"Il numero {Identity.Format(number)} non risulta in linea: il programma su quel PC è chiuso o non raggiunge internet, oppure il numero è sbagliato.");
+                throw new PeerException(L.F("Il numero {0} non risulta in linea: il programma su quel PC è chiuso o non raggiunge internet, oppure il numero è sbagliato.", Identity.Format(number)));
             var (proto, ver) = AppVersion.Parse(a.Version);
             if (proto != AppVersion.Protocol)
-                throw new PeerException($"L'altro PC usa la versione {ver} (protocollo {proto}), questo la {AppVersion.Text} (protocollo {AppVersion.Protocol}): aggiorna tutti e due.");
+                throw new PeerException(L.F("L'altro PC usa la versione {0} (protocollo {1}), questo la {2} (protocollo {3}): aggiorna tutti e due.", ver, proto, AppVersion.Text, AppVersion.Protocol));
             // controllo preliminare delle versioni: stesso protocollo ma versione diversa = si collega con meno funzioni
             string verNote = AppVersion.Compare(a.Version);
             if (verNote.Length > 0) { progress(verNote); Log("VERSIONI " + verNote); }
             if (a.Age > TimeSpan.FromMinutes(8))
-                progress($"Ultimo segnale dell'altro PC: {ViewerRendezvous.Age(a.Age)}. Potrebbe essere spento; provo lo stesso…");
+                progress(L.F("Ultimo segnale dell'altro PC: {0}. Potrebbe essere spento; provo lo stesso…", ViewerRendezvous.Age(a.Age)));
 
             var link = await TryDirectAsync(a, number, progress, ct);
             if (link != null) return link;
@@ -749,10 +749,10 @@ namespace IpDeskCtrl.Core
                         Log("UDP dal giro 3 parte in parallelo il collegamento solo UDP");
                     }
                     if (round <= 2)
-                        progress($"Collegamento diretto non riuscito: chiedo all'altro PC di collegarsi a questo (giro {round} di {rounds})…");
+                        progress(L.F("Collegamento diretto non riuscito: chiedo all'altro PC di collegarsi a questo (giro {0} di {1})…", round, rounds));
                     else
                     {
-                        progress($"Giro {round} di {rounds}, porte invertite: apro una nuova porta su questo PC e chiedo di nuovo all'altro di collegarsi…");
+                        progress(L.F("Giro {0} di {1}, porte invertite: apro una nuova porta su questo PC e chiedo di nuovo all'altro di collegarsi…", round, rounds));
                         await _portLock.WaitAsync(ct);
                         try
                         {
@@ -781,7 +781,7 @@ namespace IpDeskCtrl.Core
                     if (a2 != null && (a2.Port != a.Port || a2.PublicIp != a.PublicIp))
                     {
                         a = a2;
-                        progress($"L'altro PC ha aperto la porta {a.Port}: riprovo il collegamento diretto…");
+                        progress(L.F("L'altro PC ha aperto la porta {0}: riprovo il collegamento diretto…", a.Port));
                         link = await TryDirectAsync(a, number, progress, ct);
                         if (link != null) return link;
                     }
@@ -792,7 +792,7 @@ namespace IpDeskCtrl.Core
                 // finiti i giri: si aspetta la prova UDP già partita (o la si fa ora)
                 if (!ct.IsCancellationRequested)
                 {
-                    progress("TCP non passa tra i due PC: attendo il collegamento solo UDP…");
+                    progress(L.T("TCP non passa tra i due PC: attendo il collegamento solo UDP…"));
                     link = udpTask != null ? await SafeUdp(udpTask) : await TryUdpAsync(number, progress, ct);
                     if (link != null) { udpWon = true; return link; }
                 }
@@ -811,9 +811,9 @@ namespace IpDeskCtrl.Core
                 if (tcs.Task.IsCompletedSuccessfully && (ct.IsCancellationRequested || udpWon)) tcs.Task.Result.Dispose();
             }
             if (ct.IsCancellationRequested) throw new OperationCanceledException();
-            throw new PeerException("Nessuna strada tra i due PC: né il collegamento diretto, né quello inverso, né quello solo UDP sono riusciti. " +
-                                    "Attiva UPnP sul router di almeno uno dei due PC (meglio su entrambi), oppure inoltra a mano la porta sul router. " +
-                                    "Con IP condiviso dell'operatore (CGNAT) su entrambi i lati il collegamento diretto non è possibile.");
+            throw new PeerException(L.T("Nessuna strada tra i due PC: né il collegamento diretto, né quello inverso, né quello solo UDP sono riusciti. ") +
+                                    L.T("Attiva UPnP sul router di almeno uno dei due PC (meglio su entrambi), oppure inoltra a mano la porta sul router. ") +
+                                    L.T("Con IP condiviso dell'operatore (CGNAT) su entrambi i lati il collegamento diretto non è possibile."));
         }
 
         private static async Task<SecureLink?> SafeUdp(Task<SecureLink?> t)
@@ -827,14 +827,14 @@ namespace IpDeskCtrl.Core
             if (IPAddress.TryParse(a.PublicIp, out var pip) && a.Port > 0) targets.Add((new IPEndPoint(pip, a.Port), "internet"));
             if (IPAddress.TryParse(a.LanIp, out var lip) && a.LanPort > 0)
             {
-                var lan = (new IPEndPoint(lip, a.LanPort), "rete locale");
+                var lan = (new IPEndPoint(lip, a.LanPort), L.T("rete locale"));
                 // stesso IP pubblico: molti router non lasciano rientrare dall'indirizzo pubblico di casa
                 if (_publicIp != null && a.PublicIp == _publicIp.ToString()) targets.Insert(0, lan); else targets.Add(lan);
             }
             foreach (var (ep, what) in targets)
             {
                 ct.ThrowIfCancellationRequested();
-                progress($"Mi collego a {Identity.Format(number)} via {what} ({ep})…");
+                progress(L.F("Mi collego a {0} via {1} ({2})…", Identity.Format(number), what, ep));
                 var tcp = new TcpClient(AddressFamily.InterNetwork);
                 try
                 {
@@ -850,7 +850,7 @@ namespace IpDeskCtrl.Core
                 catch (System.Security.Cryptography.CryptographicException ex)
                 {
                     tcp.Dispose();
-                    throw new PeerException("Collegamento rifiutato per motivi di sicurezza: " + ex.Message);
+                    throw new PeerException(L.T("Collegamento rifiutato per motivi di sicurezza: ") + ex.Message);
                 }
                 catch (Exception ex) when (!ct.IsCancellationRequested)
                 {
@@ -865,7 +865,7 @@ namespace IpDeskCtrl.Core
 
         public void Dispose()
         {
-            try { CurrentHost?.Close("programma chiuso sull'altro PC"); } catch { }
+            try { CurrentHost?.Close(L.T("programma chiuso sull'altro PC")); } catch { }
             _life.Cancel();
             StopListen();
             try { _rdvTask?.Wait(3000); } catch { }     // toglie l'indirizzo dai broker

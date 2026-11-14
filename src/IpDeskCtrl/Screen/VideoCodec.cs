@@ -173,7 +173,7 @@ namespace IpDeskCtrl.Screen
         public static async Task<string> DownloadAsync(Action<string> progress, CancellationToken ct, string? folder = null)
         {
             folder ??= LocalFolder;
-            if (!CanDownload) return "Lo scaricamento automatico c'è solo su Windows a 64 bit (x64 o ARM64).";
+            if (!CanDownload) return L.T("Lo scaricamento automatico c'è solo su Windows a 64 bit (x64 o ARM64).");
             string tmp = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "ipdesk-ffmpeg.zip");
             try
             {
@@ -195,24 +195,24 @@ namespace IpDeskCtrl.Screen
                         if (done - lastShown > 4 << 20)
                         {
                             lastShown = done;
-                            progress(total > 0 ? $"Scarico ffmpeg… {done * 100 / total} %" : $"Scarico ffmpeg… {done >> 20} MB");
+                            progress(total > 0 ? L.F("Scarico ffmpeg… {0} %", done * 100 / total) : L.F("Scarico ffmpeg… {0} MB", done >> 20));
                         }
                     }
                 }
-                progress("Estraggo ffmpeg…");
+                progress(L.T("Estraggo ffmpeg…"));
                 Directory.CreateDirectory(folder);
                 using (var zip = ZipFile.OpenRead(tmp))
                 {
                     var entry = zip.Entries.FirstOrDefault(e => e.FullName.EndsWith("/bin/ffmpeg.exe", StringComparison.OrdinalIgnoreCase));
-                    if (entry == null) return "Nell'archivio scaricato non c'è ffmpeg.exe.";
+                    if (entry == null) return L.T("Nell'archivio scaricato non c'è ffmpeg.exe.");
                     entry.ExtractToFile(System.IO.Path.Combine(folder, "ffmpeg.exe"), true);
                 }
                 Rescan();
                 SessionLog.Write("VIDEO ffmpeg scaricato in " + folder);
                 return "";
             }
-            catch (OperationCanceledException) { return "Scaricamento annullato."; }
-            catch (Exception ex) { return "ffmpeg non scaricato: " + ex.Message; }
+            catch (OperationCanceledException) { return L.T("Scaricamento annullato."); }
+            catch (Exception ex) { return L.T("ffmpeg non scaricato: ") + ex.Message; }
             finally { try { File.Delete(tmp); } catch { } }
         }
 
@@ -267,7 +267,7 @@ namespace IpDeskCtrl.Screen
                           $"-c:v {enc.Name} {Ffmpeg.Options(enc.Name)} -pix_fmt {(enc.Hardware ? "nv12" : "yuv420p")} " +
                           $"-g 75 -bf 0 -b:v {kbps}k -maxrate {kbps}k -bufsize {Math.Max(200, kbps / 2)}k " +
                           $"-flush_packets 1 -f {Ffmpeg.Format(enc.Codec)} -";
-            _p = Ffmpeg.Start(Ffmpeg.Path!, args, true) ?? throw new IOException("ffmpeg non avviabile");
+            _p = Ffmpeg.Start(Ffmpeg.Path!, args, true) ?? throw new IOException(L.T("ffmpeg non avviabile"));
             _in = _p.StandardInput.BaseStream;
             var err = _p.StandardError;
             _ = Task.Run(async () => { try { string e = await err.ReadToEndAsync(); if (e.Trim().Length > 0) Error = e.Trim(); } catch { } });
@@ -282,7 +282,7 @@ namespace IpDeskCtrl.Screen
                 }
                 catch { }
                 Failed = true;
-            }) { IsBackground = true, Name = "video codifica" };
+            }) { IsBackground = true, Name = L.T("video codifica") };
             _reader.Start();
         }
 
@@ -324,7 +324,7 @@ namespace IpDeskCtrl.Screen
             Width = w; Height = h;
             string args = "-hide_banner -loglevel error -fflags nobuffer -flags low_delay -probesize 32 -analyzeduration 0 -hwaccel auto " +
                           $"-f {Ffmpeg.Format(codec)} -i - -an -f rawvideo -pix_fmt bgra -s {w}x{h} -flush_packets 1 -";
-            _p = Ffmpeg.Start(Ffmpeg.Path!, args, true) ?? throw new IOException("ffmpeg non avviabile");
+            _p = Ffmpeg.Start(Ffmpeg.Path!, args, true) ?? throw new IOException(L.T("ffmpeg non avviabile"));
             _in = _p.StandardInput.BaseStream;
             var err = _p.StandardError;
             _ = Task.Run(async () => { try { string e = await err.ReadToEndAsync(); if (e.Trim().Length > 0) SessionLog.Write("VIDEO decodifica: " + e.Trim()); } catch { } });
@@ -348,7 +348,7 @@ namespace IpDeskCtrl.Screen
                     }
                 }
                 catch { Failed = true; }
-            }) { IsBackground = true, Name = "video decodifica" }.Start();
+            }) { IsBackground = true, Name = L.T("video decodifica") }.Start();
         }
 
         public void Feed(byte[] data)

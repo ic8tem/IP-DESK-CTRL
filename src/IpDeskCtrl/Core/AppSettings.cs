@@ -45,6 +45,7 @@ namespace IpDeskCtrl.Core
         public bool AllowResize { get; set; } = true;      // chi si collega può adattare la risoluzione alla sua finestra
         public bool AllowDrive { get; set; } = true;       // chi si collega può montare qui una sua cartella come disco
         public bool AllowTunnel { get; set; } = true;
+        public string Language { get; set; } = "";         // "" = lingua del sistema (una delle 36, altrimenti inglese)
         public string ToolbarDock { get; set; } = "sopra";  // plancia del collegamento: sopra, sinistra, destra (sempre a scomparsa)
         public bool AutoUpdate { get; set; } = true;       // le nuove versioni si scaricano e si installano da sole
         public string SkipAutoVersion { get; set; } = "";  // versione per cui si è scelto «Più tardi»: niente installazione da sola
@@ -103,6 +104,7 @@ namespace IpDeskCtrl.Core
             catch { s = new AppSettings(); }
             s.History = s.History.Where(h => Identity.IsValidNumber(h.Number)).ToList();
             s.ReloadShared();
+            L.Current = s.Language;            // lingua scelta, o quella del sistema
             return s;
         }
 

@@ -61,13 +61,13 @@ namespace IpDeskCtrl.UI
             if (_s.HideNoticeShown) return;
             _s.HideNoticeShown = true;
             _s.Save();
-            var ok = Ui.Btn("Ho capito", true);
+            var ok = Ui.Btn(L.T("Ho capito"), true);
             var content = Ui.Col(10,
-                Ui.H1("IP-DESK-CTRL resta attivo"),
-                Ui.Sub("La finestra è nascosta, ma il programma continua a funzionare: questo PC resta raggiungibile col suo numero e i collegamenti aperti non si chiudono."),
+                Ui.H1(L.T("IP-DESK-CTRL resta attivo")),
+                Ui.Sub(L.T("La finestra è nascosta, ma il programma continua a funzionare: questo PC resta raggiungibile col suo numero e i collegamenti aperti non si chiudono.")),
                 Ui.Sub(OperatingSystem.IsMacOS()
-                    ? "Per riaprirlo usa l'icona di IP-DESK-CTRL nella barra dei menu in alto, oppure riavvialo. Per chiuderlo davvero: icona › «Esci da IP-DESK-CTRL»."
-                    : "Per riaprirlo fai clic sull'icona di IP-DESK-CTRL vicino all'orologio, oppure riavvialo dal menu o dal desktop. Per chiuderlo davvero: clic destro sull'icona › «Esci da IP-DESK-CTRL», oppure Impostazioni › «Esci dal programma»."),
+                    ? L.T("Per riaprirlo usa l'icona di IP-DESK-CTRL nella barra dei menu in alto, oppure riavvialo. Per chiuderlo davvero: icona › «Esci da IP-DESK-CTRL».")
+                    : L.T("Per riaprirlo fai clic sull'icona di IP-DESK-CTRL vicino all'orologio, oppure riavvialo dal menu o dal desktop. Per chiuderlo davvero: clic destro sull'icona › «Esci da IP-DESK-CTRL», oppure Impostazioni › «Esci dal programma».")),
                 ok);
             var h = Shell.Current.ShowDialog("IP-DESK-CTRL", content, 460, true);
             ok.Click += (_, _) => h.Close();
