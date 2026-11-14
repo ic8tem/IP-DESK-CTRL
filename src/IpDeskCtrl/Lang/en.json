@@ -567,5 +567,6 @@
  "Collegamento non possibile": "Connection not possible",
  "Tutti gli schermi": "All screens",
  "Collegamento terminato": "Connection ended",
- "Ricollegati": "Reconnect"
+ "Ricollegati": "Reconnect",
+ "Il PC remoto è bloccato (schermata di blocco o di accesso) oppure mostra una finestra di sicurezza (UAC, Ctrl+Alt+Canc): ": "The remote PC is locked (lock or sign-in screen) or is showing a security window (UAC, Ctrl+Alt+Del): "
 }

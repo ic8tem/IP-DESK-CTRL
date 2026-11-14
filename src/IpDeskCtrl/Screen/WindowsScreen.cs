@@ -101,8 +101,8 @@ namespace IpDeskCtrl.Screen
         /// <summary>Desktop su cui si trova ora il thread chiamante ("" se non è mai stato spostato).</summary>
         public static string ThreadDesktopName => _threadDeskName ?? "";
 
-        public const string LockedNote = "Il PC remoto è bloccato (schermata di blocco o di accesso) oppure mostra una finestra di sicurezza (UAC, Ctrl+Alt+Canc): " +
-                                         L.T("Windows non la lascia vedere né comandare. Sbloccalo e l'immagine torna da sola.");
+        public static string LockedNote => L.T("Il PC remoto è bloccato (schermata di blocco o di accesso) oppure mostra una finestra di sicurezza (UAC, Ctrl+Alt+Canc): ") +
+                                           L.T("Windows non la lascia vedere né comandare. Sbloccalo e l'immagine torna da sola.");
         [DllImport("gdi32.dll")] public static extern IntPtr CreateCompatibleDC(IntPtr hdc);
         [DllImport("gdi32.dll")] public static extern bool DeleteDC(IntPtr hdc);
         [DllImport("gdi32.dll")] public static extern IntPtr SelectObject(IntPtr hdc, IntPtr obj);
