@@ -1,31 +1,42 @@
 {
-    "version": "0.5.11",
+    "version": "0.5.12",
     "description": "Desktop remoto cifrato con numero fisso di 10 cifre",
     "homepage": "https://github.com/ic8tem/IP-DESK-CTRL",
     "license": "GPL-3.0-or-later",
     "notes": "IP-DESK-CTRL si aggiorna da solo (usa scoop update). Le impostazioni stanno in %APPDATA%\\IP-DESK-CTRL.",
     "architecture": {
         "64bit": {
-            "url": "https://github.com/ic8tem/IP-DESK-CTRL/releases/download/v0.5.11/IP-DESK-CTRL-0.5.11-win-x64-portatile.zip",
-            "hash": "0000000000000000000000000000000000000000000000000000000000000000"
+            "url": "https://github.com/ic8tem/IP-DESK-CTRL/releases/download/v0.5.12/IP-DESK-CTRL-0.5.12-win-x64-portatile.zip",
+            "hash": "5afc03611322be21c58f52b25c13072397a1535dece9ee6c129c10b69ee31ca2"
         },
         "32bit": {
-            "url": "https://github.com/ic8tem/IP-DESK-CTRL/releases/download/v0.5.11/IP-DESK-CTRL-0.5.11-win-x86-portatile.zip",
-            "hash": "0000000000000000000000000000000000000000000000000000000000000000"
+            "url": "https://github.com/ic8tem/IP-DESK-CTRL/releases/download/v0.5.12/IP-DESK-CTRL-0.5.12-win-x86-portatile.zip",
+            "hash": "582d25d69d0f6407454011d881aeee34fb67a9f398e3af94d0ac71ecb5b6e147"
         },
         "arm64": {
-            "url": "https://github.com/ic8tem/IP-DESK-CTRL/releases/download/v0.5.11/IP-DESK-CTRL-0.5.11-win-arm64-portatile.zip",
-            "hash": "0000000000000000000000000000000000000000000000000000000000000000"
+            "url": "https://github.com/ic8tem/IP-DESK-CTRL/releases/download/v0.5.12/IP-DESK-CTRL-0.5.12-win-arm64-portatile.zip",
+            "hash": "540846e475e70b1b2edd1accb568a1694a91c4d267ef48c09cdb893b0e013b94"
         }
     },
     "bin": "IP-DESK-CTRL.exe",
-    "shortcuts": [["IP-DESK-CTRL.exe", "IP-DESK-CTRL"]],
+    "shortcuts": [
+        [
+            "IP-DESK-CTRL.exe",
+            "IP-DESK-CTRL"
+        ]
+    ],
     "checkver": "github",
     "autoupdate": {
         "architecture": {
-            "64bit": { "url": "https://github.com/ic8tem/IP-DESK-CTRL/releases/download/v$version/IP-DESK-CTRL-$version-win-x64-portatile.zip" },
-            "32bit": { "url": "https://github.com/ic8tem/IP-DESK-CTRL/releases/download/v$version/IP-DESK-CTRL-$version-win-x86-portatile.zip" },
-            "arm64": { "url": "https://github.com/ic8tem/IP-DESK-CTRL/releases/download/v$version/IP-DESK-CTRL-$version-win-arm64-portatile.zip" }
+            "64bit": {
+                "url": "https://github.com/ic8tem/IP-DESK-CTRL/releases/download/v$version/IP-DESK-CTRL-$version-win-x64-portatile.zip"
+            },
+            "32bit": {
+                "url": "https://github.com/ic8tem/IP-DESK-CTRL/releases/download/v$version/IP-DESK-CTRL-$version-win-x86-portatile.zip"
+            },
+            "arm64": {
+                "url": "https://github.com/ic8tem/IP-DESK-CTRL/releases/download/v$version/IP-DESK-CTRL-$version-win-arm64-portatile.zip"
+            }
         }
     }
 }
