@@ -41,6 +41,8 @@ install -d %{buildroot}/opt/ip-desk-ctrl %{buildroot}/usr/bin %{buildroot}/usr/s
            %{buildroot}/usr/share/icons/hicolor/256x256/apps %{buildroot}/usr/share/doc/ip-desk-ctrl \
            %{buildroot}/usr/lib/udev/rules.d %{buildroot}/usr/lib/modules-load.d
 install -m 755 "${SRC}/IP-DESK-CTRL" %{buildroot}/opt/ip-desk-ctrl/IP-DESK-CTRL
+install -m 755 "${ROOT}/packaging/linux/aggiorna-root.sh" %{buildroot}/opt/ip-desk-ctrl/aggiorna-root.sh
+install -D -m 644 "${ROOT}/packaging/linux/io.github.ic8tem.ipdeskctrl.aggiorna.policy" %{buildroot}/usr/share/polkit-1/actions/io.github.ic8tem.ipdeskctrl.aggiorna.policy
 ln -s /opt/ip-desk-ctrl/IP-DESK-CTRL %{buildroot}/usr/bin/ip-desk-ctrl
 install -m 644 "${ROOT}/src/IpDeskCtrl/Assets/icon.png" %{buildroot}/usr/share/icons/hicolor/256x256/apps/ip-desk-ctrl.png
 install -m 644 "${ROOT}/README.md" "${ROOT}/THIRD-PARTY-NOTICES.txt" "${ROOT}/LICENSE" %{buildroot}/usr/share/doc/ip-desk-ctrl/
@@ -72,6 +74,7 @@ exit 0
 /usr/share/doc/ip-desk-ctrl
 /usr/lib/udev/rules.d/70-ip-desk-ctrl-uinput.rules
 /usr/lib/modules-load.d/ip-desk-ctrl.conf
+/usr/share/polkit-1/actions/io.github.ic8tem.ipdeskctrl.aggiorna.policy
 SPEC
 
 rpmbuild --define "_topdir $TOP" --target "${ARCH}-linux" -bb "$TOP/SPECS/ip-desk-ctrl.spec" >/dev/null

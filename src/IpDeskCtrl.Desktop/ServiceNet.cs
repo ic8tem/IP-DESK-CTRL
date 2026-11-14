@@ -192,6 +192,12 @@ namespace IpDeskCtrl.Desktop
                             _s.Save();
                             SessionLog.Write("SERVIZIO password dell'accesso senza conferma " + (p[1] == "-" ? "tolta" : "aggiornata"));
                             break;
+                        case "MQTT" when p.Length >= 2 && _peer != null:
+                        {
+                            var list = p[1].Split(',', StringSplitOptions.RemoveEmptyEntries).ToList();
+                            if (!list.SequenceEqual(_peer.S.MqttBrokers)) _peer.SetBrokers(list);
+                            break;
+                        }
                         case "TRXDONE":
                             SessionLog.Write("SERVIZIO IP-TRX-CTRL nella sessione dell'utente: " + string.Join(' ', p.Skip(1)));
                             break;

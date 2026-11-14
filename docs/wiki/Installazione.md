@@ -98,7 +98,8 @@ L'aggiornamento:
 | macOS (.dmg, app.zip, Homebrew) | **Sì** | Sostituisce l'app; se è in Applicazioni e serve, chiede la password |
 | AppImage | **Sì, senza domande** | Sostituisce il file .AppImage |
 | Linux portatile e Alpine (.tar.gz) | **Sì, senza domande** | Sostituisce i file nella cartella, se è una cartella tua (non di sistema) |
-| Debian/Ubuntu/Mint/Raspberry (.deb), Fedora/openSUSE (.rpm), Arch (.pkg.tar.zst), Slackware (.txz), Snap | Sì, con la password | Il pacchetto si installa col gestore del sistema, che **chiede la password di amministratore**: se nessuno la scrive, l'aggiornamento resta in attesa |
+| Debian/Ubuntu/Mint/Raspberry (.deb), Fedora/openSUSE (.rpm), Arch (.pkg.tar.zst), Slackware (.txz) | **Sì, senza password** | Il pacchetto installa una regola polkit che permette solo allo script di aggiornamento di girare senza password: lo script scarica il pacchetto dalla release su GitHub, ne controlla l'impronta SHA-256 e accetta solo versioni più nuove |
+| Snap | Sì, con la password | snap chiede la password di amministratore: se nessuno la scrive, l'aggiornamento resta in attesa |
 | Android e Chromebook (APK) | **No, solo avviso** | Android non permette a un'app di installarsi da sola: si apre lo scaricamento dell'APK, da toccare per installarlo sopra |
 
 Si può sempre aggiornare anche a mano installando sopra la versione precedente: numero, storico e impostazioni restano.

@@ -16,6 +16,8 @@ PKG="$(mktemp -d)/pkg"
 install -d "$PKG/opt/ip-desk-ctrl" "$PKG/usr/bin" "$PKG/usr/share/applications" "$PKG/usr/share/icons/hicolor/256x256/apps" \
            "$PKG/usr/doc/ip-desk-ctrl-$VERSION" "$PKG/lib/udev/rules.d" "$PKG/install"
 install -m 755 "$SRC/IP-DESK-CTRL" "$PKG/opt/ip-desk-ctrl/IP-DESK-CTRL"
+install -m 755 "$ROOT/packaging/linux/aggiorna-root.sh" "$PKG/opt/ip-desk-ctrl/aggiorna-root.sh"
+install -D -m 644 "$ROOT/packaging/linux/io.github.ic8tem.ipdeskctrl.aggiorna.policy" "$PKG/usr/share/polkit-1/actions/io.github.ic8tem.ipdeskctrl.aggiorna.policy"
 install -m 644 "$ROOT/src/IpDeskCtrl/Assets/icon.png" "$PKG/usr/share/icons/hicolor/256x256/apps/ip-desk-ctrl.png"
 install -m 644 "$ROOT/README.md" "$ROOT/THIRD-PARTY-NOTICES.txt" "$ROOT/LICENSE" "$PKG/usr/doc/ip-desk-ctrl-$VERSION/"
 echo 'KERNEL=="uinput", SUBSYSTEM=="misc", TAG+="uaccess", OPTIONS+="static_node=uinput"' > "$PKG/lib/udev/rules.d/70-ip-desk-ctrl-uinput.rules"

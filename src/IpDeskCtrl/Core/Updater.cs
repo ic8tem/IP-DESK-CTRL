@@ -52,6 +52,9 @@ namespace IpDeskCtrl.Core
         }
 
         /// <summary>La cartella del programma è scrivibile (una portatile in una cartella di sistema non lo è: solo avviso).</summary>
+        /// <summary>Script di aggiornamento dei pacchetti Linux che polkit lascia girare senza password.</summary>
+        public const string RootHelper = "/opt/ip-desk-ctrl/aggiorna-root.sh";
+
         private static bool CanWrite(string dir)
         {
             try
@@ -103,6 +106,7 @@ namespace IpDeskCtrl.Core
             Kind.WindowsSetup => service
                 ? "Il servizio di IP-DESK-CTRL installa la nuova versione senza chiedere nulla, anche se il PC è comandato da remoto."
                 : "Windows chiederà il permesso di amministratore (UAC): chi è al PC deve rispondere sì.",
+            Kind.LinuxDeb or Kind.LinuxRpm or Kind.LinuxSlackware or Kind.LinuxArch when File.Exists(RootHelper) => "Si installa senza password: il pacchetto nuovo lo scarica e lo verifica il sistema da GitHub.",
             Kind.LinuxDeb or Kind.LinuxRpm or Kind.LinuxSlackware or Kind.LinuxArch or Kind.LinuxSnap => "Il sistema chiederà la password di amministratore per installare il pacchetto.",
             Kind.LinuxAppImage => "Il file .AppImage viene sostituito con quello nuovo.",
             Kind.MacApp => "Se l'app è in Applicazioni e serve, macOS chiederà la password.",
@@ -160,7 +164,7 @@ namespace IpDeskCtrl.Core
         /// <summary>
         /// Avvia l'installazione. "" = avviata: il programma deve chiudersi subito (chi installa aspetta che esca).
         /// </summary>
-        public static string Install(Kind k, string file, string sha, bool viaService)
+        public static string Install(Kind k, string file, string sha, bool viaService, string version = "")
         {
             try
             {
@@ -197,6 +201,13 @@ Start-Process -FilePath '{Q(exe)}' -ArgumentList '{AfterUpdateArg}'
                         Process.Start(new ProcessStartInfo("powershell.exe", $"-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File \"{ps}\"") { UseShellExecute = false, CreateNoWindow = true });
                         return "";
                     }
+                    // pacchetti di sistema con lo script verificato: senza password (regola polkit del pacchetto)
+                    case Kind.LinuxDeb or Kind.LinuxRpm or Kind.LinuxArch or Kind.LinuxSlackware when File.Exists(RootHelper) && version.Length > 0:
+                        return RunScript($@"
+while kill -0 {pid} 2>/dev/null; do sleep 0.3; done
+pkexec {RootHelper} '{S(version)}' '{S(System.IO.Path.GetFileName(file))}'
+nohup /opt/ip-desk-ctrl/IP-DESK-CTRL {AfterUpdateArg} >/dev/null 2>&1 &
+");
                     case Kind.LinuxDeb:
                         return RunScript($@"
 while kill -0 {pid} 2>/dev/null; do sleep 0.3; done

@@ -99,16 +99,37 @@ namespace IpDeskCtrl.Core
 
         public void Start() => _ = Task.Run(() => StartAsync(_life.Token));
 
+        private CancellationTokenSource? _rdvCts;
+
+        /// <summary>Si collega ai broker MQTT dell'elenco (all'avvio e quando l'elenco cambia).</summary>
+        private void StartRendezvous(CancellationToken life)
+        {
+            _rdvCts?.Cancel();
+            _rdvCts = CancellationTokenSource.CreateLinkedTokenSource(life);
+            var ct = _rdvCts.Token;
+            var rdv = new HostRendezvous(Me, S.MqttBrokers) { Log = Log, Publish = !ViewerOnly, AcceptRequests = !ViewerOnly };
+            rdv.RequestReceived += r => _ = Task.Run(() => OnRequestAsync(r, life));
+            rdv.NoteReceived += n => _ = Task.Run(() => OnNoteAsync(n, life));
+            _rdv = rdv;
+            _rdvTask = Task.Run(() => rdv.RunAsync(ct));
+        }
+
+        /// <summary>Nuovo elenco di broker MQTT: si salva e ci si ricollega subito.</summary>
+        public void SetBrokers(List<string> brokers)
+        {
+            S.MqttBrokers = brokers.Count > 0 ? brokers : AppSettings.DefaultBrokers.ToList();
+            S.Save();
+            Log("MQTT nuovo elenco di broker: " + string.Join(", ", S.MqttBrokers));
+            StartRendezvous(_life.Token);
+            if (Ready) Announce();
+        }
+
         private async Task StartAsync(CancellationToken ct)
         {
             try
             {
                 SessionLog.Write($"AVVIO IP-DESK-CTRL {AppVersion.Text} · {AppVersion.Os} · numero {Identity.Format(Me.Number)}");
-                _rdv = new HostRendezvous(Me, S.MqttBrokers) { Log = Log, Publish = !ViewerOnly, AcceptRequests = !ViewerOnly };
-                _rdv.RequestReceived += r => _ = Task.Run(() => OnRequestAsync(r, ct));
-                _rdv.NoteReceived += n => _ = Task.Run(() => OnNoteAsync(n, ct));
-                var rdv = _rdv;
-                _rdvTask = Task.Run(() => rdv.RunAsync(ct));
+                StartRendezvous(ct);
 
                 SetStatus("Apro la porta sul router…");
                 await _portLock.WaitAsync(ct);

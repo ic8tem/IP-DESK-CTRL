@@ -109,10 +109,10 @@ IP-DESK-CTRL controlla all'avvio e ogni 30 minuti se su GitHub c'è una versione
 L'aggiornamento automatico c'è **per tutte le distribuzioni**, con queste eccezioni:
 
 - **Android e Chromebook (APK)**: solo l'avviso; Android non lascia installare un'app da sola, l'APK si tocca a mano.
-- **Pacchetti di sistema Linux** (.deb, .rpm, Arch, Slackware, Snap): si aggiornano da soli ma il sistema **chiede la password di amministratore**; senza qualcuno che la scriva l'aggiornamento resta in attesa.
+- **Snap**: si aggiorna da solo ma il sistema **chiede la password di amministratore**. I pacchetti .deb, .rpm, Arch e Slackware invece si aggiornano **senza password** (regola polkit per il solo script di aggiornamento, che scarica e verifica il pacchetto da GitHub).
 - **Versioni portatili in una cartella di sistema** (non scrivibile dall'utente): solo l'avviso.
 
-Del tutto senza domande: Windows con il servizio, Windows portatile, AppImage, Linux portatile e Alpine, macOS (salvo la password se l'app è in una cartella protetta). Dettagli nella [wiki](https://github.com/ic8tem/IP-DESK-CTRL/wiki/Installazione#aggiornamenti).
+Del tutto senza domande: Windows con il servizio, Windows portatile, .deb, .rpm, Arch, Slackware, AppImage, Linux portatile e Alpine, macOS (salvo la password se l'app è in una cartella protetta). Dettagli nella [wiki](https://github.com/ic8tem/IP-DESK-CTRL/wiki/Installazione#aggiornamenti).
 
 ## Registri
 
@@ -124,6 +124,10 @@ Nella cartella dei dati (Impostazioni › Apri cartella dati): `errori.log` e `s
 ## Storia delle versioni
 
 Le versioni con protocollo diverso non si collegano tra loro: aggiorna tutti i dispositivi alla stessa versione principale (la 0.4.1 si collega con la 0.4.0; la 0.5 si collega con la 0.4).
+
+### 0.5.12 — 14 novembre 2026
+- **Pacchetti Linux aggiornati senza password**: .deb, .rpm, Arch e Slackware installano una regola di sistema (polkit) che lascia girare senza password solo lo script di aggiornamento di IP-DESK-CTRL. Lo script non installa file passati dal programma: scarica da solo il pacchetto dalla release ufficiale su GitHub, ne controlla l'impronta SHA-256 e accetta solo versioni più nuove. Vale per l'utente della sessione attiva (anche quando il PC è comandato da IP-DESK-CTRL). Lo Snap chiede ancora la password.
+- **Broker MQTT a scelta** (Impostazioni › «Broker MQTT»): uno per riga, anche cifrati con TLS (`mqtts://host:8883` o la porta 8883). Valgono subito, senza riavviare; con il servizio di Windows li usa anche lui. «Predefiniti» rimette hivemq, mosquitto ed emqx.
 
 ### 0.5.11 — 14 novembre 2026
 - **Tunnel per la radio**: il modello rigctld usa di qua la porta **4542** (arriva alla 4532 del PC remoto), perché la 4532 di qua è spesso già occupata da un rigctld locale (IP-TRX-CTRL, WSJT-X…); scegliendolo compare l'avviso con l'indirizzo da impostare.

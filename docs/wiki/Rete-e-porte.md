@@ -5,7 +5,7 @@ IP-DESK-CTRL usa lo stesso sistema di **IP-TRX-CTRL**: di norma non devi aprire 
 ## Come i PC si trovano
 
 1. All'avvio il programma apre una porta casuale (TCP e UDP con lo stesso numero) sul router con **UPnP/NAT-PMP** e la **verifica dall'esterno**. Se non è raggiungibile ne prova un'altra.
-2. Lascia indirizzo pubblico, porta e indirizzo locale, **firmati e cifrati**, sui **broker MQTT** pubblici (hivemq, mosquitto, emqx) e li aggiorna ogni 3 minuti.
+2. Lascia indirizzo pubblico, porta e indirizzo locale, **firmati e cifrati**, sui **broker MQTT** (di serie hivemq, mosquitto ed emqx; si cambiano in Impostazioni › «Broker MQTT», anche cifrati con `mqtts://host:8883`) e li aggiorna ogni 3 minuti.
 3. Il visore li legge e si collega **diretto** (prima in rete locale, se i due PC sono nella stessa casa).
 4. Se non ci riesce chiede il **collegamento inverso**: è l'host a collegarsi alla porta del visore. Se la rete del visore lascia uscire solo poche porte (443, 80…) l'host usa proprio quelle. I giri sono **4**: nei primi due chiede all'altro PC di collegarsi (al secondo l'altro può cambiare la sua porta); nel terzo e nel quarto le porte si **invertono**: è il PC che chiama ad aprirne una nuova (al quarto tra 443, 8443, 80 e 8080) prima di richiedere di nuovo il collegamento.
 5. Dal **giro 3**, in parallelo ai giri con le porte invertite, i due PC si scambiano anche i **candidati UDP**, forano i NAT e fanno **tutto su UDP**, con un trasporto affidabile e ordinato sotto lo stesso canale cifrato. Vince la prima strada che riesce, TCP inverso o solo UDP.

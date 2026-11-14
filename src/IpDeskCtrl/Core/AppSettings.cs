@@ -67,7 +67,8 @@ namespace IpDeskCtrl.Core
         public TouchSettings TouchInput { get; set; } = new();   // telefono e tablet: gesti, velocità, barra dei tasti
 
         // ---------------- rete (gestita in automatico)
-        public List<string> MqttBrokers { get; set; } = new() { "broker.hivemq.com:1883", "test.mosquitto.org:1883", "broker.emqx.io:1883" };
+        public static readonly string[] DefaultBrokers = { "broker.hivemq.com:1883", "test.mosquitto.org:1883", "broker.emqx.io:1883" };
+        public List<string> MqttBrokers { get; set; } = new(DefaultBrokers);
 
         /// <summary>
         /// Windows con il servizio: lo storico sta in ProgramData (storico.json), condiviso tra il servizio, che

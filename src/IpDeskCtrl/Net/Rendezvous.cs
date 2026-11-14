@@ -15,25 +15,36 @@ namespace IpDeskCtrl.Net
 {
     internal static class Mqtt
     {
-        public static (string host, int port) Split(string broker)
+        /// <summary>
+        /// «host», «host:porta», «mqtt://host:porta» o «mqtts://host:porta» (cifrato con TLS).
+        /// Senza schema la porta 8883 vale TLS, le altre no; senza porta: 1883, o 8883 con mqtts.
+        /// </summary>
+        public static (string host, int port, bool tls) Split(string broker)
         {
             string host = broker.Trim();
-            int port = 1883;
+            bool? tls = null;
+            if (host.StartsWith("mqtts://", StringComparison.OrdinalIgnoreCase)) { tls = true; host = host[8..]; }
+            else if (host.StartsWith("ssl://", StringComparison.OrdinalIgnoreCase)) { tls = true; host = host[6..]; }
+            else if (host.StartsWith("mqtt://", StringComparison.OrdinalIgnoreCase)) { tls = false; host = host[7..]; }
+            else if (host.StartsWith("tcp://", StringComparison.OrdinalIgnoreCase)) { tls = false; host = host[6..]; }
+            host = host.TrimEnd('/');
+            int port = tls == true ? 8883 : 1883;
             int colon = host.LastIndexOf(':');
             if (colon > 0 && int.TryParse(host[(colon + 1)..], out int p)) { port = p; host = host[..colon]; }
-            return (host, port);
+            return (host, port, tls ?? port == 8883);
         }
 
         public static MqttClientOptions Options(string broker, string clientId, int keepAliveSeconds = 30)
         {
-            var (host, port) = Split(broker);
-            return new MqttClientOptionsBuilder()
+            var (host, port, tls) = Split(broker);
+            var b = new MqttClientOptionsBuilder()
                 .WithTcpServer(host, port)
                 .WithClientId(clientId)
                 .WithCleanSession(true)
                 .WithKeepAlivePeriod(TimeSpan.FromSeconds(keepAliveSeconds))
-                .WithTimeout(TimeSpan.FromSeconds(8))
-                .Build();
+                .WithTimeout(TimeSpan.FromSeconds(8));
+            if (tls) b = b.WithTls();
+            return b.Build();
         }
 
         public static string NewClientId() => "ipdk-" + Guid.NewGuid().ToString("N")[..12];

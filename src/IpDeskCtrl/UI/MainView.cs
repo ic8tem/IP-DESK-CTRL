@@ -268,6 +268,7 @@ namespace IpDeskCtrl.UI
                 Chk("Chi si collega può montare qui una sua cartella come disco", _s.AllowDrive, v => _s.AllowDrive = v),
                 Chk("Chi si collega può aprire tunnel di porte attraverso questo PC (rigctld, flrig, web della radio…)", _s.AllowTunnel, v => _s.AllowTunnel = v),
                 DockRow(),
+                BrokersRow(),
                 Chk("Aggiornamenti automatici: ogni 30 minuti cerca una nuova versione e la installa da sola (i collegamenti riprendono)", _s.AutoUpdate, v => _s.AutoUpdate = v),
                 Chk("Mentre uno comanda, altri possono chiedere di guardare (solo visione, al massimo 4)", _s.AllowObservers, v => _s.AllowObservers = v),
                 VideoRow(),
@@ -380,6 +381,7 @@ namespace IpDeskCtrl.UI
             _svc.Lost += () => Dispatcher.UIThread.Post(() => { _svcHosts = 0; _incomingBanner.IsVisible = false; });
             _svc.SendSettings(_s.AcceptIncoming, _s.AllowInput, _s.ShareAudio);
             if (_s.PasswordHash.Length > 0) _svc.Send($"PWD {_s.PasswordSalt} {_s.PasswordHash} {_s.PasswordIterations}");
+            _svc.Send("MQTT " + string.Join(",", _s.MqttBrokers));   // il servizio usa gli stessi broker del programma
             SessionLog.Write("SERVIZIO collegato: i collegamenti a questo PC li riceve il servizio di Windows");
         }
 
@@ -690,7 +692,7 @@ namespace IpDeskCtrl.UI
                 }
                 catch (Exception ex) { ErrorLog.Write("Aggiornamento, avviso ai collegati: " + ex.Message); }
                 await Task.Delay(600);           // i messaggi partono prima di chiudere
-                string why = await Task.Run(() => Updater.Install(kind, path, sha, service));
+                string why = await Task.Run(() => Updater.Install(kind, path, sha, service, r.Version));
                 if (why.Length > 0)
                 {
                     status.Text = "Aggiornamento non riuscito: " + why;
@@ -728,6 +730,34 @@ namespace IpDeskCtrl.UI
                 };
                 timer.Start();
             }
+        }
+
+        /// <summary>Elenco dei broker MQTT per il ritrovo, modificabile: uno per riga, anche cifrati (mqtts://host:8883).</summary>
+        private Control BrokersRow()
+        {
+            var box = new TextBox
+            {
+                AcceptsReturn = true, TextWrapping = TextWrapping.NoWrap, MinHeight = 80, MinWidth = 280,
+                Text = string.Join("\n", _s.MqttBrokers),
+                Watermark = "host:porta, uno per riga"
+            };
+            var save = Ui.Btn("Usa questi broker");
+            var reset = Ui.Btn("Predefiniti");
+            var note = Ui.Sub("Uno per riga: host:porta (1883 in chiaro, 8883 cifrato) oppure mqtts://host:porta. Tutti e due i PC devono avere almeno un broker in comune. Valgono subito.", 12);
+            save.Click += (_, _) =>
+            {
+                var list = (box.Text ?? "").Split('\n', '\r', ',', ' ', ';')
+                    .Select(x => x.Trim()).Where(x => x.Length > 0).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+                var bad = list.FirstOrDefault(x => !System.Text.RegularExpressions.Regex.IsMatch(x, @"^((mqtts?|ssl|tcp)://)?[A-Za-z0-9.\-]+(:\d{1,5})?/?$"));
+                if (bad != null) { note.Text = $"«{bad}» non è un indirizzo valido (esempio: broker.hivemq.com:1883)."; return; }
+                if (list.Count == 0) list = AppSettings.DefaultBrokers.ToList();
+                box.Text = string.Join("\n", list);
+                _peer.SetBrokers(list);
+                _svc?.Send("MQTT " + string.Join(",", list));
+                note.Text = $"Broker in uso: {list.Count}. Mi ricollego…";
+            };
+            reset.Click += (_, _) => box.Text = string.Join("\n", AppSettings.DefaultBrokers);
+            return Ui.Col(6, Ui.Lbl("BROKER MQTT (RITROVO DEI PC)"), box, Ui.Row(10, save, reset), note);
         }
 
         /// <summary>Dove sta la plancia nella finestra del collegamento (sotto c'è la fascia arancione degli avvisi).</summary>

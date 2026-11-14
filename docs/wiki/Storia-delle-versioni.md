@@ -3,6 +3,10 @@
 
 Le versioni con protocollo diverso non si collegano tra loro: aggiorna tutti i dispositivi alla stessa versione principale (la 0.4.1 si collega con la 0.4.0; la 0.5 si collega con la 0.4).
 
+## 0.5.12 — 14 novembre 2026
+- **Pacchetti Linux aggiornati senza password**: .deb, .rpm, Arch e Slackware installano una regola di sistema (polkit) che lascia girare senza password solo lo script di aggiornamento di IP-DESK-CTRL. Lo script non installa file passati dal programma: scarica da solo il pacchetto dalla release ufficiale su GitHub, ne controlla l'impronta SHA-256 e accetta solo versioni più nuove. Vale per l'utente della sessione attiva (anche quando il PC è comandato da IP-DESK-CTRL). Lo Snap chiede ancora la password.
+- **Broker MQTT a scelta** (Impostazioni › «Broker MQTT»): uno per riga, anche cifrati con TLS (`mqtts://host:8883` o la porta 8883). Valgono subito, senza riavviare; con il servizio di Windows li usa anche lui. «Predefiniti» rimette hivemq, mosquitto ed emqx.
+
 ## 0.5.11 — 14 novembre 2026
 - **Tunnel per la radio**: il modello rigctld usa di qua la porta **4542** (arriva alla 4532 del PC remoto), perché la 4532 di qua è spesso già occupata da un rigctld locale (IP-TRX-CTRL, WSJT-X…); scegliendolo compare l'avviso con l'indirizzo da impostare.
 - **Installatore di Windows**: nuova opzione «Scarica ffmpeg» (attiva di serie), che mette ffmpeg nella cartella del programma: il video compresso H.264/H.265/AV1 c'è subito, anche per il servizio.

@@ -16,6 +16,9 @@ install -d "$PKG/DEBIAN" "$PKG/opt/ip-desk-ctrl" "$PKG/usr/bin" "$PKG/usr/share/
            "$PKG/usr/share/icons/hicolor/256x256/apps" "$PKG/usr/share/doc/ip-desk-ctrl" \
            "$PKG/usr/lib/udev/rules.d" "$PKG/usr/lib/modules-load.d"
 install -m 755 "$SRC/IP-DESK-CTRL" "$PKG/opt/ip-desk-ctrl/IP-DESK-CTRL"
+# aggiornamento automatico senza password (regola polkit per il solo script di aggiornamento verificato)
+install -m 755 "$ROOT/packaging/linux/aggiorna-root.sh" "$PKG/opt/ip-desk-ctrl/aggiorna-root.sh"
+install -D -m 644 "$ROOT/packaging/linux/io.github.ic8tem.ipdeskctrl.aggiorna.policy" "$PKG/usr/share/polkit-1/actions/io.github.ic8tem.ipdeskctrl.aggiorna.policy"
 ln -s /opt/ip-desk-ctrl/IP-DESK-CTRL "$PKG/usr/bin/ip-desk-ctrl"
 install -m 644 "$ROOT/src/IpDeskCtrl/Assets/icon.png" "$PKG/usr/share/icons/hicolor/256x256/apps/ip-desk-ctrl.png"
 { printf "IP-DESK-CTRL - Copyright (C) 2026 IC8TEM\nLicenza: GNU GPL 3.0 o successiva (/usr/share/common-licenses/GPL-3)\n\n"; cat "$ROOT/THIRD-PARTY-NOTICES.txt"; } > "$PKG/usr/share/doc/ip-desk-ctrl/copyright"

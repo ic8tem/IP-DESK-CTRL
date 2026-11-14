@@ -10,6 +10,8 @@ namespace IpDeskCtrl.Desktop
         public static void Main(string[] args)
         {
             AppDomain.CurrentDomain.UnhandledException += (_, e) => ErrorLog.Write(e.ExceptionObject?.ToString());
+            // per lo script di aggiornamento: stampa solo la versione ed esce
+            if (args.Length > 0 && args[0] == "--versione") { Console.WriteLine(AppVersion.Text); return; }
             if (OperatingSystem.IsWindows() && args.Length > 0)
             {
                 // servizio di sistema e processo di supporto (UAC, schermata di blocco): niente finestre
