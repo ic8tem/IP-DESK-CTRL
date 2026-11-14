@@ -170,8 +170,9 @@ namespace IpDeskCtrl.Screen
         public static bool CanDownload => OperatingSystem.IsWindows() && Environment.Is64BitOperatingSystem;
 
         /// <summary>Scarica ffmpeg.exe nella cartella dati (circa 150 MB da GitHub, una volta sola). "" = fatto.</summary>
-        public static async Task<string> DownloadAsync(Action<string> progress, CancellationToken ct)
+        public static async Task<string> DownloadAsync(Action<string> progress, CancellationToken ct, string? folder = null)
         {
+            folder ??= LocalFolder;
             if (!CanDownload) return "Lo scaricamento automatico c'è solo su Windows a 64 bit (x64 o ARM64).";
             string tmp = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "ipdesk-ffmpeg.zip");
             try
@@ -199,15 +200,15 @@ namespace IpDeskCtrl.Screen
                     }
                 }
                 progress("Estraggo ffmpeg…");
-                Directory.CreateDirectory(LocalFolder);
+                Directory.CreateDirectory(folder);
                 using (var zip = ZipFile.OpenRead(tmp))
                 {
                     var entry = zip.Entries.FirstOrDefault(e => e.FullName.EndsWith("/bin/ffmpeg.exe", StringComparison.OrdinalIgnoreCase));
                     if (entry == null) return "Nell'archivio scaricato non c'è ffmpeg.exe.";
-                    entry.ExtractToFile(System.IO.Path.Combine(LocalFolder, "ffmpeg.exe"), true);
+                    entry.ExtractToFile(System.IO.Path.Combine(folder, "ffmpeg.exe"), true);
                 }
                 Rescan();
-                SessionLog.Write("VIDEO ffmpeg scaricato in " + LocalFolder);
+                SessionLog.Write("VIDEO ffmpeg scaricato in " + folder);
                 return "";
             }
             catch (OperationCanceledException) { return "Scaricamento annullato."; }

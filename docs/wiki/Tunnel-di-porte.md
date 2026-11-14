@@ -18,13 +18,15 @@ I tunnel si salvano per ogni PC; con **Avvia questi tunnel da soli a ogni colleg
 
 | Servizio | Porta di qui | Indirizzo e porta dal PC remoto |
 |---|---|---|
-| rigctld (Hamlib) | 4532 | 127.0.0.1:4532 |
+| rigctld (Hamlib) | **4542** | 127.0.0.1:4532 |
 | rotctld (rotore, Hamlib) | 4533 | 127.0.0.1:4533 |
 | flrig | 12345 | 127.0.0.1:12345 |
 | fldigi (XML-RPC) | 7362 | 127.0.0.1:7362 |
 | Interfaccia web (radio, router…) | 8080 | 192.168.1.1:80 (cambia l'indirizzo) |
 
 Per l'interfaccia web apri nel browser di qui `http://127.0.0.1:8080`.
+
+Per **rigctld** la porta di qui è **4542** e non 4532: sul PC da cui comandi la 4532 è spesso già occupata da un rigctld locale (IP-TRX-CTRL, WSJT-X…). Nel programma di qui imposta quindi `127.0.0.1:4542`, che arriva alla 4532 del PC remoto.
 
 ## Note
 

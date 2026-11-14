@@ -125,6 +125,11 @@ Nella cartella dei dati (Impostazioni › Apri cartella dati): `errori.log` e `s
 
 Le versioni con protocollo diverso non si collegano tra loro: aggiorna tutti i dispositivi alla stessa versione principale (la 0.4.1 si collega con la 0.4.0; la 0.5 si collega con la 0.4).
 
+### 0.5.11 — 14 novembre 2026
+- **Tunnel per la radio**: il modello rigctld usa di qua la porta **4542** (arriva alla 4532 del PC remoto), perché la 4532 di qua è spesso già occupata da un rigctld locale (IP-TRX-CTRL, WSJT-X…); scegliendolo compare l'avviso con l'indirizzo da impostare.
+- **Installatore di Windows**: nuova opzione «Scarica ffmpeg» (attiva di serie), che mette ffmpeg nella cartella del programma: il video compresso H.264/H.265/AV1 c'è subito, anche per il servizio.
+- **Collegamento più rapido nelle reti difficili**: dal giro 3 dei tentativi la strada solo UDP parte in parallelo ai giri con le porte invertite, e vince la prima che riesce (prima partiva solo dopo il giro 4).
+
 ### 0.5.10 — 14 novembre 2026
 - **Aggiornamenti automatici spiegati** nel README, nella wiki e nella pagina della release: ci sono per tutte le distribuzioni, tranne Android/Chromebook (solo avviso); i pacchetti di sistema Linux chiedono la password di amministratore.
 - **Altre distribuzioni**: pacchetti per **Arch, Manjaro, EndeavourOS e Arch Linux ARM** (`.pkg.tar.zst`, x86_64 e aarch64), **AppImage** (un solo file per qualsiasi Linux, x86_64 e aarch64), **Snap** (amd64 e arm64), **Alpine Linux** e altre distribuzioni con musl (x64 e arm64), **Homebrew** sul Mac (`brew install --cask ip-desk-ctrl` dopo il `brew tap`). Anche questi si aggiornano da soli (pacman, snap, file AppImage sostituito, Homebrew aggiornato a ogni release). Nella guida c'è anche il Chromebook (APK Android o `.deb` nel Linux interno).

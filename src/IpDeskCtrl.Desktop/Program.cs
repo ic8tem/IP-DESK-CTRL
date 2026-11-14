@@ -15,6 +15,15 @@ namespace IpDeskCtrl.Desktop
                 // servizio di sistema e processo di supporto (UAC, schermata di blocco): niente finestre
                 if (args[0] == "--service") { WinService.RunAsService(); return; }
                 if (args[0] == "--helper" && args.Length >= 3) { Environment.Exit(Screen.WinHelper.RunHelper(args[1], args[2])); return; }
+                // dall'installatore: scarica ffmpeg nella cartella del programma (lo trovano sia l'utente sia il servizio)
+                if (args[0] == "--scarica-ffmpeg")
+                {
+                    string dir = args.Length > 1 ? args[1] : AppContext.BaseDirectory;
+                    string err = Screen.Ffmpeg.DownloadAsync(_ => { }, System.Threading.CancellationToken.None, dir).GetAwaiter().GetResult();
+                    if (err.Length > 0) ErrorLog.Write("ffmpeg dall'installatore: " + err);
+                    Environment.Exit(err.Length == 0 ? 0 : 1);
+                    return;
+                }
             }
             try
             {

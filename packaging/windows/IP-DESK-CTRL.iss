@@ -44,6 +44,7 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"
 Name: "servizio"; Description: "Accesso completo: richieste UAC, schermata di blocco, programmi da amministratore e Ctrl+Alt+Canc (servizio di Windows; serve l'installazione come amministratore)"; GroupDescription: "Accesso:"; Check: IsAdminInstallMode
+Name: "ffmpeg"; Description: "Scarica ffmpeg per il video compresso H.264, H.265 e AV1 (circa 150 MB da GitHub; senza, si usano i riquadri JPEG)"; GroupDescription: "Video:"
 Name: "autostart"; Description: "Avvia IP-DESK-CTRL all'accesso a Windows (così il PC è sempre raggiungibile col suo numero)"; GroupDescription: "Avvio:"; Flags: unchecked
 
 [Files]
@@ -64,6 +65,7 @@ Root: HKLM; Subkey: "SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System";
 [Run]
 Filename: "{sys}\sc.exe"; Parameters: "create IPDeskCtrl binPath= ""\""{app}\IP-DESK-CTRL.exe\"" --service"" start= auto DisplayName= ""IP-DESK-CTRL accesso completo"""; Flags: runhidden; Tasks: servizio
 Filename: "{sys}\sc.exe"; Parameters: "description IPDeskCtrl ""Permette a IP-DESK-CTRL di mostrare e comandare le richieste UAC, la schermata di blocco e i programmi da amministratore durante i collegamenti accettati."""; Flags: runhidden; Tasks: servizio
+Filename: "{app}\IP-DESK-CTRL.exe"; Parameters: "--scarica-ffmpeg ""{app}"""; StatusMsg: "Scarico ffmpeg per il video compresso (circa 150 MB)..."; Flags: runhidden waituntilterminated; Tasks: ffmpeg; Check: NoFfmpeg
 Filename: "{sys}\sc.exe"; Parameters: "start IPDeskCtrl"; Flags: runhidden; Tasks: servizio
 Filename: "{app}\IP-DESK-CTRL.exe"; Description: "{cm:LaunchProgram,IP-DESK-CTRL}"; Flags: nowait postinstall skipifsilent
 ; aggiornamento dal programma (/AGGIORNA): lo si riapre da solo, come l'utente di prima, per riprendere i collegamenti
@@ -73,7 +75,15 @@ Filename: "{app}\IP-DESK-CTRL.exe"; Parameters: "--dopo-aggiornamento"; Flags: n
 Filename: "{sys}\sc.exe"; Parameters: "stop IPDeskCtrl"; Flags: runhidden; RunOnceId: "FermaServizio"
 Filename: "{sys}\sc.exe"; Parameters: "delete IPDeskCtrl"; Flags: runhidden; RunOnceId: "TogliServizio"
 
+[UninstallDelete]
+Type: files; Name: "{app}\ffmpeg.exe"
+
 [Code]
+function NoFfmpeg(): Boolean;
+begin
+  Result := not FileExists(ExpandConstant('{app}\ffmpeg.exe'));
+end;
+
 function IsAutoUpdate: Boolean;
 var
   I: Integer;

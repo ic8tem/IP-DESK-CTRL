@@ -31,7 +31,8 @@ namespace IpDeskCtrl.Core
         /// <summary>Tunnel pronti per i programmi della radio e simili.</summary>
         public static readonly TunnelSpec[] Presets =
         {
-            new(4532, "127.0.0.1", 4532, "rigctld (Hamlib)"),
+            // di qua 4542 e non 4532: la 4532 la usa spesso un rigctld locale (IP-TRX-CTRL, WSJT-X…) e il tunnel non partirebbe
+            new(4542, "127.0.0.1", 4532, "rigctld (Hamlib)"),
             new(4533, "127.0.0.1", 4533, "rotctld (rotore, Hamlib)"),
             new(12345, "127.0.0.1", 12345, "flrig"),
             new(7362, "127.0.0.1", 7362, "fldigi (XML-RPC)"),

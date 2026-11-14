@@ -702,6 +702,16 @@ namespace IpDeskCtrl.Core
             // collegamento inverso: chiedo all'altro PC di collegarsi a me
             var tcs = new TaskCompletionSource<SecureLink>(TaskCreationOptions.RunContinuationsAsynchronously);
             _waitReverse[number] = tcs;
+            Task<SecureLink?>? udpTask = null;          // strada solo UDP, in parallelo dal giro 3
+            CancellationTokenSource? udpCts = null;
+            bool udpWon = false;
+            Task UdpOrNever() => udpTask is { IsCompleted: false } ? udpTask : Task.Delay(Timeout.Infinite, ct);
+            bool UdpDone(out SecureLink? l)
+            {
+                l = udpTask is { IsCompletedSuccessfully: true } ? udpTask.Result : null;
+                if (l != null) udpWon = true;
+                return l != null;
+            }
             try
             {
                 // giri 1 e 2: si chiede all'altro PC di collegarsi alla porta di questo (al 2° l'altro può cambiare la sua);
@@ -710,6 +720,13 @@ namespace IpDeskCtrl.Core
                 const int rounds = 4;
                 for (int round = 1; round <= rounds && !ct.IsCancellationRequested; round++)
                 {
+                    if (round == 3 && udpTask == null)
+                    {
+                        // dal giro 3 la strada solo UDP parte in parallelo ai giri invertiti: vince la prima che riesce
+                        udpCts = CancellationTokenSource.CreateLinkedTokenSource(ct);
+                        udpTask = TryUdpAsync(number, msg => Log("UDP " + msg), udpCts.Token);
+                        Log("UDP dal giro 3 parte in parallelo il collegamento solo UDP");
+                    }
                     if (round <= 2)
                         progress($"Collegamento diretto non riuscito: chiedo all'altro PC di collegarsi a questo (giro {round} di {rounds})…");
                     else
@@ -735,8 +752,9 @@ namespace IpDeskCtrl.Core
 
                     var wait = Task.Delay(TimeSpan.FromSeconds(round <= 2 ? 20 : 15), ct);
                     var recheck = Task.Delay(TimeSpan.FromSeconds(9), ct);
-                    var first = await Task.WhenAny(tcs.Task, recheck);
+                    var first = await Task.WhenAny(tcs.Task, recheck, UdpOrNever());
                     if (first == tcs.Task) return tcs.Task.Result;
+                    if (UdpDone(out var u1)) return u1!;
                     // l'altro PC potrebbe aver cambiato porta per noi
                     var a2 = await ViewerRendezvous.LookupAsync(number, S.MqttBrokers, null, ct);
                     if (a2 != null && (a2.Port != a.Port || a2.PublicIp != a.PublicIp))
@@ -746,25 +764,40 @@ namespace IpDeskCtrl.Core
                         link = await TryDirectAsync(a, number, progress, ct);
                         if (link != null) return link;
                     }
-                    if (await Task.WhenAny(tcs.Task, wait) == tcs.Task) return tcs.Task.Result;
+                    var second = await Task.WhenAny(tcs.Task, wait, UdpOrNever());
+                    if (second == tcs.Task) return tcs.Task.Result;
+                    if (UdpDone(out var u2)) return u2!;
+                }
+                // finiti i giri: si aspetta la prova UDP già partita (o la si fa ora)
+                if (!ct.IsCancellationRequested)
+                {
+                    progress("TCP non passa tra i due PC: attendo il collegamento solo UDP…");
+                    link = udpTask != null ? await SafeUdp(udpTask) : await TryUdpAsync(number, progress, ct);
+                    if (link != null) { udpWon = true; return link; }
                 }
             }
             catch (OperationCanceledException) { throw; }
             finally
             {
+                // ha vinto un'altra strada: la prova UDP in parallelo si ferma, e un suo canale arrivato tardi si chiude
+                if (udpTask != null && !udpWon)
+                {
+                    udpCts?.Cancel();
+                    _ = udpTask.ContinueWith(t => { if (t.IsCompletedSuccessfully) t.Result?.Dispose(); });
+                }
                 _waitReverse.TryRemove(number, out _);
                 // un collegamento inverso arrivato all'ultimo momento non resta appeso
-                if (tcs.Task.IsCompletedSuccessfully && ct.IsCancellationRequested) tcs.Task.Result.Dispose();
+                if (tcs.Task.IsCompletedSuccessfully && (ct.IsCancellationRequested || udpWon)) tcs.Task.Result.Dispose();
             }
-            if (ct.IsCancellationRequested) throw new OperationCanceledException();
-
-            link = await TryUdpAsync(number, progress, ct);
-            if (link != null) return link;
-
             if (ct.IsCancellationRequested) throw new OperationCanceledException();
             throw new PeerException("Nessuna strada tra i due PC: né il collegamento diretto, né quello inverso, né quello solo UDP sono riusciti. " +
                                     "Attiva UPnP sul router di almeno uno dei due PC (meglio su entrambi), oppure inoltra a mano la porta sul router. " +
                                     "Con IP condiviso dell'operatore (CGNAT) su entrambi i lati il collegamento diretto non è possibile.");
+        }
+
+        private static async Task<SecureLink?> SafeUdp(Task<SecureLink?> t)
+        {
+            try { return await t; } catch { return null; }
         }
 
         private async Task<SecureLink?> TryDirectAsync(Net.Announce a, string number, Action<string> progress, CancellationToken ct)

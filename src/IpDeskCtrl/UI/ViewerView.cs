@@ -991,6 +991,9 @@ namespace IpDeskCtrl.UI
                 if (preset.SelectedIndex <= 0) return;
                 var p = TunnelSpec.Presets[preset.SelectedIndex - 1];
                 local.Text = p.LocalPort.ToString(); host.Text = p.Host; port.Text = p.Port.ToString(); name.Text = p.Name;
+                if (p.LocalPort != p.Port)
+                    ShowNote($"{p.Name}: di qua la porta è {p.LocalPort} (la {p.Port} di solito è già occupata da un {p.Name.Split(' ')[0]} locale). " +
+                             $"Nel programma di qua (WSJT-X, log…) imposta 127.0.0.1:{p.LocalPort}; arriva alla {p.Port} del PC remoto.", true);
             };
             var add = Ui.Btn("Aggiungi e avvia", true);
             add.Click += (_, _) =>
