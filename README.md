@@ -31,6 +31,7 @@ Ogni PC ha un **numero fisso di 10 cifre** (es. `482 913 0675`) che non cambia m
 - **Tunnel di porte** (plancia › *Tunnel ▾*): un programma di qui si collega a 127.0.0.1:porta e arriva a un indirizzo visto dal PC remoto, per esempio **rigctld** (4532), **rotctld** (4533), **flrig** (12345), **fldigi** (7362) o l'**interfaccia web della radio**. Si salvano per ogni PC e si possono avviare da soli.
 - **Controllo preliminare delle versioni**: nello storico compare la versione di ogni PC (⚠ se diversa) e prima di collegarsi il programma avvisa; con protocollo diverso non si collega e dice cosa aggiornare.
 - **Avviso di nuova versione** nella schermata principale (controllo su GitHub all'avvio e ogni 12 ore).
+- **36 lingue**, scelte in Impostazioni › «Lingua» o prese dal sistema; arabo, ebraico e urdu da destra a sinistra.
 - **Sempre attivo**: la **X** della finestra la nasconde soltanto; IP-DESK-CTRL resta attivo con l'icona vicino all'orologio (barra dei menu su macOS), il PC resta raggiungibile e i collegamenti aperti continuano. Clic sull'icona per riaprirlo; per uscire davvero: clic destro sull'icona › **Esci da IP-DESK-CTRL**, oppure Impostazioni › **Esci dal programma**. Riavviarlo mentre è nascosto riapre la finestra di quello già attivo.
 
 ## Android
@@ -126,6 +127,7 @@ Nella cartella dei dati (Impostazioni › Apri cartella dati): `errori.log` e `s
 Le versioni con protocollo diverso non si collegano tra loro: aggiorna tutti i dispositivi alla stessa versione principale (la 0.4.1 si collega con la 0.4.0; la 0.5 si collega con la 0.4).
 
 ### 0.5.12 — 14 novembre 2026
+- **36 lingue** (Impostazioni › «Lingua»): italiano, inglese, tedesco, francese, spagnolo, portoghese (anche brasiliano), olandese, svedese, norvegese, danese, islandese, estone, lettone, lituano, polacco, ceco, ungherese, rumeno, greco, russo, ucraino, turco, afrikaans, arabo, ebraico, urdu, hindi, bengalese, thailandese, indonesiano, filippino, cinese semplificato e tradizionale, giapponese, coreano. «Automatico» segue la lingua del sistema; la nuova lingua vale dal riavvio (pulsante «Riavvia ora»). Arabo, ebraico e urdu si leggono da destra a sinistra; lo schermo del PC remoto resta com'è.
 - **Pacchetti Linux aggiornati senza password**: .deb, .rpm, Arch e Slackware installano una regola di sistema (polkit) che lascia girare senza password solo lo script di aggiornamento di IP-DESK-CTRL. Lo script non installa file passati dal programma: scarica da solo il pacchetto dalla release ufficiale su GitHub, ne controlla l'impronta SHA-256 e accetta solo versioni più nuove. Vale per l'utente della sessione attiva (anche quando il PC è comandato da IP-DESK-CTRL). Lo Snap chiede ancora la password.
 - **Broker MQTT a scelta** (Impostazioni › «Broker MQTT»): uno per riga, anche cifrati con TLS (`mqtts://host:8883` o la porta 8883). Valgono subito, senza riavviare; con il servizio di Windows li usa anche lui. «Predefiniti» rimette hivemq, mosquitto ed emqx.
 

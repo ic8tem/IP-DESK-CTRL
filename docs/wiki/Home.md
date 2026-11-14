@@ -6,6 +6,8 @@ Un solo programma fa tutto: ogni dispositivo è insieme **host** (si fa vedere e
 
 Ogni dispositivo ha un **numero fisso di 10 cifre** che non cambia mai. Per collegarti a un PC scrivi il suo numero e premi **Collegati**: sull'altro PC compare la richiesta da accettare.
 
+Il programma parla **36 lingue**: si sceglie in Impostazioni › «Lingua» (con «Automatico» segue la lingua del sistema) e vale dal riavvio.
+
 ## Da dove cominciare
 
 1. [Installazione](Installazione) — quale file scaricare per ogni sistema.
