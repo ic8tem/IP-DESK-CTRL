@@ -3,6 +3,11 @@
 
 Le versioni con protocollo diverso non si collegano tra loro: aggiorna tutti i dispositivi alla stessa versione principale (la 0.4.1 si collega con la 0.4.0; la 0.5 si collega con la 0.4).
 
+## 0.5.13 — 14 novembre 2026
+- **Video compresso (H.264, H.265, AV1) che non partiva**: il visore buttava il primo fotogramma intero mentre riconosceva il flusso, quindi non decodificava niente e il PC comandato ripartiva ogni 4 secondi. Ora il primo fotogramma arriva; e se il visore non restituisce fotogrammi per due volte di fila, si torna da soli ai riquadri JPEG con un avviso.
+- **Lingua automatica giusta**: con «Automatico» il programma per PC sceglieva sempre l'inglese; ora legge la lingua di Windows, di Linux (LANG/LANGUAGE) e di macOS.
+- **Registro sempre in italiano**: alcune righe di `sessioni.log` comparivano tradotte (anche a metà); ora il registro resta in italiano qualunque sia la lingua scelta.
+
 ## 0.5.12 — 14 novembre 2026
 - **36 lingue** (Impostazioni › «Lingua»): italiano, inglese, tedesco, francese, spagnolo, portoghese (anche brasiliano), olandese, svedese, norvegese, danese, islandese, estone, lettone, lituano, polacco, ceco, ungherese, rumeno, greco, russo, ucraino, turco, afrikaans, arabo, ebraico, urdu, hindi, bengalese, thailandese, indonesiano, filippino, cinese semplificato e tradizionale, giapponese, coreano. «Automatico» segue la lingua del sistema; la nuova lingua vale dal riavvio (pulsante «Riavvia ora»). Arabo, ebraico e urdu si leggono da destra a sinistra; lo schermo del PC remoto resta com'è.
 - **Pacchetti Linux aggiornati senza password**: .deb, .rpm, Arch e Slackware installano una regola di sistema (polkit) che lascia girare senza password solo lo script di aggiornamento di IP-DESK-CTRL. Lo script non installa file passati dal programma: scarica da solo il pacchetto dalla release ufficiale su GitHub, ne controlla l'impronta SHA-256 e accetta solo versioni più nuove. Vale per l'utente della sessione attiva (anche quando il PC è comandato da IP-DESK-CTRL). Lo Snap chiede ancora la password.

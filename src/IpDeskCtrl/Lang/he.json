@@ -572,5 +572,6 @@
  "dispositivo": "מכשיר",
  "Si installa senza password: il pacchetto nuovo lo scarica e lo verifica il sistema da GitHub.": "מותקן בלי סיסמה: המערכת עצמה מורידה את החבילה החדשה מ-GitHub ובודקת אותה.",
  "Si aggiorna con Scoop, senza permessi di amministratore.": "מתעדכן דרך Scoop, בלי הרשאות מנהל.",
- "Flatpak installa il pacchetto nuovo; se il programma è installato per tutti gli utenti può chiedere la password.": "Flatpak מתקין את החבילה החדשה; אם התוכנה מותקנת לכל המשתמשים, ייתכן שתתבקש סיסמה."
+ "Flatpak installa il pacchetto nuovo; se il programma è installato per tutti gli utenti può chiedere la password.": "Flatpak מתקין את החבילה החדשה; אם התוכנה מותקנת לכל המשתמשים, ייתכן שתתבקש סיסמה.",
+ "Il PC remoto non riesce a decodificare il video compresso: uso i riquadri.": "המחשב המרוחק לא מצליח לפענח את הווידאו הדחוס: אני משתמש בריבועים."
 }

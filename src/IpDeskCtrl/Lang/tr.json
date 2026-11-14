@@ -572,5 +572,6 @@
  "dispositivo": "cihaz",
  "Si installa senza password: il pacchetto nuovo lo scarica e lo verifica il sistema da GitHub.": "Parola olmadan kurulur: yeni paketi sistemin kendisi GitHub'dan indirir ve doğrular.",
  "Si aggiorna con Scoop, senza permessi di amministratore.": "Scoop ile, yönetici izni olmadan güncellenir.",
- "Flatpak installa il pacchetto nuovo; se il programma è installato per tutti gli utenti può chiedere la password.": "Flatpak yeni paketi kurar; program tüm kullanıcılar için kuruluysa parola isteyebilir."
+ "Flatpak installa il pacchetto nuovo; se il programma è installato per tutti gli utenti può chiedere la password.": "Flatpak yeni paketi kurar; program tüm kullanıcılar için kuruluysa parola isteyebilir.",
+ "Il PC remoto non riesce a decodificare il video compresso: uso i riquadri.": "Uzak bilgisayar sıkıştırılmış videoyu çözemiyor: kareleri kullanıyorum."
 }

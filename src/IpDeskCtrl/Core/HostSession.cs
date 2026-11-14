@@ -886,7 +886,22 @@ namespace IpDeskCtrl.Core
             if (_videoWritten - _videoAcked >= 4)
             {
                 if (_videoBlockedSince == 0) _videoBlockedSince = Environment.TickCount64;
-                else if (Environment.TickCount64 - _videoBlockedSince > 4000) { _videoRestart = true; _videoBlockedSince = 0; }
+                else if (Environment.TickCount64 - _videoBlockedSince > 4000)
+                {
+                    _videoBlockedSince = 0;
+                    // il visore non ha mai restituito un fotogramma: dopo due prove si torna ai riquadri
+                    _videoDead = _videoAcked == 0 ? _videoDead + 1 : 0;
+                    if (_videoDead >= 2)
+                    {
+                        SessionLog.Write("VIDEO il visore non decodifica il flusso: torno ai riquadri JPEG");
+                        Note(L.T("Il PC remoto non riesce a decodificare il video compresso: uso i riquadri."));
+                        StopVideo();
+                        _videoOff = true;
+                        _videoDead = 0;
+                        return false;
+                    }
+                    _videoRestart = true;
+                }
                 return true;
             }
             _videoBlockedSince = 0;
@@ -895,6 +910,7 @@ namespace IpDeskCtrl.Core
         }
 
         private long _statBytesVideo;
+        private int _videoDead;
 
         private void StopVideo()
         {

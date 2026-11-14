@@ -572,5 +572,6 @@
  "dispositivo": "裝置",
  "Si installa senza password: il pacchetto nuovo lo scarica e lo verifica il sistema da GitHub.": "無需密碼即可安裝：系統會自行從 GitHub 下載新套件並加以驗證。",
  "Si aggiorna con Scoop, senza permessi di amministratore.": "透過 Scoop 更新，不需要系統管理員權限。",
- "Flatpak installa il pacchetto nuovo; se il programma è installato per tutti gli utenti può chiedere la password.": "Flatpak 會安裝新套件；如果程式是為所有使用者安裝的，可能會要求輸入密碼。"
+ "Flatpak installa il pacchetto nuovo; se il programma è installato per tutti gli utenti può chiedere la password.": "Flatpak 會安裝新套件；如果程式是為所有使用者安裝的，可能會要求輸入密碼。",
+ "Il PC remoto non riesce a decodificare il video compresso: uso i riquadri.": "遠端電腦無法解碼壓縮視訊：改用方塊。"
 }

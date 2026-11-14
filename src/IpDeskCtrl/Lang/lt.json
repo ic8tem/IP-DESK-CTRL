@@ -572,5 +572,6 @@
  "dispositivo": "įrenginys",
  "Si installa senza password: il pacchetto nuovo lo scarica e lo verifica il sistema da GitHub.": "Įdiegiama be slaptažodžio: sistema pati atsisiunčia naują paketą iš GitHub ir jį patikrina.",
  "Si aggiorna con Scoop, senza permessi di amministratore.": "Atnaujinama per Scoop, be administratoriaus teisių.",
- "Flatpak installa il pacchetto nuovo; se il programma è installato per tutti gli utenti può chiedere la password.": "Flatpak įdiegia naują paketą; jei programa įdiegta visiems naudotojams, gali paprašyti slaptažodžio."
+ "Flatpak installa il pacchetto nuovo; se il programma è installato per tutti gli utenti può chiedere la password.": "Flatpak įdiegia naują paketą; jei programa įdiegta visiems naudotojams, gali paprašyti slaptažodžio.",
+ "Il PC remoto non riesce a decodificare il video compresso: uso i riquadri.": "Nuotolinis kompiuteris negali iškoduoti suglaudinto vaizdo: naudoju kvadratus."
 }

@@ -572,5 +572,6 @@
  "dispositivo": "الجهاز",
  "Si installa senza password: il pacchetto nuovo lo scarica e lo verifica il sistema da GitHub.": "يُثبَّت دون كلمة مرور: يُنزّل النظام نفسه الحزمة الجديدة من GitHub ويتحقق منها.",
  "Si aggiorna con Scoop, senza permessi di amministratore.": "يُحدَّث عبر Scoop، دون صلاحيات المسؤول.",
- "Flatpak installa il pacchetto nuovo; se il programma è installato per tutti gli utenti può chiedere la password.": "يثبّت Flatpak الحزمة الجديدة؛ إن كان البرنامج مثبتًا لجميع المستخدمين فقد يطلب كلمة المرور."
+ "Flatpak installa il pacchetto nuovo; se il programma è installato per tutti gli utenti può chiedere la password.": "يثبّت Flatpak الحزمة الجديدة؛ إن كان البرنامج مثبتًا لجميع المستخدمين فقد يطلب كلمة المرور.",
+ "Il PC remoto non riesce a decodificare il video compresso: uso i riquadri.": "لا يستطيع الحاسوب البعيد فك ترميز الفيديو المضغوط: أستخدم المربعات."
 }

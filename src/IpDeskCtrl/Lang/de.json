@@ -572,5 +572,6 @@
  "dispositivo": "Gerät",
  "Si installa senza password: il pacchetto nuovo lo scarica e lo verifica il sistema da GitHub.": "Die Installation läuft ohne Passwort: Das System lädt das neue Paket selbst von GitHub und prüft es.",
  "Si aggiorna con Scoop, senza permessi di amministratore.": "Die Aktualisierung läuft über Scoop, ohne Administratorrechte.",
- "Flatpak installa il pacchetto nuovo; se il programma è installato per tutti gli utenti può chiedere la password.": "Flatpak installiert das neue Paket; ist das Programm für alle Benutzer installiert, kann es nach dem Passwort fragen."
+ "Flatpak installa il pacchetto nuovo; se il programma è installato per tutti gli utenti può chiedere la password.": "Flatpak installiert das neue Paket; ist das Programm für alle Benutzer installiert, kann es nach dem Passwort fragen.",
+ "Il PC remoto non riesce a decodificare il video compresso: uso i riquadri.": "Der entfernte PC kann das komprimierte Video nicht dekodieren: Ich verwende Kacheln."
 }

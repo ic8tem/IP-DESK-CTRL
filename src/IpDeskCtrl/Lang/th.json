@@ -572,5 +572,6 @@
  "dispositivo": "อุปกรณ์",
  "Si installa senza password: il pacchetto nuovo lo scarica e lo verifica il sistema da GitHub.": "ติดตั้งได้โดยไม่ต้องใช้รหัสผ่าน: ระบบดาวน์โหลดแพ็กเกจใหม่จาก GitHub และตรวจสอบเอง",
  "Si aggiorna con Scoop, senza permessi di amministratore.": "อัปเดตผ่าน Scoop โดยไม่ต้องใช้สิทธิ์ผู้ดูแลระบบ",
- "Flatpak installa il pacchetto nuovo; se il programma è installato per tutti gli utenti può chiedere la password.": "Flatpak ติดตั้งแพ็กเกจใหม่ หากติดตั้งโปรแกรมไว้สำหรับผู้ใช้ทุกคนอาจขอรหัสผ่าน"
+ "Flatpak installa il pacchetto nuovo; se il programma è installato per tutti gli utenti può chiedere la password.": "Flatpak ติดตั้งแพ็กเกจใหม่ หากติดตั้งโปรแกรมไว้สำหรับผู้ใช้ทุกคนอาจขอรหัสผ่าน",
+ "Il PC remoto non riesce a decodificare il video compresso: uso i riquadri.": "คอมพิวเตอร์ระยะไกลถอดรหัสวิดีโอบีบอัดไม่ได้: ใช้สี่เหลี่ยมแทน"
 }

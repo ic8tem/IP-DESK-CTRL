@@ -52,7 +52,7 @@ namespace IpDeskCtrl.Core
                 shared.AudioReceived += OnUdpAudio;
                 _udp = shared;
                 _udpMine = _udpPeer = true;
-                UdpLog(L.T("collegamento solo UDP: audio e mouse sullo stesso socket"));
+                UdpLog("collegamento solo UDP: audio e mouse sullo stesso socket");
             }
         }
 
@@ -84,7 +84,7 @@ namespace IpDeskCtrl.Core
                         case Msg.Pong: RttMs = (DateTime.UtcNow.Ticks - r.I64()) / 10000.0; break;
                         case Msg.Bye: reason = r.Str(); Cts.Cancel(); break;
                         case Msg.UdpOffer: { string c = r.Str(); int d = r.I32(); _ = Task.Run(() => OnUdpOfferAsync(c, d)); break; }
-                        case Msg.UdpOn: _udpPeer = r.U8() == 1; UdpLog(L.F("l'altro PC {0} su UDP", (_udpPeer ? "riceve" : L.T("non riceve")))); break;
+                        case Msg.UdpOn: _udpPeer = r.U8() == 1; UdpLog(string.Format("l'altro PC {0} su UDP", (_udpPeer ? "riceve" : "non riceve"))); break;
                         case Msg.Clipboard: OnRemoteClipboard(r.Str()); break;
                         case Msg.FileOffer:
                         case Msg.FileChunk:
@@ -162,10 +162,10 @@ namespace IpDeskCtrl.Core
                 string lan = Peer.LanIp();
                 if (lan.Length > 0) cands.Add($"{lan}:{link.LocalPort}");
                 cands = cands.Distinct().ToList();
-                UdpLog(L.F("NAT {0} · candidati {1}", nat.Type, string.Join(" ", cands)));
+                UdpLog(string.Format("NAT {0} · candidati {1}", nat.Type, string.Join(" ", cands)));
                 await SendAsync(new MsgWriter(Msg.UdpOffer).Str(string.Join(";", cands)).I32(nat.PortDelta).Build());
             }
-            catch (Exception ex) { UdpLog(L.T("errore: ") + ex.Message); }
+            catch (Exception ex) { UdpLog("errore: " + ex.Message); }
             finally { _udpLock.Release(); }
             if (_peerCands != null) await PunchAsync();
         }
@@ -177,7 +177,7 @@ namespace IpDeskCtrl.Core
                 if (IPEndPoint.TryParse(c, out var ep)) list.Add(ep);
             _peerCands = list;
             _peerDelta = delta;
-            UdpLog(L.F("candidati dell'altro PC: {0}", cands));
+            UdpLog(string.Format("candidati dell'altro PC: {0}", cands));
             if (_udp == null) await OfferUdpAsync(0, null);
             else await PunchAsync();
         }
@@ -189,7 +189,7 @@ namespace IpDeskCtrl.Core
             if (link == null || cands == null || cands.Count == 0) return;
             bool ok = await link.PunchAsync(cands, _peerDelta, TimeSpan.FromSeconds(10), Cts.Token);
             _udpMine = ok;
-            UdpLog(ok ? L.F("perforazione riuscita verso {0}", link.Remote) : L.T("perforazione non riuscita: resta solo TCP"));
+            UdpLog(ok ? string.Format("perforazione riuscita verso {0}", link.Remote) : "perforazione non riuscita: resta solo TCP");
             await SendAsync(new MsgWriter(Msg.UdpOn).U8((byte)(ok ? 1 : 0)).Build());
         }
 
@@ -201,7 +201,7 @@ namespace IpDeskCtrl.Core
             if (DateTime.UtcNow - u.LastReceived > silence)
             {
                 _udpMine = false;
-                UdpLog(L.F("nessun pacchetto UDP da {0:F0} s: torno a TCP", silence.TotalSeconds));
+                UdpLog(string.Format("nessun pacchetto UDP da {0:F0} s: torno a TCP", silence.TotalSeconds));
                 Send(new MsgWriter(Msg.UdpOn).U8(0).Build());
             }
         }

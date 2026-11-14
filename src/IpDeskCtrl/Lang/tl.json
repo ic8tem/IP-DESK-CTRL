@@ -572,5 +572,6 @@
  "dispositivo": "device",
  "Si installa senza password: il pacchetto nuovo lo scarica e lo verifica il sistema da GitHub.": "Nag-i-install nang walang password: ang system mismo ang nagda-download ng bagong package mula sa GitHub at sumusuri rito.",
  "Si aggiorna con Scoop, senza permessi di amministratore.": "Nag-a-update gamit ang Scoop, nang walang pahintulot ng administrator.",
- "Flatpak installa il pacchetto nuovo; se il programma è installato per tutti gli utenti può chiedere la password.": "Ini-install ng Flatpak ang bagong package; kung naka-install ang programa para sa lahat ng user, maaaring humingi ito ng password."
+ "Flatpak installa il pacchetto nuovo; se il programma è installato per tutti gli utenti può chiedere la password.": "Ini-install ng Flatpak ang bagong package; kung naka-install ang programa para sa lahat ng user, maaaring humingi ito ng password.",
+ "Il PC remoto non riesce a decodificare il video compresso: uso i riquadri.": "Hindi ma-decode ng malayong computer ang compressed video: kuwadrado ang gagamitin ko."
 }

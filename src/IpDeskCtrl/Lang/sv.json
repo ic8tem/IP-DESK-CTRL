@@ -572,5 +572,6 @@
  "dispositivo": "enhet",
  "Si installa senza password: il pacchetto nuovo lo scarica e lo verifica il sistema da GitHub.": "Installeras utan lösenord: systemet laddar själv ner det nya paketet från GitHub och kontrollerar det.",
  "Si aggiorna con Scoop, senza permessi di amministratore.": "Uppdateras med Scoop, utan administratörsbehörighet.",
- "Flatpak installa il pacchetto nuovo; se il programma è installato per tutti gli utenti può chiedere la password.": "Flatpak installerar det nya paketet; om programmet är installerat för alla användare kan det fråga efter lösenordet."
+ "Flatpak installa il pacchetto nuovo; se il programma è installato per tutti gli utenti può chiedere la password.": "Flatpak installerar det nya paketet; om programmet är installerat för alla användare kan det fråga efter lösenordet.",
+ "Il PC remoto non riesce a decodificare il video compresso: uso i riquadri.": "Fjärrdatorn kan inte avkoda den komprimerade videon: jag använder rutor."
 }

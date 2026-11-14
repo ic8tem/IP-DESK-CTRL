@@ -572,5 +572,6 @@
  "dispositivo": "perangkat",
  "Si installa senza password: il pacchetto nuovo lo scarica e lo verifica il sistema da GitHub.": "Terpasang tanpa kata sandi: sistem sendiri mengunduh paket baru dari GitHub dan memeriksanya.",
  "Si aggiorna con Scoop, senza permessi di amministratore.": "Diperbarui lewat Scoop, tanpa hak administrator.",
- "Flatpak installa il pacchetto nuovo; se il programma è installato per tutti gli utenti può chiedere la password.": "Flatpak memasang paket baru; jika program terpasang untuk semua pengguna, mungkin meminta kata sandi."
+ "Flatpak installa il pacchetto nuovo; se il programma è installato per tutti gli utenti può chiedere la password.": "Flatpak memasang paket baru; jika program terpasang untuk semua pengguna, mungkin meminta kata sandi.",
+ "Il PC remoto non riesce a decodificare il video compresso: uso i riquadri.": "Komputer jarak jauh tidak bisa mendekode video terkompresi: saya pakai kotak-kotak."
 }

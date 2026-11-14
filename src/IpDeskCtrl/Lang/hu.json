@@ -572,5 +572,6 @@
  "dispositivo": "eszköz",
  "Si installa senza password: il pacchetto nuovo lo scarica e lo verifica il sistema da GitHub.": "Jelszó nélkül települ: a rendszer maga tölti le az új csomagot a GitHubról, és ellenőrzi.",
  "Si aggiorna con Scoop, senza permessi di amministratore.": "A Scoopon keresztül frissül, rendszergazdai jogok nélkül.",
- "Flatpak installa il pacchetto nuovo; se il programma è installato per tutti gli utenti può chiedere la password.": "A Flatpak telepíti az új csomagot; ha a program minden felhasználónak telepítve van, jelszót kérhet."
+ "Flatpak installa il pacchetto nuovo; se il programma è installato per tutti gli utenti può chiedere la password.": "A Flatpak telepíti az új csomagot; ha a program minden felhasználónak telepítve van, jelszót kérhet.",
+ "Il PC remoto non riesce a decodificare il video compresso: uso i riquadri.": "A távoli számítógép nem tudja dekódolni a tömörített videót: négyzeteket használok."
 }

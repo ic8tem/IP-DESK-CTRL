@@ -572,5 +572,6 @@
  "dispositivo": "デバイス",
  "Si installa senza password: il pacchetto nuovo lo scarica e lo verifica il sistema da GitHub.": "パスワードなしでインストールされます: 新しいパッケージはシステム自身が GitHub からダウンロードして検証します。",
  "Si aggiorna con Scoop, senza permessi di amministratore.": "Scoop で更新されます。管理者権限は不要です。",
- "Flatpak installa il pacchetto nuovo; se il programma è installato per tutti gli utenti può chiedere la password.": "Flatpak が新しいパッケージをインストールします。すべてのユーザー向けにインストールされている場合はパスワードを求められることがあります。"
+ "Flatpak installa il pacchetto nuovo; se il programma è installato per tutti gli utenti può chiedere la password.": "Flatpak が新しいパッケージをインストールします。すべてのユーザー向けにインストールされている場合はパスワードを求められることがあります。",
+ "Il PC remoto non riesce a decodificare il video compresso: uso i riquadri.": "リモートのパソコンが圧縮映像をデコードできません: 四角形を使います。"
 }

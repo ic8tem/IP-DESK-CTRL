@@ -572,5 +572,6 @@
  "dispositivo": "zařízení",
  "Si installa senza password: il pacchetto nuovo lo scarica e lo verifica il sistema da GitHub.": "Instaluje se bez hesla: systém sám stáhne nový balíček z GitHubu a ověří ho.",
  "Si aggiorna con Scoop, senza permessi di amministratore.": "Aktualizuje se přes Scoop, bez oprávnění správce.",
- "Flatpak installa il pacchetto nuovo; se il programma è installato per tutti gli utenti può chiedere la password.": "Flatpak nainstaluje nový balíček; pokud je program nainstalován pro všechny uživatele, může požádat o heslo."
+ "Flatpak installa il pacchetto nuovo; se il programma è installato per tutti gli utenti può chiedere la password.": "Flatpak nainstaluje nový balíček; pokud je program nainstalován pro všechny uživatele, může požádat o heslo.",
+ "Il PC remoto non riesce a decodificare il video compresso: uso i riquadri.": "Vzdálený počítač nedokáže dekódovat komprimované video: používám čtverce."
 }

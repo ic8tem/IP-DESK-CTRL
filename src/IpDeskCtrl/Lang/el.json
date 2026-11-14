@@ -572,5 +572,6 @@
  "dispositivo": "συσκευής",
  "Si installa senza password: il pacchetto nuovo lo scarica e lo verifica il sistema da GitHub.": "Εγκαθίσταται χωρίς κωδικό: το ίδιο το σύστημα κατεβάζει το νέο πακέτο από το GitHub και το ελέγχει.",
  "Si aggiorna con Scoop, senza permessi di amministratore.": "Ενημερώνεται μέσω Scoop, χωρίς δικαιώματα διαχειριστή.",
- "Flatpak installa il pacchetto nuovo; se il programma è installato per tutti gli utenti può chiedere la password.": "Το Flatpak εγκαθιστά το νέο πακέτο· αν το πρόγραμμα είναι εγκατεστημένο για όλους τους χρήστες, μπορεί να ζητήσει τον κωδικό."
+ "Flatpak installa il pacchetto nuovo; se il programma è installato per tutti gli utenti può chiedere la password.": "Το Flatpak εγκαθιστά το νέο πακέτο· αν το πρόγραμμα είναι εγκατεστημένο για όλους τους χρήστες, μπορεί να ζητήσει τον κωδικό.",
+ "Il PC remoto non riesce a decodificare il video compresso: uso i riquadri.": "Ο απομακρυσμένος υπολογιστής δεν μπορεί να αποκωδικοποιήσει το συμπιεσμένο βίντεο: χρησιμοποιώ τετράγωνα."
 }

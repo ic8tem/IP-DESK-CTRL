@@ -322,7 +322,10 @@ namespace IpDeskCtrl.Screen
         public VideoDecoder(string codec, int w, int h, Action<byte[]> frame)
         {
             Width = w; Height = h;
-            string args = "-hide_banner -loglevel error -fflags nobuffer -flags low_delay -probesize 32 -analyzeduration 0 -hwaccel auto " +
+            // niente «-fflags nobuffer»: con quello i pacchetti letti per riconoscere il flusso venivano buttati, e con
+            // loro il primo fotogramma intero (IDR); il decodificatore non trovava i riferimenti («Could not find ref
+            // with POC 0») e non usciva nessun fotogramma
+            string args = "-hide_banner -loglevel error -flags low_delay -probesize 32 -analyzeduration 0 -hwaccel auto " +
                           $"-f {Ffmpeg.Format(codec)} -i - -an -f rawvideo -pix_fmt bgra -s {w}x{h} -flush_packets 1 -";
             _p = Ffmpeg.Start(Ffmpeg.Path!, args, true) ?? throw new IOException(L.T("ffmpeg non avviabile"));
             _in = _p.StandardInput.BaseStream;

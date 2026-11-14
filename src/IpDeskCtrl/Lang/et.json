@@ -572,5 +572,6 @@
  "dispositivo": "seade",
  "Si installa senza password: il pacchetto nuovo lo scarica e lo verifica il sistema da GitHub.": "Paigaldub ilma paroolita: süsteem laadib uue paketi ise GitHubist alla ja kontrollib seda.",
  "Si aggiorna con Scoop, senza permessi di amministratore.": "Uueneb Scoopi kaudu, ilma administraatori õigusteta.",
- "Flatpak installa il pacchetto nuovo; se il programma è installato per tutti gli utenti può chiedere la password.": "Flatpak paigaldab uue paketi; kui programm on paigaldatud kõigile kasutajatele, võib see küsida parooli."
+ "Flatpak installa il pacchetto nuovo; se il programma è installato per tutti gli utenti può chiedere la password.": "Flatpak paigaldab uue paketi; kui programm on paigaldatud kõigile kasutajatele, võib see küsida parooli.",
+ "Il PC remoto non riesce a decodificare il video compresso: uso i riquadri.": "Kaugarvuti ei suuda tihendatud videot dekodeerida: kasutan ruute."
 }

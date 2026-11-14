@@ -34,20 +34,100 @@ namespace IpDeskCtrl.Core
         }
 
         /// <summary>Lingua del sistema, se è tra le 36; altrimenti inglese.</summary>
+        /// <remarks>
+        /// Il programma per PC gira con InvariantGlobalization: lì CultureInfo.CurrentUICulture è sempre la cultura
+        /// invariante (che darebbe l'inglese a tutti). La lingua si chiede quindi al sistema: Windows (lingua
+        /// dell'interfaccia dell'utente), variabili LANGUAGE/LC_ALL/LC_MESSAGES/LANG su Linux, AppleLanguages su macOS.
+        /// </remarks>
         public static string FromSystem()
         {
             try
             {
-                var c = CultureInfo.CurrentUICulture;
-                string name = c.Name.ToLowerInvariant();
-                if (name is "pt-br") return "pt-br";
-                if (name is "zh-tw" or "zh-hk" or "zh-mo" || name.StartsWith("zh-hant")) return "zh-tw";
-                string two = c.TwoLetterISOLanguageName.ToLowerInvariant();
-                if (two is "no" or "nn") two = "nb";
-                if (two == "fil") two = "tl";
-                return All.Any(a => a.code == two) ? two : "en";
+                foreach (string tag in SystemTags())
+                {
+                    string code = Map(tag);
+                    if (code.Length > 0) return code;
+                }
             }
-            catch { return "en"; }
+            catch { }
+            return "en";
+        }
+
+        private static string Map(string tag)
+        {
+            string name = tag.Trim().Replace('_', '-').ToLowerInvariant();
+            int dot = name.IndexOfAny(new[] { '.', '@' });
+            if (dot >= 0) name = name[..dot];
+            if (name.Length < 2 || name is "c" or "posix" or "iv") return "";
+            if (name is "pt-br") return "pt-br";
+            if (name is "zh-tw" or "zh-hk" or "zh-mo" || name.StartsWith("zh-hant")) return "zh-tw";
+            string two = name.Split('-')[0];
+            if (two is "no" or "nn") two = "nb";
+            if (two is "fil") two = "tl";
+            if (two is "iw") two = "he";
+            if (two is "in") two = "id";
+            return All.Any(a => a.code == two) ? two : "";
+        }
+
+        private static IEnumerable<string> SystemTags()
+        {
+            if (OperatingSystem.IsWindows())
+            {
+                var sb = new System.Text.StringBuilder(85);
+                if (LCIDToLocaleName(GetUserDefaultUILanguage(), sb, sb.Capacity, 0) > 0) yield return sb.ToString();
+            }
+            else if (!OperatingSystem.IsAndroid())
+            {
+                foreach (var v in new[] { "LANGUAGE", "LC_ALL", "LC_MESSAGES", "LANG" })
+                {
+                    string? e = Environment.GetEnvironmentVariable(v);
+                    if (!string.IsNullOrWhiteSpace(e)) foreach (var p in e.Split(':')) yield return p;
+                }
+                if (OperatingSystem.IsMacOS())
+                {
+                    string mac = "";
+                    try
+                    {
+                        using var p = System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("defaults", "read -g AppleLanguages")
+                            { RedirectStandardOutput = true, UseShellExecute = false, CreateNoWindow = true });
+                        if (p != null) { mac = p.StandardOutput.ReadToEnd(); p.WaitForExit(2000); }
+                    }
+                    catch { }
+                    foreach (var part in mac.Split(new[] { '(', ')', ',', '"', '\n', ' ' }, StringSplitOptions.RemoveEmptyEntries)) yield return part;
+                }
+            }
+            yield return CultureInfo.CurrentUICulture.Name;       // Android e i casi senza InvariantGlobalization
+        }
+
+        [System.Runtime.InteropServices.DllImport("kernel32.dll")] private static extern ushort GetUserDefaultUILanguage();
+        [System.Runtime.InteropServices.DllImport("kernel32.dll", CharSet = System.Runtime.InteropServices.CharSet.Unicode)]
+        private static extern int LCIDToLocaleName(uint lcid, System.Text.StringBuilder name, int size, uint flags);
+
+        private static string _revLang = "";
+        private static List<KeyValuePair<string, string>> _rev = new();
+
+        /// <summary>
+        /// Il registro delle sessioni resta in italiano: le frasi già tradotte (avvisi mostrati anche all'utente,
+        /// motivi di chiusura…) tornano alla frase italiana prima di essere scritte.
+        /// </summary>
+        public static string ToItalian(string s)
+        {
+            string cur = Current;
+            if (cur == "it" || s.Length == 0) return s;
+            List<KeyValuePair<string, string>> rev;
+            lock (Lock)
+            {
+                if (_revLang != cur)
+                {
+                    _rev = Load(cur).Where(kv => kv.Value.Length >= 6 && kv.Key.IndexOf('{') < 0 && kv.Value != kv.Key)
+                                    .OrderByDescending(kv => kv.Value.Length).ToList();
+                    _revLang = cur;
+                }
+                rev = _rev;
+            }
+            foreach (var kv in rev)
+                if (s.Contains(kv.Value, StringComparison.Ordinal)) s = s.Replace(kv.Value, kv.Key, StringComparison.Ordinal);
+            return s;
         }
 
         private static readonly Dictionary<string, Dictionary<string, string>> Cache = new();

@@ -572,5 +572,6 @@
  "dispositivo": "dispozitiv",
  "Si installa senza password: il pacchetto nuovo lo scarica e lo verifica il sistema da GitHub.": "Se instalează fără parolă: sistemul descarcă singur noul pachet de pe GitHub și îl verifică.",
  "Si aggiorna con Scoop, senza permessi di amministratore.": "Se actualizează prin Scoop, fără drepturi de administrator.",
- "Flatpak installa il pacchetto nuovo; se il programma è installato per tutti gli utenti può chiedere la password.": "Flatpak instalează noul pachet; dacă programul este instalat pentru toți utilizatorii, poate cere parola."
+ "Flatpak installa il pacchetto nuovo; se il programma è installato per tutti gli utenti può chiedere la password.": "Flatpak instalează noul pachet; dacă programul este instalat pentru toți utilizatorii, poate cere parola.",
+ "Il PC remoto non riesce a decodificare il video compresso: uso i riquadri.": "PC-ul la distanță nu reușește să decodeze video comprimat: folosesc pătratele."
 }

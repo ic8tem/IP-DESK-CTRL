@@ -222,6 +222,7 @@ namespace IpDeskCtrl.Core
 
         public static void Write(string line)
         {
+            try { line = L.ToItalian(line); } catch { }
             lock (Lock)
             {
                 try

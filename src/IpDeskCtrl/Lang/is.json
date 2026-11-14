@@ -572,5 +572,6 @@
  "dispositivo": "tæki",
  "Si installa senza password: il pacchetto nuovo lo scarica e lo verifica il sistema da GitHub.": "Sett upp án lykilorðs: kerfið sækir sjálft nýja pakkann frá GitHub og staðfestir hann.",
  "Si aggiorna con Scoop, senza permessi di amministratore.": "Uppfært með Scoop, án stjórnandaréttinda.",
- "Flatpak installa il pacchetto nuovo; se il programma è installato per tutti gli utenti può chiedere la password.": "Flatpak setur upp nýja pakkann; ef forritið er sett upp fyrir alla notendur getur það beðið um lykilorðið."
+ "Flatpak installa il pacchetto nuovo; se il programma è installato per tutti gli utenti può chiedere la password.": "Flatpak setur upp nýja pakkann; ef forritið er sett upp fyrir alla notendur getur það beðið um lykilorðið.",
+ "Il PC remoto non riesce a decodificare il video compresso: uso i riquadri.": "Fjartölvan getur ekki afkóðað þjappaða myndbandið: ég nota reiti."
 }

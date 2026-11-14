@@ -572,5 +572,6 @@
  "dispositivo": "آلے",
  "Si installa senza password: il pacchetto nuovo lo scarica e lo verifica il sistema da GitHub.": "پاس ورڈ کے بغیر انسٹال ہوتا ہے: نیا پیکیج سسٹم خود GitHub سے ڈاؤن لوڈ کر کے جانچتا ہے۔",
  "Si aggiorna con Scoop, senza permessi di amministratore.": "Scoop کے ذریعے اپ ڈیٹ ہوتا ہے، منتظم کی اجازت کے بغیر۔",
- "Flatpak installa il pacchetto nuovo; se il programma è installato per tutti gli utenti può chiedere la password.": "Flatpak نیا پیکیج انسٹال کرتا ہے؛ اگر پروگرام سب صارفین کے لیے انسٹال ہے تو پاس ورڈ مانگ سکتا ہے۔"
+ "Flatpak installa il pacchetto nuovo; se il programma è installato per tutti gli utenti può chiedere la password.": "Flatpak نیا پیکیج انسٹال کرتا ہے؛ اگر پروگرام سب صارفین کے لیے انسٹال ہے تو پاس ورڈ مانگ سکتا ہے۔",
+ "Il PC remoto non riesce a decodificare il video compresso: uso i riquadri.": "ریموٹ کمپیوٹر کمپریسڈ ویڈیو ڈیکوڈ نہیں کر پا رہا: خانے استعمال کر رہا ہوں۔"
 }
