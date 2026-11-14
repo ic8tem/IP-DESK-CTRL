@@ -567,5 +567,6 @@
  "Collegamento non possibile": "कनेक्शन संभव नहीं",
  "Tutti gli schermi": "सभी स्क्रीन",
  "Collegamento terminato": "कनेक्शन समाप्त",
- "Ricollegati": "फिर जुड़ें"
+ "Ricollegati": "फिर जुड़ें",
+ "Il PC remoto è bloccato (schermata di blocco o di accesso) oppure mostra una finestra di sicurezza (UAC, Ctrl+Alt+Canc): ": "रिमोट कंप्यूटर लॉक है (लॉक या लॉगिन स्क्रीन) या सुरक्षा विंडो दिखा रहा है (UAC, Ctrl+Alt+Del): "
 }

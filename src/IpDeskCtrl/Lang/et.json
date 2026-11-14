@@ -567,5 +567,6 @@
  "Collegamento non possibile": "Ühendus pole võimalik",
  "Tutti gli schermi": "Kõik ekraanid",
  "Collegamento terminato": "Ühendus lõpetatud",
- "Ricollegati": "Ühenda uuesti"
+ "Ricollegati": "Ühenda uuesti",
+ "Il PC remoto è bloccato (schermata di blocco o di accesso) oppure mostra una finestra di sicurezza (UAC, Ctrl+Alt+Canc): ": "Kaugarvuti on lukus (lukustus- või sisselogimiskuva) või näitab turvaakent (UAC, Ctrl+Alt+Del): "
 }

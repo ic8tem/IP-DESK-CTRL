@@ -567,5 +567,6 @@
  "Collegamento non possibile": "Η σύνδεση δεν είναι δυνατή",
  "Tutti gli schermi": "Όλες οι οθόνες",
  "Collegamento terminato": "Η σύνδεση τερματίστηκε",
- "Ricollegati": "Επανασύνδεση"
+ "Ricollegati": "Επανασύνδεση",
+ "Il PC remoto è bloccato (schermata di blocco o di accesso) oppure mostra una finestra di sicurezza (UAC, Ctrl+Alt+Canc): ": "Ο απομακρυσμένος υπολογιστής είναι κλειδωμένος (οθόνη κλειδώματος ή σύνδεσης) ή δείχνει παράθυρο ασφαλείας (UAC, Ctrl+Alt+Del): "
 }

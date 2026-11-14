@@ -567,5 +567,6 @@
  "Collegamento non possibile": "Tilkobling ikke mulig",
  "Tutti gli schermi": "Alle skjermer",
  "Collegamento terminato": "Tilkoblingen avsluttet",
- "Ricollegati": "Koble til igjen"
+ "Ricollegati": "Koble til igjen",
+ "Il PC remoto è bloccato (schermata di blocco o di accesso) oppure mostra una finestra di sicurezza (UAC, Ctrl+Alt+Canc): ": "Den eksterne PC-en er låst (låseskjerm eller påloggingsskjerm) eller viser et sikkerhetsvindu (UAC, Ctrl+Alt+Del): "
 }

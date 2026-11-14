@@ -567,5 +567,6 @@
  "Collegamento non possibile": "החיבור אינו אפשרי",
  "Tutti gli schermi": "כל המסכים",
  "Collegamento terminato": "החיבור הסתיים",
- "Ricollegati": "התחבר מחדש"
+ "Ricollegati": "התחבר מחדש",
+ "Il PC remoto è bloccato (schermata di blocco o di accesso) oppure mostra una finestra di sicurezza (UAC, Ctrl+Alt+Canc): ": "המחשב המרוחק נעול (מסך נעילה או כניסה) או מציג חלון אבטחה (UAC, Ctrl+Alt+Del): "
 }

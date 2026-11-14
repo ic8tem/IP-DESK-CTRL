@@ -567,5 +567,6 @@
  "Collegamento non possibile": "Połączenie niemożliwe",
  "Tutti gli schermi": "Wszystkie ekrany",
  "Collegamento terminato": "Połączenie zakończone",
- "Ricollegati": "Połącz ponownie"
+ "Ricollegati": "Połącz ponownie",
+ "Il PC remoto è bloccato (schermata di blocco o di accesso) oppure mostra una finestra di sicurezza (UAC, Ctrl+Alt+Canc): ": "Zdalny komputer jest zablokowany (ekran blokady lub logowania) albo pokazuje okno zabezpieczeń (UAC, Ctrl+Alt+Del): "
 }

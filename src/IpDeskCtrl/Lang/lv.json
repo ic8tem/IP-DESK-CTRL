@@ -567,5 +567,6 @@
  "Collegamento non possibile": "Savienojums nav iespējams",
  "Tutti gli schermi": "Visi ekrāni",
  "Collegamento terminato": "Savienojums beidzies",
- "Ricollegati": "Savienoties atkārtoti"
+ "Ricollegati": "Savienoties atkārtoti",
+ "Il PC remoto è bloccato (schermata di blocco o di accesso) oppure mostra una finestra di sicurezza (UAC, Ctrl+Alt+Canc): ": "Attālais dators ir bloķēts (bloķēšanas vai pieteikšanās ekrāns) vai rāda drošības logu (UAC, Ctrl+Alt+Del): "
 }

@@ -567,5 +567,6 @@
  "Collegamento non possibile": "Подключение невозможно",
  "Tutti gli schermi": "Все экраны",
  "Collegamento terminato": "Подключение завершено",
- "Ricollegati": "Переподключиться"
+ "Ricollegati": "Переподключиться",
+ "Il PC remoto è bloccato (schermata di blocco o di accesso) oppure mostra una finestra di sicurezza (UAC, Ctrl+Alt+Canc): ": "Удалённый компьютер заблокирован (экран блокировки или входа) или показывает окно безопасности (UAC, Ctrl+Alt+Del): "
 }

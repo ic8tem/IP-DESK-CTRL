@@ -567,5 +567,6 @@
  "Collegamento non possibile": "เชื่อมต่อไม่ได้",
  "Tutti gli schermi": "ทุกหน้าจอ",
  "Collegamento terminato": "การเชื่อมต่อสิ้นสุด",
- "Ricollegati": "เชื่อมต่อใหม่"
+ "Ricollegati": "เชื่อมต่อใหม่",
+ "Il PC remoto è bloccato (schermata di blocco o di accesso) oppure mostra una finestra di sicurezza (UAC, Ctrl+Alt+Canc): ": "คอมพิวเตอร์ระยะไกลถูกล็อก (หน้าจอล็อกหรือเข้าสู่ระบบ) หรือแสดงหน้าต่างความปลอดภัย (UAC, Ctrl+Alt+Del): "
 }

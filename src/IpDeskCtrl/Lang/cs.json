@@ -567,5 +567,6 @@
  "Collegamento non possibile": "Připojení není možné",
  "Tutti gli schermi": "Všechny obrazovky",
  "Collegamento terminato": "Připojení ukončeno",
- "Ricollegati": "Připojit znovu"
+ "Ricollegati": "Připojit znovu",
+ "Il PC remoto è bloccato (schermata di blocco o di accesso) oppure mostra una finestra di sicurezza (UAC, Ctrl+Alt+Canc): ": "Vzdálený počítač je zamčený (zamykací nebo přihlašovací obrazovka) nebo zobrazuje bezpečnostní okno (UAC, Ctrl+Alt+Del): "
 }

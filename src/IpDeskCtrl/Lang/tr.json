@@ -567,5 +567,6 @@
  "Collegamento non possibile": "Bağlantı mümkün değil",
  "Tutti gli schermi": "Tüm ekranlar",
  "Collegamento terminato": "Bağlantı sona erdi",
- "Ricollegati": "Yeniden bağlan"
+ "Ricollegati": "Yeniden bağlan",
+ "Il PC remoto è bloccato (schermata di blocco o di accesso) oppure mostra una finestra di sicurezza (UAC, Ctrl+Alt+Canc): ": "Uzak bilgisayar kilitli (kilit veya oturum açma ekranı) ya da bir güvenlik penceresi gösteriyor (UAC, Ctrl+Alt+Del): "
 }

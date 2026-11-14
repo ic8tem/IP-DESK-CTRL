@@ -567,5 +567,6 @@
  "Collegamento non possibile": "A kapcsolat nem lehetséges",
  "Tutti gli schermi": "Minden képernyő",
  "Collegamento terminato": "Kapcsolat befejezve",
- "Ricollegati": "Újracsatlakozás"
+ "Ricollegati": "Újracsatlakozás",
+ "Il PC remoto è bloccato (schermata di blocco o di accesso) oppure mostra una finestra di sicurezza (UAC, Ctrl+Alt+Canc): ": "A távoli számítógép zárolva van (zárolási vagy bejelentkezési képernyő), vagy biztonsági ablakot mutat (UAC, Ctrl+Alt+Del): "
 }

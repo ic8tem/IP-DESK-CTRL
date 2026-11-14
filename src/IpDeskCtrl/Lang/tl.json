@@ -567,5 +567,6 @@
  "Collegamento non possibile": "Hindi posible ang koneksyon",
  "Tutti gli schermi": "Lahat ng screen",
  "Collegamento terminato": "Natapos ang koneksyon",
- "Ricollegati": "Kumonekta muli"
+ "Ricollegati": "Kumonekta muli",
+ "Il PC remoto è bloccato (schermata di blocco o di accesso) oppure mostra una finestra di sicurezza (UAC, Ctrl+Alt+Canc): ": "Naka-lock ang malayong computer (lock o login screen) o nagpapakita ng security window (UAC, Ctrl+Alt+Del): "
 }
