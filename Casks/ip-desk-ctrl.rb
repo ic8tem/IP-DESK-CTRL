@@ -4,9 +4,9 @@
 cask "ip-desk-ctrl" do
   arch arm: "arm64", intel: "x64"
 
-  version "0.5.12"
-  sha256 arm:   "8fbcfbc95e3bed49aac3aa71fda0187bd95949d46e0c1cd3ec21ed2bee787781",
-         intel: "5be2231ee136b1240b16fc94eeaacd1ef4dc2cdfafd241ea124249e21f4b6bed"
+  version "0.5.13"
+  sha256 arm:   "39a3ad05058aad35706641f99477f567df04e6db466ee1d52e634ef64f1f4a5d",
+         intel: "da1a28271745de549e3e043d6ae7dfa1bd617e3b61a97bcdbb650f1e65857ace"
 
   url "https://github.com/ic8tem/IP-DESK-CTRL/releases/download/v#{version}/IP-DESK-CTRL-#{version}-osx-#{arch}.dmg"
   name "IP-DESK-CTRL"
