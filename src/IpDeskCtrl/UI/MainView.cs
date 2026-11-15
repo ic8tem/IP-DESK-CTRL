@@ -230,7 +230,7 @@ namespace IpDeskCtrl.UI
                 c.IsCheckedChanged += (_, _) => { set(c.IsChecked == true); _s.Save(); _svc?.SendSettings(_s.AcceptIncoming, _s.AllowInput, _s.ShareAudio); };
                 return c;
             }
-            var theme = new ComboBox { ItemsSource = Themes.All.Select(t => t.Name).ToList(), SelectedIndex = Math.Max(0, Themes.All.FindIndex(t => t.Key == _s.Theme)), Width = 180, HorizontalAlignment = HorizontalAlignment.Left };
+            var theme = new ComboBox { ItemsSource = Themes.All.Select(t => L.T(t.Name)).ToList(), SelectedIndex = Math.Max(0, Themes.All.FindIndex(t => t.Key == _s.Theme)), Width = 240, HorizontalAlignment = HorizontalAlignment.Left };
             theme.SelectionChanged += (_, _) =>
             {
                 if (theme.SelectedIndex < 0) return;
@@ -734,7 +734,7 @@ namespace IpDeskCtrl.UI
             }
         }
 
-        /// <summary>Lingua del programma: automatica (quella del sistema) o una delle 36. Vale dal riavvio.</summary>
+        /// <summary>Lingua del programma: automatica (quella del sistema) o una delle 37. Vale dal riavvio.</summary>
         private Control LanguageRow()
         {
             var names = new List<string> { L.T("Automatica (lingua del sistema)") };

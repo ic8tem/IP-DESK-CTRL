@@ -8,7 +8,7 @@ using System.Text.Json;
 namespace IpDeskCtrl.Core
 {
     /// <summary>
-    /// Le 36 lingue di YA-MS e LIVETROPOVHF, nello stesso ordine. La chiave di ogni testo è la frase italiana:
+    /// Le 37 lingue di YAEC: le 36 di YA-MS e LIVETROPOVHF, nello stesso ordine, piu' lo slovacco (armonizzazione del 15/11/2026). La chiave di ogni testo è la frase italiana:
     /// i file Lang/{codice}.json (incorporati nell'eseguibile) danno la traduzione. Se manca nella lingua scelta
     /// si usa la lingua madre (pt-br → pt, zh-tw → zh), poi l'inglese, poi l'italiano.
     /// </summary>
@@ -18,7 +18,7 @@ namespace IpDeskCtrl.Core
         {
             ("it","Italiano"),("en","English"),("de","Deutsch"),("fr","Français"),("es","Español"),("pt","Português (Portugal)"),
             ("pt-br","Português (Brasil)"),("nl","Nederlands"),("sv","Svenska"),("nb","Norsk (bokmål)"),("da","Dansk"),("is","Íslenska"),
-            ("et","Eesti"),("lv","Latviešu"),("lt","Lietuvių"),("pl","Polski"),("cs","Čeština"),("hu","Magyar"),("ro","Română"),
+            ("et","Eesti"),("lv","Latviešu"),("lt","Lietuvių"),("pl","Polski"),("cs","Čeština"),("sk","Slovenčina"),("hu","Magyar"),("ro","Română"),
             ("el","Ελληνικά"),("ru","Русский"),("uk","Українська"),("tr","Türkçe"),("af","Afrikaans"),("ar","العربية"),("he","עברית"),
             ("ur","اردو"),("hi","हिन्दी"),("bn","বাংলা"),("th","ไทย"),("id","Bahasa Indonesia"),("tl","Tagalog"),("zh","中文 (简体)"),
             ("zh-tw","中文 (繁體)"),("ja","日本語"),("ko","한국어")
@@ -33,7 +33,7 @@ namespace IpDeskCtrl.Core
             set => _current = All.Any(a => a.code == value) ? value : FromSystem();
         }
 
-        /// <summary>Lingua del sistema, se è tra le 36; altrimenti inglese.</summary>
+        /// <summary>Lingua del sistema, se è tra le 37; altrimenti inglese.</summary>
         /// <remarks>
         /// Il programma per PC gira con InvariantGlobalization: lì CultureInfo.CurrentUICulture è sempre la cultura
         /// invariante (che darebbe l'inglese a tutti). La lingua si chiede quindi al sistema: Windows (lingua

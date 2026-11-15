@@ -75,7 +75,7 @@ namespace IpDeskCtrl.UI
 
         public static Window Dialog(string title, double width)
         {
-            return new Window
+            var w = new Window
             {
                 Title = title,
                 Width = width,
@@ -83,6 +83,8 @@ namespace IpDeskCtrl.UI
                 CanResize = false,
                 WindowStartupLocation = WindowStartupLocation.CenterOwner,
             };
+            Schermo.Adatta(w);
+            return w;
         }
 
         public static Thickness M(double l, double t, double r, double b) => new(l, t, r, b);

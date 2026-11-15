@@ -3,6 +3,11 @@
 
 Le versioni con protocollo diverso non si collegano tra loro: aggiorna tutti i dispositivi alla stessa versione principale (la 0.4.1 si collega con la 0.4.0; la 0.5 si collega con la 0.4).
 
+## In preparazione (ramo «armonizzazione», non ancora pubblicata)
+- **37 lingue**: aggiunto lo **slovacco**, come in YAEC; ora tutti i programmi di IC8TEM hanno le stesse lingue.
+- **18 temi di colore**, come E-LAYER ANALYZER (Impostazioni › «Tema»): ai sei di prima (Chiaro, Notte, Nero, Blu, Viola, Verde) si aggiungono Chiaro, Notte e Nero di YA-MS, otto pastelli (azzurro, arancio, acquamarina, verde, rosa, lilla, indaco, marrone, con le tinte di YAEC) e Scia meteorica. I nomi dei temi ora si traducono. Il tema già scelto resta quello.
+- **Schermi piccoli (768p)**: la finestra principale e i dialoghi non escono più dallo schermo (un dialogo troppo alto si accorcia e scorre); su uno schermo basso la finestra del PC remoto si apre ingrandita.
+
 ## 0.5.14 — 14 novembre 2026
 - **Tasto Windows e le sue combinazioni** (Win+R, Win+E, Win+D, Win+X…): con la finestra del PC remoto in primo piano ora vanno al PC remoto invece di aprire «Esegui» o il menu Start su questo. Restano a questo PC solo Win+L e Ctrl+Alt+Canc, che Windows non lascia intercettare (Ctrl+Alt+Canc si manda dal menu «Tasti»).
 - **Windows 7 e 8**: l'installatore ora si ferma subito con un avviso («serve Windows 10 o successivo») invece di installare un programma che poi non parte con l'errore «GetSystemTimePreciseAsFileTime».

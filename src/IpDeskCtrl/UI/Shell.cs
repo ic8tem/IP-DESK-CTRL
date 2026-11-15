@@ -130,6 +130,7 @@ namespace IpDeskCtrl.UI
                 Title = "IP-DESK-CTRL"
             };
             try { w.Icon = _main.Icon; } catch { }
+            Schermo.Adatta(w, true);
             _windows[v] = w;
             w.Closed += (_, _) => { _windows.Remove(v); v.OnClosedByShell(); };
             w.Show();
@@ -163,6 +164,7 @@ namespace IpDeskCtrl.UI
                 Content = new Border { Padding = new Thickness(22), Child = content },
                 FlowDirection = L.IsRtl ? FlowDirection.RightToLeft : FlowDirection.LeftToRight
             };
+            Schermo.Adatta(w);
             var h = new WinHandle(w);
             // con la finestra principale nascosta il dialogo non può averla come proprietaria
             if (topmost || !_main.IsVisible) { w.Show(); w.Activate(); } else w.Show(_main);
@@ -275,5 +277,52 @@ namespace IpDeskCtrl.UI
         }
 
         public IDialogHandle? ShowCorner(Control content) => null;   // su Android c'è la notifica e il riquadro nella schermata principale
+    }
+    /// <summary>
+    /// Schermi piccoli (768p, 1366×768 o 1280×720; armonizzazione del 15/11/2026): la finestra principale, il visore e i dialoghi
+    /// non escono dall'area di lavoro. Il visore su uno schermo basso si apre ingrandito; un dialogo piu' alto dello schermo
+    /// si accorcia e il contenuto scorre.
+    /// </summary>
+    internal static class Schermo
+    {
+        public static void Adatta(Window w, bool ingrandisciSeBasso = false)
+        {
+            w.Opened += (_, _) =>
+            {
+                try
+                {
+                    var sc = w.Screens.ScreenFromVisual(w) ?? w.Screens.Primary;
+                    if (sc == null) return;
+                    double k = sc.Scaling > 0 ? sc.Scaling : 1;
+                    var wa = sc.WorkingArea;
+                    double aw = wa.Width / k, ah = wa.Height / k - 40;   // 40: barra del titolo
+                    if (w.WindowState != WindowState.Normal || aw <= 0 || ah <= 0) return;
+                    if (ingrandisciSeBasso && (w.Height > ah || w.Width > aw)) { w.WindowState = WindowState.Maximized; return; }
+                    bool cambiata = false;
+                    if (w.SizeToContent == SizeToContent.Height || w.SizeToContent == SizeToContent.WidthAndHeight)
+                    {
+                        if (w.Bounds.Height > ah)
+                        {
+                            w.MaxHeight = ah;
+                            if (w.Content is Control c && c is not ScrollViewer) { w.Content = null; w.Content = new ScrollViewer { Content = c }; }
+                            cambiata = true;
+                        }
+                    }
+                    else
+                    {
+                        if (w.MinHeight > ah) w.MinHeight = ah;
+                        if (w.MinWidth > aw) w.MinWidth = aw;
+                        if (w.Height > ah) { w.Height = ah; cambiata = true; }
+                        if (w.Width > aw) { w.Width = aw; cambiata = true; }
+                    }
+                    if (cambiata)
+                    {
+                        double ww = Math.Min(w.Width > 0 && !double.IsNaN(w.Width) ? w.Width : w.Bounds.Width, aw);
+                        w.Position = new PixelPoint(wa.X + (int)Math.Max(0, (wa.Width - ww * k) / 2), wa.Y + 4);
+                    }
+                }
+                catch { }
+            };
+        }
     }
 }

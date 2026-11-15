@@ -45,7 +45,7 @@ namespace IpDeskCtrl.Core
         public bool AllowResize { get; set; } = true;      // chi si collega può adattare la risoluzione alla sua finestra
         public bool AllowDrive { get; set; } = true;       // chi si collega può montare qui una sua cartella come disco
         public bool AllowTunnel { get; set; } = true;
-        public string Language { get; set; } = "";         // "" = lingua del sistema (una delle 36, altrimenti inglese)
+        public string Language { get; set; } = "";         // "" = lingua del sistema (una delle 37, altrimenti inglese)
         public string ToolbarDock { get; set; } = "sopra";  // plancia del collegamento: sopra, sinistra, destra (sempre a scomparsa)
         public bool AutoUpdate { get; set; } = true;       // le nuove versioni si scaricano e si installano da sole
         public string SkipAutoVersion { get; set; } = "";  // versione per cui si è scelto «Più tardi»: niente installazione da sola

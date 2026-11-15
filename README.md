@@ -31,7 +31,8 @@ Ogni PC ha un **numero fisso di 10 cifre** (es. `482 913 0675`) che non cambia m
 - **Tunnel di porte** (plancia › *Tunnel ▾*): un programma di qui si collega a 127.0.0.1:porta e arriva a un indirizzo visto dal PC remoto, per esempio **rigctld** (4532), **rotctld** (4533), **flrig** (12345), **fldigi** (7362) o l'**interfaccia web della radio**. Si salvano per ogni PC e si possono avviare da soli.
 - **Controllo preliminare delle versioni**: nello storico compare la versione di ogni PC (⚠ se diversa) e prima di collegarsi il programma avvisa; con protocollo diverso non si collega e dice cosa aggiornare.
 - **Avviso di nuova versione** nella schermata principale (controllo su GitHub all'avvio e ogni 12 ore).
-- **36 lingue**, scelte in Impostazioni › «Lingua» o prese dal sistema; arabo, ebraico e urdu da destra a sinistra.
+- **37 lingue**, scelte in Impostazioni › «Lingua» o prese dal sistema; arabo, ebraico e urdu da destra a sinistra.
+- **18 temi di colore** (Impostazioni › «Tema»), gli stessi degli altri programmi di IC8TEM: chiari, scuri, pastelli e Scia meteorica.
 - **Sempre attivo**: la **X** della finestra la nasconde soltanto; IP-DESK-CTRL resta attivo con l'icona vicino all'orologio (barra dei menu su macOS), il PC resta raggiungibile e i collegamenti aperti continuano. Clic sull'icona per riaprirlo; per uscire davvero: clic destro sull'icona › **Esci da IP-DESK-CTRL**, oppure Impostazioni › **Esci dal programma**. Riavviarlo mentre è nascosto riapre la finestra di quello già attivo.
 
 ## Android
@@ -130,6 +131,11 @@ Nella cartella dei dati (Impostazioni › Apri cartella dati): `errori.log` e `s
 ## Storia delle versioni
 
 Le versioni con protocollo diverso non si collegano tra loro: aggiorna tutti i dispositivi alla stessa versione principale (la 0.4.1 si collega con la 0.4.0; la 0.5 si collega con la 0.4).
+
+### In preparazione (ramo «armonizzazione», non ancora pubblicata)
+- **37 lingue**: aggiunto lo **slovacco**, come in YAEC; ora tutti i programmi di IC8TEM hanno le stesse lingue.
+- **18 temi di colore**, come E-LAYER ANALYZER (Impostazioni › «Tema»): ai sei di prima (Chiaro, Notte, Nero, Blu, Viola, Verde) si aggiungono Chiaro, Notte e Nero di YA-MS, otto pastelli (azzurro, arancio, acquamarina, verde, rosa, lilla, indaco, marrone, con le tinte di YAEC) e Scia meteorica. I nomi dei temi ora si traducono. Il tema già scelto resta quello.
+- **Schermi piccoli (768p)**: la finestra principale e i dialoghi non escono più dallo schermo (un dialogo troppo alto si accorcia e scorre); su uno schermo basso la finestra del PC remoto si apre ingrandita.
 
 ### 0.5.14 — 14 novembre 2026
 - **Tasto Windows e le sue combinazioni** (Win+R, Win+E, Win+D, Win+X…): con la finestra del PC remoto in primo piano ora vanno al PC remoto invece di aprire «Esegui» o il menu Start su questo. Restano a questo PC solo Win+L e Ctrl+Alt+Canc, che Windows non lascia intercettare (Ctrl+Alt+Canc si manda dal menu «Tasti»).

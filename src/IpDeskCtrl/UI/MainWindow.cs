@@ -23,6 +23,7 @@ namespace IpDeskCtrl.UI
             Title = "IP-DESK-CTRL";
             Width = 780; Height = 760; MinWidth = 560; MinHeight = 520;
             WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            Schermo.Adatta(this);
             try { Icon = new WindowIcon(Avalonia.Platform.AssetLoader.Open(new Uri("avares://IpDeskCtrl/Assets/icon.png"))); } catch { }
             Shell.Current = new DesktopShell(this);
             Platform.Clipboard = OperatingSystem.IsWindows()
