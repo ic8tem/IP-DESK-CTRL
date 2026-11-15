@@ -573,5 +573,8 @@
  "Si installa senza password: il pacchetto nuovo lo scarica e lo verifica il sistema da GitHub.": "পাসওয়ার্ড ছাড়াই ইনস্টল হয়: নতুন প্যাকেজটি সিস্টেম নিজেই GitHub থেকে ডাউনলোড করে যাচাই করে।",
  "Si aggiorna con Scoop, senza permessi di amministratore.": "Scoop দিয়ে আপডেট হয়, প্রশাসকের অনুমতি ছাড়া।",
  "Flatpak installa il pacchetto nuovo; se il programma è installato per tutti gli utenti può chiedere la password.": "Flatpak নতুন প্যাকেজ ইনস্টল করে; প্রোগ্রামটি সব ব্যবহারকারীর জন্য ইনস্টল থাকলে পাসওয়ার্ড চাইতে পারে।",
- "Il PC remoto non riesce a decodificare il video compresso: uso i riquadri.": "দূরবর্তী কম্পিউটার সংকুচিত ভিডিও ডিকোড করতে পারছে না: বর্গ ব্যবহার করছি।"
+ "Il PC remoto non riesce a decodificare il video compresso: uso i riquadri.": "দূরবর্তী কম্পিউটার সংকুচিত ভিডিও ডিকোড করতে পারছে না: বর্গ ব্যবহার করছি।",
+ "L'altro PC ha la versione {0}: gli chiedo di aggiornarsi alla {1} (tentativo {2} di 3)…": "অন্য পিসিতে সংস্করণ {0}: তাকে {1}-এ আপডেট হতে বলছি (চেষ্টা {2} / 3)…",
+ "L'altro PC non si è aggiornato: mi collego lo stesso con la sua versione.": "অন্য পিসি আপডেট হয়নি: তবুও তার সংস্করণ দিয়ে সংযোগ করছি।",
+ "{0} ha una versione più nuova: il servizio aggiorna IP-DESK-CTRL, il programma si chiude e si riapre.": "{0}-এর কাছে নতুন সংস্করণ আছে: সার্ভিস IP-DESK-CTRL আপডেট করছে, প্রোগ্রাম বন্ধ হয়ে আবার খুলবে।"
 }

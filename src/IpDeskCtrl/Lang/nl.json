@@ -573,5 +573,8 @@
  "Si installa senza password: il pacchetto nuovo lo scarica e lo verifica il sistema da GitHub.": "De installatie gaat zonder wachtwoord: het systeem downloadt het nieuwe pakket zelf van GitHub en controleert het.",
  "Si aggiorna con Scoop, senza permessi di amministratore.": "Bijwerken gaat via Scoop, zonder beheerdersrechten.",
  "Flatpak installa il pacchetto nuovo; se il programma è installato per tutti gli utenti può chiedere la password.": "Flatpak installeert het nieuwe pakket; als het programma voor alle gebruikers is geïnstalleerd, kan het om het wachtwoord vragen.",
- "Il PC remoto non riesce a decodificare il video compresso: uso i riquadri.": "De externe pc kan de gecomprimeerde video niet decoderen: ik gebruik vakjes."
+ "Il PC remoto non riesce a decodificare il video compresso: uso i riquadri.": "De externe pc kan de gecomprimeerde video niet decoderen: ik gebruik vakjes.",
+ "L'altro PC ha la versione {0}: gli chiedo di aggiornarsi alla {1} (tentativo {2} di 3)…": "De andere pc heeft versie {0}: ik vraag hem bij te werken naar {1} (poging {2} van 3)…",
+ "L'altro PC non si è aggiornato: mi collego lo stesso con la sua versione.": "De andere pc is niet bijgewerkt: ik maak toch verbinding met zijn versie.",
+ "{0} ha una versione più nuova: il servizio aggiorna IP-DESK-CTRL, il programma si chiude e si riapre.": "{0} heeft een nieuwere versie: de service werkt IP-DESK-CTRL bij, het programma sluit en opent opnieuw."
 }

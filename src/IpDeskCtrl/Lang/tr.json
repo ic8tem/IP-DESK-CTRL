@@ -573,5 +573,8 @@
  "Si installa senza password: il pacchetto nuovo lo scarica e lo verifica il sistema da GitHub.": "Parola olmadan kurulur: yeni paketi sistemin kendisi GitHub'dan indirir ve doğrular.",
  "Si aggiorna con Scoop, senza permessi di amministratore.": "Scoop ile, yönetici izni olmadan güncellenir.",
  "Flatpak installa il pacchetto nuovo; se il programma è installato per tutti gli utenti può chiedere la password.": "Flatpak yeni paketi kurar; program tüm kullanıcılar için kuruluysa parola isteyebilir.",
- "Il PC remoto non riesce a decodificare il video compresso: uso i riquadri.": "Uzak bilgisayar sıkıştırılmış videoyu çözemiyor: kareleri kullanıyorum."
+ "Il PC remoto non riesce a decodificare il video compresso: uso i riquadri.": "Uzak bilgisayar sıkıştırılmış videoyu çözemiyor: kareleri kullanıyorum.",
+ "L'altro PC ha la versione {0}: gli chiedo di aggiornarsi alla {1} (tentativo {2} di 3)…": "Diğer bilgisayarda {0} sürümü var: {1} sürümüne güncellemesini istiyorum (deneme {2}/3)…",
+ "L'altro PC non si è aggiornato: mi collego lo stesso con la sua versione.": "Diğer bilgisayar güncellenmedi: yine de onun sürümüyle bağlanıyorum.",
+ "{0} ha una versione più nuova: il servizio aggiorna IP-DESK-CTRL, il programma si chiude e si riapre.": "{0} daha yeni bir sürüme sahip: hizmet IP-DESK-CTRL'yi güncelliyor, program kapanıp yeniden açılacak."
 }

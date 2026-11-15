@@ -573,5 +573,8 @@
  "Si installa senza password: il pacchetto nuovo lo scarica e lo verifica il sistema da GitHub.": "Nag-i-install nang walang password: ang system mismo ang nagda-download ng bagong package mula sa GitHub at sumusuri rito.",
  "Si aggiorna con Scoop, senza permessi di amministratore.": "Nag-a-update gamit ang Scoop, nang walang pahintulot ng administrator.",
  "Flatpak installa il pacchetto nuovo; se il programma è installato per tutti gli utenti può chiedere la password.": "Ini-install ng Flatpak ang bagong package; kung naka-install ang programa para sa lahat ng user, maaaring humingi ito ng password.",
- "Il PC remoto non riesce a decodificare il video compresso: uso i riquadri.": "Hindi ma-decode ng malayong computer ang compressed video: kuwadrado ang gagamitin ko."
+ "Il PC remoto non riesce a decodificare il video compresso: uso i riquadri.": "Hindi ma-decode ng malayong computer ang compressed video: kuwadrado ang gagamitin ko.",
+ "L'altro PC ha la versione {0}: gli chiedo di aggiornarsi alla {1} (tentativo {2} di 3)…": "Ang kabilang PC ay may bersyong {0}: hinihiling kong mag-update ito sa {1} (pagsubok {2} sa 3)…",
+ "L'altro PC non si è aggiornato: mi collego lo stesso con la sua versione.": "Hindi nag-update ang kabilang PC: kumokonekta pa rin gamit ang bersyon nito.",
+ "{0} ha una versione più nuova: il servizio aggiorna IP-DESK-CTRL, il programma si chiude e si riapre.": "May mas bagong bersyon ang {0}: ina-update ng serbisyo ang IP-DESK-CTRL, magsasara at muling magbubukas ang programa."
 }

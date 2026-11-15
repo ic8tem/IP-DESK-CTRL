@@ -37,6 +37,7 @@ namespace IpDeskCtrl.Desktop
                 // riavvio (lingua cambiata, aggiornamento): si aspetta che il programma vecchio si chiuda
                 for (int i = 0; !got && restart && i < 40; i++) { System.Threading.Thread.Sleep(250); got = UI.SingleInstance.Acquire(); }
                 if (!got) return;
+                Core.DataPaths.Migrate(service: false);   // AppData → cartella del programma
                 BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
             }
             catch (Exception ex)

@@ -27,13 +27,17 @@
 
 Nella cartella dei dati (Impostazioni › **Apri cartella dati**):
 
-- `sessioni.log` — collegamenti, porte, broker, UDP, monitor, audio;
-- `errori.log` — errori del programma (se non c'è, non ci sono stati errori).
+- `sessioni.log` — un solo registro: collegamenti, porte, broker, UDP, monitor, audio ed errori (righe «ERRORE»). Fino alla 0.5.14 gli errori stavano a parte in `errori.log`: dalla 0.5.15 sono fusi qui, in ordine di tempo.
 
 | Sistema | Cartella |
 |---|---|
-| Windows | `%APPDATA%\IP-DESK-CTRL` (il servizio scrive i suoi in `%ProgramData%\IP-DESK-CTRL`) |
-| Linux, Raspberry Pi, macOS | `~/.config/IP-DESK-CTRL` |
+| Windows (installato) | `C:\Program Files\IP-DESK-CTRL\dati` (anche il servizio scrive lì) |
+| Windows portatile | `dati` accanto al programma |
+| Linux, Raspberry Pi (.deb, .rpm, Arch, Slackware) | `/opt/ip-desk-ctrl/dati` |
+| AppImage, Linux portatile | `dati` accanto al programma |
+| Snap, Flatpak, macOS | `~/.config/IP-DESK-CTRL` |
+
+Dentro `dati`: `sessioni.log` e `storico.json` comuni; `utenti/<nome>` con impostazioni e chiave di ogni utente (leggibile solo da lui); `servizio` con la chiave del servizio di Windows (solo sistema e amministratori). Fino alla 0.5.14 i dati stavano in AppData / ProgramData / `~/.config`: al primo avvio della 0.5.15 si spostano da soli.
 
 Sul telefono: Impostazioni › **Informazioni e licenze** › **Condividi il registro** (dalla 0.5.2).
 

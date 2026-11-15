@@ -68,7 +68,7 @@ Senza UPnP su nessuno dei due router di solito si arriva al collegamento **solo 
 
 ## Note per sistema
 
-- **Windows**: con l'installatore (come amministratore) e l'opzione **Accesso completo**, attiva di serie, si installa il servizio «IP-DESK-CTRL accesso completo». Durante i collegamenti accettati fa vedere e comandare anche le **richieste UAC**, la **schermata di blocco**, i **programmi avviati come amministratore** e permette **Ctrl+Alt+Canc**. Dalla versione 0.4 il servizio tiene anche **la rete**: il PC è raggiungibile **appena acceso, prima dell'accesso a Windows**, con lo stesso numero di prima (al primo avvio il programma passa la sua chiave al servizio). Se nessuno ha fatto l'accesso entrano solo i numeri «senza conferma» (con la password, se impostata); gli altri ricevono «nessuno al PC per accettare». Con un utente collegato la richiesta compare nel suo programma. Lo storico è condiviso in `%ProgramData%\IP-DESK-CTRL`. Senza il servizio (versione portatile o installazione per un solo utente) quelle schermate restano nere e il PC è raggiungibile solo con il programma aperto.
+- **Windows**: con l'installatore (come amministratore) e l'opzione **Accesso completo**, attiva di serie, si installa il servizio «IP-DESK-CTRL accesso completo». Durante i collegamenti accettati fa vedere e comandare anche le **richieste UAC**, la **schermata di blocco**, i **programmi avviati come amministratore** e permette **Ctrl+Alt+Canc**. Dalla versione 0.4 il servizio tiene anche **la rete**: il PC è raggiungibile **appena acceso, prima dell'accesso a Windows**, con lo stesso numero di prima (al primo avvio il programma passa la sua chiave al servizio). Se nessuno ha fatto l'accesso entrano solo i numeri «senza conferma» (con la password, se impostata); gli altri ricevono «nessuno al PC per accettare». Con un utente collegato la richiesta compare nel suo programma. Lo storico è condiviso in `dati\storico.json` nella cartella del programma. Senza il servizio (versione portatile o installazione per un solo utente) quelle schermate restano nere e il PC è raggiungibile solo con il programma aperto.
 - **macOS**: al primo collegamento in arrivo concedi **Registrazione schermo** e **Accessibilità** (Impostazioni di Sistema › Privacy e sicurezza), poi riavvia il programma. Per mandare l'audio installa **BlackHole 2ch** e crea un *dispositivo a uscita multipla* (casse + BlackHole) in Configurazione MIDI Audio.
 - **Linux e Raspberry Pi con X11**: tutto funziona (XGetImage, XTest, XRandR). Audio con `parec`/`pacat` (PulseAudio o PipeWire).
 - **Wayland** (Raspberry Pi OS Bookworm, Sway…): schermo con `grim` (più lento, pochi fotogrammi al secondo), mouse e tastiera con `/dev/uinput` (il pacchetto .deb installa la regola udev: riavvia dopo l'installazione). GNOME e KDE su Wayland non permettono la cattura: scegli la sessione **Xorg** al login. Sul Raspberry si può passare a X11 con `sudo raspi-config` › Advanced Options › Wayland › X11.
@@ -122,14 +122,21 @@ Del tutto senza domande: Windows con il servizio, Windows portatile, Scoop, Flat
 
 ## Registri
 
-Nella cartella dei dati (Impostazioni › Apri cartella dati): `errori.log` e `sessioni.log` (collegamenti, porte, broker, UDP).
+Nella cartella dei dati (Impostazioni › Apri cartella dati): `sessioni.log`, un solo registro con collegamenti, porte, broker, UDP ed errori (righe «ERRORE»).
 
-- Windows: `%APPDATA%\IP-DESK-CTRL` (il servizio scrive i suoi in `%ProgramData%\IP-DESK-CTRL`)
-- Linux, Raspberry Pi e macOS: `~/.config/IP-DESK-CTRL`
+- Windows: `C:\Program Files\IP-DESK-CTRL\dati` (anche il servizio scrive lì); versione portatile: `dati` accanto al programma
+- Linux e Raspberry Pi: `/opt/ip-desk-ctrl/dati`; AppImage: `dati` accanto al file; Snap e Flatpak: `~/.config/IP-DESK-CTRL`
+- macOS: `~/.config/IP-DESK-CTRL`
 
 ## Storia delle versioni
 
 Le versioni con protocollo diverso non si collegano tra loro: aggiorna tutti i dispositivi alla stessa versione principale (la 0.4.1 si collega con la 0.4.0; la 0.5 si collega con la 0.4).
+
+### 0.5.15 — 15 novembre 2026
+- **Dati nella cartella del programma**: impostazioni, chiavi, storico e registri stanno ora nella sottocartella `dati` di dove è installato IP-DESK-CTRL (Windows: `C:\Program Files\IP-DESK-CTRL\dati`; Linux: `/opt/ip-desk-ctrl/dati`; versione portatile e AppImage: accanto al programma). Al primo avvio tutto quello che c'era in AppData, in `~/.config` o in ProgramData si sposta lì da solo e la cartella vecchia si cancella: in AppData non si scrive più niente. Ogni utente ha la sua sottocartella `dati/utenti/<nome>`, leggibile solo da lui; la chiave del servizio di Windows sta in `dati/servizio`, leggibile solo dal sistema e dagli amministratori. Restano nelle cartelle del sistema solo macOS (l'app si sostituisce intera a ogni aggiornamento), Snap, Flatpak e Android.
+- **Un solo registro**: `sessioni.log` e `errori.log` sono fusi in `sessioni.log`, in ordine di tempo; gli errori compaiono come righe «ERRORE». Anche il servizio di Windows scrive nello stesso file, così un problema si legge tutto di seguito.
+- **Collegamento più rapido nelle reti chiuse**: 2 giri invece di 4. Al primo giro si chiede subito il collegamento inverso e parte in parallelo la strada solo UDP; al secondo le porte si invertono su 443, 8443, 80 o 8080.
+- **Aggiornamento prima della sessione**: collegandoti a un PC con una versione più vecchia, IP-DESK-CTRL gli chiede di aggiornarsi (fino a 3 volte, aspettando ogni volta che ricompaia con la versione nuova) e poi si collega. Su Windows con il servizio l'aggiornamento lo scarica e lo installa il servizio, anche se al PC non c'è nessuno; altrimenti il programma si aggiorna da solo dopo 5 secondi. Vale per i PC che hanno già almeno la 0.5.15: con le versioni prima la richiesta non si capisce e il collegamento parte subito.
 
 ### 0.5.14 — 14 novembre 2026
 - **Tasto Windows e le sue combinazioni** (Win+R, Win+E, Win+D, Win+X…): con la finestra del PC remoto in primo piano ora vanno al PC remoto invece di aprire «Esegui» o il menu Start su questo. Restano a questo PC solo Win+L e Ctrl+Alt+Canc, che Windows non lascia intercettare (Ctrl+Alt+Canc si manda dal menu «Tasti»).

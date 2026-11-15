@@ -478,6 +478,16 @@ namespace IpDeskCtrl.Core
                     case Note.WakeRequest:
                         if (!ViewerOnly) OnWakeRequest(note);
                         break;
+                    case Note.UpdateRequest:
+                        // un PC con una versione più nuova vuole collegarsi: si aggiorna (al massimo una volta ogni 2 minuti;
+                        // installa solo la versione pubblicata su GitHub, con l'impronta verificata come sempre)
+                        if (!ViewerOnly && DateTime.UtcNow - _lastUpdateAsk > TimeSpan.FromMinutes(2))
+                        {
+                            _lastUpdateAsk = DateTime.UtcNow;
+                            Log($"AGGIORNAMENTI {Identity.Format(note.SenderNumber)} chiede di aggiornare questo PC prima di collegarsi");
+                            UpdateRequested?.Invoke(note.SenderNumber);
+                        }
+                        break;
                     case Note.UdpAnswer:
                     {
                         var ans = UdpCandidates.Decode(note.Data);
@@ -495,6 +505,52 @@ namespace IpDeskCtrl.Core
         // =================================================================== Wake-on-LAN
 
         private readonly ConcurrentDictionary<string, Net.Announce> _lastSeen = new();
+        private DateTime _lastUpdateAsk = DateTime.MinValue;
+
+        /// <summary>Un visore con una versione più nuova chiede a questo PC di aggiornarsi (numero del visore).</summary>
+        public event Action<string>? UpdateRequested;
+
+        /// <summary>
+        /// Prima di collegarsi a un PC con una versione più vecchia gli si chiede di aggiornarsi, fino a 3 volte;
+        /// ogni volta si aspetta che ricompaia sui broker con la versione nuova. Poi il collegamento parte comunque.
+        /// Funziona con i PC che hanno almeno la 0.5.15 (le versioni prima non conoscono la richiesta).
+        /// </summary>
+        private async Task<Net.Announce> AskUpdateAsync(Net.Announce a, string number, Action<string> progress, CancellationToken ct)
+        {
+            var rdv = _rdv;
+            if (rdv == null || !IsOlder(a.Version)) return a;
+            // prima della 0.5.15 la richiesta non si capisce: inutile aspettare minuti
+            bool understands = System.Version.TryParse(AppVersion.Parse(a.Version).version, out var rv) && rv >= new System.Version(0, 5, 15);
+            for (int attempt = 1; attempt <= 3 && !ct.IsCancellationRequested; attempt++)
+            {
+                string old = AppVersion.Parse(a.Version).version;
+                progress(L.F("L'altro PC ha la versione {0}: gli chiedo di aggiornarsi alla {1} (tentativo {2} di 3)…", old, AppVersion.Text, attempt));
+                int sent = await rdv.SendNoteAsync(number, Note.UpdateRequest, Array.Empty<byte>(), ct);
+                Log($"AGGIORNAMENTI {Identity.Format(number)} ha la {old}: richiesta di aggiornamento {attempt}/3 consegnata a {sent} broker");
+                var until = DateTime.UtcNow + TimeSpan.FromSeconds(understands ? 150 : 2);
+                while (DateTime.UtcNow < until && !ct.IsCancellationRequested)
+                {
+                    await Task.Delay(TimeSpan.FromSeconds(understands ? 6 : 2), ct);
+                    var b = await ViewerRendezvous.LookupAsync(number, S.MqttBrokers, null, ct);
+                    if (b != null && !IsOlder(b.Version))
+                    {
+                        Log($"AGGIORNAMENTI {Identity.Format(number)} aggiornato alla {AppVersion.Parse(b.Version).version}");
+                        ViewerRendezvous.Versions[number] = b.Version;
+                        await Task.Delay(TimeSpan.FromSeconds(5), ct);    // il tempo di aprire la rete dopo il riavvio
+                        return (await ViewerRendezvous.LookupAsync(number, S.MqttBrokers, null, ct)) ?? b;
+                    }
+                }
+            }
+            Log($"AGGIORNAMENTI {Identity.Format(number)} non si è aggiornato dopo 3 richieste: mi collego lo stesso");
+            progress(L.T("L'altro PC non si è aggiornato: mi collego lo stesso con la sua versione."));
+            return (await ViewerRendezvous.LookupAsync(number, S.MqttBrokers, null, ct)) ?? a;
+        }
+
+        private static bool IsOlder(string? tag)
+        {
+            var (_, ver) = AppVersion.Parse(tag);
+            return System.Version.TryParse(ver, out var other) && System.Version.TryParse(AppVersion.Text, out var mine) && other < mine;
+        }
 
         /// <summary>Ricorda nello storico MAC, broadcast e IP pubblico dell'altro PC (letti dal suo indirizzo sui broker).</summary>
         public void RememberWake(HistoryEntry h)
@@ -717,13 +773,15 @@ namespace IpDeskCtrl.Core
             if (a.Age > TimeSpan.FromMinutes(8))
                 progress(L.F("Ultimo segnale dell'altro PC: {0}. Potrebbe essere spento; provo lo stesso…", ViewerRendezvous.Age(a.Age)));
 
+            a = await AskUpdateAsync(a, number, progress, ct);
+
             var link = await TryDirectAsync(a, number, progress, ct);
             if (link != null) return link;
 
             // collegamento inverso: chiedo all'altro PC di collegarsi a me
             var tcs = new TaskCompletionSource<SecureLink>(TaskCreationOptions.RunContinuationsAsynchronously);
             _waitReverse[number] = tcs;
-            Task<SecureLink?>? udpTask = null;          // strada solo UDP, in parallelo dal giro 3
+            Task<SecureLink?>? udpTask = null;          // strada solo UDP, in parallelo fin dal primo giro
             CancellationTokenSource? udpCts = null;
             bool udpWon = false;
             Task UdpOrNever() => udpTask is { IsCompleted: false } ? udpTask : Task.Delay(Timeout.Infinite, ct);
@@ -735,20 +793,21 @@ namespace IpDeskCtrl.Core
             }
             try
             {
-                // giri 1 e 2: si chiede all'altro PC di collegarsi alla porta di questo (al 2° l'altro può cambiare la sua);
-                // giri 3 e 4, invertiti: è questo PC ad aprire una porta nuova (al 4° tra quelle che escono quasi
-                // da ogni rete: 443, 8443, 80, 8080) e a richiedere il collegamento inverso.
-                const int rounds = 4;
+                // Due giri soli, con la strada solo UDP in parallelo fin dall'inizio:
+                //   giro 1: si chiede all'altro PC di collegarsi alla porta di questo (collegamento inverso);
+                //   giro 2: questo PC apre una porta nuova tra quelle che escono quasi da ogni rete (443, 8443, 80,
+                //           8080) e lo richiede di nuovo; intanto l'altro PC può aver cambiato la sua porta.
+                // Nei registri dei PC con il router chiuso basta quasi sempre il primo giro (o l'UDP).
+                const int rounds = 2;
                 for (int round = 1; round <= rounds && !ct.IsCancellationRequested; round++)
                 {
-                    if (round == 3 && udpTask == null)
+                    if (udpTask == null)
                     {
-                        // dal giro 3 la strada solo UDP parte in parallelo ai giri invertiti: vince la prima che riesce
+                        // la strada solo UDP parte subito, in parallelo al collegamento inverso: vince la prima che riesce
                         udpCts = CancellationTokenSource.CreateLinkedTokenSource(ct);
                         udpTask = TryUdpAsync(number, msg => Log("UDP " + msg), udpCts.Token);
-                        Log("UDP dal giro 3 parte in parallelo il collegamento solo UDP");
                     }
-                    if (round <= 2)
+                    if (round == 1)
                         progress(L.F("Collegamento diretto non riuscito: chiedo all'altro PC di collegarsi a questo (giro {0} di {1})…", round, rounds));
                     else
                     {
@@ -757,7 +816,7 @@ namespace IpDeskCtrl.Core
                         try
                         {
                             int old = _extPort;
-                            await OpenPortAsync(round == 4 ? new List<int> { 443, 8443, 80, 8080 } : null, ct);
+                            await OpenPortAsync(new List<int> { 443, 8443, 80, 8080 }, ct);
                             Announce();
                             ShowNetworkStatus();
                             Log($"PORTE giro {round} (invertito): porta di questo PC {old} → {_extPort}" + (UpnpOk ? " (UPnP)" : " (router senza UPnP: vale solo con inoltro manuale o DMZ)"));
@@ -771,7 +830,7 @@ namespace IpDeskCtrl.Core
                     int sent = await ViewerRendezvous.SendRequestAsync(number, req, Me, S.MqttBrokers, ct);
                     Log($"PORTE giro {round}: richiesta di collegamento inverso consegnata a {sent} broker");
 
-                    var wait = Task.Delay(TimeSpan.FromSeconds(round <= 2 ? 20 : 15), ct);
+                    var wait = Task.Delay(TimeSpan.FromSeconds(20), ct);
                     var recheck = Task.Delay(TimeSpan.FromSeconds(9), ct);
                     var first = await Task.WhenAny(tcs.Task, recheck, UdpOrNever());
                     if (first == tcs.Task) return tcs.Task.Result;

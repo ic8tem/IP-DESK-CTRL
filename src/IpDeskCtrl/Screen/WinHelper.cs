@@ -197,7 +197,7 @@ namespace IpDeskCtrl.Screen
         /// </summary>
         public static int RunHelper(string pipe, string userSid)
         {
-            Platform.DataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "IP-DESK-CTRL");
+            Platform.DataFolder = DataPaths.ServiceFolder() ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "IP-DESK-CTRL");
             try
             {
                 var ps = new PipeSecurity();

@@ -240,7 +240,7 @@ namespace IpDeskCtrl.UI
                 _incomingBanner.Background = Themes.B(Themes.Current.TxDim);
             };
             var folder = Ui.Btn(L.T("Apri cartella dati"));
-            folder.Click += (_, _) => OpenPath(AppSettings.Folder);
+            folder.Click += (_, _) => OpenPath(DataPaths.Root ?? AppSettings.Folder);
             folder.IsVisible = !Platform.IsMobile;
             var received = Ui.Btn(L.T("File ricevuti"));
             received.Click += (_, _) => OpenPath(Platform.Received);
@@ -355,6 +355,7 @@ namespace IpDeskCtrl.UI
                 _peer.AskAccept = AskAcceptAsync;
                 _peer.HostStarted += hs => Dispatcher.UIThread.Post(() => OnHostStarted(hs));
                 _peer.HostEnded += (hs, why) => Dispatcher.UIThread.Post(() => OnHostEnded(hs, why));
+                _peer.UpdateRequested += n => _ = ForcedUpdateAsync(n);
                 _peer.Start();
                 _ = PresenceLoopAsync();
                 _ = UpdateCheck.LoopAsync(r => Dispatcher.UIThread.Post(() => ShowUpdate(r)), _life.Token);
@@ -380,6 +381,10 @@ namespace IpDeskCtrl.UI
             _svc.AskAccept = AskAcceptAsync;
             _svc.HostStarted += (n, input) => Dispatcher.UIThread.Post(() => { _svcHosts++; OnServiceHostStarted(n, input); });
             _svc.HostEnded += (n, why) => Dispatcher.UIThread.Post(() => { _svcHosts = Math.Max(0, _svcHosts - 1); _incomingBanner.IsVisible = false; RebuildHistory(); });
+            _svc.UpdateRequested += n => Dispatcher.UIThread.Post(() =>
+            {
+                _netStatus.Text = L.F("{0} ha una versione più nuova: il servizio aggiorna IP-DESK-CTRL, il programma si chiude e si riapre.", Identity.Format(n));
+            });
             _svc.Lost += () => Dispatcher.UIThread.Post(() => { _svcHosts = 0; _incomingBanner.IsVisible = false; });
             _svc.SendSettings(_s.AcceptIncoming, _s.AllowInput, _s.ShareAudio);
             if (_s.PasswordHash.Length > 0) _svc.Send($"PWD {_s.PasswordSalt} {_s.PasswordHash} {_s.PasswordIterations}");
@@ -635,7 +640,31 @@ namespace IpDeskCtrl.UI
         /// Popup della nuova versione con il programma aperto: scarica, controlla e installa da solo; prima avvisa
         /// gli altri PC collegati, così i collegamenti riprendono dopo il riavvio del programma.
         /// </summary>
-        private void ShowUpdatePopup(ReleaseInfo r, bool auto)
+        /// <summary>
+        /// Un PC con una versione più nuova vuole collegarsi e chiede a questo di aggiornarsi prima: si installa
+        /// subito (5 secondi per fermarlo), anche con l'aggiornamento automatico spento.
+        /// </summary>
+        private async Task ForcedUpdateAsync(string number)
+        {
+            ReleaseInfo? r;
+            try { r = await UpdateCheck.LatestAsync(_life.Token); } catch { return; }
+            if (r == null || !UpdateCheck.IsNewer(r.Version, AppVersion.Text)) return;
+            Dispatcher.UIThread.Post(() =>
+            {
+                var kind = Updater.Detect();
+                if (kind == Updater.Kind.None || kind == Updater.Kind.Android || Updater.FindAsset(r) == null)
+                {
+                    SessionLog.Write($"AGGIORNAMENTI {Identity.Format(number)} chiede la {r.Version}, ma qui non si installa da solo");
+                    ShowUpdate(r);
+                    return;
+                }
+                SessionLog.Write($"AGGIORNAMENTI {Identity.Format(number)} chiede di aggiornarsi alla {r.Version}: installo subito");
+                _updateDialog?.Close(); _updateDialog = null;
+                ShowUpdatePopup(r, auto: true, seconds: 5);
+            });
+        }
+
+        private void ShowUpdatePopup(ReleaseInfo r, bool auto, int seconds = 60)
         {
             if (_updateDialog != null) return;
             var kind = Updater.Detect();
@@ -711,7 +740,7 @@ namespace IpDeskCtrl.UI
             if (auto && kind != Updater.Kind.Android)
             {
                 // installazione automatica: un minuto per fermarla con «Più tardi»
-                int left = 60;
+                int left = seconds;
                 countdown.Text = L.F("Aggiornamento automatico: parte da solo tra {0} s.", left);
                 timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
                 timer.Tick += (_, _) =>

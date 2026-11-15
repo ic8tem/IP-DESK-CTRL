@@ -64,6 +64,7 @@ cat > "$PKG/DEBIAN/postinst" <<'POST'
 #!/bin/sh
 set -e
 modprobe uinput 2>/dev/null || true
+mkdir -p /opt/ip-desk-ctrl/dati && chmod 1777 /opt/ip-desk-ctrl/dati
 command -v udevadm >/dev/null 2>&1 && { udevadm control --reload-rules || true; udevadm trigger --name-match=uinput 2>/dev/null || true; }
 command -v update-desktop-database >/dev/null 2>&1 && update-desktop-database -q || true
 command -v gtk-update-icon-cache >/dev/null 2>&1 && gtk-update-icon-cache -q /usr/share/icons/hicolor || true

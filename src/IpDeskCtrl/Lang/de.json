@@ -573,5 +573,8 @@
  "Si installa senza password: il pacchetto nuovo lo scarica e lo verifica il sistema da GitHub.": "Die Installation läuft ohne Passwort: Das System lädt das neue Paket selbst von GitHub und prüft es.",
  "Si aggiorna con Scoop, senza permessi di amministratore.": "Die Aktualisierung läuft über Scoop, ohne Administratorrechte.",
  "Flatpak installa il pacchetto nuovo; se il programma è installato per tutti gli utenti può chiedere la password.": "Flatpak installiert das neue Paket; ist das Programm für alle Benutzer installiert, kann es nach dem Passwort fragen.",
- "Il PC remoto non riesce a decodificare il video compresso: uso i riquadri.": "Der entfernte PC kann das komprimierte Video nicht dekodieren: Ich verwende Kacheln."
+ "Il PC remoto non riesce a decodificare il video compresso: uso i riquadri.": "Der entfernte PC kann das komprimierte Video nicht dekodieren: Ich verwende Kacheln.",
+ "L'altro PC ha la versione {0}: gli chiedo di aggiornarsi alla {1} (tentativo {2} di 3)…": "Der andere PC hat Version {0}: Ich bitte ihn, auf {1} zu aktualisieren (Versuch {2} von 3)…",
+ "L'altro PC non si è aggiornato: mi collego lo stesso con la sua versione.": "Der andere PC wurde nicht aktualisiert: Ich verbinde mich trotzdem mit seiner Version.",
+ "{0} ha una versione più nuova: il servizio aggiorna IP-DESK-CTRL, il programma si chiude e si riapre.": "{0} hat eine neuere Version: Der Dienst aktualisiert IP-DESK-CTRL, das Programm wird geschlossen und wieder geöffnet."
 }

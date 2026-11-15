@@ -573,5 +573,8 @@
  "Si installa senza password: il pacchetto nuovo lo scarica e lo verifica il sistema da GitHub.": "無需密碼即可安裝：系統會自行從 GitHub 下載新套件並加以驗證。",
  "Si aggiorna con Scoop, senza permessi di amministratore.": "透過 Scoop 更新，不需要系統管理員權限。",
  "Flatpak installa il pacchetto nuovo; se il programma è installato per tutti gli utenti può chiedere la password.": "Flatpak 會安裝新套件；如果程式是為所有使用者安裝的，可能會要求輸入密碼。",
- "Il PC remoto non riesce a decodificare il video compresso: uso i riquadri.": "遠端電腦無法解碼壓縮視訊：改用方塊。"
+ "Il PC remoto non riesce a decodificare il video compresso: uso i riquadri.": "遠端電腦無法解碼壓縮視訊：改用方塊。",
+ "L'altro PC ha la versione {0}: gli chiedo di aggiornarsi alla {1} (tentativo {2} di 3)…": "另一台電腦的版本為 {0}：正在要求其更新到 {1}（第 {2} 次，共 3 次）…",
+ "L'altro PC non si è aggiornato: mi collego lo stesso con la sua versione.": "另一台電腦未更新：仍以其版本進行連線。",
+ "{0} ha una versione più nuova: il servizio aggiorna IP-DESK-CTRL, il programma si chiude e si riapre.": "{0} 使用較新的版本：服務正在更新 IP-DESK-CTRL，程式將關閉並重新開啟。"
 }

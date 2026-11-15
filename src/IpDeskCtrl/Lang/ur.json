@@ -573,5 +573,8 @@
  "Si installa senza password: il pacchetto nuovo lo scarica e lo verifica il sistema da GitHub.": "پاس ورڈ کے بغیر انسٹال ہوتا ہے: نیا پیکیج سسٹم خود GitHub سے ڈاؤن لوڈ کر کے جانچتا ہے۔",
  "Si aggiorna con Scoop, senza permessi di amministratore.": "Scoop کے ذریعے اپ ڈیٹ ہوتا ہے، منتظم کی اجازت کے بغیر۔",
  "Flatpak installa il pacchetto nuovo; se il programma è installato per tutti gli utenti può chiedere la password.": "Flatpak نیا پیکیج انسٹال کرتا ہے؛ اگر پروگرام سب صارفین کے لیے انسٹال ہے تو پاس ورڈ مانگ سکتا ہے۔",
- "Il PC remoto non riesce a decodificare il video compresso: uso i riquadri.": "ریموٹ کمپیوٹر کمپریسڈ ویڈیو ڈیکوڈ نہیں کر پا رہا: خانے استعمال کر رہا ہوں۔"
+ "Il PC remoto non riesce a decodificare il video compresso: uso i riquadri.": "ریموٹ کمپیوٹر کمپریسڈ ویڈیو ڈیکوڈ نہیں کر پا رہا: خانے استعمال کر رہا ہوں۔",
+ "L'altro PC ha la versione {0}: gli chiedo di aggiornarsi alla {1} (tentativo {2} di 3)…": "دوسرے پی سی پر ورژن {0} ہے: اسے {1} پر اپ ڈیٹ ہونے کو کہہ رہا ہوں (کوشش {2} از 3)…",
+ "L'altro PC non si è aggiornato: mi collego lo stesso con la sua versione.": "دوسرا پی سی اپ ڈیٹ نہیں ہوا: پھر بھی اس کے ورژن کے ساتھ جڑ رہا ہوں۔",
+ "{0} ha una versione più nuova: il servizio aggiorna IP-DESK-CTRL, il programma si chiude e si riapre.": "{0} کے پاس نیا ورژن ہے: سروس IP-DESK-CTRL اپ ڈیٹ کر رہی ہے، پروگرام بند ہو کر دوبارہ کھلے گا۔"
 }

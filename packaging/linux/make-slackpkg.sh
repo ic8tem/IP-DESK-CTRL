@@ -56,6 +56,7 @@ if [ -x /usr/bin/update-desktop-database ]; then /usr/bin/update-desktop-databas
 if [ -x /usr/bin/gtk-update-icon-cache ]; then /usr/bin/gtk-update-icon-cache -f -t -q usr/share/icons/hicolor >/dev/null 2>&1; fi
 if [ -x /sbin/udevadm ]; then /sbin/udevadm control --reload-rules >/dev/null 2>&1; fi
 /sbin/modprobe uinput >/dev/null 2>&1 || true
+mkdir -p /opt/ip-desk-ctrl/dati && chmod 1777 /opt/ip-desk-ctrl/dati
 INST
 
 NAME="ip-desk-ctrl-${VERSION}-${ARCH}-1_ic8tem.txz"

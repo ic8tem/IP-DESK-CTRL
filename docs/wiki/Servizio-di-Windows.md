@@ -20,7 +20,7 @@ Dalla versione 0.4 il servizio tiene anche **la rete**: il PC è raggiungibile *
 - Se **nessuno ha fatto l'accesso** entrano solo i numeri con [accesso senza conferma](Accesso-senza-conferma) (con la password, se impostata); gli altri ricevono «nessuno al PC per accettare».
 - Con un utente collegato la richiesta compare nel suo programma come sempre.
 
-Lo storico è condiviso nella cartella `%ProgramData%\IP-DESK-CTRL`, dove il servizio scrive anche i suoi registri.
+Lo storico è condiviso in `dati\storico.json` nella cartella del programma (`C:\Program Files\IP-DESK-CTRL\dati`); il servizio scrive nel registro unico `dati\sessioni.log` e tiene la sua chiave in `dati\servizio`, leggibile solo dal sistema e dagli amministratori. Se un PC con una versione più nuova vuole collegarsi, il servizio scarica e installa l'aggiornamento da solo, anche prima dell'accesso.
 
 ## Controllare che sia attivo
 

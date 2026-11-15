@@ -573,5 +573,8 @@
  "Si installa senza password: il pacchetto nuovo lo scarica e lo verifica il sistema da GitHub.": "Εγκαθίσταται χωρίς κωδικό: το ίδιο το σύστημα κατεβάζει το νέο πακέτο από το GitHub και το ελέγχει.",
  "Si aggiorna con Scoop, senza permessi di amministratore.": "Ενημερώνεται μέσω Scoop, χωρίς δικαιώματα διαχειριστή.",
  "Flatpak installa il pacchetto nuovo; se il programma è installato per tutti gli utenti può chiedere la password.": "Το Flatpak εγκαθιστά το νέο πακέτο· αν το πρόγραμμα είναι εγκατεστημένο για όλους τους χρήστες, μπορεί να ζητήσει τον κωδικό.",
- "Il PC remoto non riesce a decodificare il video compresso: uso i riquadri.": "Ο απομακρυσμένος υπολογιστής δεν μπορεί να αποκωδικοποιήσει το συμπιεσμένο βίντεο: χρησιμοποιώ τετράγωνα."
+ "Il PC remoto non riesce a decodificare il video compresso: uso i riquadri.": "Ο απομακρυσμένος υπολογιστής δεν μπορεί να αποκωδικοποιήσει το συμπιεσμένο βίντεο: χρησιμοποιώ τετράγωνα.",
+ "L'altro PC ha la versione {0}: gli chiedo di aggiornarsi alla {1} (tentativo {2} di 3)…": "Ο άλλος υπολογιστής έχει την έκδοση {0}: του ζητώ να ενημερωθεί στην {1} (προσπάθεια {2} από 3)…",
+ "L'altro PC non si è aggiornato: mi collego lo stesso con la sua versione.": "Ο άλλος υπολογιστής δεν ενημερώθηκε: συνδέομαι παρ' όλα αυτά με την έκδοσή του.",
+ "{0} ha una versione più nuova: il servizio aggiorna IP-DESK-CTRL, il programma si chiude e si riapre.": "Ο {0} έχει νεότερη έκδοση: η υπηρεσία ενημερώνει το IP-DESK-CTRL, το πρόγραμμα κλείνει και ανοίγει ξανά."
 }

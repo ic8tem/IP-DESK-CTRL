@@ -38,7 +38,8 @@ namespace IpDeskCtrl.Desktop
 
         public static void RunAsService()
         {
-            Platform.DataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "IP-DESK-CTRL");
+            Platform.DataFolder = DataPaths.ServiceFolder() ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "IP-DESK-CTRL");
+            DataPaths.Migrate(service: true);       // ProgramData → cartella del programma
             Run(new WinService());
         }
 
@@ -86,6 +87,28 @@ namespace IpDeskCtrl.Desktop
             int sp = args.IndexOf(' ');
             if (sp <= 0) return "ERR richiesta non valida";
             string sha = args[..sp].Trim().ToLowerInvariant(), file = args[(sp + 1)..].Trim();
+            return Install(file, sha, SessionOf(pid));
+        }
+
+        /// <summary>
+        /// Il visore di un altro PC ha chiesto di aggiornarsi: il servizio scarica da solo l'installatore da GitHub
+        /// e lo avvia, anche se al PC non c'è nessuno. session = sessione dove riaprire il programma (o null).
+        /// </summary>
+        internal static async Task<string> SelfUpdateAsync(uint? session)
+        {
+            var rel = await UpdateCheck.LatestAsync(CancellationToken.None);
+            if (rel == null || !UpdateCheck.IsNewer(rel.Version, AppVersion.Text)) return "ERR nessuna versione più nuova su GitHub";
+            string want = Updater.AssetName(rel.Version, Updater.Kind.WindowsSetup);
+            var asset = rel.Assets.FirstOrDefault(a => a.Name.Equals(want, StringComparison.OrdinalIgnoreCase));
+            if (asset == null) return "ERR installatore " + want + " non trovato";
+            SessionLog.Write($"SERVIZIO aggiornamento chiesto dall'altro PC: scarico la {rel.Version}");
+            var (path, hex, err) = await Updater.DownloadAsync(asset, (_, _) => { }, CancellationToken.None);
+            if (err.Length > 0) return "ERR " + err;
+            return Install(path, hex, session);
+        }
+
+        private static string Install(string file, string sha, uint? session)
+        {
             string name = Path.GetFileName(file);
             if (!name.StartsWith("IP-DESK-CTRL-", StringComparison.OrdinalIgnoreCase) || !name.EndsWith("-setup.exe", StringComparison.OrdinalIgnoreCase) || !File.Exists(file))
                 return "ERR file non valido";
@@ -100,7 +123,7 @@ namespace IpDeskCtrl.Desktop
             var asset = rel?.Assets.FirstOrDefault(a => a.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
             if (asset == null || !asset.Digest.Equals("sha256:" + hex, StringComparison.OrdinalIgnoreCase))
                 return "ERR il file non è l'installatore pubblicato su GitHub";
-            File.WriteAllText(MarkerPath, $"{SessionOf(pid)}|{DateTime.UtcNow.Ticks}");
+            if (session != null) File.WriteAllText(MarkerPath, $"{session}|{DateTime.UtcNow.Ticks}");
             try { ServiceNet.PrepareUpdate(); Thread.Sleep(300); } catch { }
             Process.Start(new ProcessStartInfo(copy, "/VERYSILENT /SUPPRESSMSGBOXES /NORESTART /AGGIORNA-SERVIZIO") { UseShellExecute = false, WorkingDirectory = dir });
             SessionLog.Write($"SERVIZIO aggiornamento a {rel!.Version} avviato ({name})");

@@ -41,7 +41,7 @@ namespace IpDeskCtrl.Desktop
 
         public static Identity? Me { get; private set; }
 
-        public static string HistoryPath => Path.Combine(AppSettings.Folder, "storico.json");
+        public static string HistoryPath => Path.Combine(DataPaths.Root ?? AppSettings.Folder, "storico.json");
 
         /// <summary>All'avvio del servizio: parte subito se la chiave c'è già, altrimenti aspetta il programma.</summary>
         public static void Start(CancellationToken life)
@@ -86,6 +86,7 @@ namespace IpDeskCtrl.Desktop
                 _peer = new Peer(me, _s) { AskAccept = AskAsync };
                 _peer.HostStarted += hs => Broadcast($"START {hs.PeerNumber} {(hs.InputAllowed ? 1 : 0)}");
                 _peer.HostEnded += (hs, why) => Broadcast($"END {hs.PeerNumber} {why.Replace('\n', ' ')}");
+                _peer.UpdateRequested += OnUpdateRequested;
                 _peer.Start();
                 _life.Register(() => { try { _peer.Dispose(); } catch { } });
                 SessionLog.Write($"SERVIZIO rete avviata: numero {Identity.Format(me.Number)}, raggiungibile anche prima dell'accesso");
@@ -147,6 +148,30 @@ namespace IpDeskCtrl.Desktop
             public StreamWriter W = null!;
             public readonly ConcurrentDictionary<string, TaskCompletionSource<IncomingDecision>> Asks = new();
             public void Write(string line) { lock (this) { try { W.WriteLine(line); } catch { } } }
+        }
+
+        private static int _selfUpdating;
+
+        /// <summary>
+        /// Un PC con una versione più nuova chiede a questo di aggiornarsi prima della sessione: lo fa il servizio,
+        /// senza chiedere nulla, anche se nessuno ha fatto l'accesso. Il programma dell'utente (se c'è) viene avvisato.
+        /// </summary>
+        private static void OnUpdateRequested(string number)
+        {
+            if (Interlocked.Exchange(ref _selfUpdating, 1) == 1) return;
+            uint? session;
+            lock (Users) session = Users.Count > 0 ? Users[0].Session : null;
+            Broadcast($"UPDATE {number}");
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    string r = await WinService.SelfUpdateAsync(session);
+                    if (r != "OK") SessionLog.Write("SERVIZIO aggiornamento non riuscito: " + r);
+                }
+                catch (Exception ex) { SessionLog.Write("SERVIZIO aggiornamento non riuscito: " + ex.Message); }
+                finally { Interlocked.Exchange(ref _selfUpdating, 0); }
+            });
         }
 
         private static void Broadcast(string line)

@@ -33,6 +33,7 @@ namespace IpDeskCtrl.Core
         public event Action<string, bool>? HostStarted;      // numero, mouse e tastiera consentiti
         public event Action<string, string>? HostEnded;      // numero, motivo
         public event Action? Lost;
+        public event Action<string>? UpdateRequested;        // numero del PC che ha chiesto l'aggiornamento
 
         private readonly ConcurrentDictionary<string, CancellationTokenSource> _asks = new();
 
@@ -83,7 +84,7 @@ namespace IpDeskCtrl.Core
 
         /// <summary>Cartella dati del servizio (storico condiviso, registri).</summary>
         public static string ServiceFolder =>
-            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "IP-DESK-CTRL");
+            DataPaths.Root ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "IP-DESK-CTRL");
 
         /// <summary>Collegamento permanente al servizio; null se non riesce.</summary>
         public static ServiceClient? Attach()
@@ -146,6 +147,9 @@ namespace IpDeskCtrl.Core
                             Write("TRXDONE " + (err.Length == 0 ? "OK" : err));
                             break;
                         }
+                        case "UPDATE" when p.Length >= 2:
+                            UpdateRequested?.Invoke(p[1]);
+                            break;
                         case "END" when p.Length >= 2:
                             HostEnded?.Invoke(p[1], p.Length == 3 ? p[2] : "");
                             break;

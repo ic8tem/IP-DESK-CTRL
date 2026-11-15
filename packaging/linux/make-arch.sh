@@ -27,6 +27,7 @@ optdepends=('ffmpeg: video compresso H.264/H.265/AV1' 'xorg-xrandr: risoluzione 
 options=('!strip' '!debug')
 package() {
   cp -a "\$startdir/albero/." "\$pkgdir/"
+  install -d -m 1777 "\$pkgdir/opt/ip-desk-ctrl/dati"
 }
 PKG
 # il contenitore archlinux esiste solo per x86_64: sui runner ARM gira emulato con qemu

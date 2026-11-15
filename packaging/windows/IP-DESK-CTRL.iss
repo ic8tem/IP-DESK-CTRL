@@ -49,6 +49,11 @@ Name: "servizio"; Description: "Accesso completo: richieste UAC, schermata di bl
 Name: "ffmpeg"; Description: "Scarica ffmpeg per il video compresso H.264, H.265 e AV1 (circa 150 MB da GitHub; senza, si usano i riquadri JPEG)"; GroupDescription: "Video:"
 Name: "autostart"; Description: "Avvia IP-DESK-CTRL all'accesso a Windows (così il PC è sempre raggiungibile col suo numero)"; GroupDescription: "Avvio:"; Flags: unchecked
 
+[Dirs]
+; dati del programma (registro, storico, impostazioni di ogni utente): scrivibili da tutti gli utenti;
+; le sottocartelle di ogni utente e del servizio il programma le rende private
+Name: "{app}\dati"; Permissions: users-modify
+
 [Files]
 Source: "{#SourceDir}\IP-DESK-CTRL.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\THIRD-PARTY-NOTICES.txt"; DestDir: "{app}"; Flags: ignoreversion

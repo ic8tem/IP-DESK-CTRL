@@ -573,5 +573,8 @@
  "Si installa senza password: il pacchetto nuovo lo scarica e lo verifica il sistema da GitHub.": "Instala-se sem palavra-passe: o próprio sistema descarrega o novo pacote do GitHub e verifica-o.",
  "Si aggiorna con Scoop, senza permessi di amministratore.": "Atualiza-se com o Scoop, sem permissões de administrador.",
  "Flatpak installa il pacchetto nuovo; se il programma è installato per tutti gli utenti può chiedere la password.": "O Flatpak instala o novo pacote; se o programa estiver instalado para todos os utilizadores, pode pedir a palavra-passe.",
- "Il PC remoto non riesce a decodificare il video compresso: uso i riquadri.": "O PC remoto não consegue descodificar o vídeo comprimido: uso os quadrados."
+ "Il PC remoto non riesce a decodificare il video compresso: uso i riquadri.": "O PC remoto não consegue descodificar o vídeo comprimido: uso os quadrados.",
+ "L'altro PC ha la versione {0}: gli chiedo di aggiornarsi alla {1} (tentativo {2} di 3)…": "O outro PC tem a versão {0}: peço-lhe que atualize para a {1} (tentativa {2} de 3)…",
+ "L'altro PC non si è aggiornato: mi collego lo stesso con la sua versione.": "O outro PC não se atualizou: ligo-me na mesma com a versão dele.",
+ "{0} ha una versione più nuova: il servizio aggiorna IP-DESK-CTRL, il programma si chiude e si riapre.": "{0} tem uma versão mais recente: o serviço atualiza o IP-DESK-CTRL, o programa fecha e volta a abrir."
 }

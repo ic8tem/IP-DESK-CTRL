@@ -32,7 +32,7 @@ namespace IpDeskCtrl.Screen
         public static string ExeName => OperatingSystem.IsWindows() ? "ffmpeg.exe" : "ffmpeg";
 
         /// <summary>Cartella dove il programma scarica ffmpeg (Windows).</summary>
-        public static string LocalFolder => System.IO.Path.Combine(AppSettings.Folder, "ffmpeg");
+        public static string LocalFolder => System.IO.Path.Combine(DataPaths.Root ?? AppSettings.Folder, "ffmpeg");
 
         /// <summary>ffmpeg trovato (cartella del programma, cartella dati, PATH, Homebrew); null = assente.</summary>
         public static string? Path

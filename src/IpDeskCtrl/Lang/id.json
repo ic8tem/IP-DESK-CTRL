@@ -573,5 +573,8 @@
  "Si installa senza password: il pacchetto nuovo lo scarica e lo verifica il sistema da GitHub.": "Terpasang tanpa kata sandi: sistem sendiri mengunduh paket baru dari GitHub dan memeriksanya.",
  "Si aggiorna con Scoop, senza permessi di amministratore.": "Diperbarui lewat Scoop, tanpa hak administrator.",
  "Flatpak installa il pacchetto nuovo; se il programma è installato per tutti gli utenti può chiedere la password.": "Flatpak memasang paket baru; jika program terpasang untuk semua pengguna, mungkin meminta kata sandi.",
- "Il PC remoto non riesce a decodificare il video compresso: uso i riquadri.": "Komputer jarak jauh tidak bisa mendekode video terkompresi: saya pakai kotak-kotak."
+ "Il PC remoto non riesce a decodificare il video compresso: uso i riquadri.": "Komputer jarak jauh tidak bisa mendekode video terkompresi: saya pakai kotak-kotak.",
+ "L'altro PC ha la versione {0}: gli chiedo di aggiornarsi alla {1} (tentativo {2} di 3)…": "PC lain memakai versi {0}: memintanya memperbarui ke {1} (percobaan {2} dari 3)…",
+ "L'altro PC non si è aggiornato: mi collego lo stesso con la sua versione.": "PC lain tidak diperbarui: tetap menyambung dengan versinya.",
+ "{0} ha una versione più nuova: il servizio aggiorna IP-DESK-CTRL, il programma si chiude e si riapre.": "{0} memiliki versi lebih baru: layanan memperbarui IP-DESK-CTRL, program akan ditutup dan dibuka kembali."
 }

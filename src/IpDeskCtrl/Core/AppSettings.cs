@@ -83,6 +83,10 @@ namespace IpDeskCtrl.Core
             get
             {
                 if (Platform.DataFolder != null) { Directory.CreateDirectory(Platform.DataFolder); return Platform.DataFolder; }
+                // cartella «dati» accanto al programma (vedi DataPaths); se non si può, quella di sempre
+                string? mine = null;
+                try { mine = DataPaths.UserFolder(); } catch { }
+                if (mine != null) return mine;
                 string f = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData, Environment.SpecialFolderOption.Create), "IP-DESK-CTRL");
                 Directory.CreateDirectory(f);
                 return f;
@@ -210,15 +214,17 @@ namespace IpDeskCtrl.Core
     {
         public static void Write(string? text)
         {
-            try { File.AppendAllText(Path.Combine(AppSettings.Folder, "errori.log"), $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} {text}{Environment.NewLine}"); } catch { }
+            // un solo registro: gli errori finiscono in sessioni.log con la parola ERRORE
+            if (string.IsNullOrWhiteSpace(text)) return;
+            SessionLog.Write("ERRORE " + text.Trim().Replace("\r", "").Replace("\n", "\n    "));
         }
     }
 
     /// <summary>Registro delle sessioni: collegamenti, porte, broker.</summary>
     public static class SessionLog
     {
-        private static readonly object Lock = new();
-        public static string FilePath => Path.Combine(AppSettings.Folder, "sessioni.log");
+        internal static readonly object Lock = new();
+        public static string FilePath => Path.Combine(DataPaths.Shared, "sessioni.log");
 
         public static void Write(string line)
         {
@@ -229,6 +235,7 @@ namespace IpDeskCtrl.Core
                 {
                     var fi = new FileInfo(FilePath);
                     if (fi.Exists && fi.Length > 5_000_000) File.Move(FilePath, FilePath + ".1", true);
+                    bool fresh = !File.Exists(FilePath);
                     // il servizio e il processo di supporto scrivono nello stesso file: se è occupato si riprova
                     byte[] data = System.Text.Encoding.UTF8.GetBytes($"{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}Z | {line}{Environment.NewLine}");
                     for (int i = 0; i < 20; i++)
@@ -237,6 +244,7 @@ namespace IpDeskCtrl.Core
                         {
                             using var fs = new FileStream(FilePath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite | FileShare.Delete);
                             fs.Write(data, 0, data.Length);
+                            if (fresh && !OperatingSystem.IsWindows()) try { File.SetUnixFileMode(FilePath, (UnixFileMode)0b110_110_110); } catch { }
                             break;
                         }
                         catch (IOException) { System.Threading.Thread.Sleep(15); }

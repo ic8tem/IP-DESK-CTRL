@@ -573,5 +573,8 @@
  "Si installa senza password: il pacchetto nuovo lo scarica e lo verifica il sistema da GitHub.": "Instaluje se bez hesla: systém sám stáhne nový balíček z GitHubu a ověří ho.",
  "Si aggiorna con Scoop, senza permessi di amministratore.": "Aktualizuje se přes Scoop, bez oprávnění správce.",
  "Flatpak installa il pacchetto nuovo; se il programma è installato per tutti gli utenti può chiedere la password.": "Flatpak nainstaluje nový balíček; pokud je program nainstalován pro všechny uživatele, může požádat o heslo.",
- "Il PC remoto non riesce a decodificare il video compresso: uso i riquadri.": "Vzdálený počítač nedokáže dekódovat komprimované video: používám čtverce."
+ "Il PC remoto non riesce a decodificare il video compresso: uso i riquadri.": "Vzdálený počítač nedokáže dekódovat komprimované video: používám čtverce.",
+ "L'altro PC ha la versione {0}: gli chiedo di aggiornarsi alla {1} (tentativo {2} di 3)…": "Druhý počítač má verzi {0}: žádám ho o aktualizaci na {1} (pokus {2} ze 3)…",
+ "L'altro PC non si è aggiornato: mi collego lo stesso con la sua versione.": "Druhý počítač se neaktualizoval: přesto se připojuji s jeho verzí.",
+ "{0} ha una versione più nuova: il servizio aggiorna IP-DESK-CTRL, il programma si chiude e si riapre.": "{0} má novější verzi: služba aktualizuje IP-DESK-CTRL, program se zavře a znovu otevře."
 }

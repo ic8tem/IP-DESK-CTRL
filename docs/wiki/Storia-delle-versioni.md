@@ -3,6 +3,12 @@
 
 Le versioni con protocollo diverso non si collegano tra loro: aggiorna tutti i dispositivi alla stessa versione principale (la 0.4.1 si collega con la 0.4.0; la 0.5 si collega con la 0.4).
 
+## 0.5.15 — 15 novembre 2026
+- **Dati nella cartella del programma**: impostazioni, chiavi, storico e registri stanno ora nella sottocartella `dati` di dove è installato IP-DESK-CTRL (Windows: `C:\Program Files\IP-DESK-CTRL\dati`; Linux: `/opt/ip-desk-ctrl/dati`; versione portatile e AppImage: accanto al programma). Al primo avvio tutto quello che c'era in AppData, in `~/.config` o in ProgramData si sposta lì da solo e la cartella vecchia si cancella: in AppData non si scrive più niente. Ogni utente ha la sua sottocartella `dati/utenti/<nome>`, leggibile solo da lui; la chiave del servizio di Windows sta in `dati/servizio`, leggibile solo dal sistema e dagli amministratori. Restano nelle cartelle del sistema solo macOS (l'app si sostituisce intera a ogni aggiornamento), Snap, Flatpak e Android.
+- **Un solo registro**: `sessioni.log` e `errori.log` sono fusi in `sessioni.log`, in ordine di tempo; gli errori compaiono come righe «ERRORE». Anche il servizio di Windows scrive nello stesso file, così un problema si legge tutto di seguito.
+- **Collegamento più rapido nelle reti chiuse**: 2 giri invece di 4. Al primo giro si chiede subito il collegamento inverso e parte in parallelo la strada solo UDP; al secondo le porte si invertono su 443, 8443, 80 o 8080.
+- **Aggiornamento prima della sessione**: collegandoti a un PC con una versione più vecchia, IP-DESK-CTRL gli chiede di aggiornarsi (fino a 3 volte, aspettando ogni volta che ricompaia con la versione nuova) e poi si collega. Su Windows con il servizio l'aggiornamento lo scarica e lo installa il servizio, anche se al PC non c'è nessuno; altrimenti il programma si aggiorna da solo dopo 5 secondi. Vale per i PC che hanno già almeno la 0.5.15: con le versioni prima la richiesta non si capisce e il collegamento parte subito.
+
 ## 0.5.14 — 14 novembre 2026
 - **Tasto Windows e le sue combinazioni** (Win+R, Win+E, Win+D, Win+X…): con la finestra del PC remoto in primo piano ora vanno al PC remoto invece di aprire «Esegui» o il menu Start su questo. Restano a questo PC solo Win+L e Ctrl+Alt+Canc, che Windows non lascia intercettare (Ctrl+Alt+Canc si manda dal menu «Tasti»).
 - **Windows 7 e 8**: l'installatore ora si ferma subito con un avviso («serve Windows 10 o successivo») invece di installare un programma che poi non parte con l'errore «GetSystemTimePreciseAsFileTime».
