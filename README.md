@@ -134,7 +134,6 @@ Le versioni con protocollo diverso non si collegano tra loro: aggiorna tutti i d
 
 ### 0.5.18 — 16 novembre 2026
 - **Più persone comandano insieme**: se due o più si collegano allo stesso PC, ora possono comandarlo tutti (fino a 5 in tutto), non più uno solo con gli altri a guardare. Gli altri entrano con le stesse regole del primo: richiesta da accettare oppure accesso senza conferma, con la password se è impostata. L'interruttore di mouse e tastiera e «Disconnetti» valgono per tutti; se il primo esce, la finestrella «comandato da» passa al successivo.
-- **Pagina delle release**: in cima c'è la tabella «Scarica la versione per il tuo sistema» con i collegamenti diretti a ogni file (installatore e versione senza installazione).
 
 ### 0.5.17 — 16 novembre 2026
 - **Due porte scelte da te**: in Impostazioni › «Porte aperte sul router» si possono scrivere due porte aperte a mano sul router (inoltro TCP e UDP verso il PC, stesso numero dentro e fuori). Si provano per prime, anche con l'UPnP; vale la prima raggiungibile da internet. Con il servizio di Windows le apre il servizio.
