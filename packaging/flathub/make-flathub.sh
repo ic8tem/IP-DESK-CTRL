@@ -1,24 +1,25 @@
 #!/usr/bin/env bash
-# Prepara i file per Flathub (repository flathub/io.github.ic8tem.IpDeskCtrl):
-#   io.github.ic8tem.IpDeskCtrl.yml   manifest: compila dai sorgenti con il .NET 8 dell'SDK di Flathub
+# Prepara i file per Flathub (repository flathub/io.github.ic8tem.IP_DESK_CTRL):
+#   io.github.ic8tem.IP_DESK_CTRL.yml   manifest: compila dai sorgenti con il .NET 8 dell'SDK di Flathub
 #   nuget-sources.json                 pacchetti NuGet scaricati prima (sui server di Flathub non c'è rete)
 # Uso: packaging/flathub/make-flathub.sh <versione> <commit | "locale"> <cartella di uscita>
 #   con «locale» il manifest compila la cartella del repository (prova in CI), altrimenti il tag v<versione>.
 set -euo pipefail
 VERSION="$1"; COMMIT="$2"; mkdir -p "$3"; OUT="$(cd "$3" && pwd)"
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
-ID=io.github.ic8tem.IpDeskCtrl
+# su Flathub l'ID segue il repository (github.com/ic8tem/IP-DESK-CTRL); il .flatpak delle release resta io.github.ic8tem.IpDeskCtrl
+ID=io.github.ic8tem.IP_DESK_CTRL
 PROJ=src/IpDeskCtrl.Desktop/IpDeskCtrl.Desktop.csproj
 
 # ------------------------------------------------------------------ pacchetti NuGet: una pubblicazione di prova con il .NET dell'SDK di Flathub
 # (con «restore» mancherebbero quelli che servono solo pubblicando, come Microsoft.NET.ILLink.Tasks)
 flatpak remote-add --user --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
-flatpak install --user -y --noninteractive flathub org.freedesktop.Sdk//24.08 org.freedesktop.Sdk.Extension.dotnet8//24.08 >/dev/null
+flatpak install --user -y --noninteractive flathub org.freedesktop.Sdk//26.08 org.freedesktop.Sdk.Extension.dotnet8//26.08 >/dev/null
 PKGS="$(mktemp -d)"
 for rid in linux-x64 linux-arm64; do
   flatpak run --env=DOTNET_CLI_TELEMETRY_OPTOUT=true --env=DOTNET_NOLOGO=true --command=sh \
-    --runtime=org.freedesktop.Sdk//24.08 --share=network --filesystem=host --filesystem="$PKGS" \
-    org.freedesktop.Sdk.Extension.dotnet8//24.08 -c \
+    --runtime=org.freedesktop.Sdk//26.08 --share=network --filesystem=host --filesystem="$PKGS" \
+    org.freedesktop.Sdk.Extension.dotnet8//26.08 -c \
     'PATH="$PATH:/usr/lib/sdk/dotnet8/bin" LD_LIBRARY_PATH="${LD_LIBRARY_PATH:-}:/usr/lib/sdk/dotnet8/lib" exec dotnet publish "$@"' \
     -- "$ROOT/$PROJ" -c Release -r "$rid" --packages "$PKGS" -o "$PKGS/.prova-$rid"
 done
@@ -48,7 +49,7 @@ fi
 cat > "$OUT/$ID.yml" <<YAML
 id: $ID
 runtime: org.freedesktop.Platform
-runtime-version: '24.08'
+runtime-version: '26.08'
 sdk: org.freedesktop.Sdk
 sdk-extensions:
   - org.freedesktop.Sdk.Extension.dotnet8

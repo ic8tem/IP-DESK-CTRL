@@ -56,7 +56,8 @@ namespace IpDeskCtrl.Core
 
         public const string FlatpakId = "io.github.ic8tem.IpDeskCtrl";
         /// <summary>Installato da Flathub (il manifest di Flathub imposta IPDESKCTRL_FLATHUB=1).</summary>
-        public static bool IsFlathub => IsFlatpak && Environment.GetEnvironmentVariable("IPDESKCTRL_FLATHUB") == "1";
+        public static bool IsFlathub => !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("FLATPAK_ID")) &&
+                                         Environment.GetEnvironmentVariable("IPDESKCTRL_FLATHUB") == "1";
         private static bool IsFlatpak => Environment.GetEnvironmentVariable("FLATPAK_ID") == FlatpakId;
 
         /// <summary>Script di aggiornamento dei pacchetti Linux che polkit lascia girare senza password.</summary>

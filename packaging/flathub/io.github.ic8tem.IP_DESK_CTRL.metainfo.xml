@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop-application">
-  <id>io.github.ic8tem.IpDeskCtrl</id>
+  <id>io.github.ic8tem.IP_DESK_CTRL</id>
   <name>IP-DESK-CTRL</name>
   <summary>Encrypted remote desktop with a fixed 10-digit number</summary>
   <summary xml:lang="it">Desktop remoto cifrato con numero fisso di 10 cifre</summary>
@@ -27,14 +27,7 @@
       On Linux the remote screen is captured and controlled in X11 sessions.
     </p>
   </description>
-  <description xml:lang="it">
-    <p>
-      IP-DESK-CTRL permette di vedere e comandare un altro computer (Linux, Windows, macOS, Raspberry Pi o Android)
-      con un numero fisso di 10 cifre e cifratura AES-256-GCM da un capo all'altro. Niente account e niente server
-      intermedi: i due computer si ritrovano sui broker MQTT pubblici e si collegano direttamente.
-    </p>
-  </description>
-  <launchable type="desktop-id">io.github.ic8tem.IpDeskCtrl.desktop</launchable>
+  <launchable type="desktop-id">io.github.ic8tem.IP_DESK_CTRL.desktop</launchable>
   <url type="homepage">https://github.com/ic8tem/IP-DESK-CTRL</url>
   <url type="bugtracker">https://github.com/ic8tem/IP-DESK-CTRL/issues</url>
   <url type="help">https://github.com/ic8tem/IP-DESK-CTRL/wiki</url>
