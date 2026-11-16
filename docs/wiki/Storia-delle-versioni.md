@@ -3,6 +3,9 @@
 
 Le versioni con protocollo diverso non si collegano tra loro: aggiorna tutti i dispositivi alla stessa versione principale (la 0.4.1 si collega con la 0.4.0; la 0.5 si collega con la 0.4).
 
+## 0.5.16 — 16 novembre 2026
+- **UPnP dall'apparecchio sbagliato**: in alcune case all'UPnP non risponde il router che porta a internet ma un altro apparecchio della rete (un ripetitore o nodo mesh in modalità router, un decoder, un router collegato a un altro router). Si riconosce perché il suo «IP esterno» sta nella stessa rete del PC (per esempio PC 192.168.1.186, «router» 192.168.1.157). Le porte che apre restano dentro quell'apparecchio, perciò ora il programma non lo usa e scrive nel registro di attivare l'UPnP sul router principale. Prima provava 6 porte inutili e si collegava solo con il collegamento inverso o con UDP.
+
 ## 0.5.15 — 15 novembre 2026
 - **Dati nella cartella del programma**: impostazioni, chiavi, storico e registri stanno ora nella sottocartella `dati` di dove è installato IP-DESK-CTRL (Windows: `C:\Program Files\IP-DESK-CTRL\dati`; Linux: `/opt/ip-desk-ctrl/dati`; versione portatile e AppImage: accanto al programma). Al primo avvio tutto quello che c'era in AppData, in `~/.config` o in ProgramData si sposta lì da solo e la cartella vecchia si cancella: in AppData non si scrive più niente. Ogni utente ha la sua sottocartella `dati/utenti/<nome>`, leggibile solo da lui; la chiave del servizio di Windows sta in `dati/servizio`, leggibile solo dal sistema e dagli amministratori. Restano nelle cartelle del sistema solo macOS (l'app si sostituisce intera a ogni aggiornamento), Snap, Flatpak e Android.
 - **Un solo registro**: `sessioni.log` e `errori.log` sono fusi in `sessioni.log`, in ordine di tempo; gli errori compaiono come righe «ERRORE». Anche il servizio di Windows scrive nello stesso file, così un problema si legge tutto di seguito.

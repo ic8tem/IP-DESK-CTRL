@@ -26,3 +26,7 @@ Se hai un router con UPnP disattivato, attivarlo migliora la velocità ma non è
 ## Aprire una porta a mano
 
 Non serve quasi mai. Se vuoi farlo, guarda nel `sessioni.log` la porta scelta dal programma e inoltrala (TCP e UDP) verso il PC nel router.
+
+### L'UPnP risponde ma le porte restano chiuse
+
+Se nel registro compare «l'UPnP l'ha aperta un altro apparecchio della rete», il «router» trovato non è quello che porta a internet: il suo IP esterno sta nella stessa rete del PC (per esempio 192.168.1.157 con il PC a 192.168.1.186). Di solito è un ripetitore o un nodo mesh in modalità router, un decoder o un secondo router collegato in cascata. Rimedi: attivare l'UPnP sul router principale (di solito `http://192.168.1.1` o `http://192.168.0.1`), oppure mettere quell'apparecchio in modalità «access point» o «bridge».
