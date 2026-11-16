@@ -132,6 +132,10 @@ Nella cartella dei dati (Impostazioni › Apri cartella dati): `sessioni.log`, u
 
 Le versioni con protocollo diverso non si collegano tra loro: aggiorna tutti i dispositivi alla stessa versione principale (la 0.4.1 si collega con la 0.4.0; la 0.5 si collega con la 0.4).
 
+### 0.5.17 — 16 novembre 2026
+- **Tipo di NAT riconosciuto meglio**: per capire se il NAT è «a cono» (perforabile) o simmetrico si interrogavano due server STUN di Google che a volte hanno lo stesso indirizzo, e così un NAT simmetrico (frequente con le chiavette e i router 4G/5G) sembrava «a cono», la previsione della porta non partiva e la perforazione UDP falliva. Ora il secondo server è di un altro gestore (Cloudflare) e due server con lo stesso indirizzo non valgono come due prove.
+- **Porte che rispondono ma non sono del programma**: se i servizi di verifica trovano la porta aperta ma al programma non arriva nessun collegamento, a rispondere è un altro apparecchio (spesso la pagina del router sulla porta 80 o 443): la porta ora si considera chiusa, invece di mandare l'altro PC a bussare alla porta sbagliata.
+
 ### 0.5.16 — 16 novembre 2026
 - **UPnP dall'apparecchio sbagliato**: in alcune case all'UPnP non risponde il router che porta a internet ma un altro apparecchio della rete (un ripetitore o nodo mesh in modalità router, un decoder, un router collegato a un altro router). Si riconosce perché il suo «IP esterno» sta nella stessa rete del PC (per esempio PC 192.168.1.186, «router» 192.168.1.157). Le porte che apre restano dentro quell'apparecchio, perciò ora il programma non lo usa e scrive nel registro di attivare l'UPnP sul router principale. Prima provava 6 porte inutili e si collegava solo con il collegamento inverso o con UDP.
 
