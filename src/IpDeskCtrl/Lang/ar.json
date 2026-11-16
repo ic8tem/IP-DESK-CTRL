@@ -577,5 +577,14 @@
  "L'altro PC ha la versione {0}: gli chiedo di aggiornarsi alla {1} (tentativo {2} di 3)…": "لدى الحاسوب الآخر الإصدار {0}: أطلب منه التحديث إلى {1} (المحاولة {2} من 3)…",
  "L'altro PC non si è aggiornato: mi collego lo stesso con la sua versione.": "لم يُحدَّث الحاسوب الآخر: سأتصل على أي حال بإصداره.",
  "{0} ha una versione più nuova: il servizio aggiorna IP-DESK-CTRL, il programma si chiude e si riapre.": "لدى {0} إصدار أحدث: الخدمة تحدّث IP-DESK-CTRL، وسيُغلق البرنامج ثم يُعاد فتحه.",
- "IMPOSTAZIONI": "الإعدادات"
+ "IMPOSTAZIONI": "الإعدادات",
+ "nessuna": "لا شيء",
+ "Usa queste porte": "استخدم هذه المنافذ",
+ "Se sul router hai aperto a mano una porta (inoltro TCP e UDP verso questo PC, stesso numero dentro e fuori), scrivila qui: si prova per prima, anche con l'UPnP. Vuoto = porte scelte da sole.": "إذا فتحت منفذًا يدويًا على الموجّه (توجيه TCP وUDP إلى هذا الحاسوب، بالرقم نفسه في الداخل والخارج)، فاكتبه هنا: يُجرَّب أولًا حتى مع UPnP. فارغ = تُختار المنافذ تلقائيًا.",
+ "Le porte vanno da 1 a 65535.": "المنافذ من 1 إلى 65535.",
+ "Porte salvate: le provo adesso. Il risultato è nel registro e nello stato qui sopra.": "حُفظت المنافذ: أجرّبها الآن. النتيجة في السجل وفي الحالة أعلاه.",
+ "Nessuna porta scelta: le porte si scelgono da sole.": "لم يُختر أي منفذ: تُختار المنافذ تلقائيًا.",
+ "PORTE APERTE SUL ROUTER": "المنافذ المفتوحة على الموجّه",
+ "Porta 1": "المنفذ 1",
+ "Porta 2": "المنفذ 2"
 }

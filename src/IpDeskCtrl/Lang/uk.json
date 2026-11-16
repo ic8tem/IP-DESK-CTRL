@@ -577,5 +577,14 @@
  "L'altro PC ha la versione {0}: gli chiedo di aggiornarsi alla {1} (tentativo {2} di 3)…": "На іншому ПК версія {0}: прошу його оновитися до {1} (спроба {2} з 3)…",
  "L'altro PC non si è aggiornato: mi collego lo stesso con la sua versione.": "Інший ПК не оновився: однаково підключаюся з його версією.",
  "{0} ha una versione più nuova: il servizio aggiorna IP-DESK-CTRL, il programma si chiude e si riapre.": "У {0} новіша версія: служба оновлює IP-DESK-CTRL, програма закриється й відкриється знову.",
- "IMPOSTAZIONI": "НАЛАШТУВАННЯ"
+ "IMPOSTAZIONI": "НАЛАШТУВАННЯ",
+ "nessuna": "немає",
+ "Usa queste porte": "Використати ці порти",
+ "Se sul router hai aperto a mano una porta (inoltro TCP e UDP verso questo PC, stesso numero dentro e fuori), scrivila qui: si prova per prima, anche con l'UPnP. Vuoto = porte scelte da sole.": "Якщо ви вручну відкрили порт на роутері (переадресація TCP і UDP на цей ПК, однаковий номер усередині й ззовні), впишіть його сюди: він пробується першим, навіть з UPnP. Порожньо = порти вибираються автоматично.",
+ "Le porte vanno da 1 a 65535.": "Порти — від 1 до 65535.",
+ "Porte salvate: le provo adesso. Il risultato è nel registro e nello stato qui sopra.": "Порти збережено: перевіряю їх зараз. Результат — у журналі та в стані вище.",
+ "Nessuna porta scelta: le porte si scelgono da sole.": "Порт не вибрано: порти вибираються автоматично.",
+ "PORTE APERTE SUL ROUTER": "ПОРТИ, ВІДКРИТІ НА РОУТЕРІ",
+ "Porta 1": "Порт 1",
+ "Porta 2": "Порт 2"
 }

@@ -577,5 +577,14 @@
  "L'altro PC ha la versione {0}: gli chiedo di aggiornarsi alla {1} (tentativo {2} di 3)…": "PC lain memakai versi {0}: memintanya memperbarui ke {1} (percobaan {2} dari 3)…",
  "L'altro PC non si è aggiornato: mi collego lo stesso con la sua versione.": "PC lain tidak diperbarui: tetap menyambung dengan versinya.",
  "{0} ha una versione più nuova: il servizio aggiorna IP-DESK-CTRL, il programma si chiude e si riapre.": "{0} memiliki versi lebih baru: layanan memperbarui IP-DESK-CTRL, program akan ditutup dan dibuka kembali.",
- "IMPOSTAZIONI": "PENGATURAN"
+ "IMPOSTAZIONI": "PENGATURAN",
+ "nessuna": "tidak ada",
+ "Usa queste porte": "Gunakan port ini",
+ "Se sul router hai aperto a mano una porta (inoltro TCP e UDP verso questo PC, stesso numero dentro e fuori), scrivila qui: si prova per prima, anche con l'UPnP. Vuoto = porte scelte da sole.": "Jika Anda membuka port secara manual di router (penerusan TCP dan UDP ke PC ini, nomor yang sama di dalam dan di luar), tulis di sini: port ini dicoba lebih dulu, bahkan dengan UPnP. Kosong = port dipilih otomatis.",
+ "Le porte vanno da 1 a 65535.": "Port berkisar dari 1 sampai 65535.",
+ "Porte salvate: le provo adesso. Il risultato è nel registro e nello stato qui sopra.": "Port disimpan: sedang dicoba sekarang. Hasilnya ada di log dan di status di atas.",
+ "Nessuna porta scelta: le porte si scelgono da sole.": "Tidak ada port dipilih: port dipilih otomatis.",
+ "PORTE APERTE SUL ROUTER": "PORT YANG DIBUKA DI ROUTER",
+ "Porta 1": "Port 1",
+ "Porta 2": "Port 2"
 }

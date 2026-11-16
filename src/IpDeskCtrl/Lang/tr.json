@@ -577,5 +577,14 @@
  "L'altro PC ha la versione {0}: gli chiedo di aggiornarsi alla {1} (tentativo {2} di 3)…": "Diğer bilgisayarda {0} sürümü var: {1} sürümüne güncellemesini istiyorum (deneme {2}/3)…",
  "L'altro PC non si è aggiornato: mi collego lo stesso con la sua versione.": "Diğer bilgisayar güncellenmedi: yine de onun sürümüyle bağlanıyorum.",
  "{0} ha una versione più nuova: il servizio aggiorna IP-DESK-CTRL, il programma si chiude e si riapre.": "{0} daha yeni bir sürüme sahip: hizmet IP-DESK-CTRL'yi güncelliyor, program kapanıp yeniden açılacak.",
- "IMPOSTAZIONI": "AYARLAR"
+ "IMPOSTAZIONI": "AYARLAR",
+ "nessuna": "yok",
+ "Usa queste porte": "Bu portları kullan",
+ "Se sul router hai aperto a mano una porta (inoltro TCP e UDP verso questo PC, stesso numero dentro e fuori), scrivila qui: si prova per prima, anche con l'UPnP. Vuoto = porte scelte da sole.": "Yönlendiricide elle bir port açtıysanız (bu bilgisayara TCP ve UDP yönlendirmesi, içeride ve dışarıda aynı numara), buraya yazın: UPnP olsa bile önce bu denenir. Boş = portlar otomatik seçilir.",
+ "Le porte vanno da 1 a 65535.": "Portlar 1 ile 65535 arasındadır.",
+ "Porte salvate: le provo adesso. Il risultato è nel registro e nello stato qui sopra.": "Portlar kaydedildi: şimdi deniyorum. Sonuç günlükte ve yukarıdaki durumda.",
+ "Nessuna porta scelta: le porte si scelgono da sole.": "Port seçilmedi: portlar otomatik seçilir.",
+ "PORTE APERTE SUL ROUTER": "YÖNLENDİRİCİDE AÇILAN PORTLAR",
+ "Porta 1": "Port 1",
+ "Porta 2": "Port 2"
 }

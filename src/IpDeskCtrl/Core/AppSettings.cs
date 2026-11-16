@@ -47,6 +47,8 @@ namespace IpDeskCtrl.Core
         public bool AllowTunnel { get; set; } = true;
         public string Language { get; set; } = "";         // "" = lingua del sistema (una delle 36, altrimenti inglese)
         public string ToolbarDock { get; set; } = "sopra";  // plancia del collegamento: sopra, sinistra, destra (sempre a scomparsa)
+        public int ManualPort1 { get; set; }                // porte aperte a mano sul router (inoltro): provate per prime; 0 = nessuna
+        public int ManualPort2 { get; set; }
         public bool AutoUpdate { get; set; } = true;       // le nuove versioni si scaricano e si installano da sole
         public string SkipAutoVersion { get; set; } = "";  // versione per cui si è scelto «Più tardi»: niente installazione da sola
         public bool AllowObservers { get; set; } = true;   // mentre uno comanda, altri possono chiedere di guardare (solo visione)

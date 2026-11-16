@@ -577,5 +577,14 @@
  "L'altro PC ha la versione {0}: gli chiedo di aggiornarsi alla {1} (tentativo {2} di 3)…": "El otro PC tiene la versión {0}: le pido que se actualice a la {1} (intento {2} de 3)…",
  "L'altro PC non si è aggiornato: mi collego lo stesso con la sua versione.": "El otro PC no se ha actualizado: me conecto igualmente con su versión.",
  "{0} ha una versione più nuova: il servizio aggiorna IP-DESK-CTRL, il programma si chiude e si riapre.": "{0} tiene una versión más nueva: el servicio actualiza IP-DESK-CTRL, el programa se cierra y se vuelve a abrir.",
- "IMPOSTAZIONI": "AJUSTES"
+ "IMPOSTAZIONI": "AJUSTES",
+ "nessuna": "ninguno",
+ "Usa queste porte": "Usar estos puertos",
+ "Se sul router hai aperto a mano una porta (inoltro TCP e UDP verso questo PC, stesso numero dentro e fuori), scrivila qui: si prova per prima, anche con l'UPnP. Vuoto = porte scelte da sole.": "Si abriste un puerto a mano en el router (reenvío TCP y UDP hacia este PC, mismo número dentro y fuera), escríbelo aquí: se prueba primero, incluso con UPnP. Vacío = puertos elegidos automáticamente.",
+ "Le porte vanno da 1 a 65535.": "Los puertos van de 1 a 65535.",
+ "Porte salvate: le provo adesso. Il risultato è nel registro e nello stato qui sopra.": "Puertos guardados: los pruebo ahora. El resultado está en el registro y en el estado de arriba.",
+ "Nessuna porta scelta: le porte si scelgono da sole.": "Ningún puerto elegido: los puertos se eligen automáticamente.",
+ "PORTE APERTE SUL ROUTER": "PUERTOS ABIERTOS EN EL ROUTER",
+ "Porta 1": "Puerto 1",
+ "Porta 2": "Puerto 2"
 }

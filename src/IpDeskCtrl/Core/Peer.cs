@@ -115,6 +115,56 @@ namespace IpDeskCtrl.Core
         }
 
         /// <summary>Nuovo elenco di broker MQTT: si salva e ci si ricollega subito.</summary>
+        /// <summary>Nuove porte scelte dall'utente: si salvano e la porta si riapre subito provando quelle.</summary>
+        public void SetManualPorts(int p1, int p2)
+        {
+            S.ManualPort1 = p1 is > 0 and < 65536 ? p1 : 0;
+            S.ManualPort2 = p2 is > 0 and < 65536 && p2 != p1 ? p2 : 0;
+            S.Save();
+            Log($"PORTE porte scelte dall'utente: {(S.ManualPort1 > 0 ? S.ManualPort1 : "nessuna")}" + (S.ManualPort2 > 0 ? $", {S.ManualPort2}" : ""));
+            if (!Ready || ViewerOnly) return;      // con il servizio di Windows le porte le apre il servizio
+            var ct = _life.Token;
+            _ = Task.Run(async () =>
+            {
+                await _portLock.WaitAsync(ct);
+                try { await OpenPortAsync(null, ct); Announce(); ShowNetworkStatus(); }
+                catch { }
+                finally { _portLock.Release(); }
+            }, ct);
+        }
+
+        /// <summary>
+        /// Porte scelte dall'utente (inoltro manuale sul router, o porte che il router lascia passare): stessa porta
+        /// dentro e fuori. Con UPnP si chiede anche al router di aprirle. Vale la prima raggiungibile da internet.
+        /// </summary>
+        private async Task<bool> TryManualPortsAsync(bool upnp, CancellationToken ct)
+        {
+            if (ViewerOnly) return false;
+            foreach (int port in new[] { S.ManualPort1, S.ManualPort2 })
+            {
+                if (port <= 0 || ct.IsCancellationRequested) continue;
+                bool mapped = upnp && await _pm!.OpenFixedAsync(Open.Nat.Protocol.Tcp, port, port, "IP-DESK-CTRL");
+                if (!Listen(port))
+                {
+                    Log($"PORTE porta scelta {port}: già usata da un altro programma di questo PC");
+                    if (mapped) await _pm!.ClosePortAsync(port);
+                    continue;
+                }
+                if (mapped) await _pm!.OpenFixedAsync(Open.Nat.Protocol.Udp, port, port, "IP-DESK-CTRL (UDP)");
+                bool? reach = await ProbeOwnAsync(port, ct);
+                if (reach != false)
+                {
+                    _extPort = port; _localPort = port; _reachable = true;
+                    Log($"PORTE uso la porta scelta {port}" + (mapped ? " (aperta anche con UPnP)" : " (inoltro manuale sul router)"));
+                    return true;
+                }
+                Log($"PORTE la porta scelta {port} non è raggiungibile da internet: controlla l'inoltro sul router verso questo PC");
+                StopListen();
+                if (mapped) await _pm!.ClosePortAsync(port);
+            }
+            return false;
+        }
+
         public void SetBrokers(List<string> brokers)
         {
             S.MqttBrokers = brokers.Count > 0 ? brokers : AppSettings.DefaultBrokers.ToList();
@@ -204,6 +254,8 @@ namespace IpDeskCtrl.Core
             bool doubleNat = upnp && _pm.CgnatSuspected;
             if (doubleNat) Log("PORTE doppio NAT o CGNAT: provo una sola porta; se non è raggiungibile restano rete locale, collegamento inverso e UDP");
 
+            if (preferred is not { Count: > 0 } && await TryManualPortsAsync(upnp, ct)) return;
+
             if (preferred is { Count: > 0 } && upnp && !doubleNat)
             {
                 foreach (int ext in preferred)
@@ -220,6 +272,7 @@ namespace IpDeskCtrl.Core
                 }
                 Log("PORTE nessuna delle porte richieste dal visore è apribile: torno a una porta casuale");
             }
+            if (preferred is { Count: > 0 } && await TryManualPortsAsync(upnp, ct)) return;
 
             int tries = upnp && !doubleNat ? 6 : 1;
             for (int i = 1; i <= tries && !ct.IsCancellationRequested; i++)

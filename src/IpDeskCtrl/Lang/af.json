@@ -577,5 +577,14 @@
  "L'altro PC ha la versione {0}: gli chiedo di aggiornarsi alla {1} (tentativo {2} di 3)…": "Die ander rekenaar het weergawe {0}: ek vra dit om na {1} op te dateer (poging {2} van 3)…",
  "L'altro PC non si è aggiornato: mi collego lo stesso con la sua versione.": "Die ander rekenaar is nie opgedateer nie: ek koppel tog met sy weergawe.",
  "{0} ha una versione più nuova: il servizio aggiorna IP-DESK-CTRL, il programma si chiude e si riapre.": "{0} het 'n nuwer weergawe: die diens dateer IP-DESK-CTRL op, die program maak toe en weer oop.",
- "IMPOSTAZIONI": "INSTELLINGS"
+ "IMPOSTAZIONI": "INSTELLINGS",
+ "nessuna": "geen",
+ "Usa queste porte": "Gebruik hierdie poorte",
+ "Se sul router hai aperto a mano una porta (inoltro TCP e UDP verso questo PC, stesso numero dentro e fuori), scrivila qui: si prova per prima, anche con l'UPnP. Vuoto = porte scelte da sole.": "As jy 'n poort met die hand op die roeteerder oopgemaak het (TCP- en UDP-aanstuur na hierdie rekenaar, dieselfde nommer binne en buite), skryf dit hier: dit word eerste probeer, selfs met UPnP. Leeg = poorte word outomaties gekies.",
+ "Le porte vanno da 1 a 65535.": "Poorte is van 1 tot 65535.",
+ "Porte salvate: le provo adesso. Il risultato è nel registro e nello stato qui sopra.": "Poorte gestoor: ek probeer hulle nou. Die resultaat is in die logboek en in die status hierbo.",
+ "Nessuna porta scelta: le porte si scelgono da sole.": "Geen poort gekies nie: poorte word outomaties gekies.",
+ "PORTE APERTE SUL ROUTER": "POORTE OOPGEMAAK OP DIE ROETEERDER",
+ "Porta 1": "Poort 1",
+ "Porta 2": "Poort 2"
 }

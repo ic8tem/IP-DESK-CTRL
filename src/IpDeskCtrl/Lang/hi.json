@@ -577,5 +577,14 @@
  "L'altro PC ha la versione {0}: gli chiedo di aggiornarsi alla {1} (tentativo {2} di 3)…": "दूसरे पीसी पर संस्करण {0} है: उसे {1} पर अपडेट होने को कह रहा हूँ (प्रयास {2} / 3)…",
  "L'altro PC non si è aggiornato: mi collego lo stesso con la sua versione.": "दूसरा पीसी अपडेट नहीं हुआ: फिर भी उसके संस्करण के साथ जुड़ रहा हूँ।",
  "{0} ha una versione più nuova: il servizio aggiorna IP-DESK-CTRL, il programma si chiude e si riapre.": "{0} के पास नया संस्करण है: सेवा IP-DESK-CTRL को अपडेट कर रही है, प्रोग्राम बंद होकर फिर खुलेगा।",
- "IMPOSTAZIONI": "सेटिंग्स"
+ "IMPOSTAZIONI": "सेटिंग्स",
+ "nessuna": "कोई नहीं",
+ "Usa queste porte": "ये पोर्ट इस्तेमाल करें",
+ "Se sul router hai aperto a mano una porta (inoltro TCP e UDP verso questo PC, stesso numero dentro e fuori), scrivila qui: si prova per prima, anche con l'UPnP. Vuoto = porte scelte da sole.": "अगर आपने राउटर पर हाथ से कोई पोर्ट खोला है (इस पीसी की ओर TCP और UDP फ़ॉरवर्डिंग, अंदर और बाहर एक ही नंबर), तो उसे यहाँ लिखें: उसे सबसे पहले आज़माया जाता है, UPnP के साथ भी। खाली = पोर्ट अपने आप चुने जाते हैं।",
+ "Le porte vanno da 1 a 65535.": "पोर्ट 1 से 65535 तक होते हैं।",
+ "Porte salvate: le provo adesso. Il risultato è nel registro e nello stato qui sopra.": "पोर्ट सहेजे गए: अभी आज़मा रहा हूँ। परिणाम लॉग में और ऊपर की स्थिति में है।",
+ "Nessuna porta scelta: le porte si scelgono da sole.": "कोई पोर्ट नहीं चुना: पोर्ट अपने आप चुने जाते हैं।",
+ "PORTE APERTE SUL ROUTER": "राउटर पर खोले गए पोर्ट",
+ "Porta 1": "पोर्ट 1",
+ "Porta 2": "पोर्ट 2"
 }

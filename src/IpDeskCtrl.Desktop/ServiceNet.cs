@@ -217,6 +217,10 @@ namespace IpDeskCtrl.Desktop
                             _s.Save();
                             SessionLog.Write("SERVIZIO password dell'accesso senza conferma " + (p[1] == "-" ? "tolta" : "aggiornata"));
                             break;
+                        case "PORTS" when p.Length >= 3 && _peer != null:
+                            int.TryParse(p[1], out int m1); int.TryParse(p[2], out int m2);
+                            if (m1 != _peer.S.ManualPort1 || m2 != _peer.S.ManualPort2) _peer.SetManualPorts(m1, m2);
+                            break;
                         case "MQTT" when p.Length >= 2 && _peer != null:
                         {
                             var list = p[1].Split(',', StringSplitOptions.RemoveEmptyEntries).ToList();

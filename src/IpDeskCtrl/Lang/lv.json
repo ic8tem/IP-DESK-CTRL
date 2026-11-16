@@ -577,5 +577,14 @@
  "L'altro PC ha la versione {0}: gli chiedo di aggiornarsi alla {1} (tentativo {2} di 3)…": "Otram datoram ir versija {0}: lūdzu to atjaunināt uz {1} (mēģinājums {2} no 3)…",
  "L'altro PC non si è aggiornato: mi collego lo stesso con la sua versione.": "Otrs dators netika atjaunināts: tomēr savienojos ar tā versiju.",
  "{0} ha una versione più nuova: il servizio aggiorna IP-DESK-CTRL, il programma si chiude e si riapre.": "{0} ir jaunāka versija: pakalpojums atjaunina IP-DESK-CTRL, programma aizveras un atveras no jauna.",
- "IMPOSTAZIONI": "IESTATĪJUMI"
+ "IMPOSTAZIONI": "IESTATĪJUMI",
+ "nessuna": "nav",
+ "Usa queste porte": "Izmantot šos portus",
+ "Se sul router hai aperto a mano una porta (inoltro TCP e UDP verso questo PC, stesso numero dentro e fuori), scrivila qui: si prova per prima, anche con l'UPnP. Vuoto = porte scelte da sole.": "Ja maršrutētājā portu atvēri manuāli (TCP un UDP pāradresācija uz šo datoru, tas pats numurs iekšā un ārā), ieraksti to šeit: to izmēģina pirmo, arī ar UPnP. Tukšs = porti tiek izvēlēti automātiski.",
+ "Le porte vanno da 1 a 65535.": "Porti ir no 1 līdz 65535.",
+ "Porte salvate: le provo adesso. Il risultato è nel registro e nello stato qui sopra.": "Porti saglabāti: tos tagad izmēģinu. Rezultāts ir žurnālā un statusā augstāk.",
+ "Nessuna porta scelta: le porte si scelgono da sole.": "Ports nav izvēlēts: porti tiek izvēlēti automātiski.",
+ "PORTE APERTE SUL ROUTER": "MARŠRUTĒTĀJĀ ATVĒRTIE PORTI",
+ "Porta 1": "Ports 1",
+ "Porta 2": "Ports 2"
 }

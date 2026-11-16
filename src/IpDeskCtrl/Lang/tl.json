@@ -577,5 +577,14 @@
  "L'altro PC ha la versione {0}: gli chiedo di aggiornarsi alla {1} (tentativo {2} di 3)…": "Ang kabilang PC ay may bersyong {0}: hinihiling kong mag-update ito sa {1} (pagsubok {2} sa 3)…",
  "L'altro PC non si è aggiornato: mi collego lo stesso con la sua versione.": "Hindi nag-update ang kabilang PC: kumokonekta pa rin gamit ang bersyon nito.",
  "{0} ha una versione più nuova: il servizio aggiorna IP-DESK-CTRL, il programma si chiude e si riapre.": "May mas bagong bersyon ang {0}: ina-update ng serbisyo ang IP-DESK-CTRL, magsasara at muling magbubukas ang programa.",
- "IMPOSTAZIONI": "MGA SETTING"
+ "IMPOSTAZIONI": "MGA SETTING",
+ "nessuna": "wala",
+ "Usa queste porte": "Gamitin ang mga port na ito",
+ "Se sul router hai aperto a mano una porta (inoltro TCP e UDP verso questo PC, stesso numero dentro e fuori), scrivila qui: si prova per prima, anche con l'UPnP. Vuoto = porte scelte da sole.": "Kung manwal kang nagbukas ng port sa router (TCP at UDP forwarding papunta sa PC na ito, parehong numero sa loob at labas), isulat ito rito: ito ang unang susubukan, kahit may UPnP. Walang laman = awtomatikong pinipili ang mga port.",
+ "Le porte vanno da 1 a 65535.": "Ang mga port ay mula 1 hanggang 65535.",
+ "Porte salvate: le provo adesso. Il risultato è nel registro e nello stato qui sopra.": "Na-save ang mga port: sinusubukan ko na ngayon. Ang resulta ay nasa log at sa status sa itaas.",
+ "Nessuna porta scelta: le porte si scelgono da sole.": "Walang napiling port: awtomatikong pinipili ang mga port.",
+ "PORTE APERTE SUL ROUTER": "MGA PORT NA BINUKSAN SA ROUTER",
+ "Porta 1": "Port 1",
+ "Porta 2": "Port 2"
 }

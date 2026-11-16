@@ -577,5 +577,14 @@
  "L'altro PC ha la versione {0}: gli chiedo di aggiornarsi alla {1} (tentativo {2} di 3)…": "Druhý počítač má verzi {0}: žádám ho o aktualizaci na {1} (pokus {2} ze 3)…",
  "L'altro PC non si è aggiornato: mi collego lo stesso con la sua versione.": "Druhý počítač se neaktualizoval: přesto se připojuji s jeho verzí.",
  "{0} ha una versione più nuova: il servizio aggiorna IP-DESK-CTRL, il programma si chiude e si riapre.": "{0} má novější verzi: služba aktualizuje IP-DESK-CTRL, program se zavře a znovu otevře.",
- "IMPOSTAZIONI": "NASTAVENÍ"
+ "IMPOSTAZIONI": "NASTAVENÍ",
+ "nessuna": "žádný",
+ "Usa queste porte": "Použít tyto porty",
+ "Se sul router hai aperto a mano una porta (inoltro TCP e UDP verso questo PC, stesso numero dentro e fuori), scrivila qui: si prova per prima, anche con l'UPnP. Vuoto = porte scelte da sole.": "Pokud jste na routeru ručně otevřeli port (přesměrování TCP a UDP na tento počítač, stejné číslo uvnitř i venku), zadejte ho sem: zkusí se jako první, i s UPnP. Prázdné = porty se volí automaticky.",
+ "Le porte vanno da 1 a 65535.": "Porty jsou v rozsahu 1 až 65535.",
+ "Porte salvate: le provo adesso. Il risultato è nel registro e nello stato qui sopra.": "Porty uloženy: zkouším je teď. Výsledek je v protokolu a ve stavu výše.",
+ "Nessuna porta scelta: le porte si scelgono da sole.": "Žádný port nevybrán: porty se volí automaticky.",
+ "PORTE APERTE SUL ROUTER": "PORTY OTEVŘENÉ NA ROUTERU",
+ "Porta 1": "Port 1",
+ "Porta 2": "Port 2"
 }

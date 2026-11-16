@@ -577,5 +577,14 @@
  "L'altro PC ha la versione {0}: gli chiedo di aggiornarsi alla {1} (tentativo {2} di 3)…": "Teisel arvutil on versioon {0}: palun tal uuendada versioonile {1} (katse {2}/3)…",
  "L'altro PC non si è aggiornato: mi collego lo stesso con la sua versione.": "Teine arvuti ei uuendanud: ühendan ikkagi tema versiooniga.",
  "{0} ha una versione più nuova: il servizio aggiorna IP-DESK-CTRL, il programma si chiude e si riapre.": "{0} on uuem versioon: teenus uuendab IP-DESK-CTRL-i, programm sulgub ja avaneb uuesti.",
- "IMPOSTAZIONI": "SEADED"
+ "IMPOSTAZIONI": "SEADED",
+ "nessuna": "puudub",
+ "Usa queste porte": "Kasuta neid porte",
+ "Se sul router hai aperto a mano una porta (inoltro TCP e UDP verso questo PC, stesso numero dentro e fuori), scrivila qui: si prova per prima, anche con l'UPnP. Vuoto = porte scelte da sole.": "Kui avasid ruuteris pordi käsitsi (TCP ja UDP suunamine sellesse arvutisse, sama number sees ja väljas), kirjuta see siia: seda proovitakse esimesena, ka UPnP-ga. Tühi = pordid valitakse automaatselt.",
+ "Le porte vanno da 1 a 65535.": "Pordid on vahemikus 1 kuni 65535.",
+ "Porte salvate: le provo adesso. Il risultato è nel registro e nello stato qui sopra.": "Pordid salvestatud: proovin neid kohe. Tulemus on logis ja ülal olekus.",
+ "Nessuna porta scelta: le porte si scelgono da sole.": "Porti pole valitud: pordid valitakse automaatselt.",
+ "PORTE APERTE SUL ROUTER": "RUUTERIS AVATUD PORDID",
+ "Porta 1": "Port 1",
+ "Porta 2": "Port 2"
 }

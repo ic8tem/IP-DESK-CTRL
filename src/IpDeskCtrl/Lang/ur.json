@@ -577,5 +577,14 @@
  "L'altro PC ha la versione {0}: gli chiedo di aggiornarsi alla {1} (tentativo {2} di 3)…": "دوسرے پی سی پر ورژن {0} ہے: اسے {1} پر اپ ڈیٹ ہونے کو کہہ رہا ہوں (کوشش {2} از 3)…",
  "L'altro PC non si è aggiornato: mi collego lo stesso con la sua versione.": "دوسرا پی سی اپ ڈیٹ نہیں ہوا: پھر بھی اس کے ورژن کے ساتھ جڑ رہا ہوں۔",
  "{0} ha una versione più nuova: il servizio aggiorna IP-DESK-CTRL, il programma si chiude e si riapre.": "{0} کے پاس نیا ورژن ہے: سروس IP-DESK-CTRL اپ ڈیٹ کر رہی ہے، پروگرام بند ہو کر دوبارہ کھلے گا۔",
- "IMPOSTAZIONI": "ترتیبات"
+ "IMPOSTAZIONI": "ترتیبات",
+ "nessuna": "کوئی نہیں",
+ "Usa queste porte": "یہ پورٹس استعمال کریں",
+ "Se sul router hai aperto a mano una porta (inoltro TCP e UDP verso questo PC, stesso numero dentro e fuori), scrivila qui: si prova per prima, anche con l'UPnP. Vuoto = porte scelte da sole.": "اگر آپ نے راؤٹر پر ہاتھ سے پورٹ کھولا ہے (اس پی سی کی طرف TCP اور UDP فارورڈنگ، اندر اور باہر ایک ہی نمبر)، تو اسے یہاں لکھیں: یہ سب سے پہلے آزمایا جاتا ہے، UPnP کے ساتھ بھی۔ خالی = پورٹس خود بخود منتخب ہوتے ہیں۔",
+ "Le porte vanno da 1 a 65535.": "پورٹس 1 سے 65535 تک ہوتے ہیں۔",
+ "Porte salvate: le provo adesso. Il risultato è nel registro e nello stato qui sopra.": "پورٹس محفوظ ہو گئے: ابھی آزما رہا ہوں۔ نتیجہ لاگ اور اوپر والی حالت میں ہے۔",
+ "Nessuna porta scelta: le porte si scelgono da sole.": "کوئی پورٹ منتخب نہیں: پورٹس خود بخود منتخب ہوتے ہیں۔",
+ "PORTE APERTE SUL ROUTER": "راؤٹر پر کھلے پورٹس",
+ "Porta 1": "پورٹ 1",
+ "Porta 2": "پورٹ 2"
 }

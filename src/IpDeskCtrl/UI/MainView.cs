@@ -270,6 +270,7 @@ namespace IpDeskCtrl.UI
                 Chk(L.T("Chi si collega può aprire tunnel di porte attraverso questo PC (rigctld, flrig, web della radio…)"), _s.AllowTunnel, v => _s.AllowTunnel = v),
                 LanguageRow(),
                 DockRow(),
+                PortsRow(),
                 BrokersRow(),
                 Chk(L.T("Aggiornamenti automatici: ogni 30 minuti cerca una nuova versione e la installa da sola (i collegamenti riprendono)"), _s.AutoUpdate, v => _s.AutoUpdate = v),
                 Chk(L.T("Mentre uno comanda, altri possono chiedere di guardare (solo visione, al massimo 4)"), _s.AllowObservers, v => _s.AllowObservers = v),
@@ -388,6 +389,7 @@ namespace IpDeskCtrl.UI
             });
             _svc.Lost += () => Dispatcher.UIThread.Post(() => { _svcHosts = 0; _incomingBanner.IsVisible = false; });
             _svc.SendSettings(_s.AcceptIncoming, _s.AllowInput, _s.ShareAudio);
+            _svc.Send($"PORTS {_s.ManualPort1} {_s.ManualPort2}");
             if (_s.PasswordHash.Length > 0) _svc.Send($"PWD {_s.PasswordSalt} {_s.PasswordHash} {_s.PasswordIterations}");
             _svc.Send("MQTT " + string.Join(",", _s.MqttBrokers));   // il servizio usa gli stessi broker del programma
             SessionLog.Write("SERVIZIO collegato: i collegamenti a questo PC li riceve il servizio di Windows");
@@ -800,6 +802,39 @@ namespace IpDeskCtrl.UI
         }
 
         /// <summary>Elenco dei broker MQTT per il ritrovo, modificabile: uno per riga, anche cifrati (mqtts://host:8883).</summary>
+        /// <summary>Due porte scelte dall'utente, da aprire a mano sul router (inoltro verso questo PC).</summary>
+        private Control PortsRow()
+        {
+            if (Platform.IsMobile) return new Panel();
+            TextBox Box(int v) => new TextBox { Text = v > 0 ? v.ToString() : "", Watermark = L.T("nessuna"), Width = 110 };
+            var a = Box(_s.ManualPort1);
+            var b = Box(_s.ManualPort2);
+            var save = Ui.Btn(L.T("Usa queste porte"));
+            var note = Ui.Sub(L.T("Se sul router hai aperto a mano una porta (inoltro TCP e UDP verso questo PC, stesso numero dentro e fuori), scrivila qui: si prova per prima, anche con l'UPnP. Vuoto = porte scelte da sole."), 12);
+            save.Click += (_, _) =>
+            {
+                int Read(TextBox t, out bool ok)
+                {
+                    string x = (t.Text ?? "").Trim();
+                    ok = true;
+                    if (x.Length == 0) return 0;
+                    if (int.TryParse(x, out int n) && n is >= 1 and <= 65535) return n;
+                    ok = false; return 0;
+                }
+                int p1 = Read(a, out bool ok1), p2 = Read(b, out bool ok2);
+                if (!ok1 || !ok2) { note.Text = L.T("Le porte vanno da 1 a 65535."); return; }
+                if (p1 == 0 && p2 > 0) { p1 = p2; p2 = 0; }
+                a.Text = p1 > 0 ? p1.ToString() : ""; b.Text = p2 > 0 && p2 != p1 ? p2.ToString() : "";
+                _peer.SetManualPorts(p1, p2);
+                _svc?.Send($"PORTS {p1} {p2}");
+                note.Text = p1 > 0 ? L.T("Porte salvate: le provo adesso. Il risultato è nel registro e nello stato qui sopra.") : L.T("Nessuna porta scelta: le porte si scelgono da sole.");
+            };
+            return Ui.Col(6, Ui.Lbl(L.T("PORTE APERTE SUL ROUTER")),
+                Ui.Row(10, new TextBlock { Text = L.T("Porta 1"), VerticalAlignment = VerticalAlignment.Center }, a,
+                           new TextBlock { Text = L.T("Porta 2"), VerticalAlignment = VerticalAlignment.Center }, b, save),
+                note);
+        }
+
         private Control BrokersRow()
         {
             var box = new TextBox

@@ -577,5 +577,14 @@
  "L'altro PC ha la versione {0}: gli chiedo di aggiornarsi alla {1} (tentativo {2} di 3)…": "The other PC has version {0}: asking it to update to {1} (attempt {2} of 3)…",
  "L'altro PC non si è aggiornato: mi collego lo stesso con la sua versione.": "The other PC did not update: connecting anyway with its version.",
  "{0} ha una versione più nuova: il servizio aggiorna IP-DESK-CTRL, il programma si chiude e si riapre.": "{0} has a newer version: the service is updating IP-DESK-CTRL, the program will close and reopen.",
- "IMPOSTAZIONI": "SETTINGS"
+ "IMPOSTAZIONI": "SETTINGS",
+ "nessuna": "none",
+ "Usa queste porte": "Use these ports",
+ "Se sul router hai aperto a mano una porta (inoltro TCP e UDP verso questo PC, stesso numero dentro e fuori), scrivila qui: si prova per prima, anche con l'UPnP. Vuoto = porte scelte da sole.": "If you opened a port by hand on the router (TCP and UDP forwarding to this PC, same number inside and outside), enter it here: it is tried first, even with UPnP. Empty = ports chosen automatically.",
+ "Le porte vanno da 1 a 65535.": "Ports range from 1 to 65535.",
+ "Porte salvate: le provo adesso. Il risultato è nel registro e nello stato qui sopra.": "Ports saved: trying them now. The result is in the log and in the status above.",
+ "Nessuna porta scelta: le porte si scelgono da sole.": "No port chosen: ports are chosen automatically.",
+ "PORTE APERTE SUL ROUTER": "PORTS OPENED ON THE ROUTER",
+ "Porta 1": "Port 1",
+ "Porta 2": "Port 2"
 }

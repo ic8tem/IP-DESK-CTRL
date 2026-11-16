@@ -577,5 +577,14 @@
  "L'altro PC ha la versione {0}: gli chiedo di aggiornarsi alla {1} (tentativo {2} di 3)…": "另一台电脑的版本为 {0}：正在请求其更新到 {1}（第 {2} 次，共 3 次）…",
  "L'altro PC non si è aggiornato: mi collego lo stesso con la sua versione.": "另一台电脑未更新：仍以其版本进行连接。",
  "{0} ha una versione più nuova: il servizio aggiorna IP-DESK-CTRL, il programma si chiude e si riapre.": "{0} 使用更新的版本：服务正在更新 IP-DESK-CTRL，程序将关闭并重新打开。",
- "IMPOSTAZIONI": "设置"
+ "IMPOSTAZIONI": "设置",
+ "nessuna": "无",
+ "Usa queste porte": "使用这些端口",
+ "Se sul router hai aperto a mano una porta (inoltro TCP e UDP verso questo PC, stesso numero dentro e fuori), scrivila qui: si prova per prima, anche con l'UPnP. Vuoto = porte scelte da sole.": "如果你在路由器上手动开放了端口（TCP 和 UDP 转发到这台电脑，内外端口号相同），请填在这里：即使有 UPnP 也会优先尝试。留空 = 自动选择端口。",
+ "Le porte vanno da 1 a 65535.": "端口范围为 1 到 65535。",
+ "Porte salvate: le provo adesso. Il risultato è nel registro e nello stato qui sopra.": "端口已保存：正在尝试。结果见日志和上方状态。",
+ "Nessuna porta scelta: le porte si scelgono da sole.": "未选择端口：端口将自动选择。",
+ "PORTE APERTE SUL ROUTER": "路由器上开放的端口",
+ "Porta 1": "端口 1",
+ "Porta 2": "端口 2"
 }

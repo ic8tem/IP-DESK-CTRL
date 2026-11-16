@@ -4,6 +4,7 @@
 Le versioni con protocollo diverso non si collegano tra loro: aggiorna tutti i dispositivi alla stessa versione principale (la 0.4.1 si collega con la 0.4.0; la 0.5 si collega con la 0.4).
 
 ## 0.5.17 — 16 novembre 2026
+- **Due porte scelte da te**: in Impostazioni › «Porte aperte sul router» si possono scrivere due porte aperte a mano sul router (inoltro TCP e UDP verso il PC, stesso numero dentro e fuori). Si provano per prime, anche con l'UPnP; vale la prima raggiungibile da internet. Con il servizio di Windows le apre il servizio.
 - **Tipo di NAT riconosciuto meglio**: per capire se il NAT è «a cono» (perforabile) o simmetrico si interrogavano due server STUN di Google che a volte hanno lo stesso indirizzo, e così un NAT simmetrico (frequente con le chiavette e i router 4G/5G) sembrava «a cono», la previsione della porta non partiva e la perforazione UDP falliva. Ora il secondo server è di un altro gestore (Cloudflare) e due server con lo stesso indirizzo non valgono come due prove.
 - **Porte che rispondono ma non sono del programma**: se i servizi di verifica trovano la porta aperta ma al programma non arriva nessun collegamento, a rispondere è un altro apparecchio (spesso la pagina del router sulla porta 80 o 443): la porta ora si considera chiusa, invece di mandare l'altro PC a bussare alla porta sbagliata.
 

@@ -577,5 +577,14 @@
  "L'altro PC ha la versione {0}: gli chiedo di aggiornarsi alla {1} (tentativo {2} di 3)…": "Hin tölvan er með útgáfu {0}: bið hana að uppfæra í {1} (tilraun {2} af 3)…",
  "L'altro PC non si è aggiornato: mi collego lo stesso con la sua versione.": "Hin tölvan uppfærðist ekki: tengist samt með hennar útgáfu.",
  "{0} ha una versione più nuova: il servizio aggiorna IP-DESK-CTRL, il programma si chiude e si riapre.": "{0} er með nýrri útgáfu: þjónustan uppfærir IP-DESK-CTRL, forritið lokast og opnast aftur.",
- "IMPOSTAZIONI": "STILLINGAR"
+ "IMPOSTAZIONI": "STILLINGAR",
+ "nessuna": "engin",
+ "Usa queste porte": "Nota þessi tengi",
+ "Se sul router hai aperto a mano una porta (inoltro TCP e UDP verso questo PC, stesso numero dentro e fuori), scrivila qui: si prova per prima, anche con l'UPnP. Vuoto = porte scelte da sole.": "Ef þú opnaðir tengi handvirkt á beininum (TCP- og UDP-áframsending á þessa tölvu, sama númer innan og utan), skrifaðu það hér: það er prófað fyrst, líka með UPnP. Autt = tengi valin sjálfkrafa.",
+ "Le porte vanno da 1 a 65535.": "Tengi eru frá 1 til 65535.",
+ "Porte salvate: le provo adesso. Il risultato è nel registro e nello stato qui sopra.": "Tengi vistuð: prófa þau núna. Niðurstaðan er í skránni og í stöðunni hér að ofan.",
+ "Nessuna porta scelta: le porte si scelgono da sole.": "Ekkert tengi valið: tengi eru valin sjálfkrafa.",
+ "PORTE APERTE SUL ROUTER": "TENGI OPNUÐ Á BEININUM",
+ "Porta 1": "Tengi 1",
+ "Porta 2": "Tengi 2"
 }
