@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.github.ic8tem.IpDeskCtrl</id>
+  <name>IP-DESK-CTRL</name>
+  <summary>Encrypted remote desktop with a fixed 10-digit number</summary>
+  <summary xml:lang="it">Desktop remoto cifrato con numero fisso di 10 cifre</summary>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0-or-later</project_license>
+  <developer id="io.github.ic8tem">
+    <name>Costantino Cerrotta (IC8TEM)</name>
+  </developer>
+  <description>
+    <p>
+      IP-DESK-CTRL lets you see and control another computer (Linux, Windows, macOS, Raspberry Pi or Android)
+      using a fixed 10-digit number, with end-to-end AES-256-GCM encryption. No account and no relay server:
+      the two computers find each other through public MQTT brokers and connect directly.
+    </p>
+    <p>Features:</p>
+    <ul>
+      <li>Direct connection with UPnP/NAT-PMP port opening, reverse connection and UDP hole punching</li>
+      <li>Compressed video (H.264, H.265, AV1) or JPEG tiles, multiple monitors</li>
+      <li>System audio, clipboard and file transfer</li>
+      <li>Unattended access with password for trusted numbers</li>
+      <li>Port tunnels and 36 interface languages</li>
+    </ul>
+    <p>
+      On Linux the remote screen is captured and controlled in X11 sessions.
+    </p>
+  </description>
+  <description xml:lang="it">
+    <p>
+      IP-DESK-CTRL permette di vedere e comandare un altro computer (Linux, Windows, macOS, Raspberry Pi o Android)
+      con un numero fisso di 10 cifre e cifratura AES-256-GCM da un capo all'altro. Niente account e niente server
+      intermedi: i due computer si ritrovano sui broker MQTT pubblici e si collegano direttamente.
+    </p>
+  </description>
+  <launchable type="desktop-id">io.github.ic8tem.IpDeskCtrl.desktop</launchable>
+  <url type="homepage">https://github.com/ic8tem/IP-DESK-CTRL</url>
+  <url type="bugtracker">https://github.com/ic8tem/IP-DESK-CTRL/issues</url>
+  <url type="help">https://github.com/ic8tem/IP-DESK-CTRL/wiki</url>
+  <url type="vcs-browser">https://github.com/ic8tem/IP-DESK-CTRL</url>
+  <url type="donation">https://ko-fi.com/ic8tem</url>
+  <screenshots>
+    <screenshot type="default">
+      <caption>Main window with the number of this computer and the connection history</caption>
+      <image>https://raw.githubusercontent.com/ic8tem/IP-DESK-CTRL/main/docs/screenshots/main-window.png</image>
+    </screenshot>
+  </screenshots>
+  <branding>
+    <color type="primary" scheme_preference="light">#9fc5e8</color>
+    <color type="primary" scheme_preference="dark">#1c3d5a</color>
+  </branding>
+  <content_rating type="oars-1.1"/>
+  <supports>
+    <control>pointing</control>
+    <control>keyboard</control>
+  </supports>
+  <releases>
+    <!-- RELEASES -->
+  </releases>
+</component>

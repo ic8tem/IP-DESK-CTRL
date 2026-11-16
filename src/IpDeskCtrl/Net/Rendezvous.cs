@@ -180,7 +180,7 @@ namespace IpDeskCtrl.Net
     /// </summary>
     public sealed record Note(byte Type, byte[] SenderKey, long Ticks, byte[] Data)
     {
-        public const byte UdpOffer = 3, UdpAnswer = 4, WakeRequest = 5, UpdateRequest = 6;
+        public const byte UdpOffer = 3, UdpAnswer = 4, WakeRequest = 5, UpdateRequest = 6, UpdateRefused = 7;
 
         public string SenderNumber => Identity.NumberOf(SenderKey);
         public bool Fresh => Math.Abs((DateTime.UtcNow - new DateTime(Math.Clamp(Ticks, DateTime.MinValue.Ticks, DateTime.MaxValue.Ticks), DateTimeKind.Utc)).TotalMinutes) <= 3;

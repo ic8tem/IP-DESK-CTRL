@@ -48,7 +48,7 @@ License: GPL-3.0-or-later
 LicenseUrl: https://github.com/ic8tem/IP-DESK-CTRL/blob/main/LICENSE
 ShortDescription: Desktop remoto cifrato con numero fisso di 10 cifre
 Description: Vedi e comanda un altro PC (Windows, macOS, Linux, Raspberry Pi, Android) con cifratura AES-256-GCM. Ritrovo sui broker MQTT, porte aperte con UPnP, collegamento inverso e UDP.
-Tags: [remote-desktop, desktop-remoto, ham-radio, rigctld]
+Tags: [remote-desktop, desktop-remoto, remote-control, screen-sharing, vnc]
 ReleaseNotesUrl: https://github.com/ic8tem/IP-DESK-CTRL/wiki/Storia-delle-versioni
 ManifestType: defaultLocale
 ManifestVersion: 1.6.0

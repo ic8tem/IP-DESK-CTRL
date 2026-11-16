@@ -356,6 +356,7 @@ namespace IpDeskCtrl.UI
                 _peer.HostStarted += hs => Dispatcher.UIThread.Post(() => OnHostStarted(hs));
                 _peer.HostEnded += (hs, why) => Dispatcher.UIThread.Post(() => OnHostEnded(hs, why));
                 _peer.UpdateRequested += n => _ = ForcedUpdateAsync(n);
+                { var k = Updater.Detect(); _peer.CanUpdateSelf = k != Updater.Kind.None && k != Updater.Kind.Android; }
                 _peer.Start();
                 _ = PresenceLoopAsync();
                 _ = UpdateCheck.LoopAsync(r => Dispatcher.UIThread.Post(() => ShowUpdate(r)), _life.Token);
@@ -850,6 +851,8 @@ namespace IpDeskCtrl.UI
 
         private void ShowUpdate(ReleaseInfo r)
         {
+            if (Updater.IsFlathub) return;     // gli aggiornamenti li porta Flathub
+
             bool newOne = _latest?.Version != r.Version;
             _latest = r;
             _newVersion.Content = L.F("Nuova versione {0}", r.Version);

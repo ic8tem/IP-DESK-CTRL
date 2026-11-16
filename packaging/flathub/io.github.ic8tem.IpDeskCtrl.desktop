@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=IP-DESK-CTRL
+Comment=Encrypted remote desktop: see and control another PC with a fixed 10-digit number
+Comment[it]=Desktop remoto cifrato: vedi e comanda un altro PC con un numero fisso di 10 cifre
+Exec=ip-desk-ctrl
+Icon=io.github.ic8tem.IpDeskCtrl
+Terminal=false
+Categories=Network;RemoteAccess;
+Keywords=remote;desktop;vnc;control;screen;
+StartupWMClass=IP-DESK-CTRL

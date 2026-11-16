@@ -481,12 +481,23 @@ namespace IpDeskCtrl.Core
                     case Note.UpdateRequest:
                         // un PC con una versione più nuova vuole collegarsi: si aggiorna (al massimo una volta ogni 2 minuti;
                         // installa solo la versione pubblicata su GitHub, con l'impronta verificata come sempre)
-                        if (!ViewerOnly && DateTime.UtcNow - _lastUpdateAsk > TimeSpan.FromMinutes(2))
+                        if (!ViewerOnly && !CanUpdateSelf)
+                        {
+                            // qui l'aggiornamento non si installa da solo (Flathub, Android…): lo si dice subito, così
+                            // l'altro PC non aspetta minuti per niente
+                            Log($"AGGIORNAMENTI {Identity.Format(note.SenderNumber)} chiede di aggiornare questo PC, ma qui non si aggiorna da solo");
+                            var r = _rdv;
+                            if (r != null) _ = r.SendNoteAsync(note.SenderNumber, Note.UpdateRefused, Array.Empty<byte>(), CancellationToken.None);
+                        }
+                        else if (!ViewerOnly && DateTime.UtcNow - _lastUpdateAsk > TimeSpan.FromMinutes(2))
                         {
                             _lastUpdateAsk = DateTime.UtcNow;
                             Log($"AGGIORNAMENTI {Identity.Format(note.SenderNumber)} chiede di aggiornare questo PC prima di collegarsi");
                             UpdateRequested?.Invoke(note.SenderNumber);
                         }
+                        break;
+                    case Note.UpdateRefused:
+                        _updateRefused[note.SenderNumber] = DateTime.UtcNow;
                         break;
                     case Note.UdpAnswer:
                     {
@@ -506,6 +517,10 @@ namespace IpDeskCtrl.Core
 
         private readonly ConcurrentDictionary<string, Net.Announce> _lastSeen = new();
         private DateTime _lastUpdateAsk = DateTime.MinValue;
+        private readonly ConcurrentDictionary<string, DateTime> _updateRefused = new();
+
+        /// <summary>false dove l'aggiornamento non si installa da solo: alla richiesta si risponde subito di no.</summary>
+        public bool CanUpdateSelf { get; set; } = true;
 
         /// <summary>Un visore con una versione più nuova chiede a questo PC di aggiornarsi (numero del visore).</summary>
         public event Action<string>? UpdateRequested;
@@ -521,14 +536,15 @@ namespace IpDeskCtrl.Core
             if (rdv == null || !IsOlder(a.Version)) return a;
             // prima della 0.5.15 la richiesta non si capisce: inutile aspettare minuti
             bool understands = System.Version.TryParse(AppVersion.Parse(a.Version).version, out var rv) && rv >= new System.Version(0, 5, 15);
-            for (int attempt = 1; attempt <= 3 && !ct.IsCancellationRequested; attempt++)
+            _updateRefused.TryRemove(number, out _);
+            for (int attempt = 1; attempt <= 3 && !ct.IsCancellationRequested && !_updateRefused.ContainsKey(number); attempt++)
             {
                 string old = AppVersion.Parse(a.Version).version;
                 progress(L.F("L'altro PC ha la versione {0}: gli chiedo di aggiornarsi alla {1} (tentativo {2} di 3)…", old, AppVersion.Text, attempt));
                 int sent = await rdv.SendNoteAsync(number, Note.UpdateRequest, Array.Empty<byte>(), ct);
                 Log($"AGGIORNAMENTI {Identity.Format(number)} ha la {old}: richiesta di aggiornamento {attempt}/3 consegnata a {sent} broker");
                 var until = DateTime.UtcNow + TimeSpan.FromSeconds(understands ? 150 : 2);
-                while (DateTime.UtcNow < until && !ct.IsCancellationRequested)
+                while (DateTime.UtcNow < until && !ct.IsCancellationRequested && !_updateRefused.ContainsKey(number))
                 {
                     await Task.Delay(TimeSpan.FromSeconds(understands ? 6 : 2), ct);
                     var b = await ViewerRendezvous.LookupAsync(number, S.MqttBrokers, null, ct);
@@ -541,7 +557,10 @@ namespace IpDeskCtrl.Core
                     }
                 }
             }
-            Log($"AGGIORNAMENTI {Identity.Format(number)} non si è aggiornato dopo 3 richieste: mi collego lo stesso");
+            if (_updateRefused.ContainsKey(number))
+                Log($"AGGIORNAMENTI {Identity.Format(number)} risponde che non può aggiornarsi da solo: mi collego lo stesso");
+            else
+                Log($"AGGIORNAMENTI {Identity.Format(number)} non si è aggiornato dopo 3 richieste: mi collego lo stesso");
             progress(L.T("L'altro PC non si è aggiornato: mi collego lo stesso con la sua versione."));
             return (await ViewerRendezvous.LookupAsync(number, S.MqttBrokers, null, ct)) ?? a;
         }

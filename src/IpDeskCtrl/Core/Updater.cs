@@ -39,6 +39,7 @@ namespace IpDeskCtrl.Core
             if (OperatingSystem.IsMacOS()) return exe.Contains(".app/Contents/MacOS/") ? Kind.MacApp : Kind.None;
             if (OperatingSystem.IsLinux())
             {
+                if (IsFlathub) return Kind.None;          // da Flathub: aggiorna Flathub (Software, Discover, flatpak update)
                 if (IsFlatpak) return Kind.LinuxFlatpak;
                 if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("APPIMAGE"))) return Kind.LinuxAppImage;
                 if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("SNAP")) && exe.StartsWith("/snap/")) return Kind.LinuxSnap;
@@ -54,6 +55,8 @@ namespace IpDeskCtrl.Core
         }
 
         public const string FlatpakId = "io.github.ic8tem.IpDeskCtrl";
+        /// <summary>Installato da Flathub (il manifest di Flathub imposta IPDESKCTRL_FLATHUB=1).</summary>
+        public static bool IsFlathub => IsFlatpak && Environment.GetEnvironmentVariable("IPDESKCTRL_FLATHUB") == "1";
         private static bool IsFlatpak => Environment.GetEnvironmentVariable("FLATPAK_ID") == FlatpakId;
 
         /// <summary>Script di aggiornamento dei pacchetti Linux che polkit lascia girare senza password.</summary>
