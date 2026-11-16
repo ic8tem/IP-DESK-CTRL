@@ -199,8 +199,12 @@ namespace IpDeskCtrl.Core
             if (!_pm.UpnpAvailable) await _pm.DiscoverAsync(ct);
             _publicIp = _pm.ExternalIp ?? await PortManager.GetPublicIpAsync(ct);
             bool upnp = _pm.UpnpAvailable;
+            // doppio NAT / CGNAT: il router di casa apre la porta, ma davanti c'è un altro router che la blocca.
+            // Provare altre porte non serve (e fa rifiutare le verifiche esterne per troppe richieste): una sola.
+            bool doubleNat = upnp && _pm.CgnatSuspected;
+            if (doubleNat) Log("PORTE doppio NAT o CGNAT: provo una sola porta; se non è raggiungibile restano rete locale, collegamento inverso e UDP");
 
-            if (preferred is { Count: > 0 } && upnp)
+            if (preferred is { Count: > 0 } && upnp && !doubleNat)
             {
                 foreach (int ext in preferred)
                 {
@@ -217,7 +221,7 @@ namespace IpDeskCtrl.Core
                 Log("PORTE nessuna delle porte richieste dal visore è apribile: torno a una porta casuale");
             }
 
-            int tries = upnp ? 6 : 1;
+            int tries = upnp && !doubleNat ? 6 : 1;
             for (int i = 1; i <= tries && !ct.IsCancellationRequested; i++)
             {
                 int p = upnp ? await _pm.OpenRandomPortAsync("IP-DESK-CTRL", ct) : _pm.PickLocalPort();
