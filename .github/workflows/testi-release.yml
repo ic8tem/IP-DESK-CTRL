@@ -1,0 +1,16 @@
+# Mette la tabella dei file con i collegamenti in cima al testo di tutte le release già pubblicate.
+# Si lancia a mano: Actions › Testi delle release › Run workflow.
+name: Testi delle release
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  testi:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Aggiorna i testi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python3 packaging/release/aggiorna-testi.py
