@@ -577,5 +577,14 @@
  "L'altro PC ha la versione {0}: gli chiedo di aggiornarsi alla {1} (tentativo {2} di 3)…": "Ο άλλος υπολογιστής έχει την έκδοση {0}: του ζητώ να ενημερωθεί στην {1} (προσπάθεια {2} από 3)…",
  "L'altro PC non si è aggiornato: mi collego lo stesso con la sua versione.": "Ο άλλος υπολογιστής δεν ενημερώθηκε: συνδέομαι παρ' όλα αυτά με την έκδοσή του.",
  "{0} ha una versione più nuova: il servizio aggiorna IP-DESK-CTRL, il programma si chiude e si riapre.": "Ο {0} έχει νεότερη έκδοση: η υπηρεσία ενημερώνει το IP-DESK-CTRL, το πρόγραμμα κλείνει και ανοίγει ξανά.",
- "IMPOSTAZIONI": "ΡΥΘΜΙΣΕΙΣ"
+ "IMPOSTAZIONI": "ΡΥΘΜΙΣΕΙΣ",
+ "nessuna": "καμία",
+ "Usa queste porte": "Χρήση αυτών των θυρών",
+ "Se sul router hai aperto a mano una porta (inoltro TCP e UDP verso questo PC, stesso numero dentro e fuori), scrivila qui: si prova per prima, anche con l'UPnP. Vuoto = porte scelte da sole.": "Αν άνοιξες χειροκίνητα μια θύρα στον δρομολογητή (προώθηση TCP και UDP σε αυτόν τον υπολογιστή, ίδιος αριθμός μέσα και έξω), γράψε την εδώ: δοκιμάζεται πρώτη, ακόμη και με UPnP. Κενό = οι θύρες επιλέγονται αυτόματα.",
+ "Le porte vanno da 1 a 65535.": "Οι θύρες είναι από 1 έως 65535.",
+ "Porte salvate: le provo adesso. Il risultato è nel registro e nello stato qui sopra.": "Οι θύρες αποθηκεύτηκαν: τις δοκιμάζω τώρα. Το αποτέλεσμα είναι στο αρχείο καταγραφής και στην κατάσταση παραπάνω.",
+ "Nessuna porta scelta: le porte si scelgono da sole.": "Δεν επιλέχθηκε θύρα: οι θύρες επιλέγονται αυτόματα.",
+ "PORTE APERTE SUL ROUTER": "ΘΥΡΕΣ ΑΝΟΙΧΤΕΣ ΣΤΟΝ ΔΡΟΜΟΛΟΓΗΤΗ",
+ "Porta 1": "Θύρα 1",
+ "Porta 2": "Θύρα 2"
 }

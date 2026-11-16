@@ -30,3 +30,7 @@ Non serve quasi mai. Se vuoi farlo, guarda nel `sessioni.log` la porta scelta da
 ### L'UPnP risponde ma le porte restano chiuse
 
 Se nel registro compare «l'UPnP l'ha aperta un altro apparecchio della rete», il «router» trovato non è quello che porta a internet: il suo IP esterno sta nella stessa rete del PC (per esempio 192.168.1.157 con il PC a 192.168.1.186). Di solito è un ripetitore o un nodo mesh in modalità router, un decoder o un secondo router collegato in cascata. Rimedi: attivare l'UPnP sul router principale (di solito `http://192.168.1.1` o `http://192.168.0.1`), oppure mettere quell'apparecchio in modalità «access point» o «bridge».
+
+### Porte aperte a mano
+
+Se l'UPnP non c'è o non funziona, apri sul router una o due porte (inoltro TCP e UDP verso l'indirizzo locale del PC, stesso numero dentro e fuori, per esempio 47000) e scrivile in Impostazioni › «Porte aperte sul router». Il programma le prova per prime e controlla da internet che portino davvero a lui; il risultato è nel registro («uso la porta scelta…» oppure «non è raggiungibile: controlla l'inoltro»).

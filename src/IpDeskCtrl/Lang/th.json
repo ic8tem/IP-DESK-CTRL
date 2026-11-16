@@ -577,5 +577,14 @@
  "L'altro PC ha la versione {0}: gli chiedo di aggiornarsi alla {1} (tentativo {2} di 3)…": "พีซีอีกเครื่องใช้เวอร์ชัน {0}: กำลังขอให้อัปเดตเป็น {1} (ครั้งที่ {2} จาก 3)…",
  "L'altro PC non si è aggiornato: mi collego lo stesso con la sua versione.": "พีซีอีกเครื่องไม่ได้อัปเดต: เชื่อมต่อด้วยเวอร์ชันของมันต่อไป",
  "{0} ha una versione più nuova: il servizio aggiorna IP-DESK-CTRL, il programma si chiude e si riapre.": "{0} มีเวอร์ชันที่ใหม่กว่า: บริการกำลังอัปเดต IP-DESK-CTRL โปรแกรมจะปิดแล้วเปิดใหม่",
- "IMPOSTAZIONI": "การตั้งค่า"
+ "IMPOSTAZIONI": "การตั้งค่า",
+ "nessuna": "ไม่มี",
+ "Usa queste porte": "ใช้พอร์ตเหล่านี้",
+ "Se sul router hai aperto a mano una porta (inoltro TCP e UDP verso questo PC, stesso numero dentro e fuori), scrivila qui: si prova per prima, anche con l'UPnP. Vuoto = porte scelte da sole.": "หากคุณเปิดพอร์ตบนเราเตอร์เอง (ส่งต่อ TCP และ UDP มาที่พีซีนี้ หมายเลขเดียวกันทั้งภายในและภายนอก) ให้ใส่ที่นี่: จะลองพอร์ตนี้ก่อน แม้มี UPnP ว่าง = เลือกพอร์ตอัตโนมัติ",
+ "Le porte vanno da 1 a 65535.": "พอร์ตมีค่าตั้งแต่ 1 ถึง 65535",
+ "Porte salvate: le provo adesso. Il risultato è nel registro e nello stato qui sopra.": "บันทึกพอร์ตแล้ว: กำลังลองตอนนี้ ผลลัพธ์อยู่ในบันทึกและในสถานะด้านบน",
+ "Nessuna porta scelta: le porte si scelgono da sole.": "ไม่ได้เลือกพอร์ต: เลือกพอร์ตอัตโนมัติ",
+ "PORTE APERTE SUL ROUTER": "พอร์ตที่เปิดบนเราเตอร์",
+ "Porta 1": "พอร์ต 1",
+ "Porta 2": "พอร์ต 2"
 }

@@ -577,5 +577,14 @@
  "L'altro PC ha la versione {0}: gli chiedo di aggiornarsi alla {1} (tentativo {2} di 3)…": "다른 PC의 버전은 {0}입니다: {1}(으)로 업데이트하도록 요청하는 중 (시도 {2}/3)…",
  "L'altro PC non si è aggiornato: mi collego lo stesso con la sua versione.": "다른 PC가 업데이트되지 않았습니다: 해당 버전으로 그대로 연결합니다.",
  "{0} ha una versione più nuova: il servizio aggiorna IP-DESK-CTRL, il programma si chiude e si riapre.": "{0}에 더 새로운 버전이 있습니다: 서비스가 IP-DESK-CTRL을 업데이트하며, 프로그램이 닫혔다가 다시 열립니다.",
- "IMPOSTAZIONI": "설정"
+ "IMPOSTAZIONI": "설정",
+ "nessuna": "없음",
+ "Usa queste porte": "이 포트 사용",
+ "Se sul router hai aperto a mano una porta (inoltro TCP e UDP verso questo PC, stesso numero dentro e fuori), scrivila qui: si prova per prima, anche con l'UPnP. Vuoto = porte scelte da sole.": "라우터에서 직접 포트를 열었다면(이 PC로 TCP·UDP 포워딩, 안팎 같은 번호) 여기에 입력하세요: UPnP가 있어도 먼저 시도합니다. 비워 두면 포트를 자동으로 선택합니다.",
+ "Le porte vanno da 1 a 65535.": "포트는 1부터 65535까지입니다.",
+ "Porte salvate: le provo adesso. Il risultato è nel registro e nello stato qui sopra.": "포트를 저장했습니다: 지금 시도합니다. 결과는 로그와 위의 상태에 표시됩니다.",
+ "Nessuna porta scelta: le porte si scelgono da sole.": "선택한 포트가 없습니다: 포트를 자동으로 선택합니다.",
+ "PORTE APERTE SUL ROUTER": "라우터에서 연 포트",
+ "Porta 1": "포트 1",
+ "Porta 2": "포트 2"
 }

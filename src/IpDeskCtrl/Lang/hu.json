@@ -577,5 +577,14 @@
  "L'altro PC ha la versione {0}: gli chiedo di aggiornarsi alla {1} (tentativo {2} di 3)…": "A másik gép verziója {0}: kérem, frissüljön a {1} verzióra ({2}/3. próbálkozás)…",
  "L'altro PC non si è aggiornato: mi collego lo stesso con la sua versione.": "A másik gép nem frissült: ennek ellenére csatlakozom az ő verziójával.",
  "{0} ha una versione più nuova: il servizio aggiorna IP-DESK-CTRL, il programma si chiude e si riapre.": "{0} újabb verziót használ: a szolgáltatás frissíti az IP-DESK-CTRL-t, a program bezárul és újra megnyílik.",
- "IMPOSTAZIONI": "BEÁLLÍTÁSOK"
+ "IMPOSTAZIONI": "BEÁLLÍTÁSOK",
+ "nessuna": "nincs",
+ "Usa queste porte": "Ezeket a portokat használd",
+ "Se sul router hai aperto a mano una porta (inoltro TCP e UDP verso questo PC, stesso numero dentro e fuori), scrivila qui: si prova per prima, anche con l'UPnP. Vuoto = porte scelte da sole.": "Ha kézzel nyitottál portot a routeren (TCP és UDP továbbítás erre a gépre, kívül-belül ugyanazzal a számmal), írd be ide: elsőként ezt próbálja, UPnP mellett is. Üres = a portok automatikusan választódnak.",
+ "Le porte vanno da 1 a 65535.": "A portok 1 és 65535 között lehetnek.",
+ "Porte salvate: le provo adesso. Il risultato è nel registro e nello stato qui sopra.": "Portok mentve: most kipróbálom őket. Az eredmény a naplóban és a fenti állapotban látható.",
+ "Nessuna porta scelta: le porte si scelgono da sole.": "Nincs kiválasztott port: a portok automatikusan választódnak.",
+ "PORTE APERTE SUL ROUTER": "A ROUTEREN MEGNYITOTT PORTOK",
+ "Porta 1": "1. port",
+ "Porta 2": "2. port"
 }

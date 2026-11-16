@@ -577,5 +577,14 @@
  "L'altro PC ha la versione {0}: gli chiedo di aggiornarsi alla {1} (tentativo {2} di 3)…": "相手の PC はバージョン {0} です：{1} への更新を依頼しています（{2} / 3 回目）…",
  "L'altro PC non si è aggiornato: mi collego lo stesso con la sua versione.": "相手の PC は更新されませんでした：そのバージョンのまま接続します。",
  "{0} ha una versione più nuova: il servizio aggiorna IP-DESK-CTRL, il programma si chiude e si riapre.": "{0} は新しいバージョンです：サービスが IP-DESK-CTRL を更新しています。プログラムは閉じて再び開きます。",
- "IMPOSTAZIONI": "設定"
+ "IMPOSTAZIONI": "設定",
+ "nessuna": "なし",
+ "Usa queste porte": "これらのポートを使う",
+ "Se sul router hai aperto a mano una porta (inoltro TCP e UDP verso questo PC, stesso numero dentro e fuori), scrivila qui: si prova per prima, anche con l'UPnP. Vuoto = porte scelte da sole.": "ルーターで手動でポートを開けた場合（この PC への TCP と UDP の転送、内外とも同じ番号）、ここに入力してください：UPnP があっても最初に試します。空欄 = ポートは自動で選ばれます。",
+ "Le porte vanno da 1 a 65535.": "ポートは 1 から 65535 までです。",
+ "Porte salvate: le provo adesso. Il risultato è nel registro e nello stato qui sopra.": "ポートを保存しました：今から試します。結果はログと上の状態に表示されます。",
+ "Nessuna porta scelta: le porte si scelgono da sole.": "ポートが選ばれていません：ポートは自動で選ばれます。",
+ "PORTE APERTE SUL ROUTER": "ルーターで開けたポート",
+ "Porta 1": "ポート 1",
+ "Porta 2": "ポート 2"
 }

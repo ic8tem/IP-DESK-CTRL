@@ -577,5 +577,14 @@
  "L'altro PC ha la versione {0}: gli chiedo di aggiornarsi alla {1} (tentativo {2} di 3)…": "Den andre PC-en har versjon {0}: ber den oppdatere til {1} (forsøk {2} av 3)…",
  "L'altro PC non si è aggiornato: mi collego lo stesso con la sua versione.": "Den andre PC-en ble ikke oppdatert: kobler til likevel med dens versjon.",
  "{0} ha una versione più nuova: il servizio aggiorna IP-DESK-CTRL, il programma si chiude e si riapre.": "{0} har en nyere versjon: tjenesten oppdaterer IP-DESK-CTRL, programmet lukkes og åpnes igjen.",
- "IMPOSTAZIONI": "INNSTILLINGER"
+ "IMPOSTAZIONI": "INNSTILLINGER",
+ "nessuna": "ingen",
+ "Usa queste porte": "Bruk disse portene",
+ "Se sul router hai aperto a mano una porta (inoltro TCP e UDP verso questo PC, stesso numero dentro e fuori), scrivila qui: si prova per prima, anche con l'UPnP. Vuoto = porte scelte da sole.": "Hvis du har åpnet en port manuelt i ruteren (TCP- og UDP-videresending til denne PC-en, samme nummer inne og ute), skriv den her: den prøves først, også med UPnP. Tomt = porter velges automatisk.",
+ "Le porte vanno da 1 a 65535.": "Porter går fra 1 til 65535.",
+ "Porte salvate: le provo adesso. Il risultato è nel registro e nello stato qui sopra.": "Porter lagret: prøver dem nå. Resultatet står i loggen og i statusen over.",
+ "Nessuna porta scelta: le porte si scelgono da sole.": "Ingen port valgt: porter velges automatisk.",
+ "PORTE APERTE SUL ROUTER": "PORTER ÅPNET I RUTEREN",
+ "Porta 1": "Port 1",
+ "Porta 2": "Port 2"
 }

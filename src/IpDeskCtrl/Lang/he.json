@@ -577,5 +577,14 @@
  "L'altro PC ha la versione {0}: gli chiedo di aggiornarsi alla {1} (tentativo {2} di 3)…": "במחשב השני גרסה {0}: מבקש ממנו להתעדכן ל-{1} (ניסיון {2} מתוך 3)…",
  "L'altro PC non si è aggiornato: mi collego lo stesso con la sua versione.": "המחשב השני לא התעדכן: מתחבר בכל זאת עם הגרסה שלו.",
  "{0} ha una versione più nuova: il servizio aggiorna IP-DESK-CTRL, il programma si chiude e si riapre.": "ל-{0} יש גרסה חדשה יותר: השירות מעדכן את IP-DESK-CTRL, התוכנית תיסגר ותיפתח מחדש.",
- "IMPOSTAZIONI": "הגדרות"
+ "IMPOSTAZIONI": "הגדרות",
+ "nessuna": "אין",
+ "Usa queste porte": "השתמש ביציאות אלה",
+ "Se sul router hai aperto a mano una porta (inoltro TCP e UDP verso questo PC, stesso numero dentro e fuori), scrivila qui: si prova per prima, anche con l'UPnP. Vuoto = porte scelte da sole.": "אם פתחת יציאה ידנית בנתב (הפניית TCP ו-UDP למחשב הזה, אותו מספר בפנים ובחוץ), כתוב אותה כאן: היא נבדקת ראשונה, גם עם UPnP. ריק = היציאות נבחרות אוטומטית.",
+ "Le porte vanno da 1 a 65535.": "היציאות הן מ-1 עד 65535.",
+ "Porte salvate: le provo adesso. Il risultato è nel registro e nello stato qui sopra.": "היציאות נשמרו: בודק אותן עכשיו. התוצאה ביומן ובמצב שלמעלה.",
+ "Nessuna porta scelta: le porte si scelgono da sole.": "לא נבחרה יציאה: היציאות נבחרות אוטומטית.",
+ "PORTE APERTE SUL ROUTER": "יציאות פתוחות בנתב",
+ "Porta 1": "יציאה 1",
+ "Porta 2": "יציאה 2"
 }
