@@ -586,5 +586,9 @@
  "Nessuna porta scelta: le porte si scelgono da sole.": "Ingen port valgt: porter velges automatisk.",
  "PORTE APERTE SUL ROUTER": "PORTER ÅPNET I RUTEREN",
  "Porta 1": "Port 1",
- "Porta 2": "Port 2"
+ "Porta 2": "Port 2",
+ "Su questo PC c'è anche {0}: mouse e tastiera li usate insieme.": "Også {0} er koblet til denne PC-en: dere deler mus og tastatur.",
+ "{0} vuole collegarsi a questo PC insieme a {1}, che lo sta già comandando: potrete comandarlo tutti e due.": "{0} vil koble til denne PC-en sammen med {1}, som allerede styrer den: dere kan styre den begge to.",
+ " · altri {0} collegati": " · {0} andre tilkoblet",
+ "Mentre uno comanda, altri possono collegarsi e comandare insieme (al massimo 4 in più)": "Mens én styrer, kan andre koble til og styre sammen (opptil 4 til)"
 }

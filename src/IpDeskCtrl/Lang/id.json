@@ -586,5 +586,9 @@
  "Nessuna porta scelta: le porte si scelgono da sole.": "Tidak ada port dipilih: port dipilih otomatis.",
  "PORTE APERTE SUL ROUTER": "PORT YANG DIBUKA DI ROUTER",
  "Porta 1": "Port 1",
- "Porta 2": "Port 2"
+ "Porta 2": "Port 2",
+ "Su questo PC c'è anche {0}: mouse e tastiera li usate insieme.": "{0} juga terhubung ke PC ini: kalian berbagi mouse dan keyboard.",
+ "{0} vuole collegarsi a questo PC insieme a {1}, che lo sta già comandando: potrete comandarlo tutti e due.": "{0} ingin terhubung ke PC ini bersama {1}, yang sudah mengendalikannya: kalian berdua bisa mengendalikannya.",
+ " · altri {0} collegati": " · {0} lainnya terhubung",
+ "Mentre uno comanda, altri possono collegarsi e comandare insieme (al massimo 4 in più)": "Saat seseorang mengendalikan, yang lain bisa terhubung dan mengendalikan bersama (hingga 4 lagi)"
 }

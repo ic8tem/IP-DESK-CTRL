@@ -231,10 +231,10 @@ namespace IpDeskCtrl.Desktop
                             SessionLog.Write("SERVIZIO IP-TRX-CTRL nella sessione dell'utente: " + string.Join(' ', p.Skip(1)));
                             break;
                         case "KICK":
-                            _peer?.CurrentHost?.Close("chiuso dall'utente dell'altro PC");
+                            _peer?.CloseIncoming("chiuso dall'utente dell'altro PC");
                             break;
                         case "INPUT" when p.Length >= 2:
-                            _peer?.CurrentHost?.SetInputAllowed(p[1] == "1");
+                            _peer?.SetIncomingInput(p[1] == "1");
                             break;
                         default:
                             ServiceCommands.Handle(p, a.Write);

@@ -136,13 +136,13 @@ namespace IpDeskCtrl.UI
             }
             _incomingInput.IsCheckedChanged += (_, _) =>
             {
-                _peer?.CurrentHost?.SetInputAllowed(_incomingInput.IsChecked == true);
+                _peer?.SetIncomingInput(_incomingInput.IsChecked == true);
                 _svc?.SetInput(_incomingInput.IsChecked == true);
             };
             var stop = Ui.Btn(L.T("Disconnetti"));
             stop.Click += (_, _) =>
             {
-                _peer?.CurrentHost?.Close(L.T("chiuso dall'utente dell'altro PC"));
+                _peer?.CloseIncoming(L.T("chiuso dall'utente dell'altro PC"));
                 _svc?.Kick();
             };
             _incomingBanner.Background = Themes.B(Themes.Current.TxDim);
@@ -273,7 +273,7 @@ namespace IpDeskCtrl.UI
                 PortsRow(),
                 BrokersRow(),
                 Chk(L.T("Aggiornamenti automatici: ogni 30 minuti cerca una nuova versione e la installa da sola (i collegamenti riprendono)"), _s.AutoUpdate, v => _s.AutoUpdate = v),
-                Chk(L.T("Mentre uno comanda, altri possono chiedere di guardare (solo visione, al massimo 4)"), _s.AllowObservers, v => _s.AllowObservers = v),
+                Chk(L.T("Mentre uno comanda, altri possono collegarsi e comandare insieme (al massimo 4 in più)"), _s.AllowObservers, v => _s.AllowObservers = v),
                 VideoRow(),
                 Ui.Row(10, new TextBlock { Text = L.T("Tema"), VerticalAlignment = VerticalAlignment.Center }, theme),
                 Ui.Sub(L.T("File ricevuti dagli altri PC: ") + Platform.Received, 12),

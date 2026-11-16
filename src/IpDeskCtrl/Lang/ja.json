@@ -586,5 +586,9 @@
  "Nessuna porta scelta: le porte si scelgono da sole.": "ポートが選ばれていません：ポートは自動で選ばれます。",
  "PORTE APERTE SUL ROUTER": "ルーターで開けたポート",
  "Porta 1": "ポート 1",
- "Porta 2": "ポート 2"
+ "Porta 2": "ポート 2",
+ "Su questo PC c'è anche {0}: mouse e tastiera li usate insieme.": "この PC には {0} も接続しています：マウスとキーボードは共有です。",
+ "{0} vuole collegarsi a questo PC insieme a {1}, che lo sta già comandando: potrete comandarlo tutti e due.": "{0} が、すでにこの PC を操作している {1} と一緒に接続しようとしています：二人とも操作できます。",
+ " · altri {0} collegati": " · ほかに {0} 人接続中",
+ "Mentre uno comanda, altri possono collegarsi e comandare insieme (al massimo 4 in più)": "誰かが操作中でも、ほかの人が接続して一緒に操作できます（最大 4 人まで追加）"
 }

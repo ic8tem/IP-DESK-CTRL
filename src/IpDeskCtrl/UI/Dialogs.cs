@@ -17,7 +17,7 @@ namespace IpDeskCtrl.UI
         public static IDialogHandle Incoming(IncomingInfo info, bool allowInputDefault, Action<IncomingDecision> decided)
         {
             string who = (info.Alias.Length > 0 ? info.Alias + " · " : "") + Identity.Format(info.Number);
-            var input = new CheckBox { Content = L.T("Consenti mouse, tastiera, appunti e file"), IsChecked = allowInputDefault && !info.Observer, IsVisible = !info.Observer };
+            var input = new CheckBox { Content = L.T("Consenti mouse, tastiera, appunti e file"), IsChecked = allowInputDefault };
             var always = new CheckBox { Content = L.T("Non chiedere più per questo numero (accesso senza conferma)") };
             var countdown = Ui.Sub("", 12);
             var accept = Ui.Btn(L.T("Accetta"), true);
@@ -30,7 +30,7 @@ namespace IpDeskCtrl.UI
                 new TextBlock
                 {
                     Text = info.Observer
-                        ? L.F("{0} vuole guardare lo schermo di questo PC (solo visione) mentre lo comanda {1}.", who, Identity.Format(info.Controller))
+                        ? L.F("{0} vuole collegarsi a questo PC insieme a {1}, che lo sta già comandando: potrete comandarlo tutti e due.", who, Identity.Format(info.Controller))
                         : L.F("{0} vuole vedere lo schermo di questo {1}.", who, (Platform.IsMobile ? L.T("dispositivo") : "PC")),
                     TextWrapping = TextWrapping.Wrap, FontSize = 15
                 },
@@ -68,7 +68,7 @@ namespace IpDeskCtrl.UI
         public static Control Controlled(HostSession hs, string who)
         {
             var input = new CheckBox { Content = L.T("Mouse e tastiera"), IsChecked = hs.InputAllowed };
-            input.IsCheckedChanged += (_, _) => hs.SetInputAllowed(input.IsChecked == true);
+            input.IsCheckedChanged += (_, _) => hs.Node.SetIncomingInput(input.IsChecked == true);
             var stop = Ui.Btn(L.T("Disconnetti"), true);
             stop.Click += (_, _) => { foreach (var o in hs.Node.Observers) o.Close(L.T("chiuso dall'utente dell'altro PC")); hs.Close(L.T("chiuso dall'utente dell'altro PC")); };
             var time = Ui.Sub("", 12);
@@ -77,7 +77,7 @@ namespace IpDeskCtrl.UI
             {
                 if (hs.IsClosed) { timer.Stop(); return; }
                 int obs = hs.Node.Observers.Count;
-                time.Text = L.T("da ") + HostSession.Duration(DateTime.UtcNow - hs.Started) + " · " + hs.Route + (obs > 0 ? L.F(" · {0} guardano", obs) : "");
+                time.Text = L.T("da ") + HostSession.Duration(DateTime.UtcNow - hs.Started) + " · " + hs.Route + (obs > 0 ? L.F(" · altri {0} collegati", obs) : "");
             };
             timer.Start();
             return new Border

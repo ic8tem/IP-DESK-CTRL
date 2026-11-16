@@ -586,5 +586,9 @@
  "Nessuna porta scelta: le porte si scelgono da sole.": "لم يُختر أي منفذ: تُختار المنافذ تلقائيًا.",
  "PORTE APERTE SUL ROUTER": "المنافذ المفتوحة على الموجّه",
  "Porta 1": "المنفذ 1",
- "Porta 2": "المنفذ 2"
+ "Porta 2": "المنفذ 2",
+ "Su questo PC c'è anche {0}: mouse e tastiera li usate insieme.": "{0} متصل أيضًا بهذا الحاسوب: تتشاركان الفأرة ولوحة المفاتيح.",
+ "{0} vuole collegarsi a questo PC insieme a {1}, che lo sta già comandando: potrete comandarlo tutti e due.": "يريد {0} الاتصال بهذا الحاسوب مع {1} الذي يتحكم فيه بالفعل: ستتمكنان كلاكما من التحكم فيه.",
+ " · altri {0} collegati": " · {0} آخرون متصلون",
+ "Mentre uno comanda, altri possono collegarsi e comandare insieme (al massimo 4 in più)": "بينما يتحكم أحدهم، يمكن لآخرين الاتصال والتحكم معًا (حتى 4 إضافيين)"
 }

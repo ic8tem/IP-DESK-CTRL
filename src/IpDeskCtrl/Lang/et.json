@@ -586,5 +586,9 @@
  "Nessuna porta scelta: le porte si scelgono da sole.": "Porti pole valitud: pordid valitakse automaatselt.",
  "PORTE APERTE SUL ROUTER": "RUUTERIS AVATUD PORDID",
  "Porta 1": "Port 1",
- "Porta 2": "Port 2"
+ "Porta 2": "Port 2",
+ "Su questo PC c'è anche {0}: mouse e tastiera li usate insieme.": "Selle arvutiga on ühendatud ka {0}: hiirt ja klaviatuuri kasutate koos.",
+ "{0} vuole collegarsi a questo PC insieme a {1}, che lo sta già comandando: potrete comandarlo tutti e due.": "{0} soovib ühenduda selle arvutiga koos {1}-ga, kes seda juba juhib: saate seda mõlemad juhtida.",
+ " · altri {0} collegati": " · veel {0} ühendatud",
+ "Mentre uno comanda, altri possono collegarsi e comandare insieme (al massimo 4 in più)": "Kui üks juhib, saavad teised ühenduda ja koos juhtida (kuni 4 lisaks)"
 }

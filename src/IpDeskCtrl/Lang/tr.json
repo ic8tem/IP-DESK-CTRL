@@ -586,5 +586,9 @@
  "Nessuna porta scelta: le porte si scelgono da sole.": "Port seçilmedi: portlar otomatik seçilir.",
  "PORTE APERTE SUL ROUTER": "YÖNLENDİRİCİDE AÇILAN PORTLAR",
  "Porta 1": "Port 1",
- "Porta 2": "Port 2"
+ "Porta 2": "Port 2",
+ "Su questo PC c'è anche {0}: mouse e tastiera li usate insieme.": "Bu bilgisayara {0} da bağlı: fare ve klavyeyi birlikte kullanıyorsunuz.",
+ "{0} vuole collegarsi a questo PC insieme a {1}, che lo sta già comandando: potrete comandarlo tutti e due.": "{0}, bu bilgisayarı zaten kontrol eden {1} ile birlikte bağlanmak istiyor: ikiniz de kontrol edebileceksiniz.",
+ " · altri {0} collegati": " · {0} kişi daha bağlı",
+ "Mentre uno comanda, altri possono collegarsi e comandare insieme (al massimo 4 in più)": "Biri kontrol ederken diğerleri bağlanıp birlikte kontrol edebilir (en fazla 4 kişi daha)"
 }

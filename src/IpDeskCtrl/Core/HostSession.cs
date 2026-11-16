@@ -118,16 +118,7 @@ namespace IpDeskCtrl.Core
                 string keyHex = Convert.ToHexString(Link.PeerKey);
                 bool known = h != null && h.PeerKey == keyHex;
                 IncomingDecision? d = null;
-                if (Observer)
-                {
-                    // il PC è già comandato da un altro: si entra solo a guardare
-                    if (known && (h!.AllowUnattended || ResumeState.Take(P.S, PeerNumber, out _)))
-                    {
-                        d = new IncomingDecision(true, false, false);
-                        SessionLog.Write($"SESSIONE {Identity.Format(PeerNumber)} guarda senza conferma (solo visione, comanda {Identity.Format(ControllerNumber)})");
-                    }
-                }
-                else if (known && ResumeState.Take(P.S, PeerNumber, out bool resumeInput))
+                if (known && ResumeState.Take(P.S, PeerNumber, out bool resumeInput))
                 {
                     d = new IncomingDecision(true, resumeInput, false);
                     SessionLog.Write($"SESSIONE {Identity.Format(PeerNumber)} rientra senza conferma dopo un aggiornamento");
@@ -164,14 +155,14 @@ namespace IpDeskCtrl.Core
                 if (IsClosed || d == null) return;
                 if (!d.Accept) { await Refuse(AcceptState.Rejected, d.Why.Length > 0 ? d.Why : L.T("richiesta rifiutata")); return; }
 
-                _allowInput = d.AllowInput && !Observer;
+                _allowInput = d.AllowInput;
                 var entry = P.S.Touch(PeerNumber, false, keyHex, PeerOs);
                 entry.Version = PeerVersion;
                 if (d.AlwaysAllow && !entry.AllowUnattended) { entry.AllowUnattended = true; P.S.Save(); }
                 _accepted = true;
                 await SendAsync(new MsgWriter(Msg.Accept).U8((byte)AcceptState.Accepted).Str(_allowInput ? "" : L.T("solo visione")).Build());
                 Activated?.Invoke();
-                if (Observer) Note(L.F("Guardi soltanto: questo PC lo sta comandando {0}.", Identity.Format(ControllerNumber)));
+                if (Observer) Note(L.F("Su questo PC c'è anche {0}: mouse e tastiera li usate insieme.", Identity.Format(ControllerNumber)));
 
                 _didPrepare = true;
                 if (Interlocked.Increment(ref _prepared) == 1 && Platform.PrepareHost != null)

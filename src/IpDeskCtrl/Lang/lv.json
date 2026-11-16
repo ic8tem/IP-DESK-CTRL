@@ -586,5 +586,9 @@
  "Nessuna porta scelta: le porte si scelgono da sole.": "Ports nav izvēlēts: porti tiek izvēlēti automātiski.",
  "PORTE APERTE SUL ROUTER": "MARŠRUTĒTĀJĀ ATVĒRTIE PORTI",
  "Porta 1": "Ports 1",
- "Porta 2": "Ports 2"
+ "Porta 2": "Ports 2",
+ "Su questo PC c'è anche {0}: mouse e tastiera li usate insieme.": "Ar šo datoru ir savienots arī {0}: peli un tastatūru izmantojat kopā.",
+ "{0} vuole collegarsi a questo PC insieme a {1}, che lo sta già comandando: potrete comandarlo tutti e due.": "{0} vēlas savienoties ar šo datoru kopā ar {1}, kurš to jau vada: varēsiet to vadīt abi.",
+ " · altri {0} collegati": " · vēl {0} savienoti",
+ "Mentre uno comanda, altri possono collegarsi e comandare insieme (al massimo 4 in più)": "Kamēr viens vada, citi var savienoties un vadīt kopā (līdz 4 vairāk)"
 }

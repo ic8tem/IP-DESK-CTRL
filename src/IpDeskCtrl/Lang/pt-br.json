@@ -586,5 +586,9 @@
  "Nessuna porta scelta: le porte si scelgono da sole.": "Nenhuma porta escolhida: as portas são escolhidas automaticamente.",
  "PORTE APERTE SUL ROUTER": "PORTAS ABERTAS NO ROTEADOR",
  "Porta 1": "Porta 1",
- "Porta 2": "Porta 2"
+ "Porta 2": "Porta 2",
+ "Su questo PC c'è anche {0}: mouse e tastiera li usate insieme.": "{0} também está conectado a este PC: vocês compartilham mouse e teclado.",
+ "{0} vuole collegarsi a questo PC insieme a {1}, che lo sta già comandando: potrete comandarlo tutti e due.": "{0} quer se conectar a este PC junto com {1}, que já o está controlando: vocês dois poderão controlá-lo.",
+ " · altri {0} collegati": " · mais {0} conectados",
+ "Mentre uno comanda, altri possono collegarsi e comandare insieme (al massimo 4 in più)": "Enquanto um controla, outros podem se conectar e controlar juntos (até mais 4)"
 }

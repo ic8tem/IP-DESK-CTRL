@@ -432,29 +432,57 @@ namespace IpDeskCtrl.Core
         private void StartHost(SecureLink link)
         {
             HostSession? busy;
-            int watching;
-            lock (_hostLock) { busy = _host; watching = _observers.Count; }
+            int others;
+            lock (_hostLock) { busy = _host; others = _observers.Count; }
             bool controlled = busy != null && busy.IsActive;
-            // PC già comandato: si può entrare a guardare (solo visione), se le impostazioni lo permettono
-            bool observer = controlled && S.AllowObservers && !Platform.IsMobile && watching < MaxObservers;
-            var hs = new HostSession(this, link, controlled && !observer) { Observer = observer, ControllerNumber = observer ? busy!.PeerNumber : "" };
-            if (observer)
+            // PC già comandato: altri possono entrare insieme e comandarlo anche loro (fino a 4 in più),
+            // con le stesse regole del primo (conferma, accesso senza conferma, password)
+            bool joining = controlled && S.AllowObservers && !Platform.IsMobile && others < MaxObservers;
+            var hs = new HostSession(this, link, controlled && !joining) { Observer = joining, ControllerNumber = joining ? busy!.PeerNumber : "" };
+            if (joining)
             {
                 lock (_hostLock) _observers.Add(hs);
                 hs.Activated += () => ObserversChanged?.Invoke();
                 hs.Closed += _ => { lock (_hostLock) _observers.Remove(hs); ObserversChanged?.Invoke(); };
             }
-            else if (!controlled)
-            {
-                lock (_hostLock) _host = hs;
-                hs.Activated += () => HostStarted?.Invoke(hs);
-                hs.Closed += reason =>
-                {
-                    lock (_hostLock) if (_host == hs) _host = null;
-                    HostEnded?.Invoke(hs, reason);
-                };
-            }
+            else if (!controlled) BecomeMain(hs, alreadyActive: false);
             hs.Run(_life.Token);
+        }
+
+        /// <summary>
+        /// La sessione principale (quella del riquadro «Questo PC è comandato da…»). Se si chiude mentre altri sono
+        /// ancora collegati, il primo di loro diventa la principale e il riquadro resta.
+        /// </summary>
+        private void BecomeMain(HostSession hs, bool alreadyActive)
+        {
+            lock (_hostLock) _host = hs;
+            if (alreadyActive) HostStarted?.Invoke(hs); else hs.Activated += () => HostStarted?.Invoke(hs);
+            hs.Closed += reason =>
+            {
+                HostSession? next = null;
+                lock (_hostLock)
+                {
+                    if (_host != hs) return;
+                    _host = null;
+                    next = _observers.FirstOrDefault(o => o.IsActive && !o.IsClosed);
+                    if (next != null) _observers.Remove(next);
+                }
+                HostEnded?.Invoke(hs, reason);
+                if (next != null)
+                {
+                    Log($"SESSIONE {Identity.Format(hs.PeerNumber)} è uscito: resta {Identity.Format(next.PeerNumber)}");
+                    BecomeMain(next, alreadyActive: true);
+                    ObserversChanged?.Invoke();
+                }
+            };
+        }
+
+        /// <summary>Mouse e tastiera concessi o tolti a tutti quelli collegati a questo PC.</summary>
+        public void SetIncomingInput(bool on)
+        {
+            List<HostSession> all;
+            lock (_hostLock) { all = _observers.ToList(); if (_host != null) all.Add(_host); }
+            foreach (var h in all) h.SetInputAllowed(on);
         }
 
         internal Task<IncomingDecision> AskAsync(IncomingInfo info, CancellationToken ct)

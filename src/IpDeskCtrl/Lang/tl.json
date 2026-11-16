@@ -586,5 +586,9 @@
  "Nessuna porta scelta: le porte si scelgono da sole.": "Walang napiling port: awtomatikong pinipili ang mga port.",
  "PORTE APERTE SUL ROUTER": "MGA PORT NA BINUKSAN SA ROUTER",
  "Porta 1": "Port 1",
- "Porta 2": "Port 2"
+ "Porta 2": "Port 2",
+ "Su questo PC c'è anche {0}: mouse e tastiera li usate insieme.": "Nakakonekta rin si {0} sa PC na ito: pinagsasaluhan ninyo ang mouse at keyboard.",
+ "{0} vuole collegarsi a questo PC insieme a {1}, che lo sta già comandando: potrete comandarlo tutti e due.": "Gustong kumonekta ni {0} sa PC na ito kasama si {1}, na kumokontrol na rito: pareho ninyo itong makokontrol.",
+ " · altri {0} collegati": " · {0} pa ang nakakonekta",
+ "Mentre uno comanda, altri possono collegarsi e comandare insieme (al massimo 4 in più)": "Habang may kumokontrol, puwedeng kumonekta ang iba at kumontrol nang sabay (hanggang 4 pa)"
 }

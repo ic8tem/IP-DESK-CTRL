@@ -586,5 +586,9 @@
  "Nessuna porta scelta: le porte si scelgono da sole.": "Ekkert tengi valið: tengi eru valin sjálfkrafa.",
  "PORTE APERTE SUL ROUTER": "TENGI OPNUÐ Á BEININUM",
  "Porta 1": "Tengi 1",
- "Porta 2": "Tengi 2"
+ "Porta 2": "Tengi 2",
+ "Su questo PC c'è anche {0}: mouse e tastiera li usate insieme.": "{0} er líka tengdur þessari tölvu: þið deilið mús og lyklaborði.",
+ "{0} vuole collegarsi a questo PC insieme a {1}, che lo sta già comandando: potrete comandarlo tutti e due.": "{0} vill tengjast þessari tölvu ásamt {1}, sem stýrir henni nú þegar: þið getið báðir stýrt henni.",
+ " · altri {0} collegati": " · {0} aðrir tengdir",
+ "Mentre uno comanda, altri possono collegarsi e comandare insieme (al massimo 4 in più)": "Á meðan einn stýrir geta aðrir tengst og stýrt saman (allt að 4 í viðbót)"
 }

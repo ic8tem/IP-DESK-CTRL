@@ -17,9 +17,9 @@ Mentre un PC è comandato, su di esso compare una piccola finestra sempre in pri
 
 ## Più persone collegate insieme
 
-Un PC si fa **comandare da uno alla volta**. Mentre qualcuno lo comanda, fino a **4 altri** possono collegarsi per **guardare** soltanto (niente mouse, tastiera, file, tunnel o microfono): sul PC compare la richiesta «vuole guardare … mentre lo comanda …», da accettare come le altre. I numeri con accesso senza conferma entrano a guardare da soli.
+Mentre qualcuno comanda un PC, fino a **4 altri** possono collegarsi **insieme** e comandarlo anche loro: mouse, tastiera, appunti, file e tutto il resto, come il primo. Sul PC compare la richiesta «vuole collegarsi a questo PC insieme a …», da accettare come le altre; i numeri con accesso senza conferma entrano da soli (con la password, se c'è). Mouse e tastiera sono condivisi: se due li muovono nello stesso momento, vince l'ultimo movimento.
 
-La finestrella «Questo PC è comandato da…» dice quanti stanno guardando; **Disconnetti** chiude tutti. In Impostazioni si può togliere *Mentre uno comanda, altri possono chiedere di guardare*.
+La finestrella «Questo PC è comandato da…» dice quanti altri sono collegati; l'interruttore di mouse e tastiera vale per tutti e **Disconnetti** chiude tutti. Se il primo esce, la finestrella passa al successivo. In Impostazioni si può togliere *Mentre uno comanda, altri possono collegarsi e comandare insieme*.
 
 Chi guarda vede lo schermo scelto da lui (può cambiare monitor e qualità per sé) e sente l'audio, se acceso.
 

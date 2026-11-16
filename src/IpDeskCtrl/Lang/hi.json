@@ -586,5 +586,9 @@
  "Nessuna porta scelta: le porte si scelgono da sole.": "कोई पोर्ट नहीं चुना: पोर्ट अपने आप चुने जाते हैं।",
  "PORTE APERTE SUL ROUTER": "राउटर पर खोले गए पोर्ट",
  "Porta 1": "पोर्ट 1",
- "Porta 2": "पोर्ट 2"
+ "Porta 2": "पोर्ट 2",
+ "Su questo PC c'è anche {0}: mouse e tastiera li usate insieme.": "इस पीसी से {0} भी जुड़ा है: माउस और कीबोर्ड आप साथ में इस्तेमाल करते हैं।",
+ "{0} vuole collegarsi a questo PC insieme a {1}, che lo sta già comandando: potrete comandarlo tutti e due.": "{0} इस पीसी से {1} के साथ जुड़ना चाहता है, जो इसे पहले से चला रहा है: आप दोनों इसे चला सकेंगे।",
+ " · altri {0} collegati": " · {0} और जुड़े",
+ "Mentre uno comanda, altri possono collegarsi e comandare insieme (al massimo 4 in più)": "जब कोई चला रहा हो, दूसरे भी जुड़कर साथ में चला सकते हैं (अधिकतम 4 और)"
 }

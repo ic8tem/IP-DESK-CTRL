@@ -586,5 +586,9 @@
  "Nessuna porta scelta: le porte si scelgono da sole.": "No port chosen: ports are chosen automatically.",
  "PORTE APERTE SUL ROUTER": "PORTS OPENED ON THE ROUTER",
  "Porta 1": "Port 1",
- "Porta 2": "Port 2"
+ "Porta 2": "Port 2",
+ "Su questo PC c'è anche {0}: mouse e tastiera li usate insieme.": "{0} is also connected to this PC: you share mouse and keyboard.",
+ "{0} vuole collegarsi a questo PC insieme a {1}, che lo sta già comandando: potrete comandarlo tutti e due.": "{0} wants to connect to this PC together with {1}, who is already controlling it: you will both be able to control it.",
+ " · altri {0} collegati": " · {0} others connected",
+ "Mentre uno comanda, altri possono collegarsi e comandare insieme (al massimo 4 in più)": "While someone is in control, others can connect and control it together (up to 4 more)"
 }

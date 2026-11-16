@@ -586,5 +586,9 @@
  "Nessuna porta scelta: le porte si scelgono da sole.": "Žádný port nevybrán: porty se volí automaticky.",
  "PORTE APERTE SUL ROUTER": "PORTY OTEVŘENÉ NA ROUTERU",
  "Porta 1": "Port 1",
- "Porta 2": "Port 2"
+ "Porta 2": "Port 2",
+ "Su questo PC c'è anche {0}: mouse e tastiera li usate insieme.": "K tomuto počítači je připojen i {0}: myš a klávesnici sdílíte.",
+ "{0} vuole collegarsi a questo PC insieme a {1}, che lo sta già comandando: potrete comandarlo tutti e due.": "{0} se chce připojit k tomuto počítači spolu s {1}, který ho už ovládá: budete ho moci ovládat oba.",
+ " · altri {0} collegati": " · další {0} připojeni",
+ "Mentre uno comanda, altri possono collegarsi e comandare insieme (al massimo 4 in più)": "Zatímco jeden ovládá, ostatní se mohou připojit a ovládat společně (až 4 další)"
 }
