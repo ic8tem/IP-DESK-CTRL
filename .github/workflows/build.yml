@@ -252,6 +252,7 @@ jobs:
           flatpak run --command=flatpak-builder-lint org.flatpak.Builder manifest io.github.ic8tem.IpDeskCtrl.yml 2>&1 | tee lint-manifest.txt || true
           flatpak run --command=flatpak-builder-lint org.flatpak.Builder repo repo 2>&1 | tee lint-repo.txt || true
       - name: Schermata della finestra principale (inglese)
+        if: always()
         continue-on-error: true
         run: |
           dotnet publish src/IpDeskCtrl.Desktop/IpDeskCtrl.Desktop.csproj -c Release -r linux-x64 -o shot >/dev/null
@@ -263,6 +264,7 @@ jobs:
           import -window "${WID:-root}" "$RUNNER_TEMP/fh/main-window.png"
           import -window root "$RUNNER_TEMP/fh/schermo-intero.png"
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: flathub
           path: |

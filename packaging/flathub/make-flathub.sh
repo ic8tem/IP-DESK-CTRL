@@ -19,7 +19,7 @@ for rid in linux-x64 linux-arm64; do
     --runtime=org.freedesktop.Sdk//24.08 --share=network --filesystem=host --filesystem="$PKGS" \
     org.freedesktop.Sdk.Extension.dotnet8//24.08 -c \
     'PATH="$PATH:/usr/lib/sdk/dotnet8/bin" LD_LIBRARY_PATH="${LD_LIBRARY_PATH:-}:/usr/lib/sdk/dotnet8/lib" exec dotnet restore "$@"' \
-    -- "$ROOT/$PROJ" -r "$rid" --packages "$PKGS"
+    -- "$ROOT/$PROJ" -r "$rid" --packages "$PKGS" -p:_IsPublishing=true
 done
 python3 - "$PKGS" "$OUT/nuget-sources.json" <<'PY'
 import base64, glob, json, os, sys
