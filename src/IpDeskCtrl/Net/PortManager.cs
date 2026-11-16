@@ -94,6 +94,19 @@ namespace IpDeskCtrl.Net
                 CgnatSuspected = IsPrivateOrCgnat(ExternalIp);
                 L($"router trovato con {MapperName} · IP esterno dichiarato dal router: {ExternalIp}");
 
+                // Il «router» che risponde ha l'IP esterno nella stessa rete di questo PC: non è il router che porta a
+                // internet ma un altro apparecchio della casa (ripetitore o nodo mesh in modo router, decoder, router in
+                // cascata). Le porte aperte lì restano dentro quell'apparecchio: inutile usarlo.
+                if (ExternalIp != null && OnLocalNetwork(ExternalIp))
+                {
+                    L($"l'UPnP l'ha aperta un altro apparecchio della rete ({ExternalIp}), non il router che porta a internet: " +
+                      "attiva l'UPnP sul router principale (di solito 192.168.1.1 o 192.168.0.1). Per ora non lo uso");
+                    LastError = $"UPnP solo su un altro apparecchio della rete ({ExternalIp})";
+                    _device = null;
+                    ExternalIp = await GetPublicIpAsync(ct);
+                    return false;
+                }
+
                 // Controllo aggiuntivo: l'IP che vede internet deve coincidere con quello del router
                 IPAddress? pub = await GetPublicIpAsync(ct);
                 if (pub != null)
@@ -113,6 +126,34 @@ namespace IpDeskCtrl.Net
                 ExternalIp = await GetPublicIpAsync(ct);
                 return false;
             }
+        }
+
+        /// <summary>true se l'indirizzo sta in una delle reti locali di questo PC (stessa sottorete di una scheda di rete).</summary>
+        private static bool OnLocalNetwork(IPAddress ip)
+        {
+            if (ip.AddressFamily != AddressFamily.InterNetwork) return false;
+            byte[] a = ip.GetAddressBytes();
+            try
+            {
+                foreach (var nic in System.Net.NetworkInformation.NetworkInterface.GetAllNetworkInterfaces())
+                {
+                    if (nic.OperationalStatus != System.Net.NetworkInformation.OperationalStatus.Up) continue;
+                    foreach (var u in nic.GetIPProperties().UnicastAddresses)
+                    {
+                        if (u.Address.AddressFamily != AddressFamily.InterNetwork || IPAddress.IsLoopback(u.Address)) continue;
+                        byte[] me = u.Address.GetAddressBytes();
+                        byte[] mask;
+                        try { mask = u.IPv4Mask?.GetAddressBytes() ?? new byte[] { 255, 255, 255, 0 }; }
+                        catch { mask = new byte[] { 255, 255, 255, 0 }; }
+                        if (mask.All(b => b == 0)) mask = new byte[] { 255, 255, 255, 0 };
+                        bool same = true;
+                        for (int i = 0; i < 4; i++) if ((a[i] & mask[i]) != (me[i] & mask[i])) { same = false; break; }
+                        if (same) return true;
+                    }
+                }
+            }
+            catch { }
+            return false;
         }
 
         /// <summary>Apre una porta TCP libera; restituisce il numero o 0 se non riesce.</summary>
