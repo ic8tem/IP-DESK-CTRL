@@ -10,7 +10,8 @@ ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 ID=io.github.ic8tem.IpDeskCtrl
 PROJ=src/IpDeskCtrl.Desktop/IpDeskCtrl.Desktop.csproj
 
-# ------------------------------------------------------------------ pacchetti NuGet, ripristinati con il .NET dell'SDK di Flathub
+# ------------------------------------------------------------------ pacchetti NuGet: una pubblicazione di prova con il .NET dell'SDK di Flathub
+# (con «restore» mancherebbero quelli che servono solo pubblicando, come Microsoft.NET.ILLink.Tasks)
 flatpak remote-add --user --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 flatpak install --user -y --noninteractive flathub org.freedesktop.Sdk//24.08 org.freedesktop.Sdk.Extension.dotnet8//24.08 >/dev/null
 PKGS="$(mktemp -d)"
@@ -18,8 +19,8 @@ for rid in linux-x64 linux-arm64; do
   flatpak run --env=DOTNET_CLI_TELEMETRY_OPTOUT=true --env=DOTNET_NOLOGO=true --command=sh \
     --runtime=org.freedesktop.Sdk//24.08 --share=network --filesystem=host --filesystem="$PKGS" \
     org.freedesktop.Sdk.Extension.dotnet8//24.08 -c \
-    'PATH="$PATH:/usr/lib/sdk/dotnet8/bin" LD_LIBRARY_PATH="${LD_LIBRARY_PATH:-}:/usr/lib/sdk/dotnet8/lib" exec dotnet restore "$@"' \
-    -- "$ROOT/$PROJ" -r "$rid" --packages "$PKGS" -p:_IsPublishing=true
+    'PATH="$PATH:/usr/lib/sdk/dotnet8/bin" LD_LIBRARY_PATH="${LD_LIBRARY_PATH:-}:/usr/lib/sdk/dotnet8/lib" exec dotnet publish "$@"' \
+    -- "$ROOT/$PROJ" -c Release -r "$rid" --packages "$PKGS" -o "$PKGS/.prova-$rid"
 done
 python3 - "$PKGS" "$OUT/nuget-sources.json" <<'PY'
 import base64, glob, json, os, sys

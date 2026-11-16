@@ -263,6 +263,16 @@ jobs:
           WID="$(xdotool search --name 'IP-DESK-CTRL' | head -n 1)"
           import -window "${WID:-root}" "$RUNNER_TEMP/fh/main-window.png"
           import -window root "$RUNNER_TEMP/fh/schermo-intero.png"
+      - name: Schermata nel ramo lavoro
+        if: always() && github.ref == 'refs/heads/lavoro'
+        continue-on-error: true
+        run: |
+          [ -f "$RUNNER_TEMP/fh/main-window.png" ] || exit 0
+          mkdir -p docs/screenshots
+          cp "$RUNNER_TEMP/fh/main-window.png" docs/screenshots/main-window.png
+          cp "$RUNNER_TEMP/fh/schermo-intero.png" docs/screenshots/.schermo-intero.png
+          git config user.name "github-actions[bot]"; git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f docs/screenshots && git commit -qm "Schermata per Flathub [skip ci]" && git pull -q --rebase origin lavoro && git push -q origin HEAD:lavoro || true
       - uses: actions/upload-artifact@v4
         if: always()
         with:
