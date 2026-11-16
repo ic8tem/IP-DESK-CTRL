@@ -576,5 +576,6 @@
  "Il PC remoto non riesce a decodificare il video compresso: uso i riquadri.": "Віддалений комп'ютер не може декодувати стиснене відео: використовую квадрати.",
  "L'altro PC ha la versione {0}: gli chiedo di aggiornarsi alla {1} (tentativo {2} di 3)…": "На іншому ПК версія {0}: прошу його оновитися до {1} (спроба {2} з 3)…",
  "L'altro PC non si è aggiornato: mi collego lo stesso con la sua versione.": "Інший ПК не оновився: однаково підключаюся з його версією.",
- "{0} ha una versione più nuova: il servizio aggiorna IP-DESK-CTRL, il programma si chiude e si riapre.": "У {0} новіша версія: служба оновлює IP-DESK-CTRL, програма закриється й відкриється знову."
+ "{0} ha una versione più nuova: il servizio aggiorna IP-DESK-CTRL, il programma si chiude e si riapre.": "У {0} новіша версія: служба оновлює IP-DESK-CTRL, програма закриється й відкриється знову.",
+ "IMPOSTAZIONI": "НАЛАШТУВАННЯ"
 }

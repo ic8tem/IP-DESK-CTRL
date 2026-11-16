@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Prepara i file per Flathub (repository flathub/io.github.ic8tem.IP_DESK_CTRL):
-#   io.github.ic8tem.IP_DESK_CTRL.yml   manifest: compila dai sorgenti con il .NET 8 dell'SDK di Flathub
+# Prepara i file per Flathub (repository flathub/io.github.ic8tem.IP-DESK-CTRL):
+#   io.github.ic8tem.IP-DESK-CTRL.yml   manifest: compila dai sorgenti con il .NET 8 dell'SDK di Flathub
 #   nuget-sources.json                 pacchetti NuGet scaricati prima (sui server di Flathub non c'è rete)
 # Uso: packaging/flathub/make-flathub.sh <versione> <commit | "locale"> <cartella di uscita>
 #   con «locale» il manifest compila la cartella del repository (prova in CI), altrimenti il tag v<versione>.
@@ -8,7 +8,7 @@ set -euo pipefail
 VERSION="$1"; COMMIT="$2"; mkdir -p "$3"; OUT="$(cd "$3" && pwd)"
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 # su Flathub l'ID segue il repository (github.com/ic8tem/IP-DESK-CTRL); il .flatpak delle release resta io.github.ic8tem.IpDeskCtrl
-ID=io.github.ic8tem.IP_DESK_CTRL
+ID=io.github.ic8tem.IP-DESK-CTRL
 PROJ=src/IpDeskCtrl.Desktop/IpDeskCtrl.Desktop.csproj
 
 # ------------------------------------------------------------------ pacchetti NuGet: una pubblicazione di prova con il .NET dell'SDK di Flathub

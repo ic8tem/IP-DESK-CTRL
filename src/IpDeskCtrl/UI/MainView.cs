@@ -258,7 +258,7 @@ namespace IpDeskCtrl.UI
             quit.IsVisible = Quit != null;
             ToolTip.SetTip(quit, L.T("Chiude davvero IP-DESK-CTRL: questo PC non sarà più raggiungibile finché non lo riavvii. La X della finestra invece lo nasconde soltanto."));
             return Ui.Col(8,
-                Ui.H2("IMPOSTAZIONI"),
+                Ui.H2(L.T("IMPOSTAZIONI")),
                 Chk(L.T("Accetta richieste di collegamento a questo PC"), _s.AcceptIncoming, v => _s.AcceptIncoming = v),
                 Chk(L.T("Proponi di consentire mouse e tastiera a chi si collega"), _s.AllowInput, v => _s.AllowInput = v),
                 Chk(L.T("Manda l'audio di questo PC a chi si collega"), _s.ShareAudio, v => _s.ShareAudio = v),

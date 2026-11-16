@@ -576,5 +576,6 @@
  "Il PC remoto non riesce a decodificare il video compresso: uso i riquadri.": "המחשב המרוחק לא מצליח לפענח את הווידאו הדחוס: אני משתמש בריבועים.",
  "L'altro PC ha la versione {0}: gli chiedo di aggiornarsi alla {1} (tentativo {2} di 3)…": "במחשב השני גרסה {0}: מבקש ממנו להתעדכן ל-{1} (ניסיון {2} מתוך 3)…",
  "L'altro PC non si è aggiornato: mi collego lo stesso con la sua versione.": "המחשב השני לא התעדכן: מתחבר בכל זאת עם הגרסה שלו.",
- "{0} ha una versione più nuova: il servizio aggiorna IP-DESK-CTRL, il programma si chiude e si riapre.": "ל-{0} יש גרסה חדשה יותר: השירות מעדכן את IP-DESK-CTRL, התוכנית תיסגר ותיפתח מחדש."
+ "{0} ha una versione più nuova: il servizio aggiorna IP-DESK-CTRL, il programma si chiude e si riapre.": "ל-{0} יש גרסה חדשה יותר: השירות מעדכן את IP-DESK-CTRL, התוכנית תיסגר ותיפתח מחדש.",
+ "IMPOSTAZIONI": "הגדרות"
 }

@@ -576,5 +576,6 @@
  "Il PC remoto non riesce a decodificare il video compresso: uso i riquadri.": "Fjartölvan getur ekki afkóðað þjappaða myndbandið: ég nota reiti.",
  "L'altro PC ha la versione {0}: gli chiedo di aggiornarsi alla {1} (tentativo {2} di 3)…": "Hin tölvan er með útgáfu {0}: bið hana að uppfæra í {1} (tilraun {2} af 3)…",
  "L'altro PC non si è aggiornato: mi collego lo stesso con la sua versione.": "Hin tölvan uppfærðist ekki: tengist samt með hennar útgáfu.",
- "{0} ha una versione più nuova: il servizio aggiorna IP-DESK-CTRL, il programma si chiude e si riapre.": "{0} er með nýrri útgáfu: þjónustan uppfærir IP-DESK-CTRL, forritið lokast og opnast aftur."
+ "{0} ha una versione più nuova: il servizio aggiorna IP-DESK-CTRL, il programma si chiude e si riapre.": "{0} er með nýrri útgáfu: þjónustan uppfærir IP-DESK-CTRL, forritið lokast og opnast aftur.",
+ "IMPOSTAZIONI": "STILLINGAR"
 }

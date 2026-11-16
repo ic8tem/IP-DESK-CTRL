@@ -576,5 +576,6 @@
  "Il PC remoto non riesce a decodificare il video compresso: uso i riquadri.": "リモートのパソコンが圧縮映像をデコードできません: 四角形を使います。",
  "L'altro PC ha la versione {0}: gli chiedo di aggiornarsi alla {1} (tentativo {2} di 3)…": "相手の PC はバージョン {0} です：{1} への更新を依頼しています（{2} / 3 回目）…",
  "L'altro PC non si è aggiornato: mi collego lo stesso con la sua versione.": "相手の PC は更新されませんでした：そのバージョンのまま接続します。",
- "{0} ha una versione più nuova: il servizio aggiorna IP-DESK-CTRL, il programma si chiude e si riapre.": "{0} は新しいバージョンです：サービスが IP-DESK-CTRL を更新しています。プログラムは閉じて再び開きます。"
+ "{0} ha una versione più nuova: il servizio aggiorna IP-DESK-CTRL, il programma si chiude e si riapre.": "{0} は新しいバージョンです：サービスが IP-DESK-CTRL を更新しています。プログラムは閉じて再び開きます。",
+ "IMPOSTAZIONI": "設定"
 }

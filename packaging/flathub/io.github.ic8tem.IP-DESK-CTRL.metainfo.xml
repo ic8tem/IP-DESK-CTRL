@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop-application">
-  <id>io.github.ic8tem.IP_DESK_CTRL</id>
+  <id>io.github.ic8tem.IP-DESK-CTRL</id>
   <name>IP-DESK-CTRL</name>
   <summary>Encrypted remote desktop with a fixed 10-digit number</summary>
   <summary xml:lang="it">Desktop remoto cifrato con numero fisso di 10 cifre</summary>
@@ -27,7 +27,7 @@
       On Linux the remote screen is captured and controlled in X11 sessions.
     </p>
   </description>
-  <launchable type="desktop-id">io.github.ic8tem.IP_DESK_CTRL.desktop</launchable>
+  <launchable type="desktop-id">io.github.ic8tem.IP-DESK-CTRL.desktop</launchable>
   <url type="homepage">https://github.com/ic8tem/IP-DESK-CTRL</url>
   <url type="bugtracker">https://github.com/ic8tem/IP-DESK-CTRL/issues</url>
   <url type="help">https://github.com/ic8tem/IP-DESK-CTRL/wiki</url>

@@ -576,5 +576,6 @@
  "Il PC remoto non riesce a decodificare il video compresso: uso i riquadri.": "Attālais dators nespēj atkodēt saspiesto video: izmantoju kvadrātus.",
  "L'altro PC ha la versione {0}: gli chiedo di aggiornarsi alla {1} (tentativo {2} di 3)…": "Otram datoram ir versija {0}: lūdzu to atjaunināt uz {1} (mēģinājums {2} no 3)…",
  "L'altro PC non si è aggiornato: mi collego lo stesso con la sua versione.": "Otrs dators netika atjaunināts: tomēr savienojos ar tā versiju.",
- "{0} ha una versione più nuova: il servizio aggiorna IP-DESK-CTRL, il programma si chiude e si riapre.": "{0} ir jaunāka versija: pakalpojums atjaunina IP-DESK-CTRL, programma aizveras un atveras no jauna."
+ "{0} ha una versione più nuova: il servizio aggiorna IP-DESK-CTRL, il programma si chiude e si riapre.": "{0} ir jaunāka versija: pakalpojums atjaunina IP-DESK-CTRL, programma aizveras un atveras no jauna.",
+ "IMPOSTAZIONI": "IESTATĪJUMI"
 }

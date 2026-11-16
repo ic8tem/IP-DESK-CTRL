@@ -576,5 +576,6 @@
  "Il PC remoto non riesce a decodificare il video compresso: uso i riquadri.": "PC-ul la distanță nu reușește să decodeze video comprimat: folosesc pătratele.",
  "L'altro PC ha la versione {0}: gli chiedo di aggiornarsi alla {1} (tentativo {2} di 3)…": "Celălalt PC are versiunea {0}: îi cer să se actualizeze la {1} (încercarea {2} din 3)…",
  "L'altro PC non si è aggiornato: mi collego lo stesso con la sua versione.": "Celălalt PC nu s-a actualizat: mă conectez oricum cu versiunea lui.",
- "{0} ha una versione più nuova: il servizio aggiorna IP-DESK-CTRL, il programma si chiude e si riapre.": "{0} are o versiune mai nouă: serviciul actualizează IP-DESK-CTRL, programul se închide și se redeschide."
+ "{0} ha una versione più nuova: il servizio aggiorna IP-DESK-CTRL, il programma si chiude e si riapre.": "{0} are o versiune mai nouă: serviciul actualizează IP-DESK-CTRL, programul se închide și se redeschide.",
+ "IMPOSTAZIONI": "SETĂRI"
 }

@@ -576,5 +576,6 @@
  "Il PC remoto non riesce a decodificare il video compresso: uso i riquadri.": "คอมพิวเตอร์ระยะไกลถอดรหัสวิดีโอบีบอัดไม่ได้: ใช้สี่เหลี่ยมแทน",
  "L'altro PC ha la versione {0}: gli chiedo di aggiornarsi alla {1} (tentativo {2} di 3)…": "พีซีอีกเครื่องใช้เวอร์ชัน {0}: กำลังขอให้อัปเดตเป็น {1} (ครั้งที่ {2} จาก 3)…",
  "L'altro PC non si è aggiornato: mi collego lo stesso con la sua versione.": "พีซีอีกเครื่องไม่ได้อัปเดต: เชื่อมต่อด้วยเวอร์ชันของมันต่อไป",
- "{0} ha una versione più nuova: il servizio aggiorna IP-DESK-CTRL, il programma si chiude e si riapre.": "{0} มีเวอร์ชันที่ใหม่กว่า: บริการกำลังอัปเดต IP-DESK-CTRL โปรแกรมจะปิดแล้วเปิดใหม่"
+ "{0} ha una versione più nuova: il servizio aggiorna IP-DESK-CTRL, il programma si chiude e si riapre.": "{0} มีเวอร์ชันที่ใหม่กว่า: บริการกำลังอัปเดต IP-DESK-CTRL โปรแกรมจะปิดแล้วเปิดใหม่",
+ "IMPOSTAZIONI": "การตั้งค่า"
 }

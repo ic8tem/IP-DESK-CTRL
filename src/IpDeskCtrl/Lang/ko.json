@@ -576,5 +576,6 @@
  "Il PC remoto non riesce a decodificare il video compresso: uso i riquadri.": "원격 컴퓨터가 압축 영상을 디코딩할 수 없습니다: 사각형을 사용합니다.",
  "L'altro PC ha la versione {0}: gli chiedo di aggiornarsi alla {1} (tentativo {2} di 3)…": "다른 PC의 버전은 {0}입니다: {1}(으)로 업데이트하도록 요청하는 중 (시도 {2}/3)…",
  "L'altro PC non si è aggiornato: mi collego lo stesso con la sua versione.": "다른 PC가 업데이트되지 않았습니다: 해당 버전으로 그대로 연결합니다.",
- "{0} ha una versione più nuova: il servizio aggiorna IP-DESK-CTRL, il programma si chiude e si riapre.": "{0}에 더 새로운 버전이 있습니다: 서비스가 IP-DESK-CTRL을 업데이트하며, 프로그램이 닫혔다가 다시 열립니다."
+ "{0} ha una versione più nuova: il servizio aggiorna IP-DESK-CTRL, il programma si chiude e si riapre.": "{0}에 더 새로운 버전이 있습니다: 서비스가 IP-DESK-CTRL을 업데이트하며, 프로그램이 닫혔다가 다시 열립니다.",
+ "IMPOSTAZIONI": "설정"
 }

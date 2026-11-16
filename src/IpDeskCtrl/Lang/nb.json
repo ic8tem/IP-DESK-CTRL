@@ -576,5 +576,6 @@
  "Il PC remoto non riesce a decodificare il video compresso: uso i riquadri.": "Den eksterne PC-en klarer ikke å dekode den komprimerte videoen: jeg bruker ruter.",
  "L'altro PC ha la versione {0}: gli chiedo di aggiornarsi alla {1} (tentativo {2} di 3)…": "Den andre PC-en har versjon {0}: ber den oppdatere til {1} (forsøk {2} av 3)…",
  "L'altro PC non si è aggiornato: mi collego lo stesso con la sua versione.": "Den andre PC-en ble ikke oppdatert: kobler til likevel med dens versjon.",
- "{0} ha una versione più nuova: il servizio aggiorna IP-DESK-CTRL, il programma si chiude e si riapre.": "{0} har en nyere versjon: tjenesten oppdaterer IP-DESK-CTRL, programmet lukkes og åpnes igjen."
+ "{0} ha una versione più nuova: il servizio aggiorna IP-DESK-CTRL, il programma si chiude e si riapre.": "{0} har en nyere versjon: tjenesten oppdaterer IP-DESK-CTRL, programmet lukkes og åpnes igjen.",
+ "IMPOSTAZIONI": "INNSTILLINGER"
 }

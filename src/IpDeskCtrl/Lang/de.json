@@ -576,5 +576,6 @@
  "Il PC remoto non riesce a decodificare il video compresso: uso i riquadri.": "Der entfernte PC kann das komprimierte Video nicht dekodieren: Ich verwende Kacheln.",
  "L'altro PC ha la versione {0}: gli chiedo di aggiornarsi alla {1} (tentativo {2} di 3)…": "Der andere PC hat Version {0}: Ich bitte ihn, auf {1} zu aktualisieren (Versuch {2} von 3)…",
  "L'altro PC non si è aggiornato: mi collego lo stesso con la sua versione.": "Der andere PC wurde nicht aktualisiert: Ich verbinde mich trotzdem mit seiner Version.",
- "{0} ha una versione più nuova: il servizio aggiorna IP-DESK-CTRL, il programma si chiude e si riapre.": "{0} hat eine neuere Version: Der Dienst aktualisiert IP-DESK-CTRL, das Programm wird geschlossen und wieder geöffnet."
+ "{0} ha una versione più nuova: il servizio aggiorna IP-DESK-CTRL, il programma si chiude e si riapre.": "{0} hat eine neuere Version: Der Dienst aktualisiert IP-DESK-CTRL, das Programm wird geschlossen und wieder geöffnet.",
+ "IMPOSTAZIONI": "EINSTELLUNGEN"
 }

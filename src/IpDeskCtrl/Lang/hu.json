@@ -576,5 +576,6 @@
  "Il PC remoto non riesce a decodificare il video compresso: uso i riquadri.": "A távoli számítógép nem tudja dekódolni a tömörített videót: négyzeteket használok.",
  "L'altro PC ha la versione {0}: gli chiedo di aggiornarsi alla {1} (tentativo {2} di 3)…": "A másik gép verziója {0}: kérem, frissüljön a {1} verzióra ({2}/3. próbálkozás)…",
  "L'altro PC non si è aggiornato: mi collego lo stesso con la sua versione.": "A másik gép nem frissült: ennek ellenére csatlakozom az ő verziójával.",
- "{0} ha una versione più nuova: il servizio aggiorna IP-DESK-CTRL, il programma si chiude e si riapre.": "{0} újabb verziót használ: a szolgáltatás frissíti az IP-DESK-CTRL-t, a program bezárul és újra megnyílik."
+ "{0} ha una versione più nuova: il servizio aggiorna IP-DESK-CTRL, il programma si chiude e si riapre.": "{0} újabb verziót használ: a szolgáltatás frissíti az IP-DESK-CTRL-t, a program bezárul és újra megnyílik.",
+ "IMPOSTAZIONI": "BEÁLLÍTÁSOK"
 }

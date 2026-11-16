@@ -243,21 +243,24 @@ jobs:
       - name: Compilazione come su Flathub
         run: |
           cd "$RUNNER_TEMP/fh"
-          flatpak-builder --user --install-deps-from=flathub --disable-rofiles-fuse --force-clean --mirror-screenshots-url=https://dl.flathub.org/media --repo=repo build io.github.ic8tem.IP_DESK_CTRL.yml
+          flatpak-builder --user --install-deps-from=flathub --disable-rofiles-fuse --force-clean --mirror-screenshots-url=https://dl.flathub.org/media --repo=repo build io.github.ic8tem.IP-DESK-CTRL.yml
       - name: Controllo di Flathub (flatpak-builder-lint)
         continue-on-error: true
         run: |
           cd "$RUNNER_TEMP/fh"
           flatpak install --user -y --noninteractive flathub org.flatpak.Builder >/dev/null
-          flatpak run --command=flatpak-builder-lint org.flatpak.Builder manifest io.github.ic8tem.IP_DESK_CTRL.yml 2>&1 | tee lint-manifest.txt || true
+          flatpak run --command=flatpak-builder-lint org.flatpak.Builder manifest io.github.ic8tem.IP-DESK-CTRL.yml 2>&1 | tee lint-manifest.txt || true
           flatpak run --command=flatpak-builder-lint org.flatpak.Builder repo repo 2>&1 | tee lint-repo.txt || true
       - name: Schermata della finestra principale (inglese)
         if: always()
         continue-on-error: true
         run: |
-          dotnet publish src/IpDeskCtrl.Desktop/IpDeskCtrl.Desktop.csproj -c Release -r linux-x64 -o shot >/dev/null
+          V="$(tr -d '[:space:]' < VERSION)"
+          dotnet publish src/IpDeskCtrl.Desktop/IpDeskCtrl.Desktop.csproj -c Release -r linux-x64 -p:Version=$V -o shot >/dev/null
           export LANG=en_US.UTF-8 LANGUAGE=en
-          Xvfb :99 -screen 0 1400x900x24 & sleep 2
+          # come su Flathub: niente riquadro di aggiornamento nella schermata
+          export FLATPAK_ID=io.github.ic8tem.IP-DESK-CTRL IPDESKCTRL_FLATHUB=1
+          Xvfb :99 -screen 0 1400x1000x24 & sleep 2
           export DISPLAY=:99
           mkdir -p "$RUNNER_TEMP/home"
           HOME="$RUNNER_TEMP/home" ./shot/IP-DESK-CTRL & sleep 30

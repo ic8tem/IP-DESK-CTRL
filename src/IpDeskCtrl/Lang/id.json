@@ -576,5 +576,6 @@
  "Il PC remoto non riesce a decodificare il video compresso: uso i riquadri.": "Komputer jarak jauh tidak bisa mendekode video terkompresi: saya pakai kotak-kotak.",
  "L'altro PC ha la versione {0}: gli chiedo di aggiornarsi alla {1} (tentativo {2} di 3)…": "PC lain memakai versi {0}: memintanya memperbarui ke {1} (percobaan {2} dari 3)…",
  "L'altro PC non si è aggiornato: mi collego lo stesso con la sua versione.": "PC lain tidak diperbarui: tetap menyambung dengan versinya.",
- "{0} ha una versione più nuova: il servizio aggiorna IP-DESK-CTRL, il programma si chiude e si riapre.": "{0} memiliki versi lebih baru: layanan memperbarui IP-DESK-CTRL, program akan ditutup dan dibuka kembali."
+ "{0} ha una versione più nuova: il servizio aggiorna IP-DESK-CTRL, il programma si chiude e si riapre.": "{0} memiliki versi lebih baru: layanan memperbarui IP-DESK-CTRL, program akan ditutup dan dibuka kembali.",
+ "IMPOSTAZIONI": "PENGATURAN"
 }

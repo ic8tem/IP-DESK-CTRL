@@ -576,5 +576,6 @@
  "Il PC remoto non riesce a decodificare il video compresso: uso i riquadri.": "The remote PC cannot decode the compressed video: using tiles.",
  "L'altro PC ha la versione {0}: gli chiedo di aggiornarsi alla {1} (tentativo {2} di 3)…": "The other PC has version {0}: asking it to update to {1} (attempt {2} of 3)…",
  "L'altro PC non si è aggiornato: mi collego lo stesso con la sua versione.": "The other PC did not update: connecting anyway with its version.",
- "{0} ha una versione più nuova: il servizio aggiorna IP-DESK-CTRL, il programma si chiude e si riapre.": "{0} has a newer version: the service is updating IP-DESK-CTRL, the program will close and reopen."
+ "{0} ha una versione più nuova: il servizio aggiorna IP-DESK-CTRL, il programma si chiude e si riapre.": "{0} has a newer version: the service is updating IP-DESK-CTRL, the program will close and reopen.",
+ "IMPOSTAZIONI": "SETTINGS"
 }

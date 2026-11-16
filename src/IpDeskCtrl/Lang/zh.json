@@ -576,5 +576,6 @@
  "Il PC remoto non riesce a decodificare il video compresso: uso i riquadri.": "远程电脑无法解码压缩视频：改用方块。",
  "L'altro PC ha la versione {0}: gli chiedo di aggiornarsi alla {1} (tentativo {2} di 3)…": "另一台电脑的版本为 {0}：正在请求其更新到 {1}（第 {2} 次，共 3 次）…",
  "L'altro PC non si è aggiornato: mi collego lo stesso con la sua versione.": "另一台电脑未更新：仍以其版本进行连接。",
- "{0} ha una versione più nuova: il servizio aggiorna IP-DESK-CTRL, il programma si chiude e si riapre.": "{0} 使用更新的版本：服务正在更新 IP-DESK-CTRL，程序将关闭并重新打开。"
+ "{0} ha una versione più nuova: il servizio aggiorna IP-DESK-CTRL, il programma si chiude e si riapre.": "{0} 使用更新的版本：服务正在更新 IP-DESK-CTRL，程序将关闭并重新打开。",
+ "IMPOSTAZIONI": "设置"
 }

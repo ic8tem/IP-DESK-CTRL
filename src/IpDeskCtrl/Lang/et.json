@@ -576,5 +576,6 @@
  "Il PC remoto non riesce a decodificare il video compresso: uso i riquadri.": "Kaugarvuti ei suuda tihendatud videot dekodeerida: kasutan ruute.",
  "L'altro PC ha la versione {0}: gli chiedo di aggiornarsi alla {1} (tentativo {2} di 3)…": "Teisel arvutil on versioon {0}: palun tal uuendada versioonile {1} (katse {2}/3)…",
  "L'altro PC non si è aggiornato: mi collego lo stesso con la sua versione.": "Teine arvuti ei uuendanud: ühendan ikkagi tema versiooniga.",
- "{0} ha una versione più nuova: il servizio aggiorna IP-DESK-CTRL, il programma si chiude e si riapre.": "{0} on uuem versioon: teenus uuendab IP-DESK-CTRL-i, programm sulgub ja avaneb uuesti."
+ "{0} ha una versione più nuova: il servizio aggiorna IP-DESK-CTRL, il programma si chiude e si riapre.": "{0} on uuem versioon: teenus uuendab IP-DESK-CTRL-i, programm sulgub ja avaneb uuesti.",
+ "IMPOSTAZIONI": "SEADED"
 }

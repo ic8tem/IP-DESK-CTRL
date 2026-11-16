@@ -576,5 +576,6 @@
  "Il PC remoto non riesce a decodificare il video compresso: uso i riquadri.": "रिमोट कंप्यूटर संपीड़ित वीडियो डिकोड नहीं कर पा रहा: वर्ग उपयोग कर रहा हूँ।",
  "L'altro PC ha la versione {0}: gli chiedo di aggiornarsi alla {1} (tentativo {2} di 3)…": "दूसरे पीसी पर संस्करण {0} है: उसे {1} पर अपडेट होने को कह रहा हूँ (प्रयास {2} / 3)…",
  "L'altro PC non si è aggiornato: mi collego lo stesso con la sua versione.": "दूसरा पीसी अपडेट नहीं हुआ: फिर भी उसके संस्करण के साथ जुड़ रहा हूँ।",
- "{0} ha una versione più nuova: il servizio aggiorna IP-DESK-CTRL, il programma si chiude e si riapre.": "{0} के पास नया संस्करण है: सेवा IP-DESK-CTRL को अपडेट कर रही है, प्रोग्राम बंद होकर फिर खुलेगा।"
+ "{0} ha una versione più nuova: il servizio aggiorna IP-DESK-CTRL, il programma si chiude e si riapre.": "{0} के पास नया संस्करण है: सेवा IP-DESK-CTRL को अपडेट कर रही है, प्रोग्राम बंद होकर फिर खुलेगा।",
+ "IMPOSTAZIONI": "सेटिंग्स"
 }

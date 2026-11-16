@@ -576,5 +576,6 @@
  "Il PC remoto non riesce a decodificare il video compresso: uso i riquadri.": "لا يستطيع الحاسوب البعيد فك ترميز الفيديو المضغوط: أستخدم المربعات.",
  "L'altro PC ha la versione {0}: gli chiedo di aggiornarsi alla {1} (tentativo {2} di 3)…": "لدى الحاسوب الآخر الإصدار {0}: أطلب منه التحديث إلى {1} (المحاولة {2} من 3)…",
  "L'altro PC non si è aggiornato: mi collego lo stesso con la sua versione.": "لم يُحدَّث الحاسوب الآخر: سأتصل على أي حال بإصداره.",
- "{0} ha una versione più nuova: il servizio aggiorna IP-DESK-CTRL, il programma si chiude e si riapre.": "لدى {0} إصدار أحدث: الخدمة تحدّث IP-DESK-CTRL، وسيُغلق البرنامج ثم يُعاد فتحه."
+ "{0} ha una versione più nuova: il servizio aggiorna IP-DESK-CTRL, il programma si chiude e si riapre.": "لدى {0} إصدار أحدث: الخدمة تحدّث IP-DESK-CTRL، وسيُغلق البرنامج ثم يُعاد فتحه.",
+ "IMPOSTAZIONI": "الإعدادات"
 }
