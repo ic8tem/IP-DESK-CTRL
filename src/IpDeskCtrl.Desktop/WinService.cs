@@ -117,7 +117,7 @@ namespace IpDeskCtrl.Desktop
             string copy = Path.Combine(dir, name);
             File.Copy(file, copy, true);
             string hex;
-            using (var f = File.OpenRead(copy)) hex = Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(f)).ToLowerInvariant();
+            using (var f = File.OpenRead(copy)) using (var h = System.Security.Cryptography.SHA256.Create()) hex = Convert.ToHexString(h.ComputeHash(f)).ToLowerInvariant();
             if (hex != sha) return "ERR impronta diversa";
             var rel = UpdateCheck.LatestAsync(CancellationToken.None).GetAwaiter().GetResult();
             var asset = rel?.Assets.FirstOrDefault(a => a.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
