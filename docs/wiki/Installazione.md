@@ -6,13 +6,15 @@ Tutti i file sono nella pagina **[Releases](https://github.com/ic8tem/IP-DESK-CT
 
 ## Windows
 
-Serve **Windows 10 o 11** (anche la versione portatile): su Windows 7 e 8 il programma non parte, perché .NET 8 non li supporta.
+Per **Windows 10 e 11** ci sono i pacchetti `win`. Per **Windows 7 SP1, 8 e 8.1** ci sono i pacchetti `win7`: sono compilati con .NET 6, perché .NET 8 su quei sistemi non parte (manca GetSystemTimePreciseAsFileTime). Funzionano allo stesso modo, servizio compreso; su Windows 7 il video compresso dipende dai codificatori presenti, altrimenti si usano i riquadri. Ognuno si aggiorna da solo con il pacchetto del suo tipo.
 
 | Sistema | File |
 |---|---|
 | Windows 64 bit | `IP-DESK-CTRL-…-win-x64-setup.exe` |
 | Windows 32 bit | `IP-DESK-CTRL-…-win-x86-setup.exe` |
 | Windows ARM64 (PC con Snapdragon) | `IP-DESK-CTRL-…-win-arm64-setup.exe` |
+| Windows 7 SP1, 8, 8.1 - 64 bit | `IP-DESK-CTRL-…-win7-x64-setup.exe` |
+| Windows 7 SP1, 8, 8.1 - 32 bit | `IP-DESK-CTRL-…-win7-x86-setup.exe` |
 
 1. Avvia l'installatore e accetta la richiesta di Windows (serve l'amministratore).
 2. Lascia attiva l'opzione **Accesso completo**: installa il [servizio di Windows](Servizio-di-Windows), che permette di vedere e comandare le finestre UAC, la schermata di blocco e i programmi da amministratore, e rende il PC raggiungibile appena acceso.
