@@ -90,8 +90,8 @@ namespace IpDeskCtrl.Core
             string rid = Rid();
             return k switch
             {
-                Kind.WindowsSetup => string.Format(System.Globalization.CultureInfo.InvariantCulture, "IP-DESK-CTRL-{0}-win-{1}-setup.exe", ver, (rid is "x86" or "arm64" ? rid : "x64")),
-                Kind.WindowsPortable or Kind.WindowsScoop => string.Format(System.Globalization.CultureInfo.InvariantCulture, "IP-DESK-CTRL-{0}-win-{1}-portatile.zip", ver, (rid is "x86" or "arm64" ? rid : "x64")),
+                Kind.WindowsSetup => string.Format(System.Globalization.CultureInfo.InvariantCulture, "IP-DESK-CTRL-{0}-{2}-{1}-setup.exe", ver, (rid is "x86" or "arm64" ? rid : "x64"), Compat.WinPrefix),
+                Kind.WindowsPortable or Kind.WindowsScoop => string.Format(System.Globalization.CultureInfo.InvariantCulture, "IP-DESK-CTRL-{0}-{2}-{1}-portatile.zip", ver, (rid is "x86" or "arm64" ? rid : "x64"), Compat.WinPrefix),
                 Kind.LinuxDeb => $"ip-desk-ctrl_{ver}_{(rid == "arm64" ? "arm64" : rid == "arm" ? "armhf" : "amd64")}.deb",
                 Kind.LinuxRpm => $"ip-desk-ctrl-{ver}-1.{(rid == "arm64" ? "aarch64" : rid == "arm" ? "armv7hl" : "x86_64")}.rpm",
                 Kind.LinuxSlackware => $"ip-desk-ctrl-{ver}-{(rid == "arm64" ? "aarch64" : rid == "arm" ? "arm" : "x86_64")}-1_ic8tem.txz",

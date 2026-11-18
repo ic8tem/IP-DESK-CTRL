@@ -7,10 +7,18 @@
 #ifndef Arch
   #define Arch "x64"
 #endif
+#ifndef Win
+  #define Win "win"
+#endif
 
 [Setup]
-; .NET 8 non parte su Windows 7/8/8.1 (manca GetSystemTimePreciseAsFileTime in KERNEL32): l'installatore si ferma prima
+; .NET 8 non parte su Windows 7/8/8.1 (manca GetSystemTimePreciseAsFileTime in KERNEL32): l'installatore si ferma prima;
+; per Windows 7 SP1, 8 e 8.1 c'è il pacchetto win7 (.NET 6, /DWin=win7)
+#if Win == "win7"
+MinVersion=6.1sp1
+#else
 MinVersion=10.0
+#endif
 AppId={{3E8B1C55-9A2D-4C71-B0F4-6D2E5A7C9B13}
 AppName=IP-DESK-CTRL
 AppVersion={#AppVersion}
@@ -22,7 +30,7 @@ DefaultDirName={autopf}\IP-DESK-CTRL
 DefaultGroupName=IP-DESK-CTRL
 DisableProgramGroupPage=yes
 OutputDir={#OutDir}
-OutputBaseFilename=IP-DESK-CTRL-{#AppVersion}-win-{#Arch}-setup
+OutputBaseFilename=IP-DESK-CTRL-{#AppVersion}-{#Win}-{#Arch}-setup
 SetupIconFile=..\..\src\IpDeskCtrl\Assets\icon.ico
 UninstallDisplayIcon={app}\IP-DESK-CTRL.exe
 Compression=lzma2

@@ -30,7 +30,7 @@ namespace IpDeskCtrl.Core
             byte[] nonce = RandomNumberGenerator.GetBytes(NonceSize);
             byte[] ct = new byte[plain.Length];
             byte[] tag = new byte[TagSize];
-            using (var g = new AesGcm(key, TagSize)) g.Encrypt(nonce, plain, ct, tag);
+            using (var g = Compat.Gcm(key, TagSize)) g.Encrypt(nonce, plain, ct, tag);
             return Concat(nonce, tag, ct);
         }
 
@@ -41,7 +41,7 @@ namespace IpDeskCtrl.Core
             var tag = sealedData.AsSpan(NonceSize, TagSize);
             var ct = sealedData.AsSpan(NonceSize + TagSize);
             byte[] plain = new byte[ct.Length];
-            using (var g = new AesGcm(key, TagSize)) g.Decrypt(nonce, ct, tag, plain);
+            using (var g = Compat.Gcm(key, TagSize)) g.Decrypt(nonce, ct, tag, plain);
             return plain;
         }
 

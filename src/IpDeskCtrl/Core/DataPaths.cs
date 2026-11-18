@@ -114,7 +114,7 @@ namespace IpDeskCtrl.Core
                     new DirectoryInfo(dir).SetAccessControl(sec);
                 }
                 else
-                    File.SetUnixFileMode(dir, UnixFileMode.UserRead | UnixFileMode.UserWrite | UnixFileMode.UserExecute);
+                    Compat.SetUnixMode(dir, 0b111_000_000);
             }
             catch { }
         }
@@ -208,7 +208,7 @@ namespace IpDeskCtrl.Core
                 var lines = entries.OrderBy(e => e.t).ThenBy(e => e.order)
                                    .Select(e => $"{e.t:yyyy-MM-dd HH:mm:ss}Z | {e.text}").ToList();
                 File.WriteAllLines(target, lines);
-                if (!OperatingSystem.IsWindows()) try { File.SetUnixFileMode(target, (UnixFileMode)0b110_110_110); } catch { }
+                if (!OperatingSystem.IsWindows()) try { Compat.SetUnixMode(target, 0b110_110_110); } catch { }
                 foreach (var s in src) if (!Path.GetFullPath(s).Equals(Path.GetFullPath(target), StringComparison.OrdinalIgnoreCase)) TryDelete(s);
             }
         }

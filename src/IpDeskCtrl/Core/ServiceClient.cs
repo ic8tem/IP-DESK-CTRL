@@ -126,7 +126,7 @@ namespace IpDeskCtrl.Core
             {
                 while (!_cts.IsCancellationRequested)
                 {
-                    string? line = await _r.ReadLineAsync(_cts.Token);
+                    string? line = await Compat.ReadLineAsync(_r, _cts.Token);
                     if (line == null) break;
                     string[] p = line.Split(' ', 3);
                     switch (p[0])

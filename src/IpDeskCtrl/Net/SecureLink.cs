@@ -63,8 +63,8 @@ namespace IpDeskCtrl.Net
             UdpTransport = t.Udp;
             Remote = t.Remote;
             Local = t.Local;
-            _tx = new AesGcm(txKey, Crypto.TagSize);
-            _rx = new AesGcm(rxKey, Crypto.TagSize);
+            _tx = Compat.Gcm(txKey, Crypto.TagSize);
+            _rx = Compat.Gcm(rxKey, Crypto.TagSize);
             UdpKey = udpKey;
             MyRole = role;
             PeerKey = peerKey;
