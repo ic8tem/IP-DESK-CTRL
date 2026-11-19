@@ -180,7 +180,7 @@ namespace IpDeskCtrl.Core
                 if (Run("security", $"find-generic-password -s {Service} -a {Account} -w").Trim().Length > 0) return;
             }
             File.WriteAllBytes(KeyPath, Crypto.Seal(LocalKey(), key));
-            try { File.SetUnixFileMode(KeyPath, UnixFileMode.UserRead | UnixFileMode.UserWrite); } catch { }
+            try { Compat.SetUnixMode(KeyPath, 0b110_000_000); } catch { }
         }
 
         private static byte[] LocalKey()

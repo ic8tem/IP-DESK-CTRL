@@ -246,7 +246,7 @@ namespace IpDeskCtrl.Core
                         {
                             using var fs = new FileStream(FilePath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite | FileShare.Delete);
                             fs.Write(data, 0, data.Length);
-                            if (fresh && !OperatingSystem.IsWindows()) try { File.SetUnixFileMode(FilePath, (UnixFileMode)0b110_110_110); } catch { }
+                            if (fresh && !OperatingSystem.IsWindows()) try { Compat.SetUnixMode(FilePath, 0b110_110_110); } catch { }
                             break;
                         }
                         catch (IOException) { System.Threading.Thread.Sleep(15); }

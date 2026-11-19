@@ -97,7 +97,7 @@ namespace IpDeskCtrl.Core
                     try
                     {
                         System.IO.File.WriteAllBytes(path, OperatingSystem.IsWindows() ? ProtectedData.Protect(s, null, DataProtectionScope.CurrentUser) : s);
-                        if (!OperatingSystem.IsWindows()) System.IO.File.SetUnixFileMode(path, System.IO.UnixFileMode.UserRead | System.IO.UnixFileMode.UserWrite);
+                        if (!OperatingSystem.IsWindows()) IpDeskCtrl.Core.Compat.SetUnixMode(path, 0b110_000_000);
                     }
                     catch { }
                 }

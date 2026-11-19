@@ -3,9 +3,11 @@
 
 Le versioni con protocollo diverso non si collegano tra loro: aggiorna tutti i dispositivi alla stessa versione principale (la 0.4.1 si collega con la 0.4.0; la 0.5 si collega con la 0.4).
 
+## 0.5.19 — 18 novembre 2026
+- **Windows 7 SP1, 8 e 8.1**: nuovi pacchetti `win7` a 64 e 32 bit (installatore e versione senza installazione), compilati con .NET 6 come in YA-MS, perché .NET 8 su quei sistemi non parte. Si aggiornano da soli con i pacchetti `win7`; quelli per Windows 10 e 11 restano come prima.
+
 ## 0.5.18 — 16 novembre 2026
 - **Più persone comandano insieme**: se due o più si collegano allo stesso PC, ora possono comandarlo tutti (fino a 5 in tutto), non più uno solo con gli altri a guardare. Gli altri entrano con le stesse regole del primo: richiesta da accettare oppure accesso senza conferma, con la password se è impostata. L'interruttore di mouse e tastiera e «Disconnetti» valgono per tutti; se il primo esce, la finestrella «comandato da» passa al successivo.
-- **Pagina delle release**: in cima c'è la tabella «Scarica la versione per il tuo sistema» con i collegamenti diretti a ogni file (installatore e versione senza installazione).
 
 ## 0.5.17 — 16 novembre 2026
 - **Due porte scelte da te**: in Impostazioni › «Porte aperte sul router» si possono scrivere due porte aperte a mano sul router (inoltro TCP e UDP verso il PC, stesso numero dentro e fuori). Si provano per prime, anche con l'UPnP; vale la prima raggiungibile da internet. Con il servizio di Windows le apre il servizio.

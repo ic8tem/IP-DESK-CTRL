@@ -1,4 +1,5 @@
 using System;
+using IpDeskCtrl.Core;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -65,7 +66,7 @@ namespace IpDeskCtrl.Net.Udp
                 const int SIO_UDP_CONNRESET = -1744830452;
                 try { _udp.Client.IOControl(SIO_UDP_CONNRESET, new byte[] { 0 }, null); } catch { }
             }
-            if (key != null) _aes = new AesGcm(key, 16);
+            if (key != null) _aes = Compat.Gcm(key, 16);
             _ = Task.Run(ReceiveLoopAsync);
             _ = Task.Run(MaintainLoopAsync);
         }
@@ -76,7 +77,7 @@ namespace IpDeskCtrl.Net.Udp
         public void SetKey(byte[] key)
         {
             var old = _aes;
-            _aes = new AesGcm(key, 16);
+            _aes = Compat.Gcm(key, 16);
             old?.Dispose();
         }
 

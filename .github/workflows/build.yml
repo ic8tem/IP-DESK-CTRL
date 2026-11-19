@@ -12,8 +12,11 @@ permissions:
 
 jobs:
   build:
-    name: ${{ matrix.rid }}
+    name: ${{ matrix.w7 && format('win7-{0}', matrix.arch) || matrix.rid }}
     runs-on: ${{ matrix.os }}
+    env:
+      # nome del pacchetto: il rid, oppure win7-x64 / win7-x86 per Windows 7 SP1, 8 e 8.1 (.NET 6)
+      NAME: ${{ matrix.w7 && format('win7-{0}', matrix.arch) || matrix.rid }}
     strategy:
       fail-fast: false
       matrix:
@@ -21,6 +24,9 @@ jobs:
           - { os: windows-latest, rid: win-x64, arch: x64 }
           - { os: windows-latest, rid: win-x86, arch: x86 }
           - { os: windows-latest, rid: win-arm64, arch: arm64 }
+          # Windows 7 SP1, 8 e 8.1: .NET 8 lì non parte (manca GetSystemTimePreciseAsFileTime), quindi .NET 6
+          - { os: windows-latest, rid: win-x64, arch: x64, w7: true }
+          - { os: windows-latest, rid: win-x86, arch: x86, w7: true }
           - { os: ubuntu-24.04,   rid: linux-x64 }
           - { os: ubuntu-24.04-arm, rid: linux-arm64 }
           - { os: ubuntu-latest,  rid: linux-arm }
@@ -32,7 +38,9 @@ jobs:
 
       - uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.0.x'
+          dotnet-version: |
+            6.0.x
+            8.0.x
 
       - name: Versione
         shell: bash
@@ -40,9 +48,9 @@ jobs:
           if [[ "$GITHUB_REF" == refs/tags/v* ]]; then V="${GITHUB_REF#refs/tags/v}"; else V="$(tr -d '[:space:]' < VERSION)"; fi
           echo "VERSION=$V" >> "$GITHUB_ENV"
 
-      - name: Compila ${{ matrix.rid }}
+      - name: Compila ${{ env.NAME }}
         shell: bash
-        run: dotnet publish src/IpDeskCtrl.Desktop/IpDeskCtrl.Desktop.csproj -c Release -r ${{ matrix.rid }} -p:Version=$VERSION -o dist/${{ matrix.rid }}
+        run: dotnet publish src/IpDeskCtrl.Desktop/IpDeskCtrl.Desktop.csproj -c Release -r ${{ matrix.rid }} -p:Version=$VERSION -p:Windows7=${{ matrix.w7 == true }} -o dist/${{ env.NAME }}
 
       # ---------------------------------------------------------------- Windows: Setup.exe + zip portatile
       - name: Installatore Windows
@@ -53,13 +61,13 @@ jobs:
           $iscc = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
           if (-not (Test-Path $iscc)) { choco install innosetup -y --no-progress | Out-Null }
           if (-not (Test-Path $iscc)) { $iscc = (Get-Command iscc -ErrorAction Stop).Source }
-          $src = (Resolve-Path dist/${{ matrix.rid }}).Path
+          $src = (Resolve-Path dist/${{ env.NAME }}).Path
           $out = (Resolve-Path out).Path
-          & $iscc "/DAppVersion=$env:VERSION" "/DArch=${{ matrix.arch }}" "/DSourceDir=$src" "/DOutDir=$out" packaging/windows/IP-DESK-CTRL.iss
+          & $iscc "/DAppVersion=$env:VERSION" "/DArch=${{ matrix.arch }}" "/DSourceDir=$src" "/DOutDir=$out" "/DWin=${{ matrix.w7 && 'win7' || 'win' }}" packaging/windows/IP-DESK-CTRL.iss
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          Copy-Item THIRD-PARTY-NOTICES.txt dist/${{ matrix.rid }}/
-          Copy-Item LICENSE dist/${{ matrix.rid }}/LICENSE.txt
-          Compress-Archive -Path dist/${{ matrix.rid }}/IP-DESK-CTRL.exe, dist/${{ matrix.rid }}/THIRD-PARTY-NOTICES.txt, dist/${{ matrix.rid }}/LICENSE.txt -DestinationPath "out/IP-DESK-CTRL-$env:VERSION-${{ matrix.rid }}-portatile.zip"
+          Copy-Item THIRD-PARTY-NOTICES.txt dist/${{ env.NAME }}/
+          Copy-Item LICENSE dist/${{ env.NAME }}/LICENSE.txt
+          Compress-Archive -Path dist/${{ env.NAME }}/IP-DESK-CTRL.exe, dist/${{ env.NAME }}/THIRD-PARTY-NOTICES.txt, dist/${{ env.NAME }}/LICENSE.txt -DestinationPath "out/IP-DESK-CTRL-$env:VERSION-${{ env.NAME }}-portatile.zip"
 
       # ---------------------------------------------------------------- Linux e Raspberry: .deb, .rpm, Slackware .txz, tar.gz portatile
       - name: Pacchetti Linux
@@ -67,12 +75,12 @@ jobs:
         shell: bash
         run: |
           chmod +x packaging/linux/*.sh
-          packaging/linux/make-deb.sh ${{ matrix.rid }} "$VERSION" dist/${{ matrix.rid }} out
+          packaging/linux/make-deb.sh ${{ matrix.rid }} "$VERSION" dist/${{ env.NAME }} out
           sudo apt-get install -y -qq rpm >/dev/null
-          packaging/linux/make-rpm.sh ${{ matrix.rid }} "$VERSION" dist/${{ matrix.rid }} out
-          if [ "${{ matrix.rid }}" != "linux-arm" ]; then packaging/linux/make-slackpkg.sh ${{ matrix.rid }} "$VERSION" dist/${{ matrix.rid }} out; fi
+          packaging/linux/make-rpm.sh ${{ matrix.rid }} "$VERSION" dist/${{ env.NAME }} out
+          if [ "${{ matrix.rid }}" != "linux-arm" ]; then packaging/linux/make-slackpkg.sh ${{ matrix.rid }} "$VERSION" dist/${{ env.NAME }} out; fi
           mkdir -p pkg/IP-DESK-CTRL
-          cp dist/${{ matrix.rid }}/IP-DESK-CTRL pkg/IP-DESK-CTRL/
+          cp dist/${{ env.NAME }}/IP-DESK-CTRL pkg/IP-DESK-CTRL/
           chmod +x pkg/IP-DESK-CTRL/IP-DESK-CTRL
           cp THIRD-PARTY-NOTICES.txt LICENSE src/IpDeskCtrl/Assets/icon.png pkg/IP-DESK-CTRL/
           tar -czf "out/IP-DESK-CTRL-$VERSION-${{ matrix.rid }}-portatile.tar.gz" -C pkg IP-DESK-CTRL
@@ -84,7 +92,7 @@ jobs:
         shell: bash
         run: |
           sudo apt-get install -y -qq libfuse2t64 >/dev/null 2>&1 || sudo apt-get install -y -qq libfuse2 >/dev/null 2>&1 || true
-          packaging/linux/make-appimage.sh ${{ matrix.rid }} "$VERSION" dist/${{ matrix.rid }} out
+          packaging/linux/make-appimage.sh ${{ matrix.rid }} "$VERSION" dist/${{ env.NAME }} out
           packaging/linux/make-arch.sh ${{ matrix.rid }} "$VERSION" "$(ls out/*.deb | head -n 1)" out
 
       - name: Snap
@@ -93,7 +101,7 @@ jobs:
         shell: bash
         run: |
           sudo snap install snapcraft --classic
-          packaging/linux/make-snap.sh ${{ matrix.rid }} "$VERSION" dist/${{ matrix.rid }} out
+          packaging/linux/make-snap.sh ${{ matrix.rid }} "$VERSION" dist/${{ env.NAME }} out
 
       - name: Flatpak
         if: matrix.rid == 'linux-x64' || matrix.rid == 'linux-arm64'
@@ -101,7 +109,7 @@ jobs:
         shell: bash
         run: |
           sudo apt-get install -y -qq flatpak flatpak-builder >/dev/null
-          packaging/linux/make-flatpak.sh ${{ matrix.rid }} "$VERSION" dist/${{ matrix.rid }} out
+          packaging/linux/make-flatpak.sh ${{ matrix.rid }} "$VERSION" dist/${{ env.NAME }} out
 
       # ---------------------------------------------------------------- macOS: .dmg + .app zip
       - name: Pacchetti macOS
@@ -109,11 +117,11 @@ jobs:
         shell: bash
         run: |
           chmod +x packaging/macos/make-dmg.sh
-          packaging/macos/make-dmg.sh ${{ matrix.rid }} "$VERSION" dist/${{ matrix.rid }} out
+          packaging/macos/make-dmg.sh ${{ matrix.rid }} "$VERSION" dist/${{ env.NAME }} out
 
       - uses: actions/upload-artifact@v4
         with:
-          name: IP-DESK-CTRL-${{ matrix.rid }}
+          name: IP-DESK-CTRL-${{ env.NAME }}
           path: out/*
 
   # ---------------------------------------------------------------- Android: APK firmato
@@ -301,10 +309,6 @@ jobs:
         with:
           path: artifacts
           merge-multiple: true
-      - name: Testo della release (tabella dei file con i collegamenti)
-        shell: bash
-        run: |
-          { python3 packaging/release/tabella.py "$VERSION"; echo; cat packaging/release/note.md; } > release-body.md
       - uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ env.VERSION }}
@@ -312,7 +316,48 @@ jobs:
           name: IP-DESK-CTRL ${{ env.VERSION }}
           overwrite_files: true
           files: artifacts/*
-          body_path: release-body.md
+          body: |
+            | Sistema | File |
+            |---|---|
+            | Windows 64 bit | `IP-DESK-CTRL-…-win-x64-setup.exe` (portatile: `…-win-x64-portatile.zip`) |
+            | Windows 32 bit | `…-win-x86-setup.exe` (portatile: `…-win-x86-portatile.zip`) |
+            | Windows ARM64 (PC con Snapdragon) | `…-win-arm64-setup.exe` (portatile: `…-win-arm64-portatile.zip`) |
+            | Debian / Ubuntu / Mint | `ip-desk-ctrl_…_amd64.deb` · `…_arm64.deb` · `…_armhf.deb` |
+            | Fedora / openSUSE | `ip-desk-ctrl-…-1.x86_64.rpm` · `…-1.aarch64.rpm` · `…-1.armv7hl.rpm` |
+            | Raspberry Pi OS 64 bit (arm64) | `ip-desk-ctrl_…_arm64.deb` |
+            | Raspberry Pi OS 32 bit (armhf) | `ip-desk-ctrl_…_armhf.deb` |
+            | Slackware ARM64 (anche Raspberry Pi) · Slackware64 | `ip-desk-ctrl-…-aarch64-1_ic8tem.txz` · `…-x86_64-1_ic8tem.txz` |
+            | Linux x86_64 (qualsiasi distribuzione) | `IP-DESK-CTRL-…-linux-x64-portatile.tar.gz` |
+            | Linux aarch64 (PC e mini-PC non Raspberry) | `IP-DESK-CTRL-…-linux-arm64-portatile.tar.gz` |
+            | Linux armv7l | `IP-DESK-CTRL-…-linux-arm-portatile.tar.gz` |
+            | Arch / Manjaro / EndeavourOS / Arch Linux ARM | `ip-desk-ctrl-…-1-x86_64.pkg.tar.zst` · `…-aarch64.pkg.tar.zst` |
+            | Qualsiasi Linux, un solo file (AppImage) | `IP-DESK-CTRL-…-x86_64.AppImage` · `…-aarch64.AppImage` |
+            | Snap | `ip-desk-ctrl_…_amd64.snap` · `…_arm64.snap` |
+            | Flatpak (sessioni X11) | `IP-DESK-CTRL-…-x86_64.flatpak` · `…-aarch64.flatpak` |
+            | Alpine Linux (musl) | `IP-DESK-CTRL-…-linux-musl-x64-portatile.tar.gz` · `…-linux-musl-arm64-portatile.tar.gz` |
+            | Chromebook | l'APK Android, oppure il `.deb` nel Linux del Chromebook |
+            | macOS Apple Silicon (M1-M4) | `IP-DESK-CTRL-…-osx-arm64.dmg` |
+            | macOS Intel | `IP-DESK-CTRL-…-osx-x64.dmg` |
+            | Android 8.0 e successivi | `IP-DESK-CTRL-…-android.apk` |
+
+            macOS: al primo avvio clic destro › Apri. Android: consenti l'installazione da origini sconosciute; per farti comandare dal PC attiva il servizio in Impostazioni › Accessibilità › IP-DESK-CTRL.
+
+            Linux e Raspberry: `sudo apt install ./ip-desk-ctrl_…deb` · Fedora `sudo dnf install ./ip-desk-ctrl-…rpm` · openSUSE `sudo zypper install --allow-unsigned-rpm ./ip-desk-ctrl-…rpm` · Slackware `installpkg ip-desk-ctrl-…txz` · Arch `sudo pacman -U ./ip-desk-ctrl-…pkg.tar.zst` · AppImage: rendilo eseguibile e avvialo · Snap `sudo snap install --dangerous --classic ./ip-desk-ctrl_…snap` · Alpine: `apk add libstdc++ fontconfig libx11`, poi scompatta e avvia (con la sessione Wayland riavvia dopo l'installazione: serve la regola per mouse e tastiera).
+            macOS con Homebrew: `brew tap ic8tem/ip-desk-ctrl https://github.com/ic8tem/IP-DESK-CTRL` e poi `brew install --cask ip-desk-ctrl`.
+            macOS: concedi «Registrazione schermo» e «Accessibilità» in Impostazioni di Sistema › Privacy e sicurezza; per l'audio installa BlackHole 2ch.
+            Le versioni *portatile* non richiedono installazione.
+
+            **Aggiornamenti automatici** per tutte le distribuzioni (controllo ogni 30 minuti, installazione quando nessuno è collegato), tranne Android e Chromebook (solo avviso, l'APK si installa a mano). I pacchetti .deb, .rpm, Arch e Slackware si aggiornano senza password; lo Snap chiede la password di amministratore.
+            Windows con Scoop: `scoop bucket add ip-desk-ctrl https://github.com/ic8tem/IP-DESK-CTRL` e poi `scoop install ip-desk-ctrl`. Chocolatey: il pacchetto `ip-desk-ctrl.…nupkg` è allegato qui (`choco install ip-desk-ctrl -s .`). Flatpak: `flatpak install --user ./IP-DESK-CTRL-…flatpak`.
+            Lingue: 36, in Impostazioni › «Lingua».
+            Video compresso H.264/H.265/AV1: serve ffmpeg su tutti e due i PC (Windows: Impostazioni › Scarica ffmpeg; Linux: sudo apt install ffmpeg o sudo dnf install ffmpeg-free; Mac: brew install ffmpeg).
+            La X della finestra nasconde soltanto: IP-DESK-CTRL resta attivo con l'icona vicino all'orologio; per uscire clic destro sull'icona › «Esci da IP-DESK-CTRL».
+
+            **Compatibilità**: la 0.5 si collega con la 0.4 (protocollo 3); microfono, volume, risoluzione adatta e cartella condivisa servono la 0.5 da entrambe le parti.
+
+            Guida: https://github.com/ic8tem/IP-DESK-CTRL/wiki · Novità di ogni versione: https://github.com/ic8tem/IP-DESK-CTRL/wiki/Storia-delle-versioni
+
+            IP-DESK-CTRL è gratuito e senza pubblicità: se ti è utile puoi sostenerlo su [Ko-fi](https://ko-fi.com/ic8tem) ♥
 
       # Homebrew, Scoop e winget: i file nel repository prendono la versione nuova e le impronte
       - name: Homebrew, Scoop, winget
