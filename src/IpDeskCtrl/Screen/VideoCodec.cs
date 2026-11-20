@@ -330,7 +330,26 @@ namespace IpDeskCtrl.Screen
             _p = Ffmpeg.Start(Ffmpeg.Path!, args, true) ?? throw new IOException(L.T("ffmpeg non avviabile"));
             _in = _p.StandardInput.BaseStream;
             var err = _p.StandardError;
-            _ = Task.Run(async () => { try { string e = await err.ReadToEndAsync(); if (e.Trim().Length > 0) SessionLog.Write("VIDEO decodifica: " + e.Trim()); } catch { } });
+            _ = Task.Run(async () =>
+            {
+                // gli avvisi di ffmpeg all'inizio del flusso («Could not find ref with POC», «Error constructing the
+                // frame RPS»: fotogrammi arrivati prima del primo completo) sono normali e si ripetono a ogni
+                // ripartenza: nel registro solo il conteggio
+                int skipped = 0;
+                var other = new System.Collections.Generic.List<string>();
+                try
+                {
+                    string? line;
+                    while ((line = await err.ReadLineAsync()) != null)
+                    {
+                        if (line.Contains("Could not find ref with POC") || line.Contains("Error constructing the frame RPS")) skipped++;
+                        else if (line.Trim().Length > 0 && other.Count < 20) other.Add(line.Trim());
+                    }
+                }
+                catch { }
+                if (other.Count > 0) SessionLog.Write("VIDEO decodifica: " + string.Join("\n    ", other));
+                if (skipped > 0) SessionLog.Write($"VIDEO decodifica: {skipped} fotogrammi scartati all'avvio del flusso, in attesa del primo completo (normale)");
+            });
             var outS = _p.StandardOutput.BaseStream;
             new Thread(() =>
             {

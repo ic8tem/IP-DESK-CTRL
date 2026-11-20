@@ -366,6 +366,7 @@ namespace IpDeskCtrl.Core
         // =================================================================== connessioni in arrivo
 
         private int _accepted;
+        private long _probingUntil;
 
         /// <summary>
         /// Verifica esterna della porta, controllando che a rispondere sia davvero questo programma: se i servizi di
@@ -375,7 +376,10 @@ namespace IpDeskCtrl.Core
         private async Task<bool?> ProbeOwnAsync(int port, CancellationToken ct)
         {
             int before = Volatile.Read(ref _accepted);
-            bool? r = await PortProbe.TcpReachableAsync(port, Log, ct);
+            _probingUntil = Environment.TickCount64 + 30_000;
+            bool? r;
+            try { r = await PortProbe.TcpReachableAsync(port, Log, ct); }
+            finally { _probingUntil = Environment.TickCount64 + 3_000; }
             if (r != true) return r;
             for (int i = 0; i < 10 && Volatile.Read(ref _accepted) == before; i++) await Task.Delay(100, ct);
             if (Volatile.Read(ref _accepted) != before) return true;
@@ -409,7 +413,13 @@ namespace IpDeskCtrl.Core
                             link.Dispose();
                         }
                     }
-                    catch (Exception ex) { Log($"SESSIONE handshake in arrivo non riuscito ({ex.Message})"); }
+                    catch (Exception ex)
+                    {
+                        // durante la verifica della porta da internet i servizi di prova si collegano e chiudono subito:
+                        // non è un collegamento fallito
+                        if (Environment.TickCount64 < _probingUntil) { }
+                        else Log($"SESSIONE handshake in arrivo non riuscito ({ex.Message})");
+                    }
                 }, ct);
             }
         }

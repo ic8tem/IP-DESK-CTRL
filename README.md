@@ -134,6 +134,10 @@ Nella cartella dei dati (Impostazioni › Apri cartella dati): `sessioni.log`, u
 
 Le versioni con protocollo diverso non si collegano tra loro: aggiorna tutti i dispositivi alla stessa versione principale (la 0.4.1 si collega con la 0.4.0; la 0.5 si collega con la 0.4).
 
+### 0.5.20 — 20 novembre 2026
+- **Registro più leggibile**: «nessuna uscita audio attiva» compare una volta sola invece di una riga ogni 5 secondi; gli avvisi normali di ffmpeg all'avvio del video diventano una riga con il conteggio; i collegamenti di prova dei servizi che verificano la porta non risultano più come «handshake non riuscito».
+- **Spegnimento del PC nel registro**: quando il PC si spegne o si riavvia il servizio di Windows scrive «SERVIZIO fermato: il PC si spegne o si riavvia». Prima mancava, e un normale riavvio sembrava un arresto improvviso del servizio.
+
 ### 0.5.19 — 18 novembre 2026
 - **Windows 7 SP1, 8 e 8.1**: nuovi pacchetti `win7` a 64 e 32 bit (installatore e versione senza installazione), compilati con .NET 6 come in YA-MS, perché .NET 8 su quei sistemi non parte. Si aggiornano da soli con i pacchetti `win7`; quelli per Windows 10 e 11 restano come prima.
 

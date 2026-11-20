@@ -34,7 +34,7 @@ namespace IpDeskCtrl.Desktop
     {
         private readonly CancellationTokenSource _cts = new();
 
-        public WinService() { ServiceName = WinHelper.ServiceName; CanStop = true; }
+        public WinService() { ServiceName = WinHelper.ServiceName; CanStop = true; CanShutdown = true; }
 
         public static void RunAsService()
         {
@@ -134,6 +134,16 @@ namespace IpDeskCtrl.Desktop
         {
             _cts.Cancel();
             SessionLog.Write("SERVIZIO fermato");
+        }
+
+        /// <summary>
+        /// Spegnimento o riavvio del PC: Windows non chiama OnStop, quindi prima nel registro c'era «SERVIZIO avviato»
+        /// senza «fermato» e sembrava un arresto improvviso.
+        /// </summary>
+        protected override void OnShutdown()
+        {
+            _cts.Cancel();
+            SessionLog.Write("SERVIZIO fermato: il PC si spegne o si riavvia");
         }
 
         private void Loop(CancellationToken ct)

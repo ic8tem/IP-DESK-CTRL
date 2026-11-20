@@ -314,6 +314,7 @@ namespace IpDeskCtrl.Audio
                         _out = w;
                         Note = "";
                         Core.SessionLog.Write($"AUDIO riproduzione con waveOut, uscita {dev}");
+                        _lastLog = null;
                         return;
                     }
                     catch (Exception ex) { why = ex.Message; }
@@ -321,10 +322,16 @@ namespace IpDeskCtrl.Audio
                 Note = OutDevices() == 0
                     ? L.T("Su questo PC non c'è un'uscita audio attiva (casse o cuffie scollegate o disattivate): l'audio del PC remoto partirà appena ne colleghi una.")
                     : L.T("Uscita audio di questo PC non apribile (") + why + L.T("): riprovo tra poco.");
-                Core.SessionLog.Write("AUDIO " + Note);
+                // si riprova ogni 5 s: nel registro solo quando la situazione cambia (prima: una riga ogni 5 s per ore),
+                // sempre in italiano
+                string log = OutDevices() == 0 ? "nessuna uscita audio attiva su questo PC (casse o cuffie scollegate o disattivate): riprovo finché ne colleghi una"
+                                               : "uscita audio di questo PC non apribile (" + why + "): riprovo";
+                if (log != _lastLog) { Core.SessionLog.Write("AUDIO " + log); _lastLog = log; }
                 _retryAt = Environment.TickCount64 + 5000;
             }
         }
+
+        private string? _lastLog;
 
         [System.Runtime.InteropServices.DllImport("winmm.dll")] private static extern int waveOutGetNumDevs();
 
