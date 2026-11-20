@@ -135,6 +135,7 @@ Nella cartella dei dati (Impostazioni › Apri cartella dati): `sessioni.log`, u
 Le versioni con protocollo diverso non si collegano tra loro: aggiorna tutti i dispositivi alla stessa versione principale (la 0.4.1 si collega con la 0.4.0; la 0.5 si collega con la 0.4).
 
 ### 0.5.21 — 20 novembre 2026
+- **Aggiornamento con il servizio senza «timed out»**: se un altro PC aveva appena chiesto a questo di aggiornarsi, il servizio stava già installando la versione nuova e la finestra di aggiornamento del programma, chiedendo la stessa cosa, si fermava dopo 5 secondi con «The operation has timed out». Ora il servizio risponde che l'aggiornamento è già in corso, il programma aspetta fino a un minuto se il servizio è occupato e non apre la sua finestra quando l'aggiornamento lo sta già facendo il servizio.
 - **Intestazione in ordine**: un messaggio di stato lungo (per esempio «… ha una versione più nuova: il servizio aggiorna IP-DESK-CTRL…») allargava la fila in alto a destra fino a coprire il titolo e i pulsanti. Ora lo stato in alto resta su una riga corta, con il testo intero al passaggio del mouse, e il messaggio dell'aggiornamento va nella riga di stato sotto il numero.
 
 ### 0.5.20 — 20 novembre 2026

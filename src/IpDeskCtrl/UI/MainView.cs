@@ -395,6 +395,8 @@ namespace IpDeskCtrl.UI
             {
                 // il messaggio lungo va nella riga di stato sotto il numero, in alto solo «Aggiornamento in corso…»
                 _netStatus.Text = L.T("Aggiornamento in corso…");
+                _serviceUpdating = true;                     // l'aggiornamento lo fa il servizio: niente finestra doppia
+                _updateDialog?.Close(); _updateDialog = null;
                 _netDetail.Text = L.F("{0} ha una versione più nuova: il servizio aggiorna IP-DESK-CTRL, il programma si chiude e si riapre.", Identity.Format(n));
             });
             _svc.Lost += () => Dispatcher.UIThread.Post(() => { _svcHosts = 0; _incomingBanner.IsVisible = false; });
@@ -677,9 +679,11 @@ namespace IpDeskCtrl.UI
             });
         }
 
+        private bool _serviceUpdating;
+
         private void ShowUpdatePopup(ReleaseInfo r, bool auto, int seconds = 60)
         {
-            if (_updateDialog != null) return;
+            if (_updateDialog != null || (auto && _serviceUpdating)) return;
             var kind = Updater.Detect();
             var asset = Updater.FindAsset(r);
             bool service = kind == Updater.Kind.WindowsSetup && _svc != null;

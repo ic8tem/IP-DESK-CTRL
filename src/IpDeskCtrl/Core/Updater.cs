@@ -191,7 +191,15 @@ namespace IpDeskCtrl.Core
                     case Kind.WindowsSetup:
                         if (viaService)
                         {
-                            string r = Screen.WinHelper.AskService($"UPDATE {sha} {file}", 5000);
+                            // il servizio può essere occupato o in riavvio (per esempio mentre si aggiorna da solo su
+                            // richiesta di un altro PC): fino a 4 tentativi in 1 minuto invece di arrendersi dopo 5 s
+                            string r = "";
+                            for (int i = 0; i < 4; i++)
+                            {
+                                try { r = Screen.WinHelper.AskService($"UPDATE {sha} {file}", 15000); break; }
+                                catch (TimeoutException) { r = "il servizio non risponde"; }
+                                catch (IOException ex) { r = ex.Message; }
+                            }
                             return r.StartsWith("OK") ? "" : "il servizio non ha installato l'aggiornamento: " + r;
                         }
                         try

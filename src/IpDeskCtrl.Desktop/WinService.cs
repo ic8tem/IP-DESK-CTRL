@@ -254,7 +254,8 @@ namespace IpDeskCtrl.Desktop
                             break;
                         }
                         case var u when u.StartsWith("UPDATE "):
-                            w.WriteLine(Update(u[7..], pid));
+                            // il servizio sta già aggiornando da solo (richiesta di un altro PC): niente doppioni
+                            w.WriteLine(ServiceNet.SelfUpdating ? "OK aggiornamento già in corso nel servizio" : Update(u[7..], pid));
                             break;
                         case var k when k.StartsWith("SETKEY "):
                             w.WriteLine(ServiceNet.SetKey(k[7..].Trim()));

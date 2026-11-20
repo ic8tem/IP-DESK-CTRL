@@ -151,6 +151,8 @@ namespace IpDeskCtrl.Desktop
         }
 
         private static int _selfUpdating;
+        /// <summary>true mentre il servizio scarica e installa da solo un aggiornamento.</summary>
+        public static bool SelfUpdating => Volatile.Read(ref _selfUpdating) == 1;
 
         /// <summary>
         /// Un PC con una versione più nuova chiede a questo di aggiornarsi prima della sessione: lo fa il servizio,
