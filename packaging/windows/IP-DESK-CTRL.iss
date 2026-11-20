@@ -115,6 +115,10 @@ var
 begin
   Exec(ExpandConstant('{sys}\sc.exe'), 'stop IPDeskCtrl', '', SW_HIDE, ewWaitUntilTerminated, Code);
   Exec(ExpandConstant('{sys}\sc.exe'), 'delete IPDeskCtrl', '', SW_HIDE, ewWaitUntilTerminated, Code);
+  // il programma aperto nelle sessioni degli utenti: chiudendo la finestra si nasconde vicino all'orologio invece di
+  // uscire, quindi l'installatore restava ad aspettarlo (finché qualcuno non lo chiudeva a mano). Si chiude qui;
+  // a installazione finita lo riaprono il servizio o l'installatore.
+  Exec(ExpandConstant('{sys}\taskkill.exe'), '/F /T /IM IP-DESK-CTRL.exe', '', SW_HIDE, ewWaitUntilTerminated, Code);
   Sleep(1500);
   Result := '';
 end;
