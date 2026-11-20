@@ -590,5 +590,7 @@
  "Su questo PC c'è anche {0}: mouse e tastiera li usate insieme.": "Ehhez a géphez {0} is csatlakozik: az egeret és a billentyűzetet közösen használjátok.",
  "{0} vuole collegarsi a questo PC insieme a {1}, che lo sta già comandando: potrete comandarlo tutti e due.": "{0} csatlakozni szeretne ehhez a géphez {1} mellé, aki már vezérli: mindketten vezérelhetitek.",
  " · altri {0} collegati": " · további {0} csatlakozott",
- "Mentre uno comanda, altri possono collegarsi e comandare insieme (al massimo 4 in più)": "Amíg valaki vezérel, mások is csatlakozhatnak és együtt vezérelhetnek (legfeljebb 4 további)"
+ "Mentre uno comanda, altri possono collegarsi e comandare insieme (al massimo 4 in più)": "Amíg valaki vezérel, mások is csatlakozhatnak és együtt vezérelhetnek (legfeljebb 4 további)",
+ "▶ inviato · ◀ ricevuto · ✓ riuscito · ✗ non riuscito": "▶ elküldve · ◀ fogadva · ✓ sikeres · ✗ sikertelen",
+ "Copia registro": "Napló másolása"
 }

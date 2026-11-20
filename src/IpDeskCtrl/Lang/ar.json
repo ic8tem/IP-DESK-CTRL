@@ -590,5 +590,7 @@
  "Su questo PC c'è anche {0}: mouse e tastiera li usate insieme.": "{0} متصل أيضًا بهذا الحاسوب: تتشاركان الفأرة ولوحة المفاتيح.",
  "{0} vuole collegarsi a questo PC insieme a {1}, che lo sta già comandando: potrete comandarlo tutti e due.": "يريد {0} الاتصال بهذا الحاسوب مع {1} الذي يتحكم فيه بالفعل: ستتمكنان كلاكما من التحكم فيه.",
  " · altri {0} collegati": " · {0} آخرون متصلون",
- "Mentre uno comanda, altri possono collegarsi e comandare insieme (al massimo 4 in più)": "بينما يتحكم أحدهم، يمكن لآخرين الاتصال والتحكم معًا (حتى 4 إضافيين)"
+ "Mentre uno comanda, altri possono collegarsi e comandare insieme (al massimo 4 in più)": "بينما يتحكم أحدهم، يمكن لآخرين الاتصال والتحكم معًا (حتى 4 إضافيين)",
+ "▶ inviato · ◀ ricevuto · ✓ riuscito · ✗ non riuscito": "▶ مُرسَل · ◀ مُستلَم · ✓ نجح · ✗ فشل",
+ "Copia registro": "نسخ السجل"
 }

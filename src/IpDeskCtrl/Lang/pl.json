@@ -590,5 +590,7 @@
  "Su questo PC c'è anche {0}: mouse e tastiera li usate insieme.": "Z tym komputerem połączony jest też {0}: mysz i klawiaturę używacie razem.",
  "{0} vuole collegarsi a questo PC insieme a {1}, che lo sta già comandando: potrete comandarlo tutti e due.": "{0} chce połączyć się z tym komputerem razem z {1}, który już nim steruje: będziecie mogli sterować nim obaj.",
  " · altri {0} collegati": " · jeszcze {0} połączonych",
- "Mentre uno comanda, altri possono collegarsi e comandare insieme (al massimo 4 in più)": "Gdy jeden steruje, inni mogą się połączyć i sterować razem (do 4 więcej)"
+ "Mentre uno comanda, altri possono collegarsi e comandare insieme (al massimo 4 in più)": "Gdy jeden steruje, inni mogą się połączyć i sterować razem (do 4 więcej)",
+ "▶ inviato · ◀ ricevuto · ✓ riuscito · ✗ non riuscito": "▶ wysłano · ◀ odebrano · ✓ udane · ✗ nieudane",
+ "Copia registro": "Kopiuj dziennik"
 }

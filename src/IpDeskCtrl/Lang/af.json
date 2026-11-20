@@ -590,5 +590,7 @@
  "Su questo PC c'è anche {0}: mouse e tastiera li usate insieme.": "{0} is ook aan hierdie rekenaar gekoppel: julle deel die muis en sleutelbord.",
  "{0} vuole collegarsi a questo PC insieme a {1}, che lo sta già comandando: potrete comandarlo tutti e due.": "{0} wil saam met {1}, wat dit reeds beheer, aan hierdie rekenaar koppel: julle sal dit albei kan beheer.",
  " · altri {0} collegati": " · nog {0} gekoppel",
- "Mentre uno comanda, altri possono collegarsi e comandare insieme (al massimo 4 in più)": "Terwyl een beheer, kan ander koppel en saam beheer (tot 4 meer)"
+ "Mentre uno comanda, altri possono collegarsi e comandare insieme (al massimo 4 in più)": "Terwyl een beheer, kan ander koppel en saam beheer (tot 4 meer)",
+ "▶ inviato · ◀ ricevuto · ✓ riuscito · ✗ non riuscito": "▶ gestuur · ◀ ontvang · ✓ geslaag · ✗ misluk",
+ "Copia registro": "Kopieer logboek"
 }

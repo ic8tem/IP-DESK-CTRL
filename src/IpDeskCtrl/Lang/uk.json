@@ -590,5 +590,7 @@
  "Su questo PC c'è anche {0}: mouse e tastiera li usate insieme.": "До цього ПК підключений і {0}: миша й клавіатура у вас спільні.",
  "{0} vuole collegarsi a questo PC insieme a {1}, che lo sta già comandando: potrete comandarlo tutti e due.": "{0} хоче підключитися до цього ПК разом з {1}, який уже ним керує: керувати зможуть обидва.",
  " · altri {0} collegati": " · ще {0} підключено",
- "Mentre uno comanda, altri possono collegarsi e comandare insieme (al massimo 4 in più)": "Поки один керує, інші можуть підключитися й керувати разом (ще до 4)"
+ "Mentre uno comanda, altri possono collegarsi e comandare insieme (al massimo 4 in più)": "Поки один керує, інші можуть підключитися й керувати разом (ще до 4)",
+ "▶ inviato · ◀ ricevuto · ✓ riuscito · ✗ non riuscito": "▶ надіслано · ◀ отримано · ✓ успішно · ✗ не вдалося",
+ "Copia registro": "Копіювати журнал"
 }

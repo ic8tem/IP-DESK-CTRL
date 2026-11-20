@@ -590,5 +590,7 @@
  "Su questo PC c'è anche {0}: mouse e tastiera li usate insieme.": "{0} est aussi connecté à ce PC : vous partagez la souris et le clavier.",
  "{0} vuole collegarsi a questo PC insieme a {1}, che lo sta già comandando: potrete comandarlo tutti e due.": "{0} veut se connecter à ce PC avec {1}, qui le contrôle déjà : vous pourrez le contrôler tous les deux.",
  " · altri {0} collegati": " · {0} autres connectés",
- "Mentre uno comanda, altri possono collegarsi e comandare insieme (al massimo 4 in più)": "Pendant qu'un utilisateur contrôle, d'autres peuvent se connecter et contrôler ensemble (jusqu'à 4 de plus)"
+ "Mentre uno comanda, altri possono collegarsi e comandare insieme (al massimo 4 in più)": "Pendant qu'un utilisateur contrôle, d'autres peuvent se connecter et contrôler ensemble (jusqu'à 4 de plus)",
+ "▶ inviato · ◀ ricevuto · ✓ riuscito · ✗ non riuscito": "▶ envoyé · ◀ reçu · ✓ réussi · ✗ échoué",
+ "Copia registro": "Copier le journal"
 }

@@ -590,5 +590,7 @@
  "Su questo PC c'è anche {0}: mouse e tastiera li usate insieme.": "{0} 也连接到了这台电脑：你们共用鼠标和键盘。",
  "{0} vuole collegarsi a questo PC insieme a {1}, che lo sta già comandando: potrete comandarlo tutti e due.": "{0} 想和正在控制这台电脑的 {1} 一起连接：你们两人都能控制它。",
  " · altri {0} collegati": " · 另有 {0} 人已连接",
- "Mentre uno comanda, altri possono collegarsi e comandare insieme (al massimo 4 in più)": "有人控制时，其他人也可以连接并一起控制（最多再 4 人）"
+ "Mentre uno comanda, altri possono collegarsi e comandare insieme (al massimo 4 in più)": "有人控制时，其他人也可以连接并一起控制（最多再 4 人）",
+ "▶ inviato · ◀ ricevuto · ✓ riuscito · ✗ non riuscito": "▶ 已发送 · ◀ 已接收 · ✓ 成功 · ✗ 失败",
+ "Copia registro": "复制日志"
 }

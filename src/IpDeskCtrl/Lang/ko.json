@@ -590,5 +590,7 @@
  "Su questo PC c'è anche {0}: mouse e tastiera li usate insieme.": "이 PC에는 {0}도 연결되어 있습니다: 마우스와 키보드를 함께 사용합니다.",
  "{0} vuole collegarsi a questo PC insieme a {1}, che lo sta già comandando: potrete comandarlo tutti e due.": "{0}이(가) 이미 이 PC를 제어 중인 {1}와(과) 함께 연결하려고 합니다: 두 사람 모두 제어할 수 있습니다.",
  " · altri {0} collegati": " · 다른 {0}명 연결됨",
- "Mentre uno comanda, altri possono collegarsi e comandare insieme (al massimo 4 in più)": "한 사람이 제어하는 동안 다른 사람도 연결해 함께 제어할 수 있습니다(최대 4명 추가)"
+ "Mentre uno comanda, altri possono collegarsi e comandare insieme (al massimo 4 in più)": "한 사람이 제어하는 동안 다른 사람도 연결해 함께 제어할 수 있습니다(최대 4명 추가)",
+ "▶ inviato · ◀ ricevuto · ✓ riuscito · ✗ non riuscito": "▶ 보냄 · ◀ 받음 · ✓ 성공 · ✗ 실패",
+ "Copia registro": "로그 복사"
 }

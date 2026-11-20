@@ -590,5 +590,7 @@
  "Su questo PC c'è anche {0}: mouse e tastiera li usate insieme.": "{0} ก็เชื่อมต่อกับพีซีนี้ด้วย: ใช้เมาส์และแป้นพิมพ์ร่วมกัน",
  "{0} vuole collegarsi a questo PC insieme a {1}, che lo sta già comandando: potrete comandarlo tutti e due.": "{0} ต้องการเชื่อมต่อกับพีซีนี้พร้อมกับ {1} ที่กำลังควบคุมอยู่: ทั้งสองคนจะควบคุมได้",
  " · altri {0} collegati": " · อีก {0} คนเชื่อมต่อ",
- "Mentre uno comanda, altri possono collegarsi e comandare insieme (al massimo 4 in più)": "ขณะที่มีคนควบคุม คนอื่นสามารถเชื่อมต่อและควบคุมร่วมกันได้ (เพิ่มได้สูงสุด 4 คน)"
+ "Mentre uno comanda, altri possono collegarsi e comandare insieme (al massimo 4 in più)": "ขณะที่มีคนควบคุม คนอื่นสามารถเชื่อมต่อและควบคุมร่วมกันได้ (เพิ่มได้สูงสุด 4 คน)",
+ "▶ inviato · ◀ ricevuto · ✓ riuscito · ✗ non riuscito": "▶ ส่งแล้ว · ◀ ได้รับ · ✓ สำเร็จ · ✗ ไม่สำเร็จ",
+ "Copia registro": "คัดลอกบันทึก"
 }

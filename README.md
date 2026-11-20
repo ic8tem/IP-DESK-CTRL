@@ -135,6 +135,7 @@ Nella cartella dei dati (Impostazioni › Apri cartella dati): `sessioni.log`, u
 Le versioni con protocollo diverso non si collegano tra loro: aggiorna tutti i dispositivi alla stessa versione principale (la 0.4.1 si collega con la 0.4.0; la 0.5 si collega con la 0.4).
 
 ### 0.5.20 — 20 novembre 2026
+- **Registro in diretta nel collegamento**: la finestra «Collegamento a …» mostra sotto lo stato una finestrella scura, come quella dell'abbinamento di IP-TRX-CTRL, con ogni passo del collegamento, l'ora al millesimo e un segno colorato (▶ inviato, ◀ ricevuto, ✓ riuscito, ✗ non riuscito): broker, porte, collegamento inverso, UDP, aggiornamento dell'altro PC. Se il collegamento non riesce resta visibile per vedere dove si è fermato; «Copia registro» copia tutto negli appunti.
 - **Registro più leggibile**: «nessuna uscita audio attiva» compare una volta sola invece di una riga ogni 5 secondi; gli avvisi normali di ffmpeg all'avvio del video diventano una riga con il conteggio; i collegamenti di prova dei servizi che verificano la porta non risultano più come «handshake non riuscito».
 - **Spegnimento del PC nel registro**: quando il PC si spegne o si riavvia il servizio di Windows scrive «SERVIZIO fermato: il PC si spegne o si riavvia». Prima mancava, e un normale riavvio sembrava un arresto improvviso del servizio.
 

@@ -426,10 +426,10 @@ namespace IpDeskCtrl.UI
                 CornerRadius = new CornerRadius(14),
                 Padding = new Thickness(28),
                 Margin = new Thickness(12),
-                MaxWidth = 600,
+                MaxWidth = 760,
                 HorizontalAlignment = HorizontalAlignment.Center,
                 VerticalAlignment = VerticalAlignment.Center,
-                Child = new StackPanel { Spacing = 14, Children = { _overlayTitle, _overlayText, _overlayButtons } }
+                Child = new StackPanel { Spacing = 14, Children = { _overlayTitle, _overlayText, BuildTrace(), _overlayButtons } }
             };
             grid.Children.Add(_overlay);
             return grid;
@@ -1127,12 +1127,104 @@ namespace IpDeskCtrl.UI
             public void Dispose() { }
         }
 
+        // =================================================================== registro in diretta del collegamento
+        // Finestra scura come quella dell'abbinamento di IP-TRX-CTRL: ogni passo del collegamento con l'ora e un
+        // segno (▶ inviato, ◀ ricevuto, ✓ riuscito, ✗ non riuscito). Le righe sono quelle del registro, in italiano.
+
+        private readonly StackPanel _traceLines = new() { Spacing = 0 };
+        private readonly ScrollViewer _traceScroll = new() { Height = 230, HorizontalScrollBarVisibility = ScrollBarVisibility.Auto };
+        private readonly Border _trace = new() { IsVisible = false };
+        private readonly System.Text.StringBuilder _traceText = new();
+        private bool _tracing;
+        private static readonly FontFamily Mono = new("Consolas, Menlo, DejaVu Sans Mono, monospace");
+        private static readonly IBrush TBg = new SolidColorBrush(Color.Parse("#0E1116")), TText = new SolidColorBrush(Color.Parse("#C9D1D9")),
+            TMuted = new SolidColorBrush(Color.Parse("#6E7681")), TSend = new SolidColorBrush(Color.Parse("#58A6FF")),
+            TRecv = new SolidColorBrush(Color.Parse("#D2A8FF")), TOk = new SolidColorBrush(Color.Parse("#3FB950")), TErr = new SolidColorBrush(Color.Parse("#F85149"));
+
+        private Control BuildTrace()
+        {
+            _traceScroll.Content = _traceLines;
+            var legend = new TextBlock { Text = L.T("▶ inviato · ◀ ricevuto · ✓ riuscito · ✗ non riuscito"), FontSize = 11, Foreground = TMuted, VerticalAlignment = VerticalAlignment.Center };
+            var copy = new Button { Content = L.T("Copia registro"), FontSize = 11, Padding = new Thickness(8, 2), HorizontalAlignment = HorizontalAlignment.Right };
+            copy.Click += async (_, _) =>
+            {
+                string t; lock (_traceText) t = _traceText.ToString();
+                try { var cb = TopLevel.GetTopLevel(this)?.Clipboard; if (cb != null) await cb.SetTextAsync(t); } catch { }
+            };
+            var head = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto"), Margin = new Thickness(0, 0, 0, 6) };
+            head.Children.Add(legend);
+            Grid.SetColumn(copy, 1);
+            head.Children.Add(copy);
+            _trace.Background = TBg;
+            _trace.CornerRadius = new CornerRadius(8);
+            _trace.Padding = new Thickness(10, 8);
+            _trace.Child = new StackPanel { Children = { head, _traceScroll } };
+            SessionLog.Written += OnTraceLine;
+            DetachedFromVisualTree += (_, _) => SessionLog.Written -= OnTraceLine;
+            return _trace;
+        }
+
+        private void StartTrace()
+        {
+            lock (_traceText) _traceText.Clear();
+            _traceLines.Children.Clear();
+            _trace.IsVisible = true;
+            _tracing = true;
+        }
+
+        /// <summary>Righe del registro che riguardano il collegamento (porte, broker, UDP…), solo mentre ci si collega.</summary>
+        private void OnTraceLine(string line)
+        {
+            if (!_tracing) return;
+            string first = line.Split(' ', 2)[0];
+            if (first is not ("PORTE" or "UDP" or "STUN" or "SESSIONE" or "VERSIONI" or "AGGIORNAMENTI" or "MQTT" or "ERRORE")) return;
+            if (first == "MQTT" && (line.Contains("pubblicato su") || line.Contains("in ascolto delle richieste"))) return;
+            AddTrace(Symbol(line), line);
+        }
+
+        private void AddTrace(char sym, string text)
+        {
+            string time = DateTime.Now.ToString("HH:mm:ss.fff");
+            lock (_traceText) _traceText.AppendLine($"{time}  {sym}  {text}");
+            Dispatcher.UIThread.Post(() =>
+            {
+                var color = sym switch { '▶' => TSend, '◀' => TRecv, '✓' => TOk, '✗' => TErr, _ => TMuted };
+                var tb = new TextBlock { FontFamily = Mono, FontSize = 12, LineHeight = 19, TextWrapping = TextWrapping.NoWrap };
+                tb.Inlines = new Avalonia.Controls.Documents.InlineCollection
+                {
+                    new Avalonia.Controls.Documents.Run(time) { Foreground = TMuted },
+                    new Avalonia.Controls.Documents.Run("  " + sym + "  ") { Foreground = color, FontWeight = FontWeight.Bold },
+                    new Avalonia.Controls.Documents.Run(text) { Foreground = sym is '✓' or '✗' ? color : TText },
+                };
+                _traceLines.Children.Add(tb);
+                if (_traceLines.Children.Count > 400) _traceLines.Children.RemoveAt(0);
+                _traceScroll.ScrollToEnd();
+            });
+        }
+
+        /// <summary>Il segno della riga, dal suo contenuto.</summary>
+        private static char Symbol(string l)
+        {
+            string s = l.ToLowerInvariant();
+            if (s.Contains("non raggiungibil") || s.Contains("non riuscit") || s.Contains("rifiut") || s.Contains("nessuna risposta") ||
+                s.Contains("non risponde") || s.Contains("non trovato") || s.Contains("errore") || s.Contains("scaduto") || s.Contains("annullat") ||
+                s.Contains("non si è aggiornato") || s.Contains("non coincide") || s.Contains("non è questo programma")) return '✗';
+            if (s.Contains("riuscit") || s.Contains(": sì") || s.Contains("raggiungibile (") || s.Contains("aggiornato alla") ||
+                s.Contains("collegato a") || s.Contains("coincide") || s.Contains("uso la porta") || s.Contains("cifrato")) return '✓';
+            if (s.Contains("candidati dell'altro") || s.Contains("visto come") || s.Contains("trovato") || s.Contains("ha aperto") ||
+                s.Contains("ricevut") || s.Contains("risposta") || s.Contains("aggiornato ") || (s.StartsWith("mqtt") && s.Contains(" a "))) return '◀';
+            if (s.Contains("consegnat") || s.Contains("chiedo") || s.Contains("richiesta") || s.Contains("offerta") || s.Contains("mi collego") ||
+                s.Contains("provo") || s.Contains("apro ") || s.Contains("aperta sul router") || s.Contains("propone")) return '▶';
+            return '·';
+        }
+
         // =================================================================== collegamento
 
         private void Overlay(string title, string text, params (string label, bool accent, Action action)[] buttons)
         {
             _overlayTitle.Text = title;
             _overlayText.Text = text;
+            _trace.IsVisible = _tracing;
             _overlayButtons.Children.Clear();
             foreach (var (label, accent, action) in buttons)
             {
@@ -1154,9 +1246,13 @@ namespace IpDeskCtrl.UI
             string who = (_alias.Length > 0 ? _alias + " · " : "") + Identity.Format(_number);
             if (quiet) _overlayText.Text = L.T("Il PC remoto è tornato in linea: mi ricollego…");
             else Overlay(L.T("Collegamento a ") + who, L.T("Avvio…"), (L.T("Annulla"), false, Disconnect));
+            StartTrace();
+            AddTrace('▶', "COLLEGAMENTO a " + Identity.Format(_number));
             try
             {
                 var link = await _peer.ConnectAsync(_number, msg => Dispatcher.UIThread.Post(() => { if (!ct.IsCancellationRequested) _overlayText.Text = msg; }), ct);
+                AddTrace('✓', "COLLEGAMENTO canale cifrato aperto con " + Identity.Format(_number));
+                _tracing = false;
                 if (ct.IsCancellationRequested) { link.Dispose(); return false; }
                 var s = new ViewerSession(_peer, link);
                 _session = s;
@@ -1188,11 +1284,12 @@ namespace IpDeskCtrl.UI
                 s.Run(ct);
                 return true;
             }
-            catch (OperationCanceledException) { }
-            catch (PeerException ex) { if (!quiet) Failed(ex.Message); }
+            catch (OperationCanceledException) { _tracing = false; }
+            catch (PeerException ex) { AddTrace('✗', "COLLEGAMENTO non riuscito: " + ex.Message); _tracing = false; if (!quiet) Failed(ex.Message); }
             catch (Exception ex)
             {
                 ErrorLog.Write(ex.ToString());
+                _tracing = false;
                 if (!quiet) Failed(L.T("Collegamento non riuscito: ") + ex.Message);
             }
             return false;
@@ -1277,8 +1374,11 @@ namespace IpDeskCtrl.UI
                 (L.T("Riprova"), true, () => _ = ConnectAsync()), (L.T("Chiudi"), false, Disconnect));
         }
 
-        private void Failed(string why) =>
+        private void Failed(string why)
+        {
             Overlay(L.T("Collegamento non riuscito"), why, (L.T("Riprova"), true, () => _ = ConnectAsync()), (L.T("Chiudi"), false, Disconnect));
+            _trace.IsVisible = _traceLines.Children.Count > 0;    // il registro resta: si vede dove si è fermato
+        }
 
         private void OnState(ViewerSession s)
         {

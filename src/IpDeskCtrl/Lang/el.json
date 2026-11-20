@@ -590,5 +590,7 @@
  "Su questo PC c'è anche {0}: mouse e tastiera li usate insieme.": "Σε αυτόν τον υπολογιστή είναι συνδεδεμένος και ο {0}: μοιράζεστε ποντίκι και πληκτρολόγιο.",
  "{0} vuole collegarsi a questo PC insieme a {1}, che lo sta già comandando: potrete comandarlo tutti e due.": "Ο {0} θέλει να συνδεθεί σε αυτόν τον υπολογιστή μαζί με τον {1}, που ήδη τον χειρίζεται: θα μπορείτε να τον χειρίζεστε και οι δύο.",
  " · altri {0} collegati": " · άλλοι {0} συνδεδεμένοι",
- "Mentre uno comanda, altri possono collegarsi e comandare insieme (al massimo 4 in più)": "Ενώ κάποιος χειρίζεται, άλλοι μπορούν να συνδεθούν και να χειρίζονται μαζί (έως 4 ακόμη)"
+ "Mentre uno comanda, altri possono collegarsi e comandare insieme (al massimo 4 in più)": "Ενώ κάποιος χειρίζεται, άλλοι μπορούν να συνδεθούν και να χειρίζονται μαζί (έως 4 ακόμη)",
+ "▶ inviato · ◀ ricevuto · ✓ riuscito · ✗ non riuscito": "▶ εστάλη · ◀ ελήφθη · ✓ επιτυχία · ✗ αποτυχία",
+ "Copia registro": "Αντιγραφή αρχείου καταγραφής"
 }

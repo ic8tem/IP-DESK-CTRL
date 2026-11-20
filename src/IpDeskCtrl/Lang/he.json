@@ -590,5 +590,7 @@
  "Su questo PC c'è anche {0}: mouse e tastiera li usate insieme.": "גם {0} מחובר למחשב הזה: אתם חולקים עכבר ומקלדת.",
  "{0} vuole collegarsi a questo PC insieme a {1}, che lo sta già comandando: potrete comandarlo tutti e due.": "{0} רוצה להתחבר למחשב הזה יחד עם {1}, שכבר שולט בו: שניכם תוכלו לשלוט בו.",
  " · altri {0} collegati": " · עוד {0} מחוברים",
- "Mentre uno comanda, altri possono collegarsi e comandare insieme (al massimo 4 in più)": "בזמן שמישהו שולט, אחרים יכולים להתחבר ולשלוט יחד (עד 4 נוספים)"
+ "Mentre uno comanda, altri possono collegarsi e comandare insieme (al massimo 4 in più)": "בזמן שמישהו שולט, אחרים יכולים להתחבר ולשלוט יחד (עד 4 נוספים)",
+ "▶ inviato · ◀ ricevuto · ✓ riuscito · ✗ non riuscito": "▶ נשלח · ◀ התקבל · ✓ הצליח · ✗ נכשל",
+ "Copia registro": "העתק יומן"
 }

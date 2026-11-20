@@ -590,5 +590,7 @@
  "Su questo PC c'è anche {0}: mouse e tastiera li usate insieme.": "La acest PC este conectat și {0}: folosiți împreună mouse-ul și tastatura.",
  "{0} vuole collegarsi a questo PC insieme a {1}, che lo sta già comandando: potrete comandarlo tutti e due.": "{0} vrea să se conecteze la acest PC împreună cu {1}, care îl controlează deja: îl veți putea controla amândoi.",
  " · altri {0} collegati": " · încă {0} conectați",
- "Mentre uno comanda, altri possono collegarsi e comandare insieme (al massimo 4 in più)": "Cât timp unul controlează, alții se pot conecta și controla împreună (până la încă 4)"
+ "Mentre uno comanda, altri possono collegarsi e comandare insieme (al massimo 4 in più)": "Cât timp unul controlează, alții se pot conecta și controla împreună (până la încă 4)",
+ "▶ inviato · ◀ ricevuto · ✓ riuscito · ✗ non riuscito": "▶ trimis · ◀ primit · ✓ reușit · ✗ eșuat",
+ "Copia registro": "Copiază jurnalul"
 }

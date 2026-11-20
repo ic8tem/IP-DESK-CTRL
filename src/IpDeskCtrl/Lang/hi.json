@@ -590,5 +590,7 @@
  "Su questo PC c'è anche {0}: mouse e tastiera li usate insieme.": "इस पीसी से {0} भी जुड़ा है: माउस और कीबोर्ड आप साथ में इस्तेमाल करते हैं।",
  "{0} vuole collegarsi a questo PC insieme a {1}, che lo sta già comandando: potrete comandarlo tutti e due.": "{0} इस पीसी से {1} के साथ जुड़ना चाहता है, जो इसे पहले से चला रहा है: आप दोनों इसे चला सकेंगे।",
  " · altri {0} collegati": " · {0} और जुड़े",
- "Mentre uno comanda, altri possono collegarsi e comandare insieme (al massimo 4 in più)": "जब कोई चला रहा हो, दूसरे भी जुड़कर साथ में चला सकते हैं (अधिकतम 4 और)"
+ "Mentre uno comanda, altri possono collegarsi e comandare insieme (al massimo 4 in più)": "जब कोई चला रहा हो, दूसरे भी जुड़कर साथ में चला सकते हैं (अधिकतम 4 और)",
+ "▶ inviato · ◀ ricevuto · ✓ riuscito · ✗ non riuscito": "▶ भेजा · ◀ प्राप्त · ✓ सफल · ✗ असफल",
+ "Copia registro": "लॉग कॉपी करें"
 }

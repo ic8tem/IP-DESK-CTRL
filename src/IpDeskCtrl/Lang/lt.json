@@ -590,5 +590,7 @@
  "Su questo PC c'è anche {0}: mouse e tastiera li usate insieme.": "Prie šio kompiuterio prisijungęs ir {0}: pelę ir klaviatūrą naudojate kartu.",
  "{0} vuole collegarsi a questo PC insieme a {1}, che lo sta già comandando: potrete comandarlo tutti e due.": "{0} nori prisijungti prie šio kompiuterio kartu su {1}, kuris jį jau valdo: galėsite valdyti abu.",
  " · altri {0} collegati": " · dar {0} prisijungę",
- "Mentre uno comanda, altri possono collegarsi e comandare insieme (al massimo 4 in più)": "Kol vienas valdo, kiti gali prisijungti ir valdyti kartu (iki 4 daugiau)"
+ "Mentre uno comanda, altri possono collegarsi e comandare insieme (al massimo 4 in più)": "Kol vienas valdo, kiti gali prisijungti ir valdyti kartu (iki 4 daugiau)",
+ "▶ inviato · ◀ ricevuto · ✓ riuscito · ✗ non riuscito": "▶ išsiųsta · ◀ gauta · ✓ pavyko · ✗ nepavyko",
+ "Copia registro": "Kopijuoti žurnalą"
 }

@@ -590,5 +590,7 @@
  "Su questo PC c'è anche {0}: mouse e tastiera li usate insieme.": "Ook {0} is met deze pc verbonden: jullie delen muis en toetsenbord.",
  "{0} vuole collegarsi a questo PC insieme a {1}, che lo sta già comandando: potrete comandarlo tutti e due.": "{0} wil samen met {1}, die hem al bedient, verbinding maken met deze pc: jullie kunnen hem allebei bedienen.",
  " · altri {0} collegati": " · nog {0} verbonden",
- "Mentre uno comanda, altri possono collegarsi e comandare insieme (al massimo 4 in più)": "Terwijl iemand bedient, kunnen anderen verbinden en samen bedienen (maximaal 4 extra)"
+ "Mentre uno comanda, altri possono collegarsi e comandare insieme (al massimo 4 in più)": "Terwijl iemand bedient, kunnen anderen verbinden en samen bedienen (maximaal 4 extra)",
+ "▶ inviato · ◀ ricevuto · ✓ riuscito · ✗ non riuscito": "▶ verzonden · ◀ ontvangen · ✓ gelukt · ✗ mislukt",
+ "Copia registro": "Logboek kopiëren"
 }

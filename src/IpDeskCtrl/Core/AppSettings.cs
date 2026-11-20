@@ -228,9 +228,13 @@ namespace IpDeskCtrl.Core
         internal static readonly object Lock = new();
         public static string FilePath => Path.Combine(DataPaths.Shared, "sessioni.log");
 
+        /// <summary>Ogni riga scritta (testo senza data), per il registro in diretta della finestra di collegamento.</summary>
+        public static event Action<string>? Written;
+
         public static void Write(string line)
         {
             try { line = L.ToItalian(line); } catch { }
+            try { Written?.Invoke(line); } catch { }
             lock (Lock)
             {
                 try

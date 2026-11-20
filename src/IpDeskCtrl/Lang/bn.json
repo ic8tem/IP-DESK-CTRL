@@ -590,5 +590,7 @@
  "Su questo PC c'è anche {0}: mouse e tastiera li usate insieme.": "এই পিসিতে {0}-ও যুক্ত: মাউস ও কিবোর্ড আপনারা একসঙ্গে ব্যবহার করছেন।",
  "{0} vuole collegarsi a questo PC insieme a {1}, che lo sta già comandando: potrete comandarlo tutti e due.": "{0} এই পিসিতে {1}-এর সঙ্গে যুক্ত হতে চায়, যে এটি আগে থেকেই চালাচ্ছে: আপনারা দুজনেই এটি চালাতে পারবেন।",
  " · altri {0} collegati": " · আরও {0} জন যুক্ত",
- "Mentre uno comanda, altri possono collegarsi e comandare insieme (al massimo 4 in più)": "একজন চালানোর সময় অন্যরাও যুক্ত হয়ে একসঙ্গে চালাতে পারে (সর্বোচ্চ আরও 4)"
+ "Mentre uno comanda, altri possono collegarsi e comandare insieme (al massimo 4 in più)": "একজন চালানোর সময় অন্যরাও যুক্ত হয়ে একসঙ্গে চালাতে পারে (সর্বোচ্চ আরও 4)",
+ "▶ inviato · ◀ ricevuto · ✓ riuscito · ✗ non riuscito": "▶ পাঠানো · ◀ প্রাপ্ত · ✓ সফল · ✗ ব্যর্থ",
+ "Copia registro": "লগ কপি করুন"
 }
