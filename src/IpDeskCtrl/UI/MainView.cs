@@ -397,6 +397,18 @@ namespace IpDeskCtrl.UI
                 _netStatus.Text = L.T("Aggiornamento in corso…");
                 _serviceUpdating = true;                     // l'aggiornamento lo fa il servizio: niente finestra doppia
                 _updateDialog?.Close(); _updateDialog = null;
+                // il programma si chiude subito, così l'installatore non aspetta che esca (su 630 705 7520 ci metteva
+                // più di 3 minuti); a installazione finita lo riapre il servizio
+                if (OpenSessions == 0)
+                    _ = Task.Run(async () =>
+                    {
+                        await Task.Delay(5000);
+                        Dispatcher.UIThread.Post(() =>
+                        {
+                            SessionLog.Write("AGGIORNAMENTI il servizio installa la versione nuova: chiudo il programma, lo riaprirà il servizio");
+                            if (Quit != null) Quit(); else Environment.Exit(0);
+                        });
+                    });
                 _netDetail.Text = L.F("{0} ha una versione più nuova: il servizio aggiorna IP-DESK-CTRL, il programma si chiude e si riapre.", Identity.Format(n));
             });
             _svc.Lost += () => Dispatcher.UIThread.Post(() => { _svcHosts = 0; _incomingBanner.IsVisible = false; });
