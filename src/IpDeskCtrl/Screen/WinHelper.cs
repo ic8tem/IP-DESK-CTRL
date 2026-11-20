@@ -40,6 +40,33 @@ namespace IpDeskCtrl.Screen
 
         public static HelperClient? Current { get; private set; }
 
+        private static Func<string>? _launcher;
+        private static long _nextRevive;
+        private static int _reviving;
+
+        /// <summary>
+        /// Il processo di supporto si è chiuso (di solito perché la sessione di Windows è cambiata: utente scollegato,
+        /// cambio utente, desktop remoto): lo si fa ripartire nella sessione attiva, al massimo ogni 3 secondi e in
+        /// sottofondo. Prima restava chiuso per tutta la sessione e mouse e tastiera non arrivavano più.
+        /// </summary>
+        public static void Revive()
+        {
+            if (_launcher == null || Current is { Alive: true }) return;
+            long now = Environment.TickCount64;
+            if (now < Interlocked.Read(ref _nextRevive) || Interlocked.Exchange(ref _reviving, 1) == 1) return;
+            Interlocked.Exchange(ref _nextRevive, now + 3000);
+            var launch = _launcher;
+            Task.Run(() =>
+            {
+                try
+                {
+                    SessionLog.Write("AIUTO il processo di sistema si è chiuso (cambio di sessione di Windows?): lo faccio ripartire");
+                    StartWith(launch);
+                }
+                finally { Interlocked.Exchange(ref _reviving, 0); }
+            });
+        }
+
         /// <summary>Collegamento al processo di supporto (lo fa partire il servizio). null se il servizio non c'è.</summary>
         public static HelperClient? Start() => StartWith(() => AskService("HELPER"));
 
@@ -67,6 +94,7 @@ namespace IpDeskCtrl.Screen
 
         public static void Stop()
         {
+            Interlocked.Exchange(ref _nextRevive, long.MaxValue);   // sessione finita: niente ripartenze
             Current?.Dispose();
             Current = null;
         }
@@ -92,7 +120,8 @@ namespace IpDeskCtrl.Screen
         public static void InstallHooks()
         {
             if (!OperatingSystem.IsWindows()) return;
-            Platform.PrepareHost = () => Task.Run(() => { Start(); return ""; });
+            _launcher = () => AskService("HELPER");
+            Platform.PrepareHost = () => Task.Run(() => { Interlocked.Exchange(ref _nextRevive, 0); Start(); return ""; });
             Platform.HostEnded = Stop;
             Platform.Screen = () => Current != null ? new HelperScreen(Current) : new WindowsScreen();
             Platform.Input = () => Current != null ? new HelperInput(Current) : new WindowsInput();
@@ -105,8 +134,10 @@ namespace IpDeskCtrl.Screen
         public static void InstallServiceHooks(Func<string> launchHelper)
         {
             if (!OperatingSystem.IsWindows()) return;
+            _launcher = launchHelper;
             Platform.PrepareHost = () => Task.Run(() =>
             {
+                Interlocked.Exchange(ref _nextRevive, 0);
                 StartWith(launchHelper);
                 // i file ricevuti vanno in Scaricati/IP-DESK-CTRL dell'utente (non nel profilo di sistema del servizio)
                 var hc = Current;
@@ -628,11 +659,22 @@ namespace IpDeskCtrl.Screen
     /// <summary>Schermo attraverso il processo di supporto (vede anche UAC e la schermata di blocco).</summary>
     public sealed class HelperScreen : IScreenSource
     {
-        private readonly HelperClient _c;
+        private HelperClient _orig;
+        /// <summary>Il processo di supporto attuale (dopo una ripartenza è un altro).</summary>
+        private HelperClient _c
+        {
+            get
+            {
+                var cur = WinHelper.Current;
+                if (cur != null && cur.Alive && cur != _orig) { _orig = cur; Note = ""; }
+                if (!_orig.Alive) WinHelper.Revive();
+                return _orig;
+            }
+        }
         private WindowsScreen? _fallback;
         public string Note { get; private set; } = "";
 
-        public HelperScreen(HelperClient c) { _c = c; }
+        public HelperScreen(HelperClient c) { _orig = c; }
 
         private WindowsScreen Fallback()
         {
@@ -682,11 +724,21 @@ namespace IpDeskCtrl.Screen
     /// <summary>Mouse e tastiera attraverso il processo di supporto; Ctrl+Alt+Canc lo genera il servizio.</summary>
     public sealed class HelperInput : IInputSink
     {
-        private readonly HelperClient _c;
+        private HelperClient _orig;
+        private HelperClient _c
+        {
+            get
+            {
+                var cur = WinHelper.Current;
+                if (cur != null && cur.Alive && cur != _orig) _orig = cur;
+                if (!_orig.Alive) WinHelper.Revive();
+                return _orig;
+            }
+        }
         private bool _ctrl, _alt;
         public string Note => _c.Alive ? "" : "Il processo di sistema di IP-DESK-CTRL si è chiuso: mouse e tastiera non arrivano più.";
 
-        public HelperInput(HelperClient c) { _c = c; }
+        public HelperInput(HelperClient c) { _orig = c; }
 
         public void MoveTo(int x, int y) => _c.Send(WinHelper.CmdMove, w => { w.Write(x); w.Write(y); });
         public void Button(int button, bool down) => _c.Send(WinHelper.CmdButton, w => { w.Write(button); w.Write(down); });

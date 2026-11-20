@@ -487,11 +487,20 @@ namespace IpDeskCtrl.Core
             return (Math.Clamp(x, a.X, a.X + a.W - 1), Math.Clamp(y, a.Y, a.Y + a.H - 1));
         }
 
+        private readonly Dictionary<string, long> _noteLogged = new();
+
         private void Note(string text)
         {
             if (text == _lastNote) return;
             _lastNote = text;
-            if (text.Length > 0) SessionLog.Write("AVVISO " + text);
+            // due avvisi che si alternano (PC bloccato / processo di sistema chiuso) finivano nel registro due volte al
+            // secondo: ogni testo al massimo una volta al minuto
+            long now = Environment.TickCount64;
+            if (text.Length > 0 && (!_noteLogged.TryGetValue(text, out long last) || now - last > 60_000))
+            {
+                _noteLogged[text] = now;
+                SessionLog.Write("AVVISO " + text);
+            }
             Send(new MsgWriter(Msg.ScreenNote).Str(text).Build());
         }
 

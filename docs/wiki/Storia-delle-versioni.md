@@ -5,6 +5,9 @@ Le versioni con protocollo diverso non si collegano tra loro: aggiorna tutti i d
 
 ## 0.5.20 — 20 novembre 2026
 - **Registro in diretta nel collegamento**: la finestra «Collegamento a …» mostra sotto lo stato una finestrella scura, come quella dell'abbinamento di IP-TRX-CTRL, con ogni passo del collegamento, l'ora al millesimo e un segno colorato (▶ inviato, ◀ ricevuto, ✓ riuscito, ✗ non riuscito): broker, porte, collegamento inverso, UDP, aggiornamento dell'altro PC. Se il collegamento non riesce resta visibile per vedere dove si è fermato; «Copia registro» copia tutto negli appunti.
+- **Processo di sistema che riparte da solo**: su un PC con il servizio, quando la sessione di Windows cambia (utente scollegato, cambio utente, desktop remoto) il processo di sistema che fa vedere e comandare lo schermo si chiudeva e per il resto della sessione mouse e tastiera non arrivavano più. Ora riparte da solo nella sessione attiva entro pochi secondi.
+- **Arresti del servizio nel registro**: se il servizio si chiude da solo, al riavvio copia da Windows (Visualizzatore eventi) il motivo dell'arresto in sessioni.log come riga «ERRORE», così non serve cercarlo a mano.
+- **Avvisi senza ripetizioni**: due avvisi che si alternavano (PC bloccato / processo di sistema chiuso) finivano nel registro due volte al secondo; ora ogni avviso al massimo una volta al minuto.
 - **Registro più leggibile**: «nessuna uscita audio attiva» compare una volta sola invece di una riga ogni 5 secondi; gli avvisi normali di ffmpeg all'avvio del video diventano una riga con il conteggio; i collegamenti di prova dei servizi che verificano la porta non risultano più come «handshake non riuscito».
 - **Spegnimento del PC nel registro**: quando il PC si spegne o si riavvia il servizio di Windows scrive «SERVIZIO fermato: il PC si spegne o si riavvia». Prima mancava, e un normale riavvio sembrava un arresto improvviso del servizio.
 

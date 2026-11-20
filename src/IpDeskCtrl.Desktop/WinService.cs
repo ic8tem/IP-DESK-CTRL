@@ -46,6 +46,7 @@ namespace IpDeskCtrl.Desktop
         protected override void OnStart(string[] args)
         {
             SessionLog.Write($"SERVIZIO avviato ({AppVersion.Text})");
+            _ = Task.Run(LogLastCrash);
             _ = Task.Run(() =>
             {
                 try { ServiceNet.Start(_cts.Token); }
@@ -128,6 +129,33 @@ namespace IpDeskCtrl.Desktop
             Process.Start(new ProcessStartInfo(copy, "/VERYSILENT /SUPPRESSMSGBOXES /NORESTART /AGGIORNA-SERVIZIO") { UseShellExecute = false, WorkingDirectory = dir });
             SessionLog.Write($"SERVIZIO aggiornamento a {rel!.Version} avviato ({name})");
             return "OK";
+        }
+
+        /// <summary>
+        /// Se il servizio si è chiuso da solo, .NET o Windows lo scrivono nel Visualizzatore eventi (Applicazione), non
+        /// nel nostro registro: all'avvio si cercano lì gli arresti di IP-DESK-CTRL degli ultimi 15 minuti e si
+        /// copiano in sessioni.log come «ERRORE», così non serve aprire il Visualizzatore eventi.
+        /// </summary>
+        private static void LogLastCrash()
+        {
+            try
+            {
+                string q = "*[System[(Provider[@Name='.NET Runtime'] or Provider[@Name='Application Error']) and " +
+                           "(Level=1 or Level=2) and TimeCreated[timediff(@SystemTime) <= 900000]]]";
+                var psi = new System.Diagnostics.ProcessStartInfo("wevtutil.exe", $"qe Application /q:\"{q}\" /f:text /rd:true /c:6")
+                { UseShellExecute = false, CreateNoWindow = true, RedirectStandardOutput = true };
+                using var p = System.Diagnostics.Process.Start(psi);
+                if (p == null) return;
+                string all = p.StandardOutput.ReadToEnd();
+                p.WaitForExit(10_000);
+                foreach (var ev in all.Split("Event[", StringSplitOptions.RemoveEmptyEntries))
+                {
+                    if (ev.IndexOf("IP-DESK-CTRL", StringComparison.OrdinalIgnoreCase) < 0) continue;
+                    string text = string.Join("\n", ev.Split('\n').Select(l => l.TrimEnd()).Where(l => l.Length > 0).Take(40));
+                    ErrorLog.Write("dal Visualizzatore eventi di Windows (arresto di IP-DESK-CTRL):\n" + text);
+                }
+            }
+            catch { }
         }
 
         protected override void OnStop()
