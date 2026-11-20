@@ -592,5 +592,6 @@
  " · altri {0} collegati": " · veel {0} ühendatud",
  "Mentre uno comanda, altri possono collegarsi e comandare insieme (al massimo 4 in più)": "Kui üks juhib, saavad teised ühenduda ja koos juhtida (kuni 4 lisaks)",
  "▶ inviato · ◀ ricevuto · ✓ riuscito · ✗ non riuscito": "▶ saadetud · ◀ vastu võetud · ✓ õnnestus · ✗ ebaõnnestus",
- "Copia registro": "Kopeeri logi"
+ "Copia registro": "Kopeeri logi",
+ "Aggiornamento in corso…": "Uuendamine…"
 }

@@ -592,5 +592,6 @@
  " · altri {0} collegati": " · {0} pa ang nakakonekta",
  "Mentre uno comanda, altri possono collegarsi e comandare insieme (al massimo 4 in più)": "Habang may kumokontrol, puwedeng kumonekta ang iba at kumontrol nang sabay (hanggang 4 pa)",
  "▶ inviato · ◀ ricevuto · ✓ riuscito · ✗ non riuscito": "▶ naipadala · ◀ natanggap · ✓ nagtagumpay · ✗ nabigo",
- "Copia registro": "Kopyahin ang log"
+ "Copia registro": "Kopyahin ang log",
+ "Aggiornamento in corso…": "Nag-a-update…"
 }

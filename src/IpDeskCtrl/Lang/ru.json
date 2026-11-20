@@ -592,5 +592,6 @@
  " · altri {0} collegati": " · ещё {0} подключено",
  "Mentre uno comanda, altri possono collegarsi e comandare insieme (al massimo 4 in più)": "Пока один управляет, другие могут подключиться и управлять вместе (ещё до 4)",
  "▶ inviato · ◀ ricevuto · ✓ riuscito · ✗ non riuscito": "▶ отправлено · ◀ получено · ✓ успешно · ✗ не удалось",
- "Copia registro": "Копировать журнал"
+ "Copia registro": "Копировать журнал",
+ "Aggiornamento in corso…": "Идёт обновление…"
 }

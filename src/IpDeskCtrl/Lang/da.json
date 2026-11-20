@@ -592,5 +592,6 @@
  " · altri {0} collegati": " · {0} andre forbundet",
  "Mentre uno comanda, altri possono collegarsi e comandare insieme (al massimo 4 in più)": "Mens én styrer, kan andre forbinde og styre sammen (op til 4 mere)",
  "▶ inviato · ◀ ricevuto · ✓ riuscito · ✗ non riuscito": "▶ sendt · ◀ modtaget · ✓ lykkedes · ✗ mislykkedes",
- "Copia registro": "Kopiér log"
+ "Copia registro": "Kopiér log",
+ "Aggiornamento in corso…": "Opdaterer…"
 }

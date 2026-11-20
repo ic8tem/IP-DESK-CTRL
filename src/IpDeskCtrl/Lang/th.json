@@ -592,5 +592,6 @@
  " · altri {0} collegati": " · อีก {0} คนเชื่อมต่อ",
  "Mentre uno comanda, altri possono collegarsi e comandare insieme (al massimo 4 in più)": "ขณะที่มีคนควบคุม คนอื่นสามารถเชื่อมต่อและควบคุมร่วมกันได้ (เพิ่มได้สูงสุด 4 คน)",
  "▶ inviato · ◀ ricevuto · ✓ riuscito · ✗ non riuscito": "▶ ส่งแล้ว · ◀ ได้รับ · ✓ สำเร็จ · ✗ ไม่สำเร็จ",
- "Copia registro": "คัดลอกบันทึก"
+ "Copia registro": "คัดลอกบันทึก",
+ "Aggiornamento in corso…": "กำลังอัปเดต…"
 }

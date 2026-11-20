@@ -592,5 +592,6 @@
  " · altri {0} collegati": " · {0} kişi daha bağlı",
  "Mentre uno comanda, altri possono collegarsi e comandare insieme (al massimo 4 in più)": "Biri kontrol ederken diğerleri bağlanıp birlikte kontrol edebilir (en fazla 4 kişi daha)",
  "▶ inviato · ◀ ricevuto · ✓ riuscito · ✗ non riuscito": "▶ gönderildi · ◀ alındı · ✓ başarılı · ✗ başarısız",
- "Copia registro": "Günlüğü kopyala"
+ "Copia registro": "Günlüğü kopyala",
+ "Aggiornamento in corso…": "Güncelleniyor…"
 }

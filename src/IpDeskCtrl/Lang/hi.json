@@ -592,5 +592,6 @@
  " · altri {0} collegati": " · {0} और जुड़े",
  "Mentre uno comanda, altri possono collegarsi e comandare insieme (al massimo 4 in più)": "जब कोई चला रहा हो, दूसरे भी जुड़कर साथ में चला सकते हैं (अधिकतम 4 और)",
  "▶ inviato · ◀ ricevuto · ✓ riuscito · ✗ non riuscito": "▶ भेजा · ◀ प्राप्त · ✓ सफल · ✗ असफल",
- "Copia registro": "लॉग कॉपी करें"
+ "Copia registro": "लॉग कॉपी करें",
+ "Aggiornamento in corso…": "अपडेट हो रहा है…"
 }

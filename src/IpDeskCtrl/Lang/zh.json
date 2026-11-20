@@ -592,5 +592,6 @@
  " · altri {0} collegati": " · 另有 {0} 人已连接",
  "Mentre uno comanda, altri possono collegarsi e comandare insieme (al massimo 4 in più)": "有人控制时，其他人也可以连接并一起控制（最多再 4 人）",
  "▶ inviato · ◀ ricevuto · ✓ riuscito · ✗ non riuscito": "▶ 已发送 · ◀ 已接收 · ✓ 成功 · ✗ 失败",
- "Copia registro": "复制日志"
+ "Copia registro": "复制日志",
+ "Aggiornamento in corso…": "正在更新…"
 }

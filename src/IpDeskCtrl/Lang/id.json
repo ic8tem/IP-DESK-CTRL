@@ -592,5 +592,6 @@
  " · altri {0} collegati": " · {0} lainnya terhubung",
  "Mentre uno comanda, altri possono collegarsi e comandare insieme (al massimo 4 in più)": "Saat seseorang mengendalikan, yang lain bisa terhubung dan mengendalikan bersama (hingga 4 lagi)",
  "▶ inviato · ◀ ricevuto · ✓ riuscito · ✗ non riuscito": "▶ terkirim · ◀ diterima · ✓ berhasil · ✗ gagal",
- "Copia registro": "Salin log"
+ "Copia registro": "Salin log",
+ "Aggiornamento in corso…": "Sedang memperbarui…"
 }

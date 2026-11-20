@@ -592,5 +592,6 @@
  " · altri {0} collegati": " · {0} others connected",
  "Mentre uno comanda, altri possono collegarsi e comandare insieme (al massimo 4 in più)": "While someone is in control, others can connect and control it together (up to 4 more)",
  "▶ inviato · ◀ ricevuto · ✓ riuscito · ✗ non riuscito": "▶ sent · ◀ received · ✓ succeeded · ✗ failed",
- "Copia registro": "Copy log"
+ "Copia registro": "Copy log",
+ "Aggiornamento in corso…": "Updating…"
 }

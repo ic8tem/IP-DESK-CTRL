@@ -592,5 +592,6 @@
  " · altri {0} collegati": " · {0} autres connectés",
  "Mentre uno comanda, altri possono collegarsi e comandare insieme (al massimo 4 in più)": "Pendant qu'un utilisateur contrôle, d'autres peuvent se connecter et contrôler ensemble (jusqu'à 4 de plus)",
  "▶ inviato · ◀ ricevuto · ✓ riuscito · ✗ non riuscito": "▶ envoyé · ◀ reçu · ✓ réussi · ✗ échoué",
- "Copia registro": "Copier le journal"
+ "Copia registro": "Copier le journal",
+ "Aggiornamento in corso…": "Mise à jour en cours…"
 }

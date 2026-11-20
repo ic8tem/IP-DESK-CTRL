@@ -3,6 +3,9 @@
 
 Le versioni con protocollo diverso non si collegano tra loro: aggiorna tutti i dispositivi alla stessa versione principale (la 0.4.1 si collega con la 0.4.0; la 0.5 si collega con la 0.4).
 
+## 0.5.21 — 20 novembre 2026
+- **Intestazione in ordine**: un messaggio di stato lungo (per esempio «… ha una versione più nuova: il servizio aggiorna IP-DESK-CTRL…») allargava la fila in alto a destra fino a coprire il titolo e i pulsanti. Ora lo stato in alto resta su una riga corta, con il testo intero al passaggio del mouse, e il messaggio dell'aggiornamento va nella riga di stato sotto il numero.
+
 ## 0.5.20 — 20 novembre 2026
 - **Registro in diretta nel collegamento**: la finestra «Collegamento a …» mostra sotto lo stato una finestrella scura, come quella dell'abbinamento di IP-TRX-CTRL, con ogni passo del collegamento, l'ora al millesimo e un segno colorato (▶ inviato, ◀ ricevuto, ✓ riuscito, ✗ non riuscito): broker, porte, collegamento inverso, UDP, aggiornamento dell'altro PC. Se il collegamento non riesce resta visibile per vedere dove si è fermato; «Copia registro» copia tutto negli appunti.
 - **Processo di sistema che riparte da solo**: su un PC con il servizio, quando la sessione di Windows cambia (utente scollegato, cambio utente, desktop remoto) il processo di sistema che fa vedere e comandare lo schermo si chiudeva e per il resto della sessione mouse e tastiera non arrivavano più. Ora riparte da solo nella sessione attiva entro pochi secondi.

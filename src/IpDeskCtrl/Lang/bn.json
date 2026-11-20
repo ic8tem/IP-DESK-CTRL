@@ -592,5 +592,6 @@
  " · altri {0} collegati": " · আরও {0} জন যুক্ত",
  "Mentre uno comanda, altri possono collegarsi e comandare insieme (al massimo 4 in più)": "একজন চালানোর সময় অন্যরাও যুক্ত হয়ে একসঙ্গে চালাতে পারে (সর্বোচ্চ আরও 4)",
  "▶ inviato · ◀ ricevuto · ✓ riuscito · ✗ non riuscito": "▶ পাঠানো · ◀ প্রাপ্ত · ✓ সফল · ✗ ব্যর্থ",
- "Copia registro": "লগ কপি করুন"
+ "Copia registro": "লগ কপি করুন",
+ "Aggiornamento in corso…": "আপডেট চলছে…"
 }

@@ -592,5 +592,6 @@
  " · altri {0} collegati": " · 다른 {0}명 연결됨",
  "Mentre uno comanda, altri possono collegarsi e comandare insieme (al massimo 4 in più)": "한 사람이 제어하는 동안 다른 사람도 연결해 함께 제어할 수 있습니다(최대 4명 추가)",
  "▶ inviato · ◀ ricevuto · ✓ riuscito · ✗ non riuscito": "▶ 보냄 · ◀ 받음 · ✓ 성공 · ✗ 실패",
- "Copia registro": "로그 복사"
+ "Copia registro": "로그 복사",
+ "Aggiornamento in corso…": "업데이트 중…"
 }

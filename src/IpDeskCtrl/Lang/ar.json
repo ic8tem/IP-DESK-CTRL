@@ -592,5 +592,6 @@
  " · altri {0} collegati": " · {0} آخرون متصلون",
  "Mentre uno comanda, altri possono collegarsi e comandare insieme (al massimo 4 in più)": "بينما يتحكم أحدهم، يمكن لآخرين الاتصال والتحكم معًا (حتى 4 إضافيين)",
  "▶ inviato · ◀ ricevuto · ✓ riuscito · ✗ non riuscito": "▶ مُرسَل · ◀ مُستلَم · ✓ نجح · ✗ فشل",
- "Copia registro": "نسخ السجل"
+ "Copia registro": "نسخ السجل",
+ "Aggiornamento in corso…": "جارٍ التحديث…"
 }

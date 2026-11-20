@@ -101,7 +101,15 @@ namespace IpDeskCtrl.UI
             help.Padding = kofi.Padding = new Thickness(10, 4);
             if (Platform.IsMobile) { help.Content = "?"; kofi.Content = "♥"; }
             help.VerticalAlignment = kofi.VerticalAlignment = VerticalAlignment.Center;
+            // lo stato in alto resta su una riga corta (puntini e testo intero al passaggio del mouse): un messaggio lungo
+            // allargava la fila dei pulsanti fino a coprire il titolo
+            _netStatus.MaxWidth = 230;
+            _netStatus.TextWrapping = TextWrapping.NoWrap;
+            _netStatus.TextTrimming = TextTrimming.CharacterEllipsis;
+            _netStatus.VerticalAlignment = VerticalAlignment.Center;
+            _netStatus.PropertyChanged += (_, e) => { if (e.Property == TextBlock.TextProperty) ToolTip.SetTip(_netStatus, _netStatus.Text); };
             var ledBox = Ui.Row(10, help, kofi, _newVersion, Ui.Row(8, _led, _netStatus));
+            title.ClipToBounds = true;
             DockPanel.SetDock(ledBox, Dock.Right);
             head.Children.Add(ledBox);
             head.Children.Add(title);
@@ -385,7 +393,9 @@ namespace IpDeskCtrl.UI
             _svc.HostEnded += (n, why) => Dispatcher.UIThread.Post(() => { _svcHosts = Math.Max(0, _svcHosts - 1); _incomingBanner.IsVisible = false; RebuildHistory(); });
             _svc.UpdateRequested += n => Dispatcher.UIThread.Post(() =>
             {
-                _netStatus.Text = L.F("{0} ha una versione più nuova: il servizio aggiorna IP-DESK-CTRL, il programma si chiude e si riapre.", Identity.Format(n));
+                // il messaggio lungo va nella riga di stato sotto il numero, in alto solo «Aggiornamento in corso…»
+                _netStatus.Text = L.T("Aggiornamento in corso…");
+                _netDetail.Text = L.F("{0} ha una versione più nuova: il servizio aggiorna IP-DESK-CTRL, il programma si chiude e si riapre.", Identity.Format(n));
             });
             _svc.Lost += () => Dispatcher.UIThread.Post(() => { _svcHosts = 0; _incomingBanner.IsVisible = false; });
             _svc.SendSettings(_s.AcceptIncoming, _s.AllowInput, _s.ShareAudio);

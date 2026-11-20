@@ -592,5 +592,6 @@
  " · altri {0} collegati": " · {0} weitere verbunden",
  "Mentre uno comanda, altri possono collegarsi e comandare insieme (al massimo 4 in più)": "Während einer steuert, können sich andere verbinden und gemeinsam steuern (bis zu 4 weitere)",
  "▶ inviato · ◀ ricevuto · ✓ riuscito · ✗ non riuscito": "▶ gesendet · ◀ empfangen · ✓ erfolgreich · ✗ fehlgeschlagen",
- "Copia registro": "Protokoll kopieren"
+ "Copia registro": "Protokoll kopieren",
+ "Aggiornamento in corso…": "Aktualisierung läuft…"
 }

@@ -592,5 +592,6 @@
  " · altri {0} collegati": " · {0} till anslutna",
  "Mentre uno comanda, altri possono collegarsi e comandare insieme (al massimo 4 in più)": "Medan någon styr kan andra ansluta och styra tillsammans (upp till 4 till)",
  "▶ inviato · ◀ ricevuto · ✓ riuscito · ✗ non riuscito": "▶ skickat · ◀ mottaget · ✓ lyckades · ✗ misslyckades",
- "Copia registro": "Kopiera logg"
+ "Copia registro": "Kopiera logg",
+ "Aggiornamento in corso…": "Uppdaterar…"
 }

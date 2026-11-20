@@ -592,5 +592,6 @@
  " · altri {0} collegati": " · dar {0} prisijungę",
  "Mentre uno comanda, altri possono collegarsi e comandare insieme (al massimo 4 in più)": "Kol vienas valdo, kiti gali prisijungti ir valdyti kartu (iki 4 daugiau)",
  "▶ inviato · ◀ ricevuto · ✓ riuscito · ✗ non riuscito": "▶ išsiųsta · ◀ gauta · ✓ pavyko · ✗ nepavyko",
- "Copia registro": "Kopijuoti žurnalą"
+ "Copia registro": "Kopijuoti žurnalą",
+ "Aggiornamento in corso…": "Atnaujinama…"
 }

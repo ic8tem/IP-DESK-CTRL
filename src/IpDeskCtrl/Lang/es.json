@@ -592,5 +592,6 @@
  " · altri {0} collegati": " · otros {0} conectados",
  "Mentre uno comanda, altri possono collegarsi e comandare insieme (al massimo 4 in più)": "Mientras uno controla, otros pueden conectarse y controlar juntos (hasta 4 más)",
  "▶ inviato · ◀ ricevuto · ✓ riuscito · ✗ non riuscito": "▶ enviado · ◀ recibido · ✓ correcto · ✗ fallido",
- "Copia registro": "Copiar registro"
+ "Copia registro": "Copiar registro",
+ "Aggiornamento in corso…": "Actualizando…"
 }

@@ -592,5 +592,6 @@
  " · altri {0} collegati": " · άλλοι {0} συνδεδεμένοι",
  "Mentre uno comanda, altri possono collegarsi e comandare insieme (al massimo 4 in più)": "Ενώ κάποιος χειρίζεται, άλλοι μπορούν να συνδεθούν και να χειρίζονται μαζί (έως 4 ακόμη)",
  "▶ inviato · ◀ ricevuto · ✓ riuscito · ✗ non riuscito": "▶ εστάλη · ◀ ελήφθη · ✓ επιτυχία · ✗ αποτυχία",
- "Copia registro": "Αντιγραφή αρχείου καταγραφής"
+ "Copia registro": "Αντιγραφή αρχείου καταγραφής",
+ "Aggiornamento in corso…": "Ενημέρωση σε εξέλιξη…"
 }

@@ -592,5 +592,6 @@
  " · altri {0} collegati": " · {0} aðrir tengdir",
  "Mentre uno comanda, altri possono collegarsi e comandare insieme (al massimo 4 in più)": "Á meðan einn stýrir geta aðrir tengst og stýrt saman (allt að 4 í viðbót)",
  "▶ inviato · ◀ ricevuto · ✓ riuscito · ✗ non riuscito": "▶ sent · ◀ móttekið · ✓ tókst · ✗ mistókst",
- "Copia registro": "Afrita skrá"
+ "Copia registro": "Afrita skrá",
+ "Aggiornamento in corso…": "Uppfæri…"
 }

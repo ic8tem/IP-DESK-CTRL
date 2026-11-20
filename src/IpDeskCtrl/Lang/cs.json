@@ -592,5 +592,6 @@
  " · altri {0} collegati": " · další {0} připojeni",
  "Mentre uno comanda, altri possono collegarsi e comandare insieme (al massimo 4 in più)": "Zatímco jeden ovládá, ostatní se mohou připojit a ovládat společně (až 4 další)",
  "▶ inviato · ◀ ricevuto · ✓ riuscito · ✗ non riuscito": "▶ odesláno · ◀ přijato · ✓ úspěch · ✗ neúspěch",
- "Copia registro": "Kopírovat protokol"
+ "Copia registro": "Kopírovat protokol",
+ "Aggiornamento in corso…": "Probíhá aktualizace…"
 }

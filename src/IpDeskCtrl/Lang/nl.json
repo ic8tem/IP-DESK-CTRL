@@ -592,5 +592,6 @@
  " · altri {0} collegati": " · nog {0} verbonden",
  "Mentre uno comanda, altri possono collegarsi e comandare insieme (al massimo 4 in più)": "Terwijl iemand bedient, kunnen anderen verbinden en samen bedienen (maximaal 4 extra)",
  "▶ inviato · ◀ ricevuto · ✓ riuscito · ✗ non riuscito": "▶ verzonden · ◀ ontvangen · ✓ gelukt · ✗ mislukt",
- "Copia registro": "Logboek kopiëren"
+ "Copia registro": "Logboek kopiëren",
+ "Aggiornamento in corso…": "Bezig met bijwerken…"
 }

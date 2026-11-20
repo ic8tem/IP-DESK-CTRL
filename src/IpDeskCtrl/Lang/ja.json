@@ -592,5 +592,6 @@
  " · altri {0} collegati": " · ほかに {0} 人接続中",
  "Mentre uno comanda, altri possono collegarsi e comandare insieme (al massimo 4 in più)": "誰かが操作中でも、ほかの人が接続して一緒に操作できます（最大 4 人まで追加）",
  "▶ inviato · ◀ ricevuto · ✓ riuscito · ✗ non riuscito": "▶ 送信 · ◀ 受信 · ✓ 成功 · ✗ 失敗",
- "Copia registro": "ログをコピー"
+ "Copia registro": "ログをコピー",
+ "Aggiornamento in corso…": "更新中…"
 }

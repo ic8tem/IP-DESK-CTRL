@@ -592,5 +592,6 @@
  " · altri {0} collegati": " · további {0} csatlakozott",
  "Mentre uno comanda, altri possono collegarsi e comandare insieme (al massimo 4 in più)": "Amíg valaki vezérel, mások is csatlakozhatnak és együtt vezérelhetnek (legfeljebb 4 további)",
  "▶ inviato · ◀ ricevuto · ✓ riuscito · ✗ non riuscito": "▶ elküldve · ◀ fogadva · ✓ sikeres · ✗ sikertelen",
- "Copia registro": "Napló másolása"
+ "Copia registro": "Napló másolása",
+ "Aggiornamento in corso…": "Frissítés folyamatban…"
 }

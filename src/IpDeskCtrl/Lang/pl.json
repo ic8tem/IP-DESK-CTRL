@@ -592,5 +592,6 @@
  " · altri {0} collegati": " · jeszcze {0} połączonych",
  "Mentre uno comanda, altri possono collegarsi e comandare insieme (al massimo 4 in più)": "Gdy jeden steruje, inni mogą się połączyć i sterować razem (do 4 więcej)",
  "▶ inviato · ◀ ricevuto · ✓ riuscito · ✗ non riuscito": "▶ wysłano · ◀ odebrano · ✓ udane · ✗ nieudane",
- "Copia registro": "Kopiuj dziennik"
+ "Copia registro": "Kopiuj dziennik",
+ "Aggiornamento in corso…": "Aktualizacja w toku…"
 }
