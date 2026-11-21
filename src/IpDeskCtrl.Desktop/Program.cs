@@ -27,6 +27,8 @@ namespace IpDeskCtrl.Desktop
                     return;
                 }
             }
+            // mai come amministratore: i privilegi li usa solo il servizio (vedi Unelevate)
+            if (Unelevate.RelaunchIfElevated(args)) return;
             try
             {
                 if (OperatingSystem.IsLinux()) Screen.ScreenSources.InitLinux();
