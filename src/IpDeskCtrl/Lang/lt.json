@@ -714,5 +714,6 @@
  "IP-DESK-CTRL · Accesso completo": "IP-DESK-CTRL · Visa prieiga",
  "Richiesta mandata: chi è al PC remoto deve rispondere Sì alla finestra di Windows.": "Užklausa išsiųsta: prie nuotolinio kompiuterio esantis asmuo turi atsakyti Taip Windows lange.",
  "Il PC remoto installa il servizio": "Nuotolinis kompiuteris diegia paslaugą",
- "IP-DESK-CTRL si riavvia sul PC remoto con l'accesso completo: mi ricollego appena torna": "IP-DESK-CTRL pasileidžia iš naujo nuotoliniame kompiuteryje su visa prieiga: prisijungsiu vėl, kai tik jis grįš"
+ "IP-DESK-CTRL si riavvia sul PC remoto con l'accesso completo: mi ricollego appena torna": "IP-DESK-CTRL pasileidžia iš naujo nuotoliniame kompiuteryje su visa prieiga: prisijungsiu vėl, kai tik jis grįš",
+ "Windows non concede il riavvio all'account di questo PC (utente senza diritti di arresto o criterio dell'organizzazione). Con il servizio «accesso completo» il riavvio funziona sempre: installalo da Tasti ▾.": "Windows neleidžia šio kompiuterio paskyrai paleisti iš naujo (naudotojas be išjungimo teisės arba organizacijos politika). Su paslauga „visa prieiga“ paleidimas iš naujo veikia visada: įdiekite ją iš Klavišai ▾."
 }

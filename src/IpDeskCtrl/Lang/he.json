@@ -714,5 +714,6 @@
  "IP-DESK-CTRL · Accesso completo": "IP-DESK-CTRL · גישה מלאה",
  "Richiesta mandata: chi è al PC remoto deve rispondere Sì alla finestra di Windows.": "הבקשה נשלחה: מי שיושב מול המחשב המרוחק צריך לענות «כן» בחלון של Windows.",
  "Il PC remoto installa il servizio": "המחשב המרוחק מתקין את השירות",
- "IP-DESK-CTRL si riavvia sul PC remoto con l'accesso completo: mi ricollego appena torna": "IP-DESK-CTRL מופעל מחדש במחשב המרוחק עם גישה מלאה: אתחבר שוב ברגע שיחזור"
+ "IP-DESK-CTRL si riavvia sul PC remoto con l'accesso completo: mi ricollego appena torna": "IP-DESK-CTRL מופעל מחדש במחשב המרוחק עם גישה מלאה: אתחבר שוב ברגע שיחזור",
+ "Windows non concede il riavvio all'account di questo PC (utente senza diritti di arresto o criterio dell'organizzazione). Con il servizio «accesso completo» il riavvio funziona sempre: installalo da Tasti ▾.": "Windows לא מתיר לחשבון של מחשב זה לאתחל (משתמש בלי הרשאת כיבוי או מדיניות הארגון). עם השירות «גישה מלאה» האתחול תמיד עובד: התקינו אותו מתפריט מקשים ▾."
 }

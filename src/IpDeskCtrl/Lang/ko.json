@@ -714,5 +714,6 @@
  "IP-DESK-CTRL · Accesso completo": "IP-DESK-CTRL · 전체 액세스",
  "Richiesta mandata: chi è al PC remoto deve rispondere Sì alla finestra di Windows.": "요청을 보냈습니다: 원격 PC 앞에 있는 사람이 Windows 창에서 예를 선택해야 합니다.",
  "Il PC remoto installa il servizio": "원격 PC가 서비스를 설치하는 중입니다",
- "IP-DESK-CTRL si riavvia sul PC remoto con l'accesso completo: mi ricollego appena torna": "IP-DESK-CTRL이 원격 PC에서 전체 액세스로 다시 시작됩니다: 돌아오는 즉시 다시 연결하겠습니다"
+ "IP-DESK-CTRL si riavvia sul PC remoto con l'accesso completo: mi ricollego appena torna": "IP-DESK-CTRL이 원격 PC에서 전체 액세스로 다시 시작됩니다: 돌아오는 즉시 다시 연결하겠습니다",
+ "Windows non concede il riavvio all'account di questo PC (utente senza diritti di arresto o criterio dell'organizzazione). Con il servizio «accesso completo» il riavvio funziona sempre: installalo da Tasti ▾.": "Windows가 이 PC 계정의 다시 시작을 허용하지 않습니다(종료 권한이 없는 사용자 또는 조직 정책). \"전체 액세스\" 서비스가 있으면 다시 시작은 항상 됩니다: 키 ▾에서 설치하세요."
 }

@@ -714,5 +714,6 @@
  "IP-DESK-CTRL · Accesso completo": "IP-DESK-CTRL · Fuld adgang",
  "Richiesta mandata: chi è al PC remoto deve rispondere Sì alla finestra di Windows.": "Anmodning sendt: den, der sidder ved fjern-pc'en, skal svare Ja i Windows-vinduet.",
  "Il PC remoto installa il servizio": "Fjern-pc'en installerer tjenesten",
- "IP-DESK-CTRL si riavvia sul PC remoto con l'accesso completo: mi ricollego appena torna": "IP-DESK-CTRL genstarter på fjern-pc'en med fuld adgang: jeg forbinder igen, så snart den er tilbage"
+ "IP-DESK-CTRL si riavvia sul PC remoto con l'accesso completo: mi ricollego appena torna": "IP-DESK-CTRL genstarter på fjern-pc'en med fuld adgang: jeg forbinder igen, så snart den er tilbage",
+ "Windows non concede il riavvio all'account di questo PC (utente senza diritti di arresto o criterio dell'organizzazione). Con il servizio «accesso completo» il riavvio funziona sempre: installalo da Tasti ▾.": "Windows lader ikke denne pc's konto genstarte (bruger uden ret til at lukke ned eller en organisationspolitik). Med tjenesten »fuld adgang« virker genstart altid: installer den fra Taster ▾."
 }

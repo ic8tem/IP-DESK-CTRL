@@ -714,5 +714,6 @@
  "IP-DESK-CTRL · Accesso completo": "IP-DESK-CTRL · Πλήρης πρόσβαση",
  "Richiesta mandata: chi è al PC remoto deve rispondere Sì alla finestra di Windows.": "Το αίτημα στάλθηκε: όποιος κάθεται στον απομακρυσμένο υπολογιστή πρέπει να απαντήσει Ναι στο παράθυρο των Windows.",
  "Il PC remoto installa il servizio": "Ο απομακρυσμένος υπολογιστής εγκαθιστά την υπηρεσία",
- "IP-DESK-CTRL si riavvia sul PC remoto con l'accesso completo: mi ricollego appena torna": "Το IP-DESK-CTRL επανεκκινείται στον απομακρυσμένο υπολογιστή με πλήρη πρόσβαση: θα επανασυνδεθώ μόλις επιστρέψει"
+ "IP-DESK-CTRL si riavvia sul PC remoto con l'accesso completo: mi ricollego appena torna": "Το IP-DESK-CTRL επανεκκινείται στον απομακρυσμένο υπολογιστή με πλήρη πρόσβαση: θα επανασυνδεθώ μόλις επιστρέψει",
+ "Windows non concede il riavvio all'account di questo PC (utente senza diritti di arresto o criterio dell'organizzazione). Con il servizio «accesso completo» il riavvio funziona sempre: installalo da Tasti ▾.": "Τα Windows δεν επιτρέπουν στον λογαριασμό αυτού του υπολογιστή την επανεκκίνηση (χρήστης χωρίς δικαίωμα τερματισμού ή πολιτική του οργανισμού). Με την υπηρεσία «πλήρης πρόσβαση» η επανεκκίνηση λειτουργεί πάντα: εγκαταστήστε τη από τα Πλήκτρα ▾."
 }

@@ -714,5 +714,6 @@
  "IP-DESK-CTRL · Accesso completo": "IP-DESK-CTRL · Buong access",
  "Richiesta mandata: chi è al PC remoto deve rispondere Sì alla finestra di Windows.": "Naipadala ang hiling: kailangang sumagot ng Oo ang nasa harap ng remote na PC sa window ng Windows.",
  "Il PC remoto installa il servizio": "Nag-i-install ng serbisyo ang remote na PC",
- "IP-DESK-CTRL si riavvia sul PC remoto con l'accesso completo: mi ricollego appena torna": "Nagre-restart ang IP-DESK-CTRL sa remote na PC na may buong access: muli akong kokonekta pagbalik nito"
+ "IP-DESK-CTRL si riavvia sul PC remoto con l'accesso completo: mi ricollego appena torna": "Nagre-restart ang IP-DESK-CTRL sa remote na PC na may buong access: muli akong kokonekta pagbalik nito",
+ "Windows non concede il riavvio all'account di questo PC (utente senza diritti di arresto o criterio dell'organizzazione). Con il servizio «accesso completo» il riavvio funziona sempre: installalo da Tasti ▾.": "Hindi pinapayagan ng Windows ang account ng PC na ito na mag-restart (user na walang karapatang mag-shutdown o patakaran ng organisasyon). Sa serbisyong “buong access” laging gumagana ang restart: i-install ito mula sa Mga Key ▾."
 }

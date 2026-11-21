@@ -714,5 +714,6 @@
  "IP-DESK-CTRL · Accesso completo": "IP-DESK-CTRL · 完整存取",
  "Richiesta mandata: chi è al PC remoto deve rispondere Sì alla finestra di Windows.": "要求已傳送：遠端電腦前的人需要在 Windows 視窗中選擇「是」。",
  "Il PC remoto installa il servizio": "遠端電腦正在安裝服務",
- "IP-DESK-CTRL si riavvia sul PC remoto con l'accesso completo: mi ricollego appena torna": "IP-DESK-CTRL 正在遠端電腦上以完整存取重新啟動：它一回來我就重新連線"
+ "IP-DESK-CTRL si riavvia sul PC remoto con l'accesso completo: mi ricollego appena torna": "IP-DESK-CTRL 正在遠端電腦上以完整存取重新啟動：它一回來我就重新連線",
+ "Windows non concede il riavvio all'account di questo PC (utente senza diritti di arresto o criterio dell'organizzazione). Con il servizio «accesso completo» il riavvio funziona sempre: installalo da Tasti ▾.": "Windows 不允許此電腦的帳戶重新啟動（使用者沒有關機權限或受組織原則限制）。安裝「完整存取」服務後重新啟動一定成功：從「按鍵 ▾」安裝。"
 }

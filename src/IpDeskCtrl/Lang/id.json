@@ -714,5 +714,6 @@
  "IP-DESK-CTRL · Accesso completo": "IP-DESK-CTRL · Akses penuh",
  "Richiesta mandata: chi è al PC remoto deve rispondere Sì alla finestra di Windows.": "Permintaan terkirim: orang di depan PC jarak jauh harus menjawab Ya di jendela Windows.",
  "Il PC remoto installa il servizio": "PC jarak jauh sedang memasang layanan",
- "IP-DESK-CTRL si riavvia sul PC remoto con l'accesso completo: mi ricollego appena torna": "IP-DESK-CTRL dimulai ulang di PC jarak jauh dengan akses penuh: saya akan tersambung lagi begitu kembali"
+ "IP-DESK-CTRL si riavvia sul PC remoto con l'accesso completo: mi ricollego appena torna": "IP-DESK-CTRL dimulai ulang di PC jarak jauh dengan akses penuh: saya akan tersambung lagi begitu kembali",
+ "Windows non concede il riavvio all'account di questo PC (utente senza diritti di arresto o criterio dell'organizzazione). Con il servizio «accesso completo» il riavvio funziona sempre: installalo da Tasti ▾.": "Windows tidak mengizinkan akun PC ini memulai ulang (pengguna tanpa hak mematikan atau kebijakan organisasi). Dengan layanan “akses penuh” mulai ulang selalu berhasil: pasang dari Tombol ▾."
 }
