@@ -721,5 +721,6 @@
  "Ricollegamento automatico non riuscito.": "Outomatiese herverbinding het misluk.",
  "Sul PC remoto: {0}.": "Op die afgeleë rekenaar: {0}.",
  "codifica con la scheda grafica ({0}) sospesa fino al {1}: il PC si era bloccato mentre la usava": "kodering met die grafiese kaart ({0}) opgeskort tot {1}: die rekenaar het gevries terwyl dit gebruik is",
- "Trascinamento dal PC remoto: se erano file, arrivano qui in Scaricati e negli appunti (incollali con Ctrl+V)…": "Sleep vanaf die afgeleë rekenaar: as dit lêers was, kom hulle hier in Aflaaie en op die knipbord (plak met Ctrl+V)…"
+ "Trascinamento dal PC remoto: se erano file, arrivano qui in Scaricati e negli appunti (incollali con Ctrl+V)…": "Sleep vanaf die afgeleë rekenaar: as dit lêers was, kom hulle hier in Aflaaie en op die knipbord (plak met Ctrl+V)…",
+ "Aggiornamenti automatici: ogni {0} minuti cerca una nuova versione e la installa da sola (i collegamenti riprendono)": "Outomatiese bywerkings: elke {0} minute word ’n nuwe weergawe gesoek en dit installeer vanself (verbindings gaan voort)"
 }

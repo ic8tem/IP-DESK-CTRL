@@ -3,6 +3,9 @@
 
 Le versioni con protocollo diverso non si collegano tra loro: aggiorna tutti i dispositivi alla stessa versione principale (la 0.4.1 si collega con la 0.4.0; la 0.5 si collega con la 0.4).
 
+## 0.5.30 — 21 novembre 2026
+- **Nuove versioni trovate prima**: il controllo passa da ogni 30 minuti a **ogni 5 minuti**. Il controllo frequente guarda solo il rimando della pagina «ultima versione» di GitHub, che non ha limiti; i dettagli si chiedono all'API di GitHub solo quando c'è davvero una versione nuova, così anche più PC dietro la stessa connessione non superano le 60 richieste all'ora concesse senza account.
+
 ## 0.5.29 — 21 novembre 2026
 - **Trascinamento dal PC remoto verso il tuo**: trascina un file in Esplora file del PC remoto e portalo fuori dalla finestra del visore (o sul bordo, a schermo intero): sul PC remoto una finestrella invisibile raccoglie il file lasciato e lo manda qui, in Scaricati e negli appunti, pronto da incollare con Ctrl+V. Serve la 0.5.29 su tutti e due i PC.
 - **File ricevuti con il servizio, cartella giusta**: i file trascinati o incollati verso un PC con il servizio di Windows potevano finire in `C:\Windows\system32\config\systemprofile\Downloads`, la cartella del sistema che l'utente non vede. Ora vanno sempre in Scaricati\IP-DESK-CTRL dell'utente collegato.

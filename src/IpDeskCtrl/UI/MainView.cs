@@ -311,7 +311,7 @@ namespace IpDeskCtrl.UI
                 DockRow(),
                 PortsRow(),
                 BrokersRow(),
-                Chk(L.T("Aggiornamenti automatici: ogni 30 minuti cerca una nuova versione e la installa da sola (i collegamenti riprendono)"), _s.AutoUpdate, v => _s.AutoUpdate = v),
+                Chk(L.F("Aggiornamenti automatici: ogni {0} minuti cerca una nuova versione e la installa da sola (i collegamenti riprendono)", UpdateCheck.EveryMinutes), _s.AutoUpdate, v => _s.AutoUpdate = v),
                 Chk(L.T("Mentre uno comanda, altri possono collegarsi e comandare insieme (al massimo 4 in più)"), _s.AllowObservers, v => _s.AllowObservers = v),
                 VideoRow(),
                 Ui.Row(10, new TextBlock { Text = L.T("Tema"), VerticalAlignment = VerticalAlignment.Center }, theme),

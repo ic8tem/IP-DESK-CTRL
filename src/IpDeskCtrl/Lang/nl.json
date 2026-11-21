@@ -721,5 +721,6 @@
  "Ricollegamento automatico non riuscito.": "Automatisch opnieuw verbinden mislukt.",
  "Sul PC remoto: {0}.": "Op de externe pc: {0}.",
  "codifica con la scheda grafica ({0}) sospesa fino al {1}: il PC si era bloccato mentre la usava": "codering met de videokaart ({0}) opgeschort tot {1}: de pc was vastgelopen tijdens het gebruik",
- "Trascinamento dal PC remoto: se erano file, arrivano qui in Scaricati e negli appunti (incollali con Ctrl+V)…": "Slepen vanaf de externe pc: als het bestanden waren, komen ze hier in Downloads en op het klembord (plak ze met Ctrl+V)…"
+ "Trascinamento dal PC remoto: se erano file, arrivano qui in Scaricati e negli appunti (incollali con Ctrl+V)…": "Slepen vanaf de externe pc: als het bestanden waren, komen ze hier in Downloads en op het klembord (plak ze met Ctrl+V)…",
+ "Aggiornamenti automatici: ogni {0} minuti cerca una nuova versione e la installa da sola (i collegamenti riprendono)": "Automatische updates: elke {0} minuten wordt naar een nieuwe versie gezocht en die zelf geïnstalleerd (verbindingen gaan verder)"
 }

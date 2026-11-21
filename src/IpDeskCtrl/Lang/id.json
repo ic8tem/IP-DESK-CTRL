@@ -721,5 +721,6 @@
  "Ricollegamento automatico non riuscito.": "Penyambungan ulang otomatis gagal.",
  "Sul PC remoto: {0}.": "Di PC jarak jauh: {0}.",
  "codifica con la scheda grafica ({0}) sospesa fino al {1}: il PC si era bloccato mentre la usava": "pengodean dengan kartu grafis ({0}) ditangguhkan hingga {1}: PC sempat macet saat menggunakannya",
- "Trascinamento dal PC remoto: se erano file, arrivano qui in Scaricati e negli appunti (incollali con Ctrl+V)…": "Seret dari PC jarak jauh: jika itu file, file tiba di sini di Unduhan dan papan klip (tempel dengan Ctrl+V)…"
+ "Trascinamento dal PC remoto: se erano file, arrivano qui in Scaricati e negli appunti (incollali con Ctrl+V)…": "Seret dari PC jarak jauh: jika itu file, file tiba di sini di Unduhan dan papan klip (tempel dengan Ctrl+V)…",
+ "Aggiornamenti automatici: ogni {0} minuti cerca una nuova versione e la installa da sola (i collegamenti riprendono)": "Pembaruan otomatis: setiap {0} menit dicari versi baru dan terpasang sendiri (koneksi tetap berlanjut)"
 }

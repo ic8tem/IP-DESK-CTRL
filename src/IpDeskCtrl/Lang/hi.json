@@ -721,5 +721,6 @@
  "Ricollegamento automatico non riuscito.": "स्वचालित पुनः कनेक्शन विफल रहा।",
  "Sul PC remoto: {0}.": "रिमोट पीसी पर: {0}।",
  "codifica con la scheda grafica ({0}) sospesa fino al {1}: il PC si era bloccato mentre la usava": "ग्राफ़िक्स कार्ड से एन्कोडिंग ({0}) {1} तक निलंबित: इसके उपयोग के दौरान पीसी अटक गया था",
- "Trascinamento dal PC remoto: se erano file, arrivano qui in Scaricati e negli appunti (incollali con Ctrl+V)…": "रिमोट पीसी से खींचना: अगर फ़ाइलें थीं, तो यहाँ डाउनलोड और क्लिपबोर्ड में आएँगी (Ctrl+V से चिपकाएँ)…"
+ "Trascinamento dal PC remoto: se erano file, arrivano qui in Scaricati e negli appunti (incollali con Ctrl+V)…": "रिमोट पीसी से खींचना: अगर फ़ाइलें थीं, तो यहाँ डाउनलोड और क्लिपबोर्ड में आएँगी (Ctrl+V से चिपकाएँ)…",
+ "Aggiornamenti automatici: ogni {0} minuti cerca una nuova versione e la installa da sola (i collegamenti riprendono)": "स्वचालित अपडेट: हर {0} मिनट में नया संस्करण खोजा जाता है और अपने आप इंस्टॉल होता है (कनेक्शन जारी रहते हैं)"
 }
