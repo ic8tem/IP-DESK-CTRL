@@ -3,6 +3,13 @@
 
 Le versioni con protocollo diverso non si collegano tra loro: aggiorna tutti i dispositivi alla stessa versione principale (la 0.4.1 si collega con la 0.4.0; la 0.5 si collega con la 0.4).
 
+## 0.5.23 — 21 novembre 2026
+- **Avviso UAC nella plancia**: quando sul PC remoto si apre una richiesta UAC, il visore lo dice chiaramente: con il servizio «la vedi sullo schermo, rispondi Sì o No», senza il servizio «non si vede da qui, deve rispondere chi è al PC».
+- **Servizio installabile a distanza**: se il PC remoto ha IP-DESK-CTRL installato con l'installatore ma senza il servizio, da Tasti ▾ (o dall'avviso UAC) si chiede di installarlo. Chi è al PC risponde Sì alla richiesta di Windows una volta sola, il programma si riavvia lì con lo stesso numero e il collegamento riprende da solo con l'accesso completo (UAC, schermata di blocco, Ctrl+Alt+Canc, programmi da amministratore).
+- **Avvia come amministratore** (Tasti ▾): con il servizio, apre sul PC remoto Prompt dei comandi, PowerShell, Gestione attività, Editor del Registro, Servizi, Gestione computer o Gestione dispositivi già da amministratore, senza la richiesta UAC. È spento di serie: lo permette chi è al PC remoto in Impostazioni, e solo se il suo account è amministratore. Ogni avvio va nel registro.
+- **Registrazione e privacy**: prima di registrare una finestra spiega che il video riprende tutto lo schermo remoto e chiede di confermare il consenso di chi usa quel PC; chi è davanti al PC remoto vede un avviso rosso «Sessione registrata» finché la registrazione è attiva.
+- **«Adatta la risoluzione» rispettato anche dal servizio**: se chi è al PC toglieva il permesso nelle Impostazioni, il servizio non lo sapeva e la risoluzione cambiava lo stesso.
+
 ## 0.5.22 — 21 novembre 2026
 - **Gestione file a due pannelli** (File ▾ › «Gestione file a due pannelli…»): a sinistra le cartelle di questo PC, a destra quelle del PC remoto, con dischi e cartelle utente (Desktop, Documenti, Scaricati, Immagini) a portata di mano. Si trasferisce nei due versi con i pulsanti → e ←, con il doppio clic, trascinando da un pannello all'altro o da Esplora risorse sul pannello remoto; si creano cartelle, si rinomina (F2) e si elimina (Canc, con conferma). I trasferimenti vanno in coda, uno alla volta, con avanzamento e velocità, e si possono fermare. Sul PC remoto si lavora con i permessi dell'utente collegato, anche quando il collegamento lo riceve il servizio. È anche l'alternativa al trascinamento quando Windows lo blocca.
 - **Chat**: pulsante «Chat» nella plancia. Chi è davanti al PC comandato vede aprirsi una finestra in primo piano e risponde da lì (anche dal pulsante «Chat» nel riquadro del collegamento in arrivo). I messaggi restano nel registro.

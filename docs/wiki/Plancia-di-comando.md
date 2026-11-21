@@ -14,7 +14,7 @@ Nella finestra del PC remoto c'è una piccola plancia di comando: **in alto al c
 | **Audio** | Accende o spegne l'audio del PC remoto (32 kHz stereo). |
 | **Microfono** | Manda il tuo microfono al PC remoto (vedi sotto). |
 | **✋** | (telefono e tablet) Tocco e gesti: vedi [Android](Android). |
-| **Tasti ▾** | Ctrl+Alt+Canc, Alt+Tab, Tasto Windows / Cmd, Alt+F4, Ctrl+C, Ctrl+V, Stamp, Esc, **Volume del PC remoto +, −, muto**, *Pannello scorciatoie*, *Riavvia il PC remoto…* |
+| **Tasti ▾** | Ctrl+Alt+Canc, Alt+Tab, Tasto Windows / Cmd, Alt+F4, Ctrl+C, Ctrl+V, Stamp, Esc, **Volume del PC remoto +, −, muto**, *Pannello scorciatoie*, *Installa il servizio sul PC remoto*, *Avvia come amministratore* (vedi [Servizio di Windows](Servizio-di-Windows)), *Riavvia il PC remoto…* |
 | **File ▾** | Prendi i file copiati sul PC remoto, manda quelli copiati qui, scegli file da mandare (vedi [File e appunti](File-e-appunti)). |
 | **Chat** | Apre la chat con chi è davanti al PC remoto: di là si apre una finestra in primo piano. Si apre da sola quando arriva un messaggio. |
 | **✎** | Lavagna: disegni in rosso sullo schermo del PC remoto (vedi sotto). |
