@@ -660,5 +660,9 @@
  "Registrazione salvata: ": "ההקלטה נשמרה: ",
  "La chat richiede IP-DESK-CTRL 0.5.22 o successivo sul PC remoto.": "הצ'אט דורש IP-DESK-CTRL 0.5.22 ומעלה במחשב המרוחק.",
  "Gestione file a due pannelli…": "מנהל קבצים דו-חלוני…",
- "Gestione file a due pannelli (il PC remoto va aggiornato)": "מנהל קבצים דו-חלוני (יש לעדכן את המחשב המרוחק)"
+ "Gestione file a due pannelli (il PC remoto va aggiornato)": "מנהל קבצים דו-חלוני (יש לעדכן את המחשב המרוחק)",
+ "Nessuna strada diretta: provo a passare dal broker MQTT (relè, lento ma funziona quasi sempre)…": "אין נתיב ישיר: מנסה דרך מתווך MQTT (ממסר, איטי אבל כמעט תמיד עובד)…",
+ "Lavagna: disegna sullo schermo del PC remoto per indicare qualcosa (tratti rossi). Clic destro per cancellare. Premi di nuovo per tornare a comandare.": "לוח: ציירו על מסך המחשב המרוחק כדי להצביע על משהו (קווים אדומים). לחיצה ימנית מוחקת. לחצו שוב כדי לחזור לשליטה.",
+ "La lavagna richiede IP-DESK-CTRL 0.5.22 o successivo sul PC remoto.": "הלוח דורש IP-DESK-CTRL 0.5.22 ומעלה במחשב המרוחק.",
+ "Lavagna attiva: disegna col tasto sinistro, clic destro cancella. Il mouse non arriva al PC remoto finché non la chiudi.": "הלוח פעיל: ציירו בכפתור השמאלי, לחיצה ימנית מוחקת. העכבר לא מגיע למחשב המרוחק עד שתסגרו אותו."
 }

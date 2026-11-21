@@ -660,5 +660,9 @@
  "Registrazione salvata: ": "Înregistrare salvată: ",
  "La chat richiede IP-DESK-CTRL 0.5.22 o successivo sul PC remoto.": "Chatul necesită IP-DESK-CTRL 0.5.22 sau mai nou pe PC-ul de la distanță.",
  "Gestione file a due pannelli…": "Manager de fișiere cu două panouri…",
- "Gestione file a due pannelli (il PC remoto va aggiornato)": "Manager de fișiere cu două panouri (PC-ul de la distanță trebuie actualizat)"
+ "Gestione file a due pannelli (il PC remoto va aggiornato)": "Manager de fișiere cu două panouri (PC-ul de la distanță trebuie actualizat)",
+ "Nessuna strada diretta: provo a passare dal broker MQTT (relè, lento ma funziona quasi sempre)…": "Nicio cale directă: încerc prin brokerul MQTT (releu, lent dar funcționează aproape mereu)…",
+ "Lavagna: disegna sullo schermo del PC remoto per indicare qualcosa (tratti rossi). Clic destro per cancellare. Premi di nuovo per tornare a comandare.": "Tablă: desenează pe ecranul PC-ului de la distanță pentru a indica ceva (linii roșii). Clic dreapta șterge. Apasă din nou pentru a reveni la control.",
+ "La lavagna richiede IP-DESK-CTRL 0.5.22 o successivo sul PC remoto.": "Tabla necesită IP-DESK-CTRL 0.5.22 sau mai nou pe PC-ul de la distanță.",
+ "Lavagna attiva: disegna col tasto sinistro, clic destro cancella. Il mouse non arriva al PC remoto finché non la chiudi.": "Tablă activă: desenează cu butonul stâng, clic dreapta șterge. Mouse-ul nu ajunge la PC-ul de la distanță până nu o închizi."
 }

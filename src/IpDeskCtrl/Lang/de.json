@@ -660,5 +660,9 @@
  "Registrazione salvata: ": "Aufzeichnung gespeichert: ",
  "La chat richiede IP-DESK-CTRL 0.5.22 o successivo sul PC remoto.": "Der Chat benötigt IP-DESK-CTRL 0.5.22 oder neuer auf dem entfernten PC.",
  "Gestione file a due pannelli…": "Dateimanager mit zwei Bereichen…",
- "Gestione file a due pannelli (il PC remoto va aggiornato)": "Dateimanager mit zwei Bereichen (der entfernte PC muss aktualisiert werden)"
+ "Gestione file a due pannelli (il PC remoto va aggiornato)": "Dateimanager mit zwei Bereichen (der entfernte PC muss aktualisiert werden)",
+ "Nessuna strada diretta: provo a passare dal broker MQTT (relè, lento ma funziona quasi sempre)…": "Kein direkter Weg: versuche es über den MQTT-Broker (Relais, langsam, klappt aber fast immer)…",
+ "Lavagna: disegna sullo schermo del PC remoto per indicare qualcosa (tratti rossi). Clic destro per cancellare. Premi di nuovo per tornare a comandare.": "Whiteboard: auf dem Bildschirm des entfernten PCs zeichnen, um etwas zu zeigen (rote Striche). Rechtsklick löscht. Erneut drücken, um wieder zu steuern.",
+ "La lavagna richiede IP-DESK-CTRL 0.5.22 o successivo sul PC remoto.": "Das Whiteboard benötigt IP-DESK-CTRL 0.5.22 oder neuer auf dem entfernten PC.",
+ "Lavagna attiva: disegna col tasto sinistro, clic destro cancella. Il mouse non arriva al PC remoto finché non la chiudi.": "Whiteboard aktiv: mit der linken Taste zeichnen, Rechtsklick löscht. Die Maus erreicht den entfernten PC erst nach dem Schließen."
 }

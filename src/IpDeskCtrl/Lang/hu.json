@@ -660,5 +660,9 @@
  "Registrazione salvata: ": "Felvétel mentve: ",
  "La chat richiede IP-DESK-CTRL 0.5.22 o successivo sul PC remoto.": "A csevegéshez a távoli gépen IP-DESK-CTRL 0.5.22 vagy újabb kell.",
  "Gestione file a due pannelli…": "Kétpaneles fájlkezelő…",
- "Gestione file a due pannelli (il PC remoto va aggiornato)": "Kétpaneles fájlkezelő (a távoli gépet frissíteni kell)"
+ "Gestione file a due pannelli (il PC remoto va aggiornato)": "Kétpaneles fájlkezelő (a távoli gépet frissíteni kell)",
+ "Nessuna strada diretta: provo a passare dal broker MQTT (relè, lento ma funziona quasi sempre)…": "Nincs közvetlen út: a MQTT-brókeren keresztül próbálom (átjátszó, lassú, de szinte mindig működik)…",
+ "Lavagna: disegna sullo schermo del PC remoto per indicare qualcosa (tratti rossi). Clic destro per cancellare. Premi di nuovo per tornare a comandare.": "Tábla: rajzolj a távoli gép képernyőjére, hogy megmutass valamit (piros vonalak). Jobb klikk töröl. Nyomd meg újra, hogy ismét irányíts.",
+ "La lavagna richiede IP-DESK-CTRL 0.5.22 o successivo sul PC remoto.": "A táblához a távoli gépen IP-DESK-CTRL 0.5.22 vagy újabb kell.",
+ "Lavagna attiva: disegna col tasto sinistro, clic destro cancella. Il mouse non arriva al PC remoto finché non la chiudi.": "Tábla bekapcsolva: rajzolj a bal gombbal, jobb klikk töröl. Az egér nem jut el a távoli géphez, amíg be nem zárod."
 }

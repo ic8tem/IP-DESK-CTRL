@@ -660,5 +660,9 @@
  "Registrazione salvata: ": "ریکارڈنگ محفوظ: ",
  "La chat richiede IP-DESK-CTRL 0.5.22 o successivo sul PC remoto.": "چیٹ کے لیے ریموٹ پی سی پر IP-DESK-CTRL 0.5.22 یا نیا درکار ہے۔",
  "Gestione file a due pannelli…": "دو پینل والا فائل منیجر…",
- "Gestione file a due pannelli (il PC remoto va aggiornato)": "دو پینل والا فائل منیجر (ریموٹ پی سی کو اپ ڈیٹ کرنا ہوگا)"
+ "Gestione file a due pannelli (il PC remoto va aggiornato)": "دو پینل والا فائل منیجر (ریموٹ پی سی کو اپ ڈیٹ کرنا ہوگا)",
+ "Nessuna strada diretta: provo a passare dal broker MQTT (relè, lento ma funziona quasi sempre)…": "کوئی براہِ راست راستہ نہیں: MQTT بروکر کے ذریعے کوشش (ریلے، سست مگر تقریباً ہمیشہ کام کرتا ہے)…",
+ "Lavagna: disegna sullo schermo del PC remoto per indicare qualcosa (tratti rossi). Clic destro per cancellare. Premi di nuovo per tornare a comandare.": "وائٹ بورڈ: کچھ دکھانے کے لیے ریموٹ پی سی کی اسکرین پر بنائیں (سرخ لکیریں)۔ دایاں کلک مٹاتا ہے۔ دوبارہ کنٹرول کے لیے پھر دبائیں۔",
+ "La lavagna richiede IP-DESK-CTRL 0.5.22 o successivo sul PC remoto.": "وائٹ بورڈ کے لیے ریموٹ پی سی پر IP-DESK-CTRL 0.5.22 یا نیا درکار ہے۔",
+ "Lavagna attiva: disegna col tasto sinistro, clic destro cancella. Il mouse non arriva al PC remoto finché non la chiudi.": "وائٹ بورڈ فعال: بائیں بٹن سے بنائیں، دایاں کلک مٹاتا ہے۔ بند کرنے تک ماؤس ریموٹ پی سی تک نہیں پہنچتا۔"
 }

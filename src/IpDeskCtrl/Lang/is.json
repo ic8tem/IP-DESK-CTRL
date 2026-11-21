@@ -660,5 +660,9 @@
  "Registrazione salvata: ": "Upptaka vistuð: ",
  "La chat richiede IP-DESK-CTRL 0.5.22 o successivo sul PC remoto.": "Spjallið krefst IP-DESK-CTRL 0.5.22 eða nýrra á fjartölvunni.",
  "Gestione file a due pannelli…": "Skráastjóri með tveimur svæðum…",
- "Gestione file a due pannelli (il PC remoto va aggiornato)": "Skráastjóri með tveimur svæðum (uppfæra þarf fjartölvuna)"
+ "Gestione file a due pannelli (il PC remoto va aggiornato)": "Skráastjóri með tveimur svæðum (uppfæra þarf fjartölvuna)",
+ "Nessuna strada diretta: provo a passare dal broker MQTT (relè, lento ma funziona quasi sempre)…": "Engin bein leið: reyni í gegnum MQTT-miðlarann (endurvarpi, hægt en virkar nær alltaf)…",
+ "Lavagna: disegna sullo schermo del PC remoto per indicare qualcosa (tratti rossi). Clic destro per cancellare. Premi di nuovo per tornare a comandare.": "Tafla: teiknaðu á skjá fjartölvunnar til að benda á eitthvað (rauð strik). Hægrismellur hreinsar. Ýttu aftur til að stjórna á ný.",
+ "La lavagna richiede IP-DESK-CTRL 0.5.22 o successivo sul PC remoto.": "Taflan krefst IP-DESK-CTRL 0.5.22 eða nýrra á fjartölvunni.",
+ "Lavagna attiva: disegna col tasto sinistro, clic destro cancella. Il mouse non arriva al PC remoto finché non la chiudi.": "Tafla virk: teiknaðu með vinstri hnappi, hægrismellur hreinsar. Músin nær ekki til fjartölvunnar fyrr en þú lokar henni."
 }

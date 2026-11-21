@@ -621,6 +621,9 @@ namespace IpDeskCtrl.Core
                     case Note.UdpOffer:
                         if (!ViewerOnly) await OnUdpOfferAsync(note, ct);
                         break;
+                    case Note.RelayOffer:
+                        if (!ViewerOnly) _ = OnRelayOfferAsync(note, ct);
+                        break;
                     case Note.WakeRequest:
                         if (!ViewerOnly) OnWakeRequest(note);
                         break;
@@ -906,6 +909,70 @@ namespace IpDeskCtrl.Core
             }
         }
 
+        // =================================================================== relè sul broker MQTT (ultima strada)
+
+        /// <summary>Lato host: il visore non passa in nessun modo e propone il relè sul broker.</summary>
+        private async Task OnRelayOfferAsync(Note note, CancellationToken ct)
+        {
+            string viewer = note.SenderNumber;
+            string[] parts = System.Text.Encoding.UTF8.GetString(note.Data).Split('|', 2);
+            if (parts.Length != 2 || parts[0].Length != 32) return;
+            if (!_seenRequests.TryAdd("relay:" + parts[0], DateTime.UtcNow)) return;     // arriva da più broker
+            Log($"RELÈ {Identity.Format(viewer)} chiede il collegamento attraverso il broker {parts[1]}");
+            MqttRelayStream? st = null;
+            try
+            {
+                st = await MqttRelayStream.OpenAsync(new[] { parts[1] }, parts[0], false, ct);
+                var tr = new SecureLink.Transport(st, st, new IPEndPoint(IPAddress.Any, 0), null, null);
+                var sl = await SecureLink.HandshakeAsync(tr, Me, LinkRole.Host, viewer, ct);
+                st = null;
+                Log($"RELÈ collegamento attraverso il broker riuscito con {Identity.Format(viewer)}: sarà lento, l'immagine si alleggerisce");
+                StartHost(sl);
+            }
+            catch (Exception ex)
+            {
+                st?.Dispose();
+                if (!ct.IsCancellationRequested) Log($"RELÈ collegamento con {Identity.Format(viewer)} non riuscito ({ex.Message})");
+            }
+        }
+
+        /// <summary>Lato visore: relè sul broker MQTT quando non passa né TCP né UDP.</summary>
+        private async Task<SecureLink?> TryRelayAsync(string number, Action<string> progress, CancellationToken ct)
+        {
+            var rdv = _rdv;
+            if (rdv == null || S.MqttBrokers.Count == 0) return null;
+            progress(L.T("Nessuna strada diretta: provo a passare dal broker MQTT (relè, lento ma funziona quasi sempre)…"));
+            MqttRelayStream? st = null;
+            try
+            {
+                string session = Convert.ToHexString(RandomNumberGenerator.GetBytes(16));
+                st = await MqttRelayStream.OpenAsync(S.MqttBrokers, session, true, ct);
+                int sent = await rdv.SendNoteAsync(number, Note.RelayOffer, System.Text.Encoding.UTF8.GetBytes(session + "|" + st.Broker), ct);
+                Log($"RELÈ proposta consegnata a {sent} broker, relè su {st.Broker}");
+                var tr = new SecureLink.Transport(st, st, new IPEndPoint(IPAddress.Any, 0), null, null);
+                var sl = await SecureLink.HandshakeAsync(tr, Me, LinkRole.Viewer, number, ct);
+                st = null;
+                Log($"RELÈ collegamento attraverso il broker riuscito verso {Identity.Format(number)}");
+                return sl;
+            }
+            catch (CryptographicException ex)
+            {
+                st?.Dispose();
+                throw new PeerException(L.T("Collegamento rifiutato per motivi di sicurezza: ") + ex.Message);
+            }
+            catch (Exception ex) when (!ct.IsCancellationRequested)
+            {
+                st?.Dispose();
+                Log("RELÈ collegamento attraverso il broker non riuscito: " + ex.Message);
+                return null;
+            }
+            catch
+            {
+                st?.Dispose();
+                throw;
+            }
+        }
+
         // =================================================================== collegamento verso un altro PC
 
         /// <summary>
@@ -1019,6 +1086,8 @@ namespace IpDeskCtrl.Core
                     progress(L.T("TCP non passa tra i due PC: attendo il collegamento solo UDP…"));
                     link = udpTask != null ? await SafeUdp(udpTask) : await TryUdpAsync(number, progress, ct);
                     if (link != null) { udpWon = true; return link; }
+                    link = await TryRelayAsync(number, progress, ct);
+                    if (link != null) return link;
                 }
             }
             catch (OperationCanceledException) { throw; }

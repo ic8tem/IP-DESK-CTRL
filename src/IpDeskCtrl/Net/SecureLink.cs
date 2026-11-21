@@ -52,6 +52,8 @@ namespace IpDeskCtrl.Net
         public IPEndPoint? Local { get; }
         /// <summary>true = il collegamento corre solo su UDP (nessuna connessione TCP tra i due PC).</summary>
         public bool IsUdp => UdpTransport != null;
+        /// <summary>true = il collegamento passa dal broker MQTT (relè, ultima strada).</summary>
+        public bool IsRelay => _stream is MqttRelayStream;
         /// <summary>Il socket UDP sotto il flusso, se il collegamento è «solo UDP»: serve anche per audio e mouse.</summary>
         public UdpLink? UdpTransport { get; }
         public long BytesSent, BytesReceived;
@@ -186,7 +188,7 @@ namespace IpDeskCtrl.Net
                 var link = role == LinkRole.Viewer
                     ? new SecureLink(tr, role.Value, v2h, h2v, udp, peerKey, peerNumber)
                     : new SecureLink(tr, role.Value, h2v, v2h, udp, peerKey, peerNumber);
-                SessionLog.Write($"SESSIONE {(role == LinkRole.Viewer ? "visore" : "host")} ⇄ {Identity.Format(peerNumber)} ({link.Remote}{(link.IsUdp ? ", solo UDP" : "")}) · ECDH P-256 · AES-256-GCM · impronta {Crypto.Fingerprint(peerKey)}");
+                SessionLog.Write($"SESSIONE {(role == LinkRole.Viewer ? "visore" : "host")} ⇄ {Identity.Format(peerNumber)} ({link.Remote}{(link.IsUdp ? ", solo UDP" : link.IsRelay ? ", relè MQTT" : "")}) · ECDH P-256 · AES-256-GCM · impronta {Crypto.Fingerprint(peerKey)}");
                 return link;
             }
             catch

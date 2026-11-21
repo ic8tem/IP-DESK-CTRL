@@ -660,5 +660,9 @@
  "Registrazione salvata: ": "录制已保存： ",
  "La chat richiede IP-DESK-CTRL 0.5.22 o successivo sul PC remoto.": "聊天需要远程电脑安装 IP-DESK-CTRL 0.5.22 或更高版本。",
  "Gestione file a due pannelli…": "双窗格文件管理器…",
- "Gestione file a due pannelli (il PC remoto va aggiornato)": "双窗格文件管理器（远程电脑需要更新）"
+ "Gestione file a due pannelli (il PC remoto va aggiornato)": "双窗格文件管理器（远程电脑需要更新）",
+ "Nessuna strada diretta: provo a passare dal broker MQTT (relè, lento ma funziona quasi sempre)…": "没有直接通路：尝试经由 MQTT 代理中转（较慢，但几乎总能连上）…",
+ "Lavagna: disegna sullo schermo del PC remoto per indicare qualcosa (tratti rossi). Clic destro per cancellare. Premi di nuovo per tornare a comandare.": "白板：在远程电脑屏幕上画出标记（红色线条）。右键清除。再按一次返回控制。",
+ "La lavagna richiede IP-DESK-CTRL 0.5.22 o successivo sul PC remoto.": "白板需要远程电脑安装 IP-DESK-CTRL 0.5.22 或更高版本。",
+ "Lavagna attiva: disegna col tasto sinistro, clic destro cancella. Il mouse non arriva al PC remoto finché non la chiudi.": "白板已开启：用左键绘制，右键清除。关闭白板前鼠标不会传到远程电脑。"
 }

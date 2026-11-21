@@ -660,5 +660,9 @@
  "Registrazione salvata: ": "Η εγγραφή αποθηκεύτηκε: ",
  "La chat richiede IP-DESK-CTRL 0.5.22 o successivo sul PC remoto.": "Η συνομιλία απαιτεί IP-DESK-CTRL 0.5.22 ή νεότερο στον απομακρυσμένο υπολογιστή.",
  "Gestione file a due pannelli…": "Διαχείριση αρχείων δύο πλαισίων…",
- "Gestione file a due pannelli (il PC remoto va aggiornato)": "Διαχείριση αρχείων δύο πλαισίων (ο απομακρυσμένος υπολογιστής χρειάζεται ενημέρωση)"
+ "Gestione file a due pannelli (il PC remoto va aggiornato)": "Διαχείριση αρχείων δύο πλαισίων (ο απομακρυσμένος υπολογιστής χρειάζεται ενημέρωση)",
+ "Nessuna strada diretta: provo a passare dal broker MQTT (relè, lento ma funziona quasi sempre)…": "Καμία άμεση διαδρομή: δοκιμή μέσω του MQTT broker (αναμετάδοση, αργή αλλά λειτουργεί σχεδόν πάντα)…",
+ "Lavagna: disegna sullo schermo del PC remoto per indicare qualcosa (tratti rossi). Clic destro per cancellare. Premi di nuovo per tornare a comandare.": "Πίνακας: σχεδιάστε στην οθόνη του απομακρυσμένου υπολογιστή για να δείξετε κάτι (κόκκινες γραμμές). Το δεξί κλικ σβήνει. Πατήστε ξανά για να επιστρέψετε στον έλεγχο.",
+ "La lavagna richiede IP-DESK-CTRL 0.5.22 o successivo sul PC remoto.": "Ο πίνακας απαιτεί IP-DESK-CTRL 0.5.22 ή νεότερο στον απομακρυσμένο υπολογιστή.",
+ "Lavagna attiva: disegna col tasto sinistro, clic destro cancella. Il mouse non arriva al PC remoto finché non la chiudi.": "Πίνακας ενεργός: σχεδιάστε με το αριστερό κουμπί, το δεξί κλικ σβήνει. Το ποντίκι δεν φτάνει στον απομακρυσμένο υπολογιστή μέχρι να τον κλείσετε."
 }

@@ -660,5 +660,9 @@
  "Registrazione salvata: ": "Na-save ang recording: ",
  "La chat richiede IP-DESK-CTRL 0.5.22 o successivo sul PC remoto.": "Kailangan ng chat ang IP-DESK-CTRL 0.5.22 o mas bago sa remote na PC.",
  "Gestione file a due pannelli…": "File manager na may dalawang panel…",
- "Gestione file a due pannelli (il PC remoto va aggiornato)": "File manager na may dalawang panel (kailangang i-update ang remote na PC)"
+ "Gestione file a due pannelli (il PC remoto va aggiornato)": "File manager na may dalawang panel (kailangang i-update ang remote na PC)",
+ "Nessuna strada diretta: provo a passare dal broker MQTT (relè, lento ma funziona quasi sempre)…": "Walang direktang daan: sinusubukan sa MQTT broker (relay, mabagal pero halos laging gumagana)…",
+ "Lavagna: disegna sullo schermo del PC remoto per indicare qualcosa (tratti rossi). Clic destro per cancellare. Premi di nuovo per tornare a comandare.": "Whiteboard: gumuhit sa screen ng remote na PC para magturo ng isang bagay (pulang guhit). Right-click para burahin. Pindutin muli para bumalik sa pagkontrol.",
+ "La lavagna richiede IP-DESK-CTRL 0.5.22 o successivo sul PC remoto.": "Kailangan ng whiteboard ang IP-DESK-CTRL 0.5.22 o mas bago sa remote na PC.",
+ "Lavagna attiva: disegna col tasto sinistro, clic destro cancella. Il mouse non arriva al PC remoto finché non la chiudi.": "Naka-on ang whiteboard: gumuhit gamit ang kaliwang button, nagbubura ang right-click. Hindi umaabot ang mouse sa remote na PC hanggang isara mo ito."
 }

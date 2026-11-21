@@ -660,5 +660,9 @@
  "Registrazione salvata: ": "Ieraksts saglabāts: ",
  "La chat richiede IP-DESK-CTRL 0.5.22 o successivo sul PC remoto.": "Tērzēšanai attālajā datorā vajadzīga IP-DESK-CTRL 0.5.22 vai jaunāka versija.",
  "Gestione file a due pannelli…": "Divu paneļu failu pārvaldnieks…",
- "Gestione file a due pannelli (il PC remoto va aggiornato)": "Divu paneļu failu pārvaldnieks (attālais dators jāatjaunina)"
+ "Gestione file a due pannelli (il PC remoto va aggiornato)": "Divu paneļu failu pārvaldnieks (attālais dators jāatjaunina)",
+ "Nessuna strada diretta: provo a passare dal broker MQTT (relè, lento ma funziona quasi sempre)…": "Nav tieša ceļa: mēģinu caur MQTT brokeri (retranslators, lēni, bet gandrīz vienmēr darbojas)…",
+ "Lavagna: disegna sullo schermo del PC remoto per indicare qualcosa (tratti rossi). Clic destro per cancellare. Premi di nuovo per tornare a comandare.": "Tāfele: zīmē attālā datora ekrānā, lai kaut ko norādītu (sarkanas līnijas). Labais klikšķis notīra. Nospied vēlreiz, lai atkal vadītu.",
+ "La lavagna richiede IP-DESK-CTRL 0.5.22 o successivo sul PC remoto.": "Tāfelei attālajā datorā vajadzīga IP-DESK-CTRL 0.5.22 vai jaunāka versija.",
+ "Lavagna attiva: disegna col tasto sinistro, clic destro cancella. Il mouse non arriva al PC remoto finché non la chiudi.": "Tāfele ieslēgta: zīmē ar kreiso pogu, labais klikšķis notīra. Pele nesasniedz attālo datoru, kamēr to neaizver."
 }

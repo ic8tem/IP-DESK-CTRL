@@ -660,5 +660,9 @@
  "Registrazione salvata: ": "録画を保存しました: ",
  "La chat richiede IP-DESK-CTRL 0.5.22 o successivo sul PC remoto.": "チャットにはリモート PC に IP-DESK-CTRL 0.5.22 以降が必要です。",
  "Gestione file a due pannelli…": "2 ペインのファイル マネージャー…",
- "Gestione file a due pannelli (il PC remoto va aggiornato)": "2 ペインのファイル マネージャー（リモート PC の更新が必要）"
+ "Gestione file a due pannelli (il PC remoto va aggiornato)": "2 ペインのファイル マネージャー（リモート PC の更新が必要）",
+ "Nessuna strada diretta: provo a passare dal broker MQTT (relè, lento ma funziona quasi sempre)…": "直接の経路がありません: MQTT ブローカー経由で試します（中継、遅いがほぼ常に接続できます）…",
+ "Lavagna: disegna sullo schermo del PC remoto per indicare qualcosa (tratti rossi). Clic destro per cancellare. Premi di nuovo per tornare a comandare.": "ホワイトボード: リモート PC の画面に描いて何かを示します（赤い線）。右クリックで消去。もう一度押すと操作に戻ります。",
+ "La lavagna richiede IP-DESK-CTRL 0.5.22 o successivo sul PC remoto.": "ホワイトボードにはリモート PC に IP-DESK-CTRL 0.5.22 以降が必要です。",
+ "Lavagna attiva: disegna col tasto sinistro, clic destro cancella. Il mouse non arriva al PC remoto finché non la chiudi.": "ホワイトボード オン: 左ボタンで描画、右クリックで消去。閉じるまでマウスはリモート PC に届きません。"
 }

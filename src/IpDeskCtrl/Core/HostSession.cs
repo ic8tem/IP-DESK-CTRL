@@ -590,7 +590,7 @@ namespace IpDeskCtrl.Core
                     blockedSince = 0;
 
                     // finestra del visore ridotta a icona: un fotogramma al secondo (banda e processore a riposo)
-                    if (_viewerHidden && t0 - _lastHiddenFrame < 1000) { Thread.Sleep(50); continue; }
+                    if ((_viewerHidden || Link.IsRelay) && t0 - _lastHiddenFrame < (_viewerHidden ? 1000 : 250)) { Thread.Sleep(20); continue; }
                     _lastHiddenFrame = t0;
 
                     var area = _area;

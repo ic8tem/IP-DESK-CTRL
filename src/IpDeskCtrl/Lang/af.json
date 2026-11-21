@@ -660,5 +660,9 @@
  "Registrazione salvata: ": "Opname gestoor: ",
  "La chat richiede IP-DESK-CTRL 0.5.22 o successivo sul PC remoto.": "Klets benodig IP-DESK-CTRL 0.5.22 of nuwer op die afgeleë rekenaar.",
  "Gestione file a due pannelli…": "Lêerbestuurder met twee panele…",
- "Gestione file a due pannelli (il PC remoto va aggiornato)": "Lêerbestuurder met twee panele (die afgeleë rekenaar moet bygewerk word)"
+ "Gestione file a due pannelli (il PC remoto va aggiornato)": "Lêerbestuurder met twee panele (die afgeleë rekenaar moet bygewerk word)",
+ "Nessuna strada diretta: provo a passare dal broker MQTT (relè, lento ma funziona quasi sempre)…": "Geen direkte roete nie: probeer deur die MQTT-makelaar (aanstuur, stadig maar werk byna altyd)…",
+ "Lavagna: disegna sullo schermo del PC remoto per indicare qualcosa (tratti rossi). Clic destro per cancellare. Premi di nuovo per tornare a comandare.": "Witbord: teken op die afgeleë rekenaar se skerm om iets uit te wys (rooi strepe). Regsklik vee uit. Druk weer om terug te gaan na beheer.",
+ "La lavagna richiede IP-DESK-CTRL 0.5.22 o successivo sul PC remoto.": "Die witbord benodig IP-DESK-CTRL 0.5.22 of nuwer op die afgeleë rekenaar.",
+ "Lavagna attiva: disegna col tasto sinistro, clic destro cancella. Il mouse non arriva al PC remoto finché non la chiudi.": "Witbord aan: teken met die linkerknoppie, regsklik vee uit. Die muis bereik nie die afgeleë rekenaar totdat jy dit toemaak nie."
 }

@@ -660,5 +660,9 @@
  "Registrazione salvata: ": "Rekaman disimpan: ",
  "La chat richiede IP-DESK-CTRL 0.5.22 o successivo sul PC remoto.": "Obrolan memerlukan IP-DESK-CTRL 0.5.22 atau lebih baru di PC jarak jauh.",
  "Gestione file a due pannelli…": "Pengelola file dua panel…",
- "Gestione file a due pannelli (il PC remoto va aggiornato)": "Pengelola file dua panel (PC jarak jauh harus diperbarui)"
+ "Gestione file a due pannelli (il PC remoto va aggiornato)": "Pengelola file dua panel (PC jarak jauh harus diperbarui)",
+ "Nessuna strada diretta: provo a passare dal broker MQTT (relè, lento ma funziona quasi sempre)…": "Tidak ada jalur langsung: mencoba lewat broker MQTT (relai, lambat tapi hampir selalu berhasil)…",
+ "Lavagna: disegna sullo schermo del PC remoto per indicare qualcosa (tratti rossi). Clic destro per cancellare. Premi di nuovo per tornare a comandare.": "Papan tulis: gambar di layar PC jarak jauh untuk menunjukkan sesuatu (garis merah). Klik kanan menghapus. Tekan lagi untuk kembali mengendalikan.",
+ "La lavagna richiede IP-DESK-CTRL 0.5.22 o successivo sul PC remoto.": "Papan tulis memerlukan IP-DESK-CTRL 0.5.22 atau lebih baru di PC jarak jauh.",
+ "Lavagna attiva: disegna col tasto sinistro, clic destro cancella. Il mouse non arriva al PC remoto finché non la chiudi.": "Papan tulis aktif: gambar dengan tombol kiri, klik kanan menghapus. Mouse tidak sampai ke PC jarak jauh sampai Anda menutupnya."
 }

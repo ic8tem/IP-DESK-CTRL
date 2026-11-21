@@ -660,5 +660,9 @@
  "Registrazione salvata: ": "Salvestis salvestatud: ",
  "La chat richiede IP-DESK-CTRL 0.5.22 o successivo sul PC remoto.": "Vestlus vajab kaugarvutis IP-DESK-CTRL 0.5.22 või uuemat.",
  "Gestione file a due pannelli…": "Kahe paaniga failihaldur…",
- "Gestione file a due pannelli (il PC remoto va aggiornato)": "Kahe paaniga failihaldur (kaugarvuti tuleb uuendada)"
+ "Gestione file a due pannelli (il PC remoto va aggiornato)": "Kahe paaniga failihaldur (kaugarvuti tuleb uuendada)",
+ "Nessuna strada diretta: provo a passare dal broker MQTT (relè, lento ma funziona quasi sempre)…": "Otseteed pole: proovin MQTT-maakleri kaudu (relee, aeglane, kuid töötab peaaegu alati)…",
+ "Lavagna: disegna sullo schermo del PC remoto per indicare qualcosa (tratti rossi). Clic destro per cancellare. Premi di nuovo per tornare a comandare.": "Tahvel: joonista kaugarvuti ekraanile, et midagi näidata (punased jooned). Paremklõps kustutab. Vajuta uuesti, et taas juhtida.",
+ "La lavagna richiede IP-DESK-CTRL 0.5.22 o successivo sul PC remoto.": "Tahvel vajab kaugarvutis IP-DESK-CTRL 0.5.22 või uuemat.",
+ "Lavagna attiva: disegna col tasto sinistro, clic destro cancella. Il mouse non arriva al PC remoto finché non la chiudi.": "Tahvel sees: joonista vasaku nupuga, paremklõps kustutab. Hiir ei jõua kaugarvutisse enne, kui selle sulged."
 }

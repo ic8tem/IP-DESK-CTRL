@@ -660,5 +660,9 @@
  "Registrazione salvata: ": "Kayıt kaydedildi: ",
  "La chat richiede IP-DESK-CTRL 0.5.22 o successivo sul PC remoto.": "Sohbet için uzak bilgisayarda IP-DESK-CTRL 0.5.22 veya üstü gerekir.",
  "Gestione file a due pannelli…": "İki bölmeli dosya yöneticisi…",
- "Gestione file a due pannelli (il PC remoto va aggiornato)": "İki bölmeli dosya yöneticisi (uzak bilgisayar güncellenmeli)"
+ "Gestione file a due pannelli (il PC remoto va aggiornato)": "İki bölmeli dosya yöneticisi (uzak bilgisayar güncellenmeli)",
+ "Nessuna strada diretta: provo a passare dal broker MQTT (relè, lento ma funziona quasi sempre)…": "Doğrudan yol yok: MQTT aracısı üzerinden deneniyor (röle, yavaş ama neredeyse her zaman çalışır)…",
+ "Lavagna: disegna sullo schermo del PC remoto per indicare qualcosa (tratti rossi). Clic destro per cancellare. Premi di nuovo per tornare a comandare.": "Yazı tahtası: bir şeyi göstermek için uzak bilgisayarın ekranına çizin (kırmızı çizgiler). Sağ tık temizler. Yeniden kontrole dönmek için tekrar basın.",
+ "La lavagna richiede IP-DESK-CTRL 0.5.22 o successivo sul PC remoto.": "Yazı tahtası için uzak bilgisayarda IP-DESK-CTRL 0.5.22 veya üstü gerekir.",
+ "Lavagna attiva: disegna col tasto sinistro, clic destro cancella. Il mouse non arriva al PC remoto finché non la chiudi.": "Yazı tahtası açık: sol tuşla çizin, sağ tık temizler. Kapatana kadar fare uzak bilgisayara ulaşmaz."
 }

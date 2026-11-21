@@ -660,5 +660,9 @@
  "Registrazione salvata: ": "تم حفظ التسجيل: ",
  "La chat richiede IP-DESK-CTRL 0.5.22 o successivo sul PC remoto.": "المحادثة تتطلب IP-DESK-CTRL 0.5.22 أو أحدث على الحاسوب البعيد.",
  "Gestione file a due pannelli…": "مدير ملفات بلوحتين…",
- "Gestione file a due pannelli (il PC remoto va aggiornato)": "مدير ملفات بلوحتين (يجب تحديث الحاسوب البعيد)"
+ "Gestione file a due pannelli (il PC remoto va aggiornato)": "مدير ملفات بلوحتين (يجب تحديث الحاسوب البعيد)",
+ "Nessuna strada diretta: provo a passare dal broker MQTT (relè, lento ma funziona quasi sempre)…": "لا يوجد طريق مباشر: أحاول عبر وسيط MQTT (ترحيل، بطيء لكنه يعمل غالبًا)…",
+ "Lavagna: disegna sullo schermo del PC remoto per indicare qualcosa (tratti rossi). Clic destro per cancellare. Premi di nuovo per tornare a comandare.": "السبورة: ارسم على شاشة الحاسوب البعيد للإشارة إلى شيء ما (خطوط حمراء). النقر بالزر الأيمن يمسح. اضغط مجددًا للعودة إلى التحكم.",
+ "La lavagna richiede IP-DESK-CTRL 0.5.22 o successivo sul PC remoto.": "السبورة تتطلب IP-DESK-CTRL 0.5.22 أو أحدث على الحاسوب البعيد.",
+ "Lavagna attiva: disegna col tasto sinistro, clic destro cancella. Il mouse non arriva al PC remoto finché non la chiudi.": "السبورة مفعّلة: ارسم بالزر الأيسر، والنقر الأيمن يمسح. لا يصل الفأرة إلى الحاسوب البعيد حتى تغلقها."
 }

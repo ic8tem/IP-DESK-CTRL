@@ -660,5 +660,9 @@
  "Registrazione salvata: ": "Įrašas išsaugotas: ",
  "La chat richiede IP-DESK-CTRL 0.5.22 o successivo sul PC remoto.": "Pokalbiui nuotoliniame kompiuteryje reikia IP-DESK-CTRL 0.5.22 ar naujesnės.",
  "Gestione file a due pannelli…": "Dviejų skydelių failų tvarkyklė…",
- "Gestione file a due pannelli (il PC remoto va aggiornato)": "Dviejų skydelių failų tvarkyklė (nuotolinį kompiuterį reikia atnaujinti)"
+ "Gestione file a due pannelli (il PC remoto va aggiornato)": "Dviejų skydelių failų tvarkyklė (nuotolinį kompiuterį reikia atnaujinti)",
+ "Nessuna strada diretta: provo a passare dal broker MQTT (relè, lento ma funziona quasi sempre)…": "Tiesioginio kelio nėra: bandau per MQTT brokerį (retransliatorius, lėtas, bet veikia beveik visada)…",
+ "Lavagna: disegna sullo schermo del PC remoto per indicare qualcosa (tratti rossi). Clic destro per cancellare. Premi di nuovo per tornare a comandare.": "Lenta: pieškite nuotolinio kompiuterio ekrane, kad ką nors parodytumėte (raudoni brūkšniai). Dešinysis spustelėjimas išvalo. Paspauskite dar kartą, kad vėl valdytumėte.",
+ "La lavagna richiede IP-DESK-CTRL 0.5.22 o successivo sul PC remoto.": "Lentai nuotoliniame kompiuteryje reikia IP-DESK-CTRL 0.5.22 ar naujesnės.",
+ "Lavagna attiva: disegna col tasto sinistro, clic destro cancella. Il mouse non arriva al PC remoto finché non la chiudi.": "Lenta įjungta: pieškite kairiuoju mygtuku, dešinysis spustelėjimas išvalo. Pelė nepasiekia nuotolinio kompiuterio, kol jos neuždarysite."
 }

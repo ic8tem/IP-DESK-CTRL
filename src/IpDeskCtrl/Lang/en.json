@@ -660,5 +660,9 @@
  "Registrazione salvata: ": "Recording saved: ",
  "La chat richiede IP-DESK-CTRL 0.5.22 o successivo sul PC remoto.": "Chat needs IP-DESK-CTRL 0.5.22 or later on the remote PC.",
  "Gestione file a due pannelli…": "Two-pane file manager…",
- "Gestione file a due pannelli (il PC remoto va aggiornato)": "Two-pane file manager (the remote PC must be updated)"
+ "Gestione file a due pannelli (il PC remoto va aggiornato)": "Two-pane file manager (the remote PC must be updated)",
+ "Nessuna strada diretta: provo a passare dal broker MQTT (relè, lento ma funziona quasi sempre)…": "No direct route: trying through the MQTT broker (relay, slow but almost always works)…",
+ "Lavagna: disegna sullo schermo del PC remoto per indicare qualcosa (tratti rossi). Clic destro per cancellare. Premi di nuovo per tornare a comandare.": "Whiteboard: draw on the remote PC's screen to point something out (red strokes). Right-click to clear. Press again to go back to controlling.",
+ "La lavagna richiede IP-DESK-CTRL 0.5.22 o successivo sul PC remoto.": "The whiteboard needs IP-DESK-CTRL 0.5.22 or later on the remote PC.",
+ "Lavagna attiva: disegna col tasto sinistro, clic destro cancella. Il mouse non arriva al PC remoto finché non la chiudi.": "Whiteboard on: draw with the left button, right-click clears. The mouse does not reach the remote PC until you close it."
 }

@@ -660,5 +660,9 @@
  "Registrazione salvata: ": "Gravação guardada: ",
  "La chat richiede IP-DESK-CTRL 0.5.22 o successivo sul PC remoto.": "A conversa requer IP-DESK-CTRL 0.5.22 ou posterior no PC remoto.",
  "Gestione file a due pannelli…": "Gestor de ficheiros de dois painéis…",
- "Gestione file a due pannelli (il PC remoto va aggiornato)": "Gestor de ficheiros de dois painéis (o PC remoto tem de ser atualizado)"
+ "Gestione file a due pannelli (il PC remoto va aggiornato)": "Gestor de ficheiros de dois painéis (o PC remoto tem de ser atualizado)",
+ "Nessuna strada diretta: provo a passare dal broker MQTT (relè, lento ma funziona quasi sempre)…": "Sem caminho direto: a tentar através do broker MQTT (relé, lento mas funciona quase sempre)…",
+ "Lavagna: disegna sullo schermo del PC remoto per indicare qualcosa (tratti rossi). Clic destro per cancellare. Premi di nuovo per tornare a comandare.": "Quadro: desenhe no ecrã do PC remoto para indicar algo (traços vermelhos). Clique direito para apagar. Prima de novo para voltar a controlar.",
+ "La lavagna richiede IP-DESK-CTRL 0.5.22 o successivo sul PC remoto.": "O quadro requer IP-DESK-CTRL 0.5.22 ou posterior no PC remoto.",
+ "Lavagna attiva: disegna col tasto sinistro, clic destro cancella. Il mouse non arriva al PC remoto finché non la chiudi.": "Quadro ativo: desenhe com o botão esquerdo, o clique direito apaga. O rato não chega ao PC remoto até o fechar."
 }

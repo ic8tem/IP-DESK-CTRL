@@ -660,5 +660,9 @@
  "Registrazione salvata: ": "Inspelningen sparad: ",
  "La chat richiede IP-DESK-CTRL 0.5.22 o successivo sul PC remoto.": "Chatten kräver IP-DESK-CTRL 0.5.22 eller senare på fjärrdatorn.",
  "Gestione file a due pannelli…": "Filhanterare med två paneler…",
- "Gestione file a due pannelli (il PC remoto va aggiornato)": "Filhanterare med två paneler (fjärrdatorn måste uppdateras)"
+ "Gestione file a due pannelli (il PC remoto va aggiornato)": "Filhanterare med två paneler (fjärrdatorn måste uppdateras)",
+ "Nessuna strada diretta: provo a passare dal broker MQTT (relè, lento ma funziona quasi sempre)…": "Ingen direkt väg: försöker via MQTT-mäklaren (relä, långsamt men fungerar nästan alltid)…",
+ "Lavagna: disegna sullo schermo del PC remoto per indicare qualcosa (tratti rossi). Clic destro per cancellare. Premi di nuovo per tornare a comandare.": "Whiteboard: rita på fjärrdatorns skärm för att visa något (röda streck). Högerklick rensar. Tryck igen för att styra igen.",
+ "La lavagna richiede IP-DESK-CTRL 0.5.22 o successivo sul PC remoto.": "Whiteboarden kräver IP-DESK-CTRL 0.5.22 eller senare på fjärrdatorn.",
+ "Lavagna attiva: disegna col tasto sinistro, clic destro cancella. Il mouse non arriva al PC remoto finché non la chiudi.": "Whiteboard på: rita med vänsterknappen, högerklick rensar. Musen når inte fjärrdatorn förrän du stänger den."
 }

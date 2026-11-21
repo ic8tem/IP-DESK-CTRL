@@ -660,5 +660,9 @@
  "Registrazione salvata: ": "রেকর্ডিং সংরক্ষিত: ",
  "La chat richiede IP-DESK-CTRL 0.5.22 o successivo sul PC remoto.": "চ্যাটের জন্য দূরবর্তী পিসিতে IP-DESK-CTRL 0.5.22 বা নতুন দরকার।",
  "Gestione file a due pannelli…": "দুই প্যানেলের ফাইল ম্যানেজার…",
- "Gestione file a due pannelli (il PC remoto va aggiornato)": "দুই প্যানেলের ফাইল ম্যানেজার (দূরবর্তী পিসি আপডেট করতে হবে)"
+ "Gestione file a due pannelli (il PC remoto va aggiornato)": "দুই প্যানেলের ফাইল ম্যানেজার (দূরবর্তী পিসি আপডেট করতে হবে)",
+ "Nessuna strada diretta: provo a passare dal broker MQTT (relè, lento ma funziona quasi sempre)…": "সরাসরি পথ নেই: MQTT ব্রোকারের মাধ্যমে চেষ্টা (রিলে, ধীর তবে প্রায় সবসময় কাজ করে)…",
+ "Lavagna: disegna sullo schermo del PC remoto per indicare qualcosa (tratti rossi). Clic destro per cancellare. Premi di nuovo per tornare a comandare.": "হোয়াইটবোর্ড: কিছু দেখাতে দূরবর্তী পিসির পর্দায় আঁকুন (লাল দাগ)। ডান ক্লিক মুছে দেয়। আবার নিয়ন্ত্রণে ফিরতে আবার চাপুন।",
+ "La lavagna richiede IP-DESK-CTRL 0.5.22 o successivo sul PC remoto.": "হোয়াইটবোর্ডের জন্য দূরবর্তী পিসিতে IP-DESK-CTRL 0.5.22 বা নতুন দরকার।",
+ "Lavagna attiva: disegna col tasto sinistro, clic destro cancella. Il mouse non arriva al PC remoto finché non la chiudi.": "হোয়াইটবোর্ড চালু: বাঁ বোতামে আঁকুন, ডান ক্লিক মুছে দেয়। বন্ধ না করা পর্যন্ত মাউস দূরবর্তী পিসিতে পৌঁছায় না।"
 }

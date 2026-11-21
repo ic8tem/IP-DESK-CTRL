@@ -660,5 +660,9 @@
  "Registrazione salvata: ": "Optagelse gemt: ",
  "La chat richiede IP-DESK-CTRL 0.5.22 o successivo sul PC remoto.": "Chatten kræver IP-DESK-CTRL 0.5.22 eller nyere på fjern-pc'en.",
  "Gestione file a due pannelli…": "Filhåndtering med to paneler…",
- "Gestione file a due pannelli (il PC remoto va aggiornato)": "Filhåndtering med to paneler (fjern-pc'en skal opdateres)"
+ "Gestione file a due pannelli (il PC remoto va aggiornato)": "Filhåndtering med to paneler (fjern-pc'en skal opdateres)",
+ "Nessuna strada diretta: provo a passare dal broker MQTT (relè, lento ma funziona quasi sempre)…": "Ingen direkte vej: prøver via MQTT-mægleren (relæ, langsomt, men virker næsten altid)…",
+ "Lavagna: disegna sullo schermo del PC remoto per indicare qualcosa (tratti rossi). Clic destro per cancellare. Premi di nuovo per tornare a comandare.": "Tavle: tegn på fjern-pc'ens skærm for at vise noget (røde streger). Højreklik sletter. Tryk igen for at styre igen.",
+ "La lavagna richiede IP-DESK-CTRL 0.5.22 o successivo sul PC remoto.": "Tavlen kræver IP-DESK-CTRL 0.5.22 eller nyere på fjern-pc'en.",
+ "Lavagna attiva: disegna col tasto sinistro, clic destro cancella. Il mouse non arriva al PC remoto finché non la chiudi.": "Tavle til: tegn med venstre knap, højreklik sletter. Musen når ikke fjern-pc'en, før du lukker den."
 }

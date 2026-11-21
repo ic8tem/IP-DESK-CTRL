@@ -660,5 +660,9 @@
  "Registrazione salvata: ": "บันทึกแล้ว: ",
  "La chat richiede IP-DESK-CTRL 0.5.22 o successivo sul PC remoto.": "แชทต้องใช้ IP-DESK-CTRL 0.5.22 ขึ้นไปบนพีซีระยะไกล",
  "Gestione file a due pannelli…": "ตัวจัดการไฟล์แบบสองแผง…",
- "Gestione file a due pannelli (il PC remoto va aggiornato)": "ตัวจัดการไฟล์แบบสองแผง (ต้องอัปเดตพีซีระยะไกล)"
+ "Gestione file a due pannelli (il PC remoto va aggiornato)": "ตัวจัดการไฟล์แบบสองแผง (ต้องอัปเดตพีซีระยะไกล)",
+ "Nessuna strada diretta: provo a passare dal broker MQTT (relè, lento ma funziona quasi sempre)…": "ไม่มีเส้นทางตรง: ลองผ่านโบรกเกอร์ MQTT (รีเลย์ ช้าแต่ใช้ได้เกือบทุกครั้ง)…",
+ "Lavagna: disegna sullo schermo del PC remoto per indicare qualcosa (tratti rossi). Clic destro per cancellare. Premi di nuovo per tornare a comandare.": "กระดานวาด: วาดบนหน้าจอพีซีระยะไกลเพื่อชี้สิ่งต่าง ๆ (เส้นสีแดง) คลิกขวาเพื่อล้าง กดอีกครั้งเพื่อกลับไปควบคุม",
+ "La lavagna richiede IP-DESK-CTRL 0.5.22 o successivo sul PC remoto.": "กระดานวาดต้องใช้ IP-DESK-CTRL 0.5.22 ขึ้นไปบนพีซีระยะไกล",
+ "Lavagna attiva: disegna col tasto sinistro, clic destro cancella. Il mouse non arriva al PC remoto finché non la chiudi.": "เปิดกระดานวาดแล้ว: วาดด้วยปุ่มซ้าย คลิกขวาเพื่อล้าง เมาส์จะไม่ไปถึงพีซีระยะไกลจนกว่าจะปิด"
 }

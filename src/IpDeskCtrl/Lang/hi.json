@@ -660,5 +660,9 @@
  "Registrazione salvata: ": "रिकॉर्डिंग सहेजी गई: ",
  "La chat richiede IP-DESK-CTRL 0.5.22 o successivo sul PC remoto.": "चैट के लिए रिमोट पीसी पर IP-DESK-CTRL 0.5.22 या नया चाहिए।",
  "Gestione file a due pannelli…": "दो पैनल वाला फ़ाइल प्रबंधक…",
- "Gestione file a due pannelli (il PC remoto va aggiornato)": "दो पैनल वाला फ़ाइल प्रबंधक (रिमोट पीसी को अपडेट करना होगा)"
+ "Gestione file a due pannelli (il PC remoto va aggiornato)": "दो पैनल वाला फ़ाइल प्रबंधक (रिमोट पीसी को अपडेट करना होगा)",
+ "Nessuna strada diretta: provo a passare dal broker MQTT (relè, lento ma funziona quasi sempre)…": "कोई सीधा रास्ता नहीं: MQTT ब्रोकर के ज़रिए कोशिश (रिले, धीमा पर लगभग हमेशा चलता है)…",
+ "Lavagna: disegna sullo schermo del PC remoto per indicare qualcosa (tratti rossi). Clic destro per cancellare. Premi di nuovo per tornare a comandare.": "व्हाइटबोर्ड: कुछ दिखाने के लिए रिमोट पीसी की स्क्रीन पर बनाएँ (लाल रेखाएँ)। दायाँ क्लिक मिटाता है। फिर से नियंत्रण के लिए दोबारा दबाएँ।",
+ "La lavagna richiede IP-DESK-CTRL 0.5.22 o successivo sul PC remoto.": "व्हाइटबोर्ड के लिए रिमोट पीसी पर IP-DESK-CTRL 0.5.22 या नया चाहिए।",
+ "Lavagna attiva: disegna col tasto sinistro, clic destro cancella. Il mouse non arriva al PC remoto finché non la chiudi.": "व्हाइटबोर्ड चालू: बाएँ बटन से बनाएँ, दायाँ क्लिक मिटाता है। बंद करने तक माउस रिमोट पीसी तक नहीं पहुँचता।"
 }

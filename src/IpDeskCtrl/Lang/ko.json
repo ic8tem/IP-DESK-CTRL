@@ -660,5 +660,9 @@
  "Registrazione salvata: ": "녹화 저장됨: ",
  "La chat richiede IP-DESK-CTRL 0.5.22 o successivo sul PC remoto.": "채팅하려면 원격 PC에 IP-DESK-CTRL 0.5.22 이상이 필요합니다.",
  "Gestione file a due pannelli…": "2창 파일 관리자…",
- "Gestione file a due pannelli (il PC remoto va aggiornato)": "2창 파일 관리자(원격 PC를 업데이트해야 함)"
+ "Gestione file a due pannelli (il PC remoto va aggiornato)": "2창 파일 관리자(원격 PC를 업데이트해야 함)",
+ "Nessuna strada diretta: provo a passare dal broker MQTT (relè, lento ma funziona quasi sempre)…": "직접 경로 없음: MQTT 브로커를 통해 시도합니다(릴레이, 느리지만 거의 항상 작동)…",
+ "Lavagna: disegna sullo schermo del PC remoto per indicare qualcosa (tratti rossi). Clic destro per cancellare. Premi di nuovo per tornare a comandare.": "화이트보드: 원격 PC 화면에 그려 무언가를 가리킵니다(빨간 선). 오른쪽 클릭으로 지웁니다. 다시 누르면 제어로 돌아갑니다.",
+ "La lavagna richiede IP-DESK-CTRL 0.5.22 o successivo sul PC remoto.": "화이트보드를 쓰려면 원격 PC에 IP-DESK-CTRL 0.5.22 이상이 필요합니다.",
+ "Lavagna attiva: disegna col tasto sinistro, clic destro cancella. Il mouse non arriva al PC remoto finché non la chiudi.": "화이트보드 켜짐: 왼쪽 버튼으로 그리고 오른쪽 클릭으로 지웁니다. 닫을 때까지 마우스가 원격 PC에 전달되지 않습니다."
 }

@@ -660,5 +660,9 @@
  "Registrazione salvata: ": "Запис збережено: ",
  "La chat richiede IP-DESK-CTRL 0.5.22 o successivo sul PC remoto.": "Для чату на віддаленому ПК потрібна IP-DESK-CTRL 0.5.22 або новіша.",
  "Gestione file a due pannelli…": "Двопанельний файловий менеджер…",
- "Gestione file a due pannelli (il PC remoto va aggiornato)": "Двопанельний файловий менеджер (віддалений ПК треба оновити)"
+ "Gestione file a due pannelli (il PC remoto va aggiornato)": "Двопанельний файловий менеджер (віддалений ПК треба оновити)",
+ "Nessuna strada diretta: provo a passare dal broker MQTT (relè, lento ma funziona quasi sempre)…": "Прямого шляху немає: пробую через MQTT-брокер (ретранслятор, повільно, але працює майже завжди)…",
+ "Lavagna: disegna sullo schermo del PC remoto per indicare qualcosa (tratti rossi). Clic destro per cancellare. Premi di nuovo per tornare a comandare.": "Дошка: малюйте на екрані віддаленого ПК, щоб щось показати (червоні лінії). Правий клік стирає. Натисніть ще раз, щоб повернутися до керування.",
+ "La lavagna richiede IP-DESK-CTRL 0.5.22 o successivo sul PC remoto.": "Для дошки на віддаленому ПК потрібна IP-DESK-CTRL 0.5.22 або новіша.",
+ "Lavagna attiva: disegna col tasto sinistro, clic destro cancella. Il mouse non arriva al PC remoto finché non la chiudi.": "Дошку ввімкнено: малюйте лівою кнопкою, правий клік стирає. Миша не доходить до віддаленого ПК, доки ви її не закриєте."
 }

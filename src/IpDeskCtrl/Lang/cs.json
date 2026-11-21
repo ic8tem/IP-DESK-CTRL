@@ -660,5 +660,9 @@
  "Registrazione salvata: ": "Nahrávka uložena: ",
  "La chat richiede IP-DESK-CTRL 0.5.22 o successivo sul PC remoto.": "Chat vyžaduje na vzdáleném počítači IP-DESK-CTRL 0.5.22 nebo novější.",
  "Gestione file a due pannelli…": "Správce souborů se dvěma panely…",
- "Gestione file a due pannelli (il PC remoto va aggiornato)": "Správce souborů se dvěma panely (vzdálený počítač je třeba aktualizovat)"
+ "Gestione file a due pannelli (il PC remoto va aggiornato)": "Správce souborů se dvěma panely (vzdálený počítač je třeba aktualizovat)",
+ "Nessuna strada diretta: provo a passare dal broker MQTT (relè, lento ma funziona quasi sempre)…": "Žádná přímá cesta: zkouším přes broker MQTT (relé, pomalé, ale funguje skoro vždy)…",
+ "Lavagna: disegna sullo schermo del PC remoto per indicare qualcosa (tratti rossi). Clic destro per cancellare. Premi di nuovo per tornare a comandare.": "Tabule: kreslete na obrazovku vzdáleného počítače a něco ukažte (červené čáry). Pravé tlačítko maže. Dalším stisknutím se vrátíte k ovládání.",
+ "La lavagna richiede IP-DESK-CTRL 0.5.22 o successivo sul PC remoto.": "Tabule vyžaduje na vzdáleném počítači IP-DESK-CTRL 0.5.22 nebo novější.",
+ "Lavagna attiva: disegna col tasto sinistro, clic destro cancella. Il mouse non arriva al PC remoto finché non la chiudi.": "Tabule zapnuta: kreslete levým tlačítkem, pravé maže. Myš se ke vzdálenému počítači nedostane, dokud ji nezavřete."
 }
