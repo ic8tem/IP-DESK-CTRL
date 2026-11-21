@@ -718,5 +718,7 @@
  "Windows non concede il riavvio all'account di questo PC (utente senza diritti di arresto o criterio dell'organizzazione). Con il servizio «accesso completo» il riavvio funziona sempre: installalo da Tasti ▾.": "Windows가 이 PC 계정의 다시 시작을 허용하지 않습니다(종료 권한이 없는 사용자 또는 조직 정책). \"전체 액세스\" 서비스가 있으면 다시 시작은 항상 됩니다: 키 ▾에서 설치하세요.",
  "Collegamento caduto": "연결이 끊어졌습니다",
  "{0} · mi ricollego da solo (tentativo {1} di {2})…": "{0} · 자동으로 다시 연결하는 중(시도 {1}/{2})…",
- "Ricollegamento automatico non riuscito.": "자동 재연결에 실패했습니다."
+ "Ricollegamento automatico non riuscito.": "자동 재연결에 실패했습니다.",
+ "Sul PC remoto: {0}.": "원격 PC: {0}.",
+ "codifica con la scheda grafica ({0}) sospesa fino al {1}: il PC si era bloccato mentre la usava": "그래픽 카드 인코딩({0})이 {1}까지 중지됨: 사용 중 PC가 멈췄기 때문"
 }

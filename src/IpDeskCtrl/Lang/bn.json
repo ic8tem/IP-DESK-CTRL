@@ -718,5 +718,7 @@
  "Windows non concede il riavvio all'account di questo PC (utente senza diritti di arresto o criterio dell'organizzazione). Con il servizio «accesso completo» il riavvio funziona sempre: installalo da Tasti ▾.": "Windows এই পিসির অ্যাকাউন্টকে রিস্টার্ট করতে দেয় না (বন্ধ করার অধিকারহীন ব্যবহারকারী বা প্রতিষ্ঠানের নীতি)। «সম্পূর্ণ প্রবেশাধিকার» সার্ভিস থাকলে রিস্টার্ট সবসময় কাজ করে: কী ▾ থেকে এটি ইনস্টল করুন।",
  "Collegamento caduto": "সংযোগ বিচ্ছিন্ন হয়েছে",
  "{0} · mi ricollego da solo (tentativo {1} di {2})…": "{0} · নিজে থেকে আবার সংযুক্ত হচ্ছি (চেষ্টা {1}/{2})…",
- "Ricollegamento automatico non riuscito.": "স্বয়ংক্রিয় পুনঃসংযোগ ব্যর্থ হয়েছে।"
+ "Ricollegamento automatico non riuscito.": "স্বয়ংক্রিয় পুনঃসংযোগ ব্যর্থ হয়েছে।",
+ "Sul PC remoto: {0}.": "দূরবর্তী পিসিতে: {0}।",
+ "codifica con la scheda grafica ({0}) sospesa fino al {1}: il PC si era bloccato mentre la usava": "গ্রাফিক্স কার্ড দিয়ে এনকোডিং ({0}) {1} পর্যন্ত স্থগিত: এটি ব্যবহারের সময় পিসি আটকে গিয়েছিল"
 }

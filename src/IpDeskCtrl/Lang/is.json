@@ -718,5 +718,7 @@
  "Windows non concede il riavvio all'account di questo PC (utente senza diritti di arresto o criterio dell'organizzazione). Con il servizio «accesso completo» il riavvio funziona sempre: installalo da Tasti ▾.": "Windows leyfir ekki aðgangi þessarar tölvu að endurræsa (notandi án réttar til að slökkva eða stefna fyrirtækis). Með þjónustunni „fullur aðgangur“ virkar endurræsing alltaf: settu hana upp úr Lyklar ▾.",
  "Collegamento caduto": "Tenging rofnaði",
  "{0} · mi ricollego da solo (tentativo {1} di {2})…": "{0} · tengist aftur sjálfkrafa (tilraun {1} af {2})…",
- "Ricollegamento automatico non riuscito.": "Sjálfvirk endurtenging tókst ekki."
+ "Ricollegamento automatico non riuscito.": "Sjálfvirk endurtenging tókst ekki.",
+ "Sul PC remoto: {0}.": "Á fjartölvunni: {0}.",
+ "codifica con la scheda grafica ({0}) sospesa fino al {1}: il PC si era bloccato mentre la usava": "kóðun með skjákortinu ({0}) stöðvuð til {1}: tölvan hafði frosið meðan hún var notuð"
 }

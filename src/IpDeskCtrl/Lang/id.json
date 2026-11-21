@@ -718,5 +718,7 @@
  "Windows non concede il riavvio all'account di questo PC (utente senza diritti di arresto o criterio dell'organizzazione). Con il servizio «accesso completo» il riavvio funziona sempre: installalo da Tasti ▾.": "Windows tidak mengizinkan akun PC ini memulai ulang (pengguna tanpa hak mematikan atau kebijakan organisasi). Dengan layanan “akses penuh” mulai ulang selalu berhasil: pasang dari Tombol ▾.",
  "Collegamento caduto": "Koneksi terputus",
  "{0} · mi ricollego da solo (tentativo {1} di {2})…": "{0} · menyambung ulang sendiri (percobaan {1} dari {2})…",
- "Ricollegamento automatico non riuscito.": "Penyambungan ulang otomatis gagal."
+ "Ricollegamento automatico non riuscito.": "Penyambungan ulang otomatis gagal.",
+ "Sul PC remoto: {0}.": "Di PC jarak jauh: {0}.",
+ "codifica con la scheda grafica ({0}) sospesa fino al {1}: il PC si era bloccato mentre la usava": "pengodean dengan kartu grafis ({0}) ditangguhkan hingga {1}: PC sempat macet saat menggunakannya"
 }

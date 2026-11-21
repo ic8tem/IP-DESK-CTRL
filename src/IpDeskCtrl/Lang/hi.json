@@ -718,5 +718,7 @@
  "Windows non concede il riavvio all'account di questo PC (utente senza diritti di arresto o criterio dell'organizzazione). Con il servizio «accesso completo» il riavvio funziona sempre: installalo da Tasti ▾.": "Windows इस पीसी के खाते को पुनः आरंभ करने नहीं देता (बंद करने के अधिकार के बिना उपयोगकर्ता या संगठन की नीति)। «पूर्ण पहुँच» सेवा के साथ पुनः आरंभ हमेशा काम करता है: इसे कुंजियाँ ▾ से इंस्टॉल करें।",
  "Collegamento caduto": "कनेक्शन टूट गया",
  "{0} · mi ricollego da solo (tentativo {1} di {2})…": "{0} · अपने आप फिर जुड़ रहा हूँ (प्रयास {1} / {2})…",
- "Ricollegamento automatico non riuscito.": "स्वचालित पुनः कनेक्शन विफल रहा।"
+ "Ricollegamento automatico non riuscito.": "स्वचालित पुनः कनेक्शन विफल रहा।",
+ "Sul PC remoto: {0}.": "रिमोट पीसी पर: {0}।",
+ "codifica con la scheda grafica ({0}) sospesa fino al {1}: il PC si era bloccato mentre la usava": "ग्राफ़िक्स कार्ड से एन्कोडिंग ({0}) {1} तक निलंबित: इसके उपयोग के दौरान पीसी अटक गया था"
 }

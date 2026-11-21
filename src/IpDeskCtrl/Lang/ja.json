@@ -718,5 +718,7 @@
  "Windows non concede il riavvio all'account di questo PC (utente senza diritti di arresto o criterio dell'organizzazione). Con il servizio «accesso completo» il riavvio funziona sempre: installalo da Tasti ▾.": "Windows がこの PC のアカウントに再起動を許可していません（シャットダウン権限のないユーザー、または組織のポリシー）。「フル アクセス」サービスがあれば再起動は常にできます: キー ▾ からインストールしてください。",
  "Collegamento caduto": "接続が切れました",
  "{0} · mi ricollego da solo (tentativo {1} di {2})…": "{0} · 自動で再接続しています（{1}/{2} 回目）…",
- "Ricollegamento automatico non riuscito.": "自動再接続に失敗しました。"
+ "Ricollegamento automatico non riuscito.": "自動再接続に失敗しました。",
+ "Sul PC remoto: {0}.": "リモート PC: {0}。",
+ "codifica con la scheda grafica ({0}) sospesa fino al {1}: il PC si era bloccato mentre la usava": "グラフィックス カードでのエンコード（{0}）を {1} まで停止: 使用中に PC がフリーズしたため"
 }

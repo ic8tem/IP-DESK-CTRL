@@ -718,5 +718,7 @@
  "Windows non concede il riavvio all'account di questo PC (utente senza diritti di arresto o criterio dell'organizzazione). Con il servizio «accesso completo» il riavvio funziona sempre: installalo da Tasti ▾.": "Windows erlaubt dem Konto dieses PCs keinen Neustart (Benutzer ohne Herunterfahrrecht oder Organisationsrichtlinie). Mit dem Dienst „Vollzugriff“ klappt der Neustart immer: installiere ihn über Tasten ▾.",
  "Collegamento caduto": "Verbindung abgebrochen",
  "{0} · mi ricollego da solo (tentativo {1} di {2})…": "{0} · ich verbinde mich selbst neu (Versuch {1} von {2})…",
- "Ricollegamento automatico non riuscito.": "Automatische Wiederverbindung fehlgeschlagen."
+ "Ricollegamento automatico non riuscito.": "Automatische Wiederverbindung fehlgeschlagen.",
+ "Sul PC remoto: {0}.": "Auf dem entfernten PC: {0}.",
+ "codifica con la scheda grafica ({0}) sospesa fino al {1}: il PC si era bloccato mentre la usava": "Kodierung mit der Grafikkarte ({0}) bis {1} ausgesetzt: der PC war während der Nutzung eingefroren"
 }

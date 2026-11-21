@@ -718,5 +718,7 @@
  "Windows non concede il riavvio all'account di questo PC (utente senza diritti di arresto o criterio dell'organizzazione). Con il servizio «accesso completo» il riavvio funziona sempre: installalo da Tasti ▾.": "Windows does not let this PC's account restart it (user without shutdown rights or an organization policy). With the “full access” service restarting always works: install it from Keys ▾.",
  "Collegamento caduto": "Connection dropped",
  "{0} · mi ricollego da solo (tentativo {1} di {2})…": "{0} · reconnecting by myself (attempt {1} of {2})…",
- "Ricollegamento automatico non riuscito.": "Automatic reconnection failed."
+ "Ricollegamento automatico non riuscito.": "Automatic reconnection failed.",
+ "Sul PC remoto: {0}.": "On the remote PC: {0}.",
+ "codifica con la scheda grafica ({0}) sospesa fino al {1}: il PC si era bloccato mentre la usava": "encoding with the graphics card ({0}) suspended until {1}: the PC had frozen while using it"
 }

@@ -718,5 +718,7 @@
  "Windows non concede il riavvio all'account di questo PC (utente senza diritti di arresto o criterio dell'organizzazione). Con il servizio «accesso completo» il riavvio funziona sempre: installalo da Tasti ▾.": "Windows n'autorise pas le compte de ce PC à redémarrer (utilisateur sans droit d'arrêt ou stratégie de l'organisation). Avec le service « accès complet » le redémarrage fonctionne toujours : installez-le depuis Touches ▾.",
  "Collegamento caduto": "Connexion perdue",
  "{0} · mi ricollego da solo (tentativo {1} di {2})…": "{0} · je me reconnecte tout seul (tentative {1} sur {2})…",
- "Ricollegamento automatico non riuscito.": "La reconnexion automatique a échoué."
+ "Ricollegamento automatico non riuscito.": "La reconnexion automatique a échoué.",
+ "Sul PC remoto: {0}.": "Sur le PC distant : {0}.",
+ "codifica con la scheda grafica ({0}) sospesa fino al {1}: il PC si era bloccato mentre la usava": "encodage par la carte graphique ({0}) suspendu jusqu'au {1} : le PC s'était bloqué pendant son utilisation"
 }

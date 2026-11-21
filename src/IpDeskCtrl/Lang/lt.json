@@ -718,5 +718,7 @@
  "Windows non concede il riavvio all'account di questo PC (utente senza diritti di arresto o criterio dell'organizzazione). Con il servizio «accesso completo» il riavvio funziona sempre: installalo da Tasti ▾.": "Windows neleidžia šio kompiuterio paskyrai paleisti iš naujo (naudotojas be išjungimo teisės arba organizacijos politika). Su paslauga „visa prieiga“ paleidimas iš naujo veikia visada: įdiekite ją iš Klavišai ▾.",
  "Collegamento caduto": "Ryšys nutrūko",
  "{0} · mi ricollego da solo (tentativo {1} di {2})…": "{0} · jungiuosi iš naujo pats (bandymas {1} iš {2})…",
- "Ricollegamento automatico non riuscito.": "Automatinis prisijungimas iš naujo nepavyko."
+ "Ricollegamento automatico non riuscito.": "Automatinis prisijungimas iš naujo nepavyko.",
+ "Sul PC remoto: {0}.": "Nuotoliniame kompiuteryje: {0}.",
+ "codifica con la scheda grafica ({0}) sospesa fino al {1}: il PC si era bloccato mentre la usava": "kodavimas vaizdo plokšte ({0}) sustabdytas iki {1}: kompiuteris buvo pakibęs ją naudojant"
 }

@@ -718,5 +718,7 @@
  "Windows non concede il riavvio all'account di questo PC (utente senza diritti di arresto o criterio dell'organizzazione). Con il servizio «accesso completo» il riavvio funziona sempre: installalo da Tasti ▾.": "Windows lader ikke denne pc's konto genstarte (bruger uden ret til at lukke ned eller en organisationspolitik). Med tjenesten »fuld adgang« virker genstart altid: installer den fra Taster ▾.",
  "Collegamento caduto": "Forbindelsen faldt ud",
  "{0} · mi ricollego da solo (tentativo {1} di {2})…": "{0} · forbinder igen af mig selv (forsøg {1} af {2})…",
- "Ricollegamento automatico non riuscito.": "Automatisk genforbindelse mislykkedes."
+ "Ricollegamento automatico non riuscito.": "Automatisk genforbindelse mislykkedes.",
+ "Sul PC remoto: {0}.": "På fjern-pc'en: {0}.",
+ "codifica con la scheda grafica ({0}) sospesa fino al {1}: il PC si era bloccato mentre la usava": "kodning med grafikkortet ({0}) sat på pause til {1}: pc'en var gået i stå, mens den blev brugt"
 }

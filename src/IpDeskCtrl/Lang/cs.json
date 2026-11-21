@@ -718,5 +718,7 @@
  "Windows non concede il riavvio all'account di questo PC (utente senza diritti di arresto o criterio dell'organizzazione). Con il servizio «accesso completo» il riavvio funziona sempre: installalo da Tasti ▾.": "Windows účtu tohoto počítače nedovolí restart (uživatel bez práva vypnutí nebo zásada organizace). Se službou „plný přístup“ restart funguje vždy: nainstalujte ji z nabídky Klávesy ▾.",
  "Collegamento caduto": "Spojení spadlo",
  "{0} · mi ricollego da solo (tentativo {1} di {2})…": "{0} · připojuji se znovu sám (pokus {1} z {2})…",
- "Ricollegamento automatico non riuscito.": "Automatické opětovné připojení se nezdařilo."
+ "Ricollegamento automatico non riuscito.": "Automatické opětovné připojení se nezdařilo.",
+ "Sul PC remoto: {0}.": "Na vzdáleném počítači: {0}.",
+ "codifica con la scheda grafica ({0}) sospesa fino al {1}: il PC si era bloccato mentre la usava": "kódování grafickou kartou ({0}) pozastaveno do {1}: počítač při jeho používání zamrzl"
 }

@@ -718,5 +718,7 @@
  "Windows non concede il riavvio all'account di questo PC (utente senza diritti di arresto o criterio dell'organizzazione). Con il servizio «accesso completo» il riavvio funziona sempre: installalo da Tasti ▾.": "Windows 不允許此電腦的帳戶重新啟動（使用者沒有關機權限或受組織原則限制）。安裝「完整存取」服務後重新啟動一定成功：從「按鍵 ▾」安裝。",
  "Collegamento caduto": "連線中斷",
  "{0} · mi ricollego da solo (tentativo {1} di {2})…": "{0} · 正在自動重新連線（第 {1}/{2} 次）…",
- "Ricollegamento automatico non riuscito.": "自動重新連線失敗。"
+ "Ricollegamento automatico non riuscito.": "自動重新連線失敗。",
+ "Sul PC remoto: {0}.": "遠端電腦上：{0}。",
+ "codifica con la scheda grafica ({0}) sospesa fino al {1}: il PC si era bloccato mentre la usava": "顯示卡編碼（{0}）暫停至 {1}：使用時電腦曾經當機"
 }

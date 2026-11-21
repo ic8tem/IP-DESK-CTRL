@@ -718,5 +718,7 @@
  "Windows non concede il riavvio all'account di questo PC (utente senza diritti di arresto o criterio dell'organizzazione). Con il servizio «accesso completo» il riavvio funziona sempre: installalo da Tasti ▾.": "Windows bu bilgisayarın hesabının yeniden başlatmasına izin vermiyor (kapatma hakkı olmayan kullanıcı veya kuruluş ilkesi). “Tam erişim” hizmetiyle yeniden başlatma her zaman çalışır: Tuşlar ▾ menüsünden kurun.",
  "Collegamento caduto": "Bağlantı koptu",
  "{0} · mi ricollego da solo (tentativo {1} di {2})…": "{0} · kendiliğinden yeniden bağlanıyorum (deneme {1}/{2})…",
- "Ricollegamento automatico non riuscito.": "Otomatik yeniden bağlanma başarısız oldu."
+ "Ricollegamento automatico non riuscito.": "Otomatik yeniden bağlanma başarısız oldu.",
+ "Sul PC remoto: {0}.": "Uzak bilgisayarda: {0}.",
+ "codifica con la scheda grafica ({0}) sospesa fino al {1}: il PC si era bloccato mentre la usava": "ekran kartıyla kodlama ({0}) {1} tarihine kadar askıya alındı: bilgisayar kullanırken donmuştu"
 }

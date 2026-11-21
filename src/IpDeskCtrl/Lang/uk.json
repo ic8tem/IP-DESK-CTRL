@@ -718,5 +718,7 @@
  "Windows non concede il riavvio all'account di questo PC (utente senza diritti di arresto o criterio dell'organizzazione). Con il servizio «accesso completo» il riavvio funziona sempre: installalo da Tasti ▾.": "Windows не дозволяє обліковому запису цього ПК перезавантаження (користувач без права завершення роботи або політика організації). Зі службою «повний доступ» перезавантаження працює завжди: встановіть її з меню Клавіші ▾.",
  "Collegamento caduto": "З'єднання обірвалося",
  "{0} · mi ricollego da solo (tentativo {1} di {2})…": "{0} · перепідключаюся сам (спроба {1} з {2})…",
- "Ricollegamento automatico non riuscito.": "Автоматичне перепідключення не вдалося."
+ "Ricollegamento automatico non riuscito.": "Автоматичне перепідключення не вдалося.",
+ "Sul PC remoto: {0}.": "На віддаленому ПК: {0}.",
+ "codifica con la scheda grafica ({0}) sospesa fino al {1}: il PC si era bloccato mentre la usava": "кодування відеокартою ({0}) призупинено до {1}: ПК зависав під час її використання"
 }
