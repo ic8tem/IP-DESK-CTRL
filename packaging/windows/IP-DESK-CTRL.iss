@@ -118,7 +118,9 @@ begin
   // il programma aperto nelle sessioni degli utenti: chiudendo la finestra si nasconde vicino all'orologio invece di
   // uscire, quindi l'installatore restava ad aspettarlo (finché qualcuno non lo chiudeva a mano). Si chiude qui;
   // a installazione finita lo riaprono il servizio o l'installatore.
-  Exec(ExpandConstant('{sys}\taskkill.exe'), '/F /T /IM IP-DESK-CTRL.exe', '', SW_HIDE, ewWaitUntilTerminated, Code);
+  // Senza /T: l'installatore stesso è figlio di IP-DESK-CTRL.exe (del programma che l'ha lanciato con la UAC, o del
+  // servizio che aggiorna da solo) e con /T taskkill chiudeva anche lui a metà, senza installare né riaprire niente.
+  Exec(ExpandConstant('{sys}\taskkill.exe'), '/F /IM IP-DESK-CTRL.exe', '', SW_HIDE, ewWaitUntilTerminated, Code);
   Sleep(1500);
   Result := '';
 end;
