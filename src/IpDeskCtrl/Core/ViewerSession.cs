@@ -69,6 +69,15 @@ namespace IpDeskCtrl.Core
                     PeerHasTrx = !r.AtEnd && r.Bool();
                     PeerCaps = r.AtEnd ? "" : r.Str();
                     break;
+                case Msg.FsResp: _files?.OnResponse(r); break;
+                case Msg.Chat:
+                {
+                    string text = r.Str();
+                    if (text.Length > 4000) text = text[..4000];
+                    SessionLog.Write($"CHAT da {Identity.Format(PeerNumber)}: {text}");
+                    ChatReceived?.Invoke(text);
+                    break;
+                }
                 case Msg.DriveReq:
                 {
                     int id = r.I32(); byte op = r.U8(); string path = r.Str(), path2 = r.Str(); long pos = r.I64();
@@ -245,6 +254,29 @@ namespace IpDeskCtrl.Core
         public void SelectMonitor(int index) => Send(new MsgWriter(Msg.SelectMonitor).I32(index).Build());
 
         // ------------------------------------------------------------------ 0.5: funzioni annunciate dall'altro PC
+
+        /// <summary>Messaggio di chat da chi è davanti al PC remoto.</summary>
+        public event Action<string>? ChatReceived;
+
+        public void SendChat(string text)
+        {
+            if (text.Length == 0) return;
+            SessionLog.Write($"CHAT a {Identity.Format(PeerNumber)}: {text}");
+            Send(new MsgWriter(Msg.Chat).Str(text).Build());
+        }
+
+        /// <summary>Lavagna: manda un pezzo di tratto (punti in 0..1 dell'immagine, x,y alternati).</summary>
+        public void SendDraw(byte op, IReadOnlyList<float> pts)
+        {
+            int n = Math.Min(pts.Count / 2, 2000);
+            var w = new MsgWriter(Msg.Draw).U8(op).U16((ushort)n);
+            for (int i = 0; i < n * 2; i++) w.U16((ushort)Math.Clamp((int)(pts[i] * 65535f), 0, 65535));
+            Send(w.Build());
+        }
+
+        private DriveClient? _files;
+        /// <summary>Gestione file a due pannelli: richieste al PC remoto (null se il PC remoto non la conosce, prima della 0.5.22).</summary>
+        public DriveClient? Files => PeerHas("fs") ? _files ??= new DriveClient(SendAsync, Msg.FsReq) : null;
 
         /// <summary>Funzioni del PC remoto (vedi <see cref="AppVersion.Caps"/>); vuoto = 0.4.</summary>
         public string PeerCaps { get; private set; } = "";

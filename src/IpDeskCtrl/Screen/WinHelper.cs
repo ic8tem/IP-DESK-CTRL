@@ -36,7 +36,7 @@ namespace IpDeskCtrl.Screen
         // comandi della pipe del supporto: [u8 comando][i32 lunghezza][dati] → risposta [u8 esito][i32 lunghezza][dati]
         public const byte CmdMonitors = 1, CmdCapture = 2, CmdCursor = 3,
                           CmdMove = 10, CmdButton = 11, CmdWheel = 12, CmdKey = 13, CmdText = 14,
-                          CmdClipGet = 20, CmdClipSet = 21, CmdClipFiles = 22, CmdClipSetFiles = 23, CmdUserFolder = 24, CmdBye = 99;
+                          CmdClipGet = 20, CmdClipSet = 21, CmdClipFiles = 22, CmdClipSetFiles = 23, CmdUserFolder = 24, CmdFitDisplay = 25, CmdBye = 99;
 
         public static HelperClient? Current { get; private set; }
 
@@ -123,6 +123,13 @@ namespace IpDeskCtrl.Screen
             _launcher = () => AskService("HELPER");
             Platform.PrepareHost = () => Task.Run(() => { Interlocked.Exchange(ref _nextRevive, 0); Start(); return ""; });
             Platform.HostEnded = Stop;
+            Platform.FitDisplay = (mon, w, h) =>
+            {
+                var c = Current;
+                if (c == null || !c.Alive) return null;
+                var (st, data) = c.Ask(CmdFitDisplay, bw => { bw.Write(mon?.Name ?? ""); bw.Write(mon?.X ?? 0); bw.Write(mon?.Y ?? 0); bw.Write(w); bw.Write(h); });
+                return st == 0 ? Encoding.UTF8.GetString(data) : L.T("Risoluzione non cambiata.");
+            };
             Platform.Screen = () => Current != null ? new HelperScreen(Current) : new WindowsScreen();
             Platform.Input = () => Current != null ? new HelperInput(Current) : new WindowsInput();
         }
@@ -149,6 +156,13 @@ namespace IpDeskCtrl.Screen
                 return Current == null ? "Il processo di sistema non è partito: lo schermo del PC remoto potrebbe non essere visibile." : "";
             });
             Platform.HostEnded = Stop;
+            Platform.FitDisplay = (mon, w, h) =>
+            {
+                var c = Current;
+                if (c == null || !c.Alive) return null;
+                var (st, data) = c.Ask(CmdFitDisplay, bw => { bw.Write(mon?.Name ?? ""); bw.Write(mon?.X ?? 0); bw.Write(mon?.Y ?? 0); bw.Write(w); bw.Write(h); });
+                return st == 0 ? Encoding.UTF8.GetString(data) : L.T("Risoluzione non cambiata.");
+            };
             Platform.Screen = () => Current != null ? new HelperScreen(Current) : new WindowsScreen();
             Platform.Input = () => Current != null ? new HelperInput(Current) : new WindowsInput();
             // il servizio gira nella sessione 0, che non ha gli appunti dell'utente: passano dal processo di supporto
@@ -226,6 +240,8 @@ namespace IpDeskCtrl.Screen
         /// Corpo del processo «--helper &lt;pipe&gt; &lt;SID dell'utente&gt;», avviato dal servizio come SYSTEM nella
         /// sessione dell'utente. Cattura e input girano su un thread che segue il desktop attivo.
         /// </summary>
+        private static readonly DisplayResizer _resizer = new();
+
         public static int RunHelper(string pipe, string userSid)
         {
             Platform.DataFolder = DataPaths.ServiceFolder() ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "IP-DESK-CTRL");
@@ -332,6 +348,15 @@ namespace IpDeskCtrl.Screen
                         {
                             string f = UserDownloads(userSid);
                             Reply(bw, f.Length > 0 ? (byte)0 : (byte)1, Encoding.UTF8.GetBytes(f));
+                            break;
+                        }
+                        case CmdFitDisplay:
+                        {
+                            // risoluzione adattata alla finestra del visore: qui, nella sessione dell'utente, gli schermi si vedono
+                            string name = r.ReadString(); int mx = r.ReadInt32(), my = r.ReadInt32(), fw = r.ReadInt32(), fh = r.ReadInt32();
+                            var mon = name.Length > 0 ? new MonitorInfo(name, mx, my, 0, 0, false) : null;
+                            string err = _resizer.Fit(mon, fw, fh);
+                            Reply(bw, 0, Encoding.UTF8.GetBytes(err));
                             break;
                         }
                         case CmdBye: return 0;

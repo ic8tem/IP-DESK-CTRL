@@ -1,5 +1,15 @@
 # File e appunti
 
+## Gestione file a due pannelli
+
+Da **File ▾ › Gestione file a due pannelli…** si apre una finestra con **a sinistra questo PC** e **a destra il PC remoto**. In ogni pannello c'è l'elenco dei dischi e delle cartelle utente (Desktop, Documenti, Scaricati, Immagini), il percorso (si può scrivere), ↑ per la cartella superiore e ⟳ per aggiornare.
+
+- **Trasferire**: seleziona file o cartelle e premi **→** (da qui al PC remoto) o **←** (dal PC remoto a qui); oppure doppio clic su un file, oppure trascinalo nell'altro pannello. Si possono anche trascinare file da Esplora risorse sul pannello del PC remoto.
+- **Nuova cartella**, **Rinomina** (F2) ed **Elimina** (Canc, con conferma) valgono sul pannello evidenziato.
+- I trasferimenti vanno **in coda**, uno alla volta, con avanzamento e velocità; «Ferma i trasferimenti» li interrompe.
+
+Sul PC remoto si lavora con i permessi dell'utente collegato, anche quando il collegamento lo riceve il servizio di Windows. Serve la 0.5.22 su tutti e due i PC; funziona anche dove il trascinamento è bloccato da Windows.
+
 ## Copia e incolla
 
 Testi **e file** copiati su un PC si incollano sull'altro, **nei due versi**, con i soliti Ctrl+C e Ctrl+V (Cmd sul Mac).

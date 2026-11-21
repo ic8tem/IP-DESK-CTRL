@@ -79,6 +79,12 @@ namespace IpDeskCtrl.UI
         private bool _panelHold, _panelCancel;
         private static int _panelLast;
         private readonly Button _files = new() { Content = L.T("File ▾") };
+        private readonly Button _chatBtn = new() { Content = L.T("Chat") };
+        private ChatPanel? _chat;
+        private readonly Button _recBtn = new() { Content = "⏺" };
+        private readonly ToggleButton _drawBtn = new() { Content = "✎" };
+        private IpDeskCtrl.Screen.SessionRecorder? _rec;
+        private int _chatUnread;
         private readonly TextBlock _stats = new() { FontSize = 11, VerticalAlignment = VerticalAlignment.Center, Foreground = Brushes.Gainsboro, MinWidth = 150 };
 
         // tastiera del telefono
@@ -160,6 +166,7 @@ namespace IpDeskCtrl.UI
 
         public void Disconnect()
         {
+            StopRecording();
             _visibleTimer.Stop();
             _rebootCts?.Cancel();
             _cts.Cancel();
@@ -310,6 +317,17 @@ namespace IpDeskCtrl.UI
             keys.Flyout = menu;
             ToolTip.SetTip(keys, L.T("Combinazioni che il tuo sistema non lascerebbe passare. Ctrl+Alt+Canc su Windows richiede il servizio «accesso completo» sul PC remoto."));
 
+            _chatBtn.Click += (_, _) => ToggleChat(_chat?.IsVisible != true);
+            ToolTip.SetTip(_chatBtn, L.T("Scrivi a chi è davanti al PC remoto: gli si apre una finestra di chat."));
+
+            ToolTip.SetTip(_drawBtn, L.T("Lavagna: disegna sullo schermo del PC remoto per indicare qualcosa (tratti rossi). Clic destro per cancellare. Premi di nuovo per tornare a comandare."));
+            _view.DrawChunk += (op, pts) => _session?.SendDraw(op, pts);
+            _drawBtn.IsCheckedChanged += (_, _) => SetDrawMode(_drawBtn.IsChecked == true);
+
+            _recBtn.IsVisible = !Platform.IsMobile;
+            ToolTip.SetTip(_recBtn, L.T("Registra la sessione in un video MP4 (cartella Video\\IP-DESK-CTRL). Serve ffmpeg."));
+            _recBtn.Click += (_, _) => ToggleRecording();
+
             _files.Click += (_, _) => ShowFilesMenu();
             ToolTip.SetTip(_files, L.T("Manda file al PC remoto o prendi quelli copiati lì. Puoi anche trascinarli sulla finestra."));
 
@@ -343,7 +361,7 @@ namespace IpDeskCtrl.UI
 
             var bar = new WrapPanel { HorizontalAlignment = HorizontalAlignment.Center };
             _bar = bar;
-            foreach (var c in new Control[] { _fullBtn, minus, _zoom, plus, _monitor, _quality, _codec, _fitRes, _audio, _mic, keyboard, gestures, keys, _files, _tunnelBtn, _radio, refresh, _stats, close, hide })
+            foreach (var c in new Control[] { _fullBtn, minus, _zoom, plus, _monitor, _quality, _codec, _fitRes, _audio, _mic, keyboard, gestures, keys, _files, _chatBtn, _drawBtn, _recBtn, _tunnelBtn, _radio, refresh, _stats, close, hide })
             {
                 c.VerticalAlignment = VerticalAlignment.Center;
                 c.Margin = new Thickness(3);
@@ -402,6 +420,19 @@ namespace IpDeskCtrl.UI
             BuildPanel();
             grid.Children.Add(_panel);
 
+            // ---- chat
+            _chat = new ChatPanel(Identity.Format(_number), t => _session?.SendChat(t), true)
+            {
+                Width = Platform.IsMobile ? double.NaN : 340,
+                Margin = new Thickness(12, 60, 12, 12),
+                HorizontalAlignment = Platform.IsMobile ? HorizontalAlignment.Stretch : HorizontalAlignment.Right,
+                VerticalAlignment = VerticalAlignment.Stretch,
+                MaxHeight = 520,
+                IsVisible = false,
+            };
+            _chat.CloseRequested += () => ToggleChat(false);
+            grid.Children.Add(_chat);
+
             // ---- trasferimento di file
             _transfer.Child = new StackPanel { Spacing = 4, Children = { _transferText, _transferBar } };
             _transfer.Background = new SolidColorBrush(Color.FromArgb(220, 24, 28, 36));
@@ -413,7 +444,7 @@ namespace IpDeskCtrl.UI
             grid.Children.Add(_transfer);
 
             // ---- avvisi del PC remoto (permessi, Wayland…) e file ricevuti
-            _noteOpen.Click += (_, _) => MainView.OpenPath(Platform.Received);
+            _noteOpen.Click += (_, _) => MainView.OpenPath(_noteFolder ?? Platform.Received);
             _note.Child = new StackPanel { Children = { _noteText, _noteOpen } };
             _note.Background = new SolidColorBrush(Color.FromArgb(220, 120, 60, 0));
             _note.CornerRadius = new CornerRadius(8);
@@ -449,8 +480,11 @@ namespace IpDeskCtrl.UI
             return b;
         }
 
-        private void ShowNote(string text, bool openFolder = false)
+        private string? _noteFolder;
+
+        private void ShowNote(string text, bool openFolder = false, string? folder = null)
         {
+            _noteFolder = folder;
             _noteText.Text = text;
             _noteOpen.IsVisible = openFolder && !Platform.IsMobile;
             _note.IsVisible = text.Length > 0;
@@ -591,6 +625,57 @@ namespace IpDeskCtrl.UI
 
         // =================================================================== file
 
+        private void SetDrawMode(bool on)
+        {
+            var s = _session;
+            if (on && s?.PeerHas("draw") == false)
+            {
+                ShowNote(L.T("La lavagna richiede IP-DESK-CTRL 0.5.22 o successivo sul PC remoto."));
+                _drawBtn.IsChecked = false;
+                return;
+            }
+            if (_view.DrawMode == on) return;
+            _view.DrawMode = on;
+            if (!on) s?.SendDraw(DrawEvent.Clear, Array.Empty<float>());
+            else ShowNote(L.T("Lavagna attiva: disegna col tasto sinistro, clic destro cancella. Il mouse non arriva al PC remoto finché non la chiudi."));
+        }
+
+        private void ToggleRecording()
+        {
+            if (_rec != null) { StopRecording(); return; }
+            var s = _session;
+            if (s == null) return;
+            var r = IpDeskCtrl.Screen.SessionRecorder.Start(s.Decoder, Identity.Format(_number), out string err);
+            if (r == null) { ShowNote(L.T("Registrazione non avviata: ") + err + "."); return; }
+            _rec = r;
+            _recBtn.Content = "⏹ REC";
+            _recBtn.Foreground = Brushes.Red;
+            ShowNote(L.F("Registrazione in corso in {0}", IpDeskCtrl.Screen.SessionRecorder.Folder));
+        }
+
+        private void StopRecording()
+        {
+            var r = _rec;
+            if (r == null) return;
+            _rec = null;
+            r.Dispose();
+            _recBtn.Content = "⏺";
+            _recBtn.ClearValue(Button.ForegroundProperty);
+            ShowNote(L.T("Registrazione salvata: ") + r.File, true, IpDeskCtrl.Screen.SessionRecorder.Folder);
+        }
+
+        private void ToggleChat(bool show)
+        {
+            if (_chat == null) return;
+            if (show && _session?.PeerHas("chat") == false)
+            {
+                ShowNote(L.T("La chat richiede IP-DESK-CTRL 0.5.22 o successivo sul PC remoto."));
+                return;
+            }
+            _chat.IsVisible = show;
+            if (show) { _chatUnread = 0; _chatBtn.Content = L.T("Chat"); _chat.FocusInput(); }
+        }
+
         private void ShowFilesMenu()
         {
             var s = _session;
@@ -621,6 +706,14 @@ namespace IpDeskCtrl.UI
                     Add(L.T("Condividi una cartella come disco del PC remoto…"), s.InputAllowed, () => _ = ShareFolderAsync(false));
                     Add(L.T("Condividi una cartella in sola lettura…"), s.InputAllowed, () => _ = ShareFolderAsync(true));
                 }
+            }
+            if (!Platform.IsMobile)
+            {
+                menu.Items.Add(new Separator());
+                var fs = s.Files;
+                Add(fs != null ? L.T("Gestione file a due pannelli…") : L.T("Gestione file a due pannelli (il PC remoto va aggiornato)"),
+                    fs != null && s.InputAllowed,
+                    () => FileManager.Open(TopLevel.GetTopLevel(this) as Window, fs!, Identity.Format(_number)));
             }
             if (!s.InputAllowed) Add(L.T("(solo visione: i file non sono permessi)"), false, () => { });
             menu.ShowAt(_files);
@@ -1269,6 +1362,7 @@ namespace IpDeskCtrl.UI
                 var s = new ViewerSession(_peer, link);
                 _session = s;
                 _view.Session = s;
+                if (_view.DrawMode) { _view.DrawMode = false; _drawBtn.IsChecked = false; }
                 s.StateChanged += () => Dispatcher.UIThread.Post(() => OnState(s));
                 s.PasswordRequested += c => Dispatcher.UIThread.Post(() => AskPassword(s, c));
                 s.MonitorsChanged += () => Dispatcher.UIThread.Post(() => OnMonitors(s));
@@ -1288,6 +1382,14 @@ namespace IpDeskCtrl.UI
                              (onClip ? (Platform.IsMobile ? "." : L.T(": sono negli appunti, incollali con Ctrl+V dove vuoi.")) : "."), true);
                 });
                 s.TunnelMessage += m => Dispatcher.UIThread.Post(() => ShowNote(m));
+                s.ChatReceived += t => Dispatcher.UIThread.Post(() =>
+                {
+                    _chat?.Add(false, t);
+                    if (_chat?.IsVisible == true) return;
+                    _chatUnread++;
+                    _chatBtn.Content = L.T("Chat") + $" ({_chatUnread})";
+                    ToggleChat(true);
+                });
                 s.DriveChanged += (on, where) => Dispatcher.UIThread.Post(() =>
                     ShowNote(on ? L.F("Cartella condivisa: sul PC remoto è il disco {0}.", where)
                         : where.Length > 0 ? L.T("Cartella non montata sul PC remoto: ") + where + "." : L.T("Cartella condivisa tolta.")));
@@ -1451,6 +1553,7 @@ namespace IpDeskCtrl.UI
         private void OnClosed(ViewerSession s, string reason)
         {
             if (s != _session) return;
+            StopRecording();
             HistoryChanged?.Invoke();
             if (_ended) return;
             if (s.RebootRequested) { _ = WaitRebootAsync(); return; }

@@ -35,7 +35,7 @@ namespace IpDeskCtrl.Core
         public double RttMs { get; private set; } = double.NaN;
         public bool UdpActive => _udpMine && _udpPeer && _udp?.Remote != null;
         /// <summary>Strada del collegamento come la mostra la plancia: «TCP», «UDP + TCP» o «solo UDP».</summary>
-        public string Route => Link.IsUdp ? "solo UDP" : UdpActive ? "UDP + TCP" : "TCP";
+        public string Route => Link.IsRelay ? "relè MQTT" : Link.IsUdp ? "solo UDP" : UdpActive ? "UDP + TCP" : "TCP";
         public bool IsClosed => _closed != 0;
 
         public event Action<string>? Closed;

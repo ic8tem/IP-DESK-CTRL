@@ -272,6 +272,31 @@ namespace IpDeskCtrl.Core
                     if (_accepted) _ = Task.Run(() => RequestResize(w, h));
                     break;
                 }
+                case Msg.Draw:
+                {
+                    if (!_accepted) break;
+                    byte op = r.U8();
+                    int n = Math.Min((int)r.U16(), 2000);
+                    var pts = new float[n * 2];
+                    for (int i = 0; i < pts.Length; i++) pts[i] = r.U16() / 65535f;
+                    var a = _area;
+                    if (a == null) break;
+                    if (op == DrawEvent.Clear) SessionLog.Write($"LAVAGNA {Identity.Format(PeerNumber)} cancella i disegni");
+                    else if (op == DrawEvent.NewStroke && !_drawLogged) { _drawLogged = true; SessionLog.Write($"LAVAGNA {Identity.Format(PeerNumber)} disegna sullo schermo"); }
+                    P.RaiseDraw(new DrawEvent(PeerNumber, op, pts, a.X, a.Y, a.W, a.H));
+                    break;
+                }
+                case Msg.Chat:
+                {
+                    string text = r.Str();
+                    if (_accepted && text.Length > 0)
+                    {
+                        if (text.Length > 4000) text = text[..4000];
+                        SessionLog.Write($"CHAT da {Identity.Format(PeerNumber)}: {text}");
+                        P.RaiseChat(this, text);
+                    }
+                    break;
+                }
                 case Msg.Volume:
                 {
                     int a = r.U8();
@@ -287,6 +312,20 @@ namespace IpDeskCtrl.Core
                 }
                 case Msg.DriveClose: _ = Task.Run(() => CloseDrive("tolta dal visore")); break;
                 case Msg.DriveResp: _drive?.OnResponse(r); break;
+                case Msg.FsReq:
+                {
+                    int id = r.I32(); byte op = r.U8(); string path = r.Str(), path2 = r.Str(); long pos = r.I64();
+                    byte[] data = r.Bytes(Math.Clamp(r.I32(), 0, 4 << 20));
+                    bool ok = _accepted && _allowInput && !Platform.IsMobile;
+                    _ = Task.Run(() =>
+                    {
+                        var (status, reply) = ok ? RemoteFiles.Handle(op, path, path2, pos, data) : (DriveOp.Forbidden, Array.Empty<byte>());
+                        if (ok && op is DriveOp.Delete or DriveOp.Move or DriveOp.MkDir)
+                            SessionLog.Write($"FILE {Identity.Format(PeerNumber)}: {(op == DriveOp.Delete ? "eliminato" : op == DriveOp.Move ? "rinominato" : "nuova cartella")} {path}" + (op == DriveOp.Move ? " → " + path2 : "") + (status == DriveOp.Ok ? "" : $" (non riuscito, {status})"));
+                        Send(new MsgWriter(Msg.FsResp).I32(id).I32(status).I32(reply.Length).Bytes(reply).Build());
+                    });
+                    break;
+                }
                 case Msg.Resume:
                 {
                     int who = r.U8();
@@ -490,6 +529,15 @@ namespace IpDeskCtrl.Core
             return (Math.Clamp(x, a.X, a.X + a.W - 1), Math.Clamp(y, a.Y, a.Y + a.H - 1));
         }
 
+        /// <summary>Messaggio di chat a chi comanda questo PC.</summary>
+        public void SendChat(string text)
+        {
+            if (text.Length == 0 || IsClosed) return;
+            SessionLog.Write($"CHAT a {Identity.Format(PeerNumber)}: {text}");
+            Send(new MsgWriter(Msg.Chat).Str(text).Build());
+        }
+
+        private bool _drawLogged;
         private readonly Dictionary<string, long> _noteLogged = new();
 
         private void Note(string text)
@@ -542,7 +590,7 @@ namespace IpDeskCtrl.Core
                     blockedSince = 0;
 
                     // finestra del visore ridotta a icona: un fotogramma al secondo (banda e processore a riposo)
-                    if (_viewerHidden && t0 - _lastHiddenFrame < 1000) { Thread.Sleep(50); continue; }
+                    if ((_viewerHidden || Link.IsRelay) && t0 - _lastHiddenFrame < (_viewerHidden ? 1000 : 250)) { Thread.Sleep(20); continue; }
                     _lastHiddenFrame = t0;
 
                     var area = _area;
@@ -688,6 +736,7 @@ namespace IpDeskCtrl.Core
             _audio?.Dispose();
             lock (_micLock) { _mic?.Dispose(); _mic = null; }
             _resizer.Dispose();
+            if (Platform.FitDisplay != null && _fitW > 0) try { Platform.FitDisplay(null, 0, 0); } catch { }
             CloseDrive(L.T("collegamento chiuso"));
             _tunnels?.CloseAll();
             _video?.Dispose();
@@ -755,7 +804,7 @@ namespace IpDeskCtrl.Core
             try
             {
                 MonitorInfo? mon = _selected >= 0 && _selected < _monitors.Count ? _monitors[_selected] : null;
-                string err = _resizer.Fit(mon, w, h);
+                string err = Platform.FitDisplay?.Invoke(mon, w, h) ?? _resizer.Fit(mon, w, h);
                 if (err.Length > 0) Note(err);
                 Thread.Sleep(800);              // il desktop si ridisegna: poi si rimanda l'elenco dei monitor
                 SendMonitors();

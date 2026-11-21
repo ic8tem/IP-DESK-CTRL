@@ -11,6 +11,7 @@ namespace IpDeskCtrl.Core
     {
         public string Number { get; set; } = "";          // 10 cifre, senza spazi
         public string Alias { get; set; } = "";
+        public string Group { get; set; } = "";           // gruppo della rubrica (vuoto = senza gruppo)
         public DateTime LastUtc { get; set; }
         public int Count { get; set; }
         public bool Outgoing { get; set; } = true;        // ultimo collegamento: io verso lui (true) o lui verso di me
@@ -32,6 +33,7 @@ namespace IpDeskCtrl.Core
     {
         public string Theme { get; set; } = "chiaro";
         public List<HistoryEntry> History { get; set; } = new();
+        public int HistorySort { get; set; }              // rubrica: 0 ultimo collegamento, 1 nome, 2 in linea prima
 
         // ---------------- questo PC visto da fuori
         public bool AcceptIncoming { get; set; } = true;   // gli altri possono chiedere di collegarsi
@@ -146,6 +148,7 @@ namespace IpDeskCtrl.Core
                     else
                     {
                         if (cur.Alias.Length == 0) cur.Alias = h.Alias;
+                        if (cur.Group.Length == 0) cur.Group = h.Group;
                         if (cur.PeerKey.Length == 0) cur.PeerKey = h.PeerKey;
                         cur.AllowUnattended |= h.AllowUnattended;
                         if (h.LastUtc > cur.LastUtc) { cur.LastUtc = h.LastUtc; cur.Outgoing = h.Outgoing; }

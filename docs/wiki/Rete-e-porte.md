@@ -9,9 +9,10 @@ IP-DESK-CTRL usa lo stesso sistema di **IP-TRX-CTRL**: di norma non devi aprire 
 3. Il visore li legge e si collega **diretto** (prima in rete locale, se i due PC sono nella stessa casa).
 4. Se non ci riesce chiede il **collegamento inverso**: è l'host a collegarsi alla porta del visore. Se la rete del visore lascia uscire solo poche porte (443, 80…) l'host usa proprio quelle. I giri sono **2**: nel primo chiede all'altro PC di collegarsi; nel secondo le porte si **invertono**: è il PC che chiama ad aprirne una nuova tra 443, 8443, 80 e 8080 prima di richiedere di nuovo il collegamento.
 5. Fin dal **primo giro**, in parallelo, i due PC si scambiano anche i **candidati UDP**, forano i NAT e fanno **tutto su UDP**, con un trasporto affidabile e ordinato sotto lo stesso canale cifrato. Vince la prima strada che riesce, TCP inverso o solo UDP.
-6. Con un collegamento TCP riuscito i due PC provano comunque **UDP**: audio e mouse passano lì, lo schermo resta su TCP.
+6. Se non passa niente, ultima strada: il **relè sul broker MQTT**. I dati del collegamento (sempre cifrati da un capo all'altro: il broker non li può leggere) passano dal broker su due argomenti usa e getta. È lento e l'immagine si alleggerisce, ma ci si collega anche con l'IP condiviso dell'operatore su entrambi i lati. Serve la 0.5.22 su tutti e due i PC.
+7. Con un collegamento TCP riuscito i due PC provano comunque **UDP**: audio e mouse passano lì, lo schermo resta su TCP.
 
-La plancia mostra la strada usata: **TCP**, **UDP + TCP** o **solo UDP**.
+La plancia mostra la strada usata: **TCP**, **UDP + TCP**, **solo UDP** o **relè MQTT**.
 
 ## Casi tipici
 
@@ -19,7 +20,7 @@ La plancia mostra la strada usata: **TCP**, **UDP + TCP** o **solo UDP**.
 |---|---|
 | Almeno un router con UPnP attivo | TCP diretto o inverso |
 | Nessun router con UPnP | di solito **solo UDP**, funziona |
-| NAT simmetrico (es. CGNAT dell'operatore) su **entrambi** i lati | anche UDP può non passare |
+| NAT simmetrico (es. CGNAT dell'operatore) su **entrambi** i lati | anche UDP può non passare: **relè MQTT**, lento ma funziona |
 
 Se hai un router con UPnP disattivato, attivarlo migliora la velocità ma non è indispensabile.
 

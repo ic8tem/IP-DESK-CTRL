@@ -186,8 +186,10 @@ namespace IpDeskCtrl.Core
         private readonly Func<byte[], Task> _send;
         private readonly ConcurrentDictionary<int, TaskCompletionSource<(int, byte[])>> _pending = new();
         private int _id;
+        private readonly byte _req;
 
-        public DriveClient(Func<byte[], Task> send) { _send = send; }
+        /// <summary>req: tipo del messaggio di richiesta (cartella condivisa: DriveReq; gestione file: FsReq).</summary>
+        public DriveClient(Func<byte[], Task> send, byte req = Msg.DriveReq) { _send = send; _req = req; }
 
         public async Task<(int status, byte[] data)> CallAsync(byte op, string path, string path2 = "", long pos = 0, byte[]? data = null)
         {
@@ -197,7 +199,7 @@ namespace IpDeskCtrl.Core
             try
             {
                 data ??= Array.Empty<byte>();
-                await _send(new MsgWriter(Msg.DriveReq).I32(id).U8(op).Str(path).Str(path2).I64(pos).I32(data.Length).Bytes(data).Build());
+                await _send(new MsgWriter(_req).I32(id).U8(op).Str(path).Str(path2).I64(pos).I32(data.Length).Bytes(data).Build());
                 var done = await Task.WhenAny(tcs.Task, Task.Delay(TimeSpan.FromSeconds(60)));
                 return done == tcs.Task ? tcs.Task.Result : (DriveOp.Error, Array.Empty<byte>());
             }

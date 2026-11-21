@@ -17,6 +17,16 @@ namespace IpDeskCtrl.Core
         public static string? DataFolder { get; set; }
         /// <summary>Cartella dove salvare i file ricevuti (null = Scaricati/IP-DESK-CTRL).</summary>
         public static string? ReceiveFolder { get; set; }
+        /// <summary>Con il servizio di Windows: esegue come l'utente della console (gestione file). null = così com'è.</summary>
+        public static Func<Func<(int, byte[])>, (int, byte[])>? AsUser { get; set; }
+        /// <summary>Cartella personale dell'utente della console (con il servizio). null = quella di questo processo.</summary>
+        public static Func<string?>? UserHome { get; set; }
+        /// <summary>
+        /// Con il servizio di Windows: adatta la risoluzione dal processo di supporto, che vede gli schermi dell'utente
+        /// (il servizio, nella sessione 0, non li vede). Monitor null o w=0: si torna alla risoluzione di prima.
+        /// Risposta null = processo di supporto assente: si fa da qui.
+        /// </summary>
+        public static Func<global::IpDeskCtrl.Screen.MonitorInfo?, int, int, string?>? FitDisplay { get; set; }
 
         public static Func<IScreenSource>? Screen { get; set; }
         public static Func<IInputSink>? Input { get; set; }

@@ -16,12 +16,15 @@ Nella finestra del PC remoto c'è una piccola plancia di comando: **in alto al c
 | **✋** | (telefono e tablet) Tocco e gesti: vedi [Android](Android). |
 | **Tasti ▾** | Ctrl+Alt+Canc, Alt+Tab, Tasto Windows / Cmd, Alt+F4, Ctrl+C, Ctrl+V, Stamp, Esc, **Volume del PC remoto +, −, muto**, *Pannello scorciatoie*, *Riavvia il PC remoto…* |
 | **File ▾** | Prendi i file copiati sul PC remoto, manda quelli copiati qui, scegli file da mandare (vedi [File e appunti](File-e-appunti)). |
+| **Chat** | Apre la chat con chi è davanti al PC remoto: di là si apre una finestra in primo piano. Si apre da sola quando arriva un messaggio. |
+| **✎** | Lavagna: disegni in rosso sullo schermo del PC remoto (vedi sotto). |
+| **⏺** | Registra la sessione in un video MP4 (vedi sotto). |
 | **Radio (IP-TRX-CTRL)** | Se sul PC remoto c'è IP-TRX-CTRL, lo avvia lì (e anche qui, se installato). |
 | **⟳** | Aggiorna l'immagine (richiede di nuovo l'intero schermo). |
 | **▲** (◀ / ▶ di lato) | Nasconde subito la plancia. |
 | **Disconnetti** | Chiude il collegamento. |
 
-La plancia mostra anche la **strada** del collegamento: **TCP**, **UDP + TCP** o **solo UDP** (vedi [Rete e porte](Rete-e-porte)).
+La plancia mostra anche la **strada** del collegamento: **TCP**, **UDP + TCP**, **solo UDP** o **relè MQTT** (vedi [Rete e porte](Rete-e-porte)).
 
 ## Microfono
 
@@ -33,9 +36,17 @@ Con **Microfono** acceso la tua voce arriva al PC remoto (anche dal telefono). P
 
 Senza cavo virtuale la voce esce dalle casse del PC remoto. Chi è al PC remoto può rifiutare il microfono (Impostazioni › *Accetta il microfono di chi si collega*).
 
+## Lavagna
+
+Con **✎** il mouse non comanda più il PC remoto: col tasto sinistro disegni sopra l'immagine e i tratti rossi compaiono sullo schermo di là, per indicare un pulsante o una riga. **Clic destro** cancella. Ripremendo **✎** torni a comandare e i disegni spariscono. Di là la lavagna si toglie anche con un clic o da sola dopo 20 secondi senza nuovi tratti, quindi non blocca mai il PC.
+
+## Registrazione
+
+Con **⏺** l'immagine del PC remoto va in un video MP4 (H.264, 8 fotogrammi al secondo, senza audio) nella cartella **Video\IP-DESK-CTRL** di questo PC. Si ferma con **⏹ REC** o scollegandosi; se il PC remoto cambia risoluzione si continua in un secondo file («…_parte2.mp4»). Serve ffmpeg, lo stesso del [video compresso](Video).
+
 ## Risoluzione adatta
 
-Con **Risoluzione adatta** il PC remoto passa, tra le risoluzioni che il suo monitor supporta, a quella con le proporzioni più vicine alla tua finestra (o al telefono, anche in verticale). Ridimensionando la finestra si riadatta. A fine collegamento, o spegnendo il pulsante, torna com'era. Funziona su **Windows** e **Linux con X11**; serve un solo schermo scelto (non «Tutti gli schermi»). Chi è al PC remoto può impedirlo (Impostazioni).
+Con **Risoluzione adatta** il PC remoto passa, tra le risoluzioni che il suo monitor supporta, a quella con le proporzioni più vicine alla tua finestra (o al telefono, anche in verticale). Ridimensionando la finestra si riadatta. A fine collegamento, o spegnendo il pulsante, torna com'era. Funziona su **Windows** (anche con il servizio, dalla 0.5.22) e **Linux con X11**; serve un solo schermo scelto (non «Tutti gli schermi»). Chi è al PC remoto può impedirlo (Impostazioni).
 
 ## Schermo intero
 

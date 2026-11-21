@@ -138,6 +138,7 @@ namespace IpDeskCtrl.UI
             if (_bmp == null) return;
             var d = Dest();
             ctx.DrawImage(_bmp, new Rect(0, 0, _w, _h), d);
+            RenderDrawing(ctx, d);
 
             // striscia di scorrimento lungo il bordo destro (telefono e tablet)
             if (_touchMode && Touch.ScrollStrip && Platform.IsMobile)
@@ -183,6 +184,86 @@ namespace IpDeskCtrl.UI
             return (Math.Clamp(x, 0, _w - 1), Math.Clamp(y, 0, _h - 1));
         }
 
+        // ------------------------------------------------------------------ lavagna
+
+        /// <summary>Lavagna: col tasto sinistro si disegna (niente mouse al PC remoto).</summary>
+        public bool DrawMode
+        {
+            get => _drawMode;
+            set { _drawMode = value; if (!value) { _strokes.Clear(); _drawing = null; InvalidateVisual(); } }
+        }
+        private bool _drawMode;
+        private readonly List<List<Point>> _strokes = new();   // in 0..1 dell'immagine
+        private List<Point>? _drawing;
+        private readonly List<float> _pending = new();
+        private long _pendingAt;
+
+        /// <summary>Pezzo di tratto da mandare: op (DrawEvent), punti x,y alternati in 0..1.</summary>
+        public event Action<byte, List<float>>? DrawChunk;
+
+        public void ClearDrawing() { _strokes.Clear(); _drawing = null; InvalidateVisual(); }
+
+        private Point? ToUnit(Point local)
+        {
+            var d = Dest();
+            if (d.Width <= 0 || d.Height <= 0) return null;
+            return new Point(Math.Clamp((local.X - d.X) / d.Width, 0, 1), Math.Clamp((local.Y - d.Y) / d.Height, 0, 1));
+        }
+
+        private void DrawPoint(Point local, bool start)
+        {
+            var u = ToUnit(local);
+            if (u == null) return;
+            if (start)
+            {
+                FlushDraw(false);
+                _drawing = new List<Point>();
+                _strokes.Add(_drawing);
+                _pending.Clear();
+                _pendingIsNew = true;
+            }
+            if (_drawing == null) return;
+            if (_drawing.Count > 0 && Distance(_drawing[^1], u.Value) < 0.002) return;
+            _drawing.Add(u.Value);
+            _pending.Add((float)u.Value.X); _pending.Add((float)u.Value.Y);
+            InvalidateVisual();
+            // a pezzi ogni 60 ms circa: sul PC remoto il tratto si vede mentre lo fai
+            if (Environment.TickCount64 - _pendingAt > 60 || _pending.Count > 200) FlushDraw(false);
+        }
+        private bool _pendingIsNew;
+
+        private void FlushDraw(bool end)
+        {
+            if (_pending.Count > 0)
+            {
+                DrawChunk?.Invoke(_pendingIsNew ? Core.DrawEvent.NewStroke : Core.DrawEvent.Continue, new List<float>(_pending));
+                _pending.Clear();
+                _pendingIsNew = false;
+            }
+            _pendingAt = Environment.TickCount64;
+            if (end) _drawing = null;
+        }
+
+        private void RenderDrawing(DrawingContext ctx, Rect d)
+        {
+            if (_strokes.Count == 0) return;
+            var pen = new Pen(new SolidColorBrush(Color.FromArgb(230, 255, 40, 40)), 3, lineCap: PenLineCap.Round, lineJoin: PenLineJoin.Round);
+            foreach (var s in _strokes)
+            {
+                if (s.Count == 0) continue;
+                Point P(Point u) => new(d.X + u.X * d.Width, d.Y + u.Y * d.Height);
+                if (s.Count == 1) { ctx.DrawEllipse(pen.Brush, null, P(s[0]), 2, 2); continue; }
+                var g = new StreamGeometry();
+                using (var c = g.Open())
+                {
+                    c.BeginFigure(P(s[0]), false);
+                    for (int i = 1; i < s.Count; i++) c.LineTo(P(s[i]));
+                    c.EndFigure(false);
+                }
+                ctx.DrawGeometry(null, pen, g);
+            }
+        }
+
         private bool CanInput => _session != null && _session.State == Net.AcceptState.Accepted && _session.InputAllowed && !_session.IsClosed;
 
         protected override void OnPointerEntered(PointerEventArgs e) { _pointerInside = true; base.OnPointerEntered(e); }
@@ -191,6 +272,7 @@ namespace IpDeskCtrl.UI
         protected override void OnPointerMoved(PointerEventArgs e)
         {
             base.OnPointerMoved(e);
+            if (_drawMode) { if (_drawing != null) DrawPoint(e.GetPosition(this), false); e.Handled = true; return; }
             if (e.Pointer.Type == PointerType.Touch) { if (CanInput) TouchMoved(e.Pointer.Id, e.GetPosition(this)); e.Handled = true; return; }
             _lastLocal = e.GetPosition(this);
             if (!CanInput) return;
@@ -202,6 +284,20 @@ namespace IpDeskCtrl.UI
         {
             base.OnPointerPressed(e);
             Focus();
+            if (_drawMode)
+            {
+                if (e.GetCurrentPoint(this).Properties.IsRightButtonPressed)
+                {
+                    ClearDrawing();
+                    DrawChunk?.Invoke(Core.DrawEvent.Clear, new List<float>());
+                    e.Handled = true;
+                    return;
+                }
+                e.Pointer.Capture(this);
+                DrawPoint(e.GetPosition(this), true);
+                e.Handled = true;
+                return;
+            }
             if (!CanInput) return;
             e.Pointer.Capture(this);
             if (e.Pointer.Type == PointerType.Touch) { TouchPressed(e.Pointer.Id, e.GetPosition(this)); e.Handled = true; return; }
@@ -212,6 +308,7 @@ namespace IpDeskCtrl.UI
         protected override void OnPointerReleased(PointerReleasedEventArgs e)
         {
             base.OnPointerReleased(e);
+            if (_drawMode) { FlushDraw(true); e.Pointer.Capture(null); e.Handled = true; return; }
             if (!CanInput) return;
             if (e.Pointer.Type == PointerType.Touch) { TouchReleased(e.Pointer.Id); e.Handled = true; return; }
             SendButton(e.GetCurrentPoint(this).Properties.PointerUpdateKind, e.GetPosition(this));
