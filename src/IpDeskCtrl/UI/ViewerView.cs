@@ -82,6 +82,7 @@ namespace IpDeskCtrl.UI
         private readonly Button _chatBtn = new() { Content = L.T("Chat") };
         private ChatPanel? _chat;
         private readonly Button _recBtn = new() { Content = "⏺" };
+        private readonly ToggleButton _drawBtn = new() { Content = "✎" };
         private IpDeskCtrl.Screen.SessionRecorder? _rec;
         private int _chatUnread;
         private readonly TextBlock _stats = new() { FontSize = 11, VerticalAlignment = VerticalAlignment.Center, Foreground = Brushes.Gainsboro, MinWidth = 150 };
@@ -319,6 +320,10 @@ namespace IpDeskCtrl.UI
             _chatBtn.Click += (_, _) => ToggleChat(_chat?.IsVisible != true);
             ToolTip.SetTip(_chatBtn, L.T("Scrivi a chi è davanti al PC remoto: gli si apre una finestra di chat."));
 
+            ToolTip.SetTip(_drawBtn, L.T("Lavagna: disegna sullo schermo del PC remoto per indicare qualcosa (tratti rossi). Clic destro per cancellare. Premi di nuovo per tornare a comandare."));
+            _view.DrawChunk += (op, pts) => _session?.SendDraw(op, pts);
+            _drawBtn.IsCheckedChanged += (_, _) => SetDrawMode(_drawBtn.IsChecked == true);
+
             _recBtn.IsVisible = !Platform.IsMobile;
             ToolTip.SetTip(_recBtn, L.T("Registra la sessione in un video MP4 (cartella Video\\IP-DESK-CTRL). Serve ffmpeg."));
             _recBtn.Click += (_, _) => ToggleRecording();
@@ -356,7 +361,7 @@ namespace IpDeskCtrl.UI
 
             var bar = new WrapPanel { HorizontalAlignment = HorizontalAlignment.Center };
             _bar = bar;
-            foreach (var c in new Control[] { _fullBtn, minus, _zoom, plus, _monitor, _quality, _codec, _fitRes, _audio, _mic, keyboard, gestures, keys, _files, _chatBtn, _recBtn, _tunnelBtn, _radio, refresh, _stats, close, hide })
+            foreach (var c in new Control[] { _fullBtn, minus, _zoom, plus, _monitor, _quality, _codec, _fitRes, _audio, _mic, keyboard, gestures, keys, _files, _chatBtn, _drawBtn, _recBtn, _tunnelBtn, _radio, refresh, _stats, close, hide })
             {
                 c.VerticalAlignment = VerticalAlignment.Center;
                 c.Margin = new Thickness(3);
@@ -619,6 +624,21 @@ namespace IpDeskCtrl.UI
         }
 
         // =================================================================== file
+
+        private void SetDrawMode(bool on)
+        {
+            var s = _session;
+            if (on && s?.PeerHas("draw") == false)
+            {
+                ShowNote(L.T("La lavagna richiede IP-DESK-CTRL 0.5.22 o successivo sul PC remoto."));
+                _drawBtn.IsChecked = false;
+                return;
+            }
+            if (_view.DrawMode == on) return;
+            _view.DrawMode = on;
+            if (!on) s?.SendDraw(DrawEvent.Clear, Array.Empty<float>());
+            else ShowNote(L.T("Lavagna attiva: disegna col tasto sinistro, clic destro cancella. Il mouse non arriva al PC remoto finché non la chiudi."));
+        }
 
         private void ToggleRecording()
         {
@@ -1342,6 +1362,7 @@ namespace IpDeskCtrl.UI
                 var s = new ViewerSession(_peer, link);
                 _session = s;
                 _view.Session = s;
+                if (_view.DrawMode) { _view.DrawMode = false; _drawBtn.IsChecked = false; }
                 s.StateChanged += () => Dispatcher.UIThread.Post(() => OnState(s));
                 s.PasswordRequested += c => Dispatcher.UIThread.Post(() => AskPassword(s, c));
                 s.MonitorsChanged += () => Dispatcher.UIThread.Post(() => OnMonitors(s));

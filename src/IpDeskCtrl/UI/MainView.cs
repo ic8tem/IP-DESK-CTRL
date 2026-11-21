@@ -379,6 +379,7 @@ namespace IpDeskCtrl.UI
                 _peer.AskAccept = AskAcceptAsync;
                 _peer.HostStarted += hs => Dispatcher.UIThread.Post(() => OnHostStarted(hs));
                 _peer.HostEnded += (hs, why) => Dispatcher.UIThread.Post(() => OnHostEnded(hs, why));
+                _peer.HostDraw += e => Dispatcher.UIThread.Post(() => DrawOverlay.Show(e));
                 _peer.HostChat += (hs, text) => Dispatcher.UIThread.Post(() => OpenChat(hs.PeerNumber, text));
                 _peer.UpdateRequested += n => _ = ForcedUpdateAsync(n);
                 { var k = Updater.Detect(); _peer.CanUpdateSelf = k != Updater.Kind.None && k != Updater.Kind.Android; }
@@ -406,8 +407,9 @@ namespace IpDeskCtrl.UI
             if (_svc == null) return;
             _svc.AskAccept = AskAcceptAsync;
             _svc.HostStarted += (n, input) => Dispatcher.UIThread.Post(() => { _svcHosts++; OnServiceHostStarted(n, input); });
+            _svc.DrawReceived += e => Dispatcher.UIThread.Post(() => DrawOverlay.Show(e));
             _svc.ChatReceived += (n, text) => Dispatcher.UIThread.Post(() => OpenChat(n, text));
-            _svc.HostEnded += (n, why) => Dispatcher.UIThread.Post(() => { _svcHosts = Math.Max(0, _svcHosts - 1); _incomingBanner.IsVisible = false; RebuildHistory(); });
+            _svc.HostEnded += (n, why) => Dispatcher.UIThread.Post(() => { DrawOverlay.EndedFor(n); _svcHosts = Math.Max(0, _svcHosts - 1); _incomingBanner.IsVisible = false; RebuildHistory(); });
             _svc.UpdateRequested += n => Dispatcher.UIThread.Post(() =>
             {
                 // il messaggio lungo va nella riga di stato sotto il numero, in alto solo «Aggiornamento in corso…»
@@ -1131,6 +1133,7 @@ namespace IpDeskCtrl.UI
 
         private void OnHostEnded(HostSession hs, string why)
         {
+            DrawOverlay.EndedFor(hs.PeerNumber);
             _incomingBanner.IsVisible = false;
             _controlled?.Close();
             _controlled = null;

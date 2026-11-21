@@ -508,6 +508,10 @@ namespace IpDeskCtrl.Core
         public event Action<HostSession, string>? HostChat;
         internal void RaiseChat(HostSession hs, string text) => HostChat?.Invoke(hs, text);
 
+        /// <summary>Tratti della lavagna da mostrare sopra lo schermo.</summary>
+        public event Action<DrawEvent>? HostDraw;
+        internal void RaiseDraw(DrawEvent e) => HostDraw?.Invoke(e);
+
         /// <summary>La sessione in arrivo di quel numero (principale o in più), se c'è.</summary>
         public HostSession? FindIncoming(string number)
         {

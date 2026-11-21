@@ -35,6 +35,7 @@ namespace IpDeskCtrl.Core
         public event Action? Lost;
         public event Action<string>? UpdateRequested;        // numero del PC che ha chiesto l'aggiornamento
         public event Action<string, string>? ChatReceived;   // numero, testo
+        public event Action<DrawEvent>? DrawReceived;
 
         /// <summary>Messaggio di chat a chi comanda questo PC passando dal servizio.</summary>
         public void SendChat(string number, string text) =>
@@ -155,6 +156,12 @@ namespace IpDeskCtrl.Core
                         case "UPDATE" when p.Length >= 2:
                             UpdateRequested?.Invoke(p[1]);
                             break;
+                        case "DRAW":
+                        {
+                            var e = DrawEvent.FromLine(line.Split(' '));
+                            if (e != null) DrawReceived?.Invoke(e);
+                            break;
+                        }
                         case "CHAT" when p.Length == 3:
                         {
                             string text;

@@ -272,6 +272,20 @@ namespace IpDeskCtrl.Core
                     if (_accepted) _ = Task.Run(() => RequestResize(w, h));
                     break;
                 }
+                case Msg.Draw:
+                {
+                    if (!_accepted) break;
+                    byte op = r.U8();
+                    int n = Math.Min((int)r.U16(), 2000);
+                    var pts = new float[n * 2];
+                    for (int i = 0; i < pts.Length; i++) pts[i] = r.U16() / 65535f;
+                    var a = _area;
+                    if (a == null) break;
+                    if (op == DrawEvent.Clear) SessionLog.Write($"LAVAGNA {Identity.Format(PeerNumber)} cancella i disegni");
+                    else if (op == DrawEvent.NewStroke && !_drawLogged) { _drawLogged = true; SessionLog.Write($"LAVAGNA {Identity.Format(PeerNumber)} disegna sullo schermo"); }
+                    P.RaiseDraw(new DrawEvent(PeerNumber, op, pts, a.X, a.Y, a.W, a.H));
+                    break;
+                }
                 case Msg.Chat:
                 {
                     string text = r.Str();
@@ -523,6 +537,7 @@ namespace IpDeskCtrl.Core
             Send(new MsgWriter(Msg.Chat).Str(text).Build());
         }
 
+        private bool _drawLogged;
         private readonly Dictionary<string, long> _noteLogged = new();
 
         private void Note(string text)
