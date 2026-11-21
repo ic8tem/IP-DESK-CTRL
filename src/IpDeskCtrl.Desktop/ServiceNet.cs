@@ -80,6 +80,8 @@ namespace IpDeskCtrl.Desktop
                 Me = me;
                 _s = AppSettings.Load();
                 Platform.ReceiveFolder = Path.Combine(AppSettings.Folder, "ricevuti");
+                Platform.AsUser = Launch.RunAsConsoleUser;      // gestione file: come l'utente della console, mai come SYSTEM
+                Platform.UserHome = Launch.ConsoleUserHome;
                 WinHelper.InstallServiceHooks(LaunchHelper);
                 Platform.Reboot = ServiceCommands.RebootNow;
                 Platform.LaunchTrx = LaunchTrx;

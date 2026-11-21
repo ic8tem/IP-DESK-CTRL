@@ -81,6 +81,10 @@ namespace IpDeskCtrl.Net
         public const byte DriveReq = 0x82;       // host -> visore: i32 id | u8 operazione | str percorso | str secondo percorso | i64 posizione | i32 n | n byte
         public const byte DriveResp = 0x83;      // visore -> host: i32 id | i32 stato (0 = ok, altrimenti codice HTTP) | i32 n | n byte
         public const byte DriveState = 0x84;     // host -> visore: bool montato | str dove (lettera, percorso) o motivo
+
+        // ---- gestione file a due pannelli: il visore sfoglia e trasferisce i file del PC remoto (0.5.22+)
+        public const byte FsReq = 0x86;          // visore -> host: come DriveReq, percorsi assoluti («» = radice)
+        public const byte FsResp = 0x87;         // host -> visore: come DriveResp
     }
 
     public enum AcceptState : byte { Waiting = 0, Accepted = 1, Rejected = 2, Busy = 3, Disabled = 4 }

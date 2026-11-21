@@ -17,6 +17,10 @@ namespace IpDeskCtrl.Core
         public static string? DataFolder { get; set; }
         /// <summary>Cartella dove salvare i file ricevuti (null = Scaricati/IP-DESK-CTRL).</summary>
         public static string? ReceiveFolder { get; set; }
+        /// <summary>Con il servizio di Windows: esegue come l'utente della console (gestione file). null = così com'è.</summary>
+        public static Func<Func<(int, byte[])>, (int, byte[])>? AsUser { get; set; }
+        /// <summary>Cartella personale dell'utente della console (con il servizio). null = quella di questo processo.</summary>
+        public static Func<string?>? UserHome { get; set; }
 
         public static Func<IScreenSource>? Screen { get; set; }
         public static Func<IInputSink>? Input { get; set; }

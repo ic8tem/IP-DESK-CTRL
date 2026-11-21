@@ -376,6 +376,36 @@ namespace IpDeskCtrl.Desktop
             }
         }
 
+        [DllImport("kernel32.dll")] private static extern uint WTSGetActiveConsoleSessionId();
+        [DllImport("userenv.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        private static extern bool GetUserProfileDirectoryW(IntPtr token, StringBuilder? dir, ref int size);
+
+        /// <summary>
+        /// Gestione file del visore: il servizio (SYSTEM) lavora con i permessi dell'utente collegato alla console,
+        /// così non si legge né si scrive niente che quell'utente non potrebbe. Nessun utente collegato = niente file.
+        /// </summary>
+        public static (int, byte[]) RunAsConsoleUser(Func<(int, byte[])> work)
+        {
+            uint session = WTSGetActiveConsoleSessionId();
+            if (session == 0xFFFFFFFF || !WTSQueryUserToken(session, out IntPtr tok)) return (403, System.Text.Encoding.UTF8.GetBytes("nessun utente collegato"));
+            using var h = new Microsoft.Win32.SafeHandles.SafeAccessTokenHandle(tok);
+            return System.Security.Principal.WindowsIdentity.RunImpersonated(h, work);
+        }
+
+        public static string? ConsoleUserHome()
+        {
+            uint session = WTSGetActiveConsoleSessionId();
+            if (session == 0xFFFFFFFF || !WTSQueryUserToken(session, out IntPtr tok)) return null;
+            try
+            {
+                int size = 0;
+                GetUserProfileDirectoryW(tok, null, ref size);
+                var sb = new StringBuilder(size + 1);
+                return GetUserProfileDirectoryW(tok, sb, ref size) ? sb.ToString() : null;
+            }
+            finally { CloseHandle(tok); }
+        }
+
         public static void AsSystemInSession(uint session, string commandLine)
         {
             const uint TOKEN_ALL = 0xF01FF;

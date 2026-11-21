@@ -622,6 +622,14 @@ namespace IpDeskCtrl.UI
                     Add(L.T("Condividi una cartella in sola lettura…"), s.InputAllowed, () => _ = ShareFolderAsync(true));
                 }
             }
+            if (!Platform.IsMobile)
+            {
+                menu.Items.Add(new Separator());
+                var fs = s.Files;
+                Add(fs != null ? L.T("Gestione file a due pannelli…") : L.T("Gestione file a due pannelli (il PC remoto va aggiornato)"),
+                    fs != null && s.InputAllowed,
+                    () => FileManager.Open(TopLevel.GetTopLevel(this) as Window, fs!, Identity.Format(_number)));
+            }
             if (!s.InputAllowed) Add(L.T("(solo visione: i file non sono permessi)"), false, () => { });
             menu.ShowAt(_files);
         }

@@ -69,6 +69,7 @@ namespace IpDeskCtrl.Core
                     PeerHasTrx = !r.AtEnd && r.Bool();
                     PeerCaps = r.AtEnd ? "" : r.Str();
                     break;
+                case Msg.FsResp: _files?.OnResponse(r); break;
                 case Msg.DriveReq:
                 {
                     int id = r.I32(); byte op = r.U8(); string path = r.Str(), path2 = r.Str(); long pos = r.I64();
@@ -245,6 +246,10 @@ namespace IpDeskCtrl.Core
         public void SelectMonitor(int index) => Send(new MsgWriter(Msg.SelectMonitor).I32(index).Build());
 
         // ------------------------------------------------------------------ 0.5: funzioni annunciate dall'altro PC
+
+        private DriveClient? _files;
+        /// <summary>Gestione file a due pannelli: richieste al PC remoto (null se il PC remoto non la conosce, prima della 0.5.22).</summary>
+        public DriveClient? Files => PeerHas("fs") ? _files ??= new DriveClient(SendAsync, Msg.FsReq) : null;
 
         /// <summary>Funzioni del PC remoto (vedi <see cref="AppVersion.Caps"/>); vuoto = 0.4.</summary>
         public string PeerCaps { get; private set; } = "";

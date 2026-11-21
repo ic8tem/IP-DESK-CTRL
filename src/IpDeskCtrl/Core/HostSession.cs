@@ -287,6 +287,20 @@ namespace IpDeskCtrl.Core
                 }
                 case Msg.DriveClose: _ = Task.Run(() => CloseDrive("tolta dal visore")); break;
                 case Msg.DriveResp: _drive?.OnResponse(r); break;
+                case Msg.FsReq:
+                {
+                    int id = r.I32(); byte op = r.U8(); string path = r.Str(), path2 = r.Str(); long pos = r.I64();
+                    byte[] data = r.Bytes(Math.Clamp(r.I32(), 0, 4 << 20));
+                    bool ok = _accepted && _allowInput && !Platform.IsMobile;
+                    _ = Task.Run(() =>
+                    {
+                        var (status, reply) = ok ? RemoteFiles.Handle(op, path, path2, pos, data) : (DriveOp.Forbidden, Array.Empty<byte>());
+                        if (ok && op is DriveOp.Delete or DriveOp.Move or DriveOp.MkDir)
+                            SessionLog.Write($"FILE {Identity.Format(PeerNumber)}: {(op == DriveOp.Delete ? "eliminato" : op == DriveOp.Move ? "rinominato" : "nuova cartella")} {path}" + (op == DriveOp.Move ? " → " + path2 : "") + (status == DriveOp.Ok ? "" : $" (non riuscito, {status})"));
+                        Send(new MsgWriter(Msg.FsResp).I32(id).I32(status).I32(reply.Length).Bytes(reply).Build());
+                    });
+                    break;
+                }
                 case Msg.Resume:
                 {
                     int who = r.U8();
