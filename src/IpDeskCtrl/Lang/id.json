@@ -725,5 +725,6 @@
  "Aggiornamenti automatici: ogni {0} minuti cerca una nuova versione e la installa da sola (i collegamenti riprendono)": "Pembaruan otomatis: setiap {0} menit dicari versi baru dan terpasang sendiri (koneksi tetap berlanjut)",
  "Sul PC remoto ci sono file copiati: {0} ({1}).": "Ada file yang disalin di PC jarak jauh: {0} ({1}).",
  "Prendili qui": "Ambil ke sini",
- "Prendo i file copiati sul PC remoto…": "Mengambil file yang disalin di PC jarak jauh…"
+ "Prendo i file copiati sul PC remoto…": "Mengambil file yang disalin di PC jarak jauh…",
+ "grafica integrata Intel ({0}) non usata con {1} monitor collegati: codifica software": "grafis terintegrasi Intel ({0}) tidak dipakai dengan {1} monitor terhubung: encoding perangkat lunak"
 }

@@ -185,7 +185,8 @@ namespace IpDeskCtrl.Screen
             {
                 if (!list.Contains(" " + name + " ")) continue;
                 if (hw && HwGuard.Suspended != null) continue;
-                if (ok.Any(e => e.Codec == codec && e.Hardware)) continue;     // per ogni codec basta un hardware
+                if (hw && ok.Any(e => e.Codec == codec && e.Hardware)) continue;   // per ogni codec basta un hardware
+                // il software si prova sempre: serve da riserva quando la grafica integrata non va usata (più monitor)
                 string args = $"-hide_banner -loglevel error -f lavfi -i testsrc2=s=640x360:r=25 -frames:v 8 -an -c:v {name} {Options(name)} -pix_fmt {(hw ? "nv12" : "yuv420p")} -f null -";
                 using var p = Start(exe, args, false);
                 if (p == null) continue;
@@ -214,23 +215,32 @@ namespace IpDeskCtrl.Screen
         /// <summary>Formato del flusso grezzo per ffmpeg.</summary>
         public static string Format(string codec) => codec switch { "hevc" => "hevc", "av1" => "obu", _ => "h264" };
 
+        /// <summary>Intel Quick Sync: il motore video della grafica integrata Intel.</summary>
+        public static bool IsQuickSync(Encoder e) => e.Name.EndsWith("_qsv", StringComparison.Ordinal);
+
         /// <summary>
         /// Sceglie il codificatore: «auto» = AV1 o H.265 solo con l'hardware, altrimenti H.264 (hardware o x264);
         /// un codec scelto dal visore = il migliore per quel codec. null = riquadri JPEG.
+        /// Grafica integrata Intel (Quick Sync): con più monitor collegati non si usa (la stessa grafica che disegna
+        /// i monitor ha bloccato tutto il PC mentre codificava); con un monitor solo, in «auto» si usa solo per H.264,
+        /// perché i blocchi sono stati visti con hevc_qsv.
         /// </summary>
-        public static Encoder? Choose(List<Encoder> have, string[] viewerCan, string wanted)
+        public static Encoder? Choose(List<Encoder> have, string[] viewerCan, string wanted, int monitors = 1)
         {
-            var usable = have.Where(e => viewerCan.Contains(e.Codec)).ToList();
+            var usable = have.Where(e => viewerCan.Contains(e.Codec) && !(monitors >= 2 && IsQuickSync(e))).ToList();
             if (wanted == "jpeg" || usable.Count == 0) return null;
             if (wanted is "h264" or "hevc" or "av1")
                 return usable.Where(e => e.Codec == wanted).OrderByDescending(e => e.Hardware).FirstOrDefault();
             foreach (var c in Codecs)
             {
-                var hw = usable.FirstOrDefault(e => e.Codec == c && e.Hardware);
+                var hw = usable.FirstOrDefault(e => e.Codec == c && e.Hardware && (c == "h264" || !IsQuickSync(e)));
                 if (hw != null) return hw;
             }
-            return usable.FirstOrDefault(e => e.Codec == "h264");
+            return usable.Where(e => e.Codec == "h264").OrderByDescending(e => e.Hardware).FirstOrDefault();
         }
+
+        /// <summary>True se la grafica integrata Intel c'è ma non si usa perché ci sono più monitor.</summary>
+        public static bool QuickSyncSkipped(List<Encoder> have, int monitors) => monitors >= 2 && have.Any(IsQuickSync);
 
         // ------------------------------------------------------------------ scaricamento (Windows 64 bit e ARM64)
 

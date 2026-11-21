@@ -725,5 +725,6 @@
  "Aggiornamenti automatici: ogni {0} minuti cerca una nuova versione e la installa da sola (i collegamenti riprendono)": "स्वचालित अपडेट: हर {0} मिनट में नया संस्करण खोजा जाता है और अपने आप इंस्टॉल होता है (कनेक्शन जारी रहते हैं)",
  "Sul PC remoto ci sono file copiati: {0} ({1}).": "रिमोट पीसी पर कॉपी की गई फ़ाइलें हैं: {0} ({1})।",
  "Prendili qui": "यहाँ लाएँ",
- "Prendo i file copiati sul PC remoto…": "रिमोट पीसी पर कॉपी की गई फ़ाइलें ला रहा हूँ…"
+ "Prendo i file copiati sul PC remoto…": "रिमोट पीसी पर कॉपी की गई फ़ाइलें ला रहा हूँ…",
+ "grafica integrata Intel ({0}) non usata con {1} monitor collegati: codifica software": "{1} मॉनिटर जुड़े होने पर Intel इंटीग्रेटेड ग्राफ़िक्स ({0}) का उपयोग नहीं: सॉफ़्टवेयर एन्कोडिंग"
 }

@@ -725,5 +725,6 @@
  "Aggiornamenti automatici: ogni {0} minuti cerca una nuova versione e la installa da sola (i collegamenti riprendono)": "Awtomatikong update: bawat {0} minuto may hinahanap na bagong bersyon at kusang nag-i-install (tuloy ang mga koneksyon)",
  "Sul PC remoto ci sono file copiati: {0} ({1}).": "May mga kinopyang file sa remote na PC: {0} ({1}).",
  "Prendili qui": "Kunin dito",
- "Prendo i file copiati sul PC remoto…": "Kinukuha ang mga file na kinopya sa remote na PC…"
+ "Prendo i file copiati sul PC remoto…": "Kinukuha ang mga file na kinopya sa remote na PC…",
+ "grafica integrata Intel ({0}) non usata con {1} monitor collegati: codifica software": "hindi ginagamit ang integrated graphics ng Intel ({0}) kapag may {1} monitor na nakakabit: software encoding"
 }

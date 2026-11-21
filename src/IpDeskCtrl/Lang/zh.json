@@ -725,5 +725,6 @@
  "Aggiornamenti automatici: ogni {0} minuti cerca una nuova versione e la installa da sola (i collegamenti riprendono)": "自动更新：每 {0} 分钟检查新版本并自动安装（连接会继续）",
  "Sul PC remoto ci sono file copiati: {0} ({1}).": "远程电脑上有已复制的文件：{0}（{1}）。",
  "Prendili qui": "取到这里",
- "Prendo i file copiati sul PC remoto…": "正在获取远程电脑上复制的文件…"
+ "Prendo i file copiati sul PC remoto…": "正在获取远程电脑上复制的文件…",
+ "grafica integrata Intel ({0}) non usata con {1} monitor collegati: codifica software": "连接 {1} 台显示器时不使用 Intel 集成显卡 ({0})：软件编码"
 }

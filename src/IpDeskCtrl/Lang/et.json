@@ -725,5 +725,6 @@
  "Aggiornamenti automatici: ogni {0} minuti cerca una nuova versione e la installa da sola (i collegamenti riprendono)": "Automaatsed uuendused: iga {0} minuti järel otsitakse uut versiooni ja see paigaldub ise (ühendused jätkuvad)",
  "Sul PC remoto ci sono file copiati: {0} ({1}).": "Kaugarvutis on kopeeritud faile: {0} ({1}).",
  "Prendili qui": "Too siia",
- "Prendo i file copiati sul PC remoto…": "Toon kaugarvutis kopeeritud failid…"
+ "Prendo i file copiati sul PC remoto…": "Toon kaugarvutis kopeeritud failid…",
+ "grafica integrata Intel ({0}) non usata con {1} monitor collegati: codifica software": "Inteli integreeritud graafikat ({0}) ei kasutata, kui ühendatud on {1} monitori: tarkvaraline kodeerimine"
 }

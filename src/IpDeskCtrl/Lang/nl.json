@@ -725,5 +725,6 @@
  "Aggiornamenti automatici: ogni {0} minuti cerca una nuova versione e la installa da sola (i collegamenti riprendono)": "Automatische updates: elke {0} minuten wordt naar een nieuwe versie gezocht en die zelf geïnstalleerd (verbindingen gaan verder)",
  "Sul PC remoto ci sono file copiati: {0} ({1}).": "Er zijn bestanden gekopieerd op de externe pc: {0} ({1}).",
  "Prendili qui": "Hierheen halen",
- "Prendo i file copiati sul PC remoto…": "Ik haal de op de externe pc gekopieerde bestanden op…"
+ "Prendo i file copiati sul PC remoto…": "Ik haal de op de externe pc gekopieerde bestanden op…",
+ "grafica integrata Intel ({0}) non usata con {1} monitor collegati: codifica software": "geïntegreerde Intel-graphics ({0}) niet gebruikt met {1} aangesloten monitoren: softwarecodering"
 }
