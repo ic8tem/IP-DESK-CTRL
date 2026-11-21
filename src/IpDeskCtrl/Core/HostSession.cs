@@ -426,11 +426,14 @@ namespace IpDeskCtrl.Core
                     Thread.Sleep(150);
                     int mod = OperatingSystem.IsMacOS() ? Input.KeyMap.LeftMeta : Input.KeyMap.LeftCtrl;
                     _input.Key(mod, true); _input.Key(47, true); _input.Key(47, false); _input.Key(mod, false);
+                    SessionLog.Write($"FILE trascinati da {Identity.Format(PeerNumber)}: clic dove sono stati lasciati e Ctrl+V");
                     Note(L.F("{0} copiati sul PC remoto (in {1}) e incollati dove li hai lasciati.", what, folder));
                     return;
                 }
-                catch { }
+                catch (Exception ex) { SessionLog.Write("FILE trascinati: incolla non riuscito: " + ex.Message); }
             }
+            else if (purpose == TransferPurpose.Drop)
+                SessionLog.Write("FILE trascinati: non incollati " + (!onClipboard ? "(appunti non disponibili)" : _input == null ? "(mouse e tastiera non disponibili)" : !_allowInput ? "(mouse e tastiera non consentiti)" : ""));
             Note(L.F("{0} copiati sul PC remoto in {1}", what, folder) + (onClipboard ? L.T(": sono negli appunti, incollali con Ctrl+V dove vuoi.") : "."));
         }
 

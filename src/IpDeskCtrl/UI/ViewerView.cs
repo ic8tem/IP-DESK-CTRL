@@ -196,6 +196,13 @@ namespace IpDeskCtrl.UI
 
             // trascinare file sulla vista = mandarli al PC remoto, dove sono stati lasciati
             DragDrop.SetAllowDrop(_view, true);
+            _view.AddHandler(DragDrop.DragEnterEvent, (_, e) =>
+            {
+                // nel registro anche l'inizio: se manca, Windows non ha nemmeno consegnato il trascinamento al programma
+                bool files = e.Data.Contains(DataFormats.Files);
+                SessionLog.Write(files ? "FILE trascinamento iniziato sopra la finestra del visore" : "FILE trascinamento sopra il visore, ma non sono file (ignorato)");
+            });
+            _view.AddHandler(DragDrop.DragLeaveEvent, (_, _) => SessionLog.Write("FILE trascinamento uscito dalla finestra senza rilasciare"));
             _view.AddHandler(DragDrop.DragOverEvent, (_, e) => { e.DragEffects = e.Data.Contains(DataFormats.Files) ? DragDropEffects.Copy : DragDropEffects.None; });
             _view.AddHandler(DragDrop.DropEvent, (_, e) => OnDrop(e));
 
