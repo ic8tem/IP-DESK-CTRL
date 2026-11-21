@@ -82,7 +82,9 @@ Filename: "{sys}\sc.exe"; Parameters: "create IPDeskCtrl binPath= ""\""{app}\IP-
 Filename: "{sys}\sc.exe"; Parameters: "description IPDeskCtrl ""Permette a IP-DESK-CTRL di mostrare e comandare le richieste UAC, la schermata di blocco e i programmi da amministratore durante i collegamenti accettati."""; Flags: runhidden; Tasks: servizio
 Filename: "{app}\IP-DESK-CTRL.exe"; Parameters: "--scarica-ffmpeg ""{app}"""; StatusMsg: "Scarico ffmpeg per il video compresso (circa 150 MB)..."; Flags: runhidden waituntilterminated; Tasks: ffmpeg; Check: NoFfmpeg
 Filename: "{sys}\sc.exe"; Parameters: "start IPDeskCtrl"; Flags: runhidden; Tasks: servizio
-Filename: "{app}\IP-DESK-CTRL.exe"; Description: "{cm:LaunchProgram,IP-DESK-CTRL}"; Flags: nowait postinstall skipifsilent
+; «Avvia IP-DESK-CTRL» a fine installazione: come l'utente che ha avviato l'installatore, NON come amministratore.
+; Un programma da amministratore non riceve i file trascinati da Esplora risorse (Windows li blocca, UIPI).
+Filename: "{app}\IP-DESK-CTRL.exe"; Description: "{cm:LaunchProgram,IP-DESK-CTRL}"; Flags: nowait postinstall skipifsilent runasoriginaluser
 ; aggiornamento dal programma (/AGGIORNA): lo si riapre da solo, come l'utente di prima, per riprendere i collegamenti
 Filename: "{app}\IP-DESK-CTRL.exe"; Parameters: "--dopo-aggiornamento"; Flags: nowait runasoriginaluser; Check: IsAutoUpdate
 
