@@ -122,7 +122,8 @@ namespace IpDeskCtrl.Core
             }
         }
 
-        public void SendSettings(bool accept, bool input, bool audio) => Write($"SET {(accept ? 1 : 0)} {(input ? 1 : 0)} {(audio ? 1 : 0)}");
+        public void SendSettings(bool accept, bool input, bool audio, bool resize = true, bool adminRun = false) =>
+            Write($"SET {(accept ? 1 : 0)} {(input ? 1 : 0)} {(audio ? 1 : 0)} {(resize ? 1 : 0)} {(adminRun ? 1 : 0)}");
         public void Kick() => Write("KICK");
         public void SetInput(bool on) => Write("INPUT " + (on ? 1 : 0));
         public void Send(string line) => Write(line);

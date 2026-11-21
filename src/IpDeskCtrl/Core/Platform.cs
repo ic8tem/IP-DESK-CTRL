@@ -52,6 +52,18 @@ namespace IpDeskCtrl.Core
         public static Func<string>? LaunchTrx { get; set; }
         /// <summary>Riavvio del PC ("" = partito); null = <see cref="Power.Reboot"/> normale.</summary>
         public static Func<string>? Reboot { get; set; }
+
+        // ---- accesso completo di Windows (servizio, UAC)
+        /// <summary>0 = non c'entra (non Windows), 1 = servizio attivo, 2 = servizio assente ma installabile da qui, 3 = assente e non installabile.</summary>
+        public static Func<int>? ServiceState { get; set; }
+        /// <summary>Sul PC c'è una richiesta UAC aperta (consent.exe).</summary>
+        public static Func<bool>? UacPending { get; set; }
+        /// <summary>Installa il servizio (UAC per chi è al PC): "" = fatto, altrimenti il motivo.</summary>
+        public static Func<Task<string>>? InstallService { get; set; }
+        /// <summary>Solo nel servizio: avvia un programma come amministratore nella sessione dell'utente. "" = avviato.</summary>
+        public static Func<string, string>? RunAdmin { get; set; }
+        /// <summary>Dopo l'installazione del servizio il programma si riavvia per passargli la chiave.</summary>
+        public static Action? RestartApp { get; set; }
         /// <summary>Apre una cartella o un file con il programma del sistema.</summary>
         public static Action<string>? Open { get; set; }
         /// <summary>Condivide un testo con le app del telefono (Android: e-mail, WhatsApp…). null = non disponibile.</summary>

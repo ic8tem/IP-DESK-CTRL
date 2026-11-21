@@ -51,6 +51,11 @@ namespace IpDeskCtrl.UI
         private readonly StackPanel _overlayButtons = new() { Orientation = Orientation.Horizontal, Spacing = 10, HorizontalAlignment = HorizontalAlignment.Center };
         private readonly Border _note = new() { IsVisible = false };
         private readonly TextBlock _noteText = new() { TextWrapping = TextWrapping.Wrap, Foreground = Brushes.White, MaxWidth = 700 };
+        private readonly Button _noteAction = new() { IsVisible = false, Margin = new Thickness(0, 6, 0, 0) };
+        private Action? _noteActionFn;
+        private readonly MenuItem _installSvcItem = new() { IsVisible = false };
+        private readonly MenuItem _adminMenu = new() { Header = L.T("Avvia come amministratore"), IsVisible = false };
+        private bool _uacNoteShown;
         private readonly Button _noteOpen = new() { Content = L.T("Apri cartella"), IsVisible = false, Margin = new Thickness(0, 6, 0, 0) };
         private readonly Border _transfer = new() { IsVisible = false };
         private readonly TextBlock _transferText = new() { Foreground = Brushes.White, FontSize = 12, TextWrapping = TextWrapping.Wrap, MaxWidth = 360 };
@@ -311,6 +316,23 @@ namespace IpDeskCtrl.UI
             panelItem.Click += (_, _) => OpenPanel(false);
             menu.Items.Add(panelItem);
             menu.Items.Add(new Separator());
+            _installSvcItem.Click += (_, _) => AskInstallService();
+            menu.Items.Add(_installSvcItem);
+            void Admin(string text, string what)
+            {
+                var mi = new MenuItem { Header = text };
+                mi.Click += (_, _) => { _session?.RunAdmin(what); _view.Focus(); };
+                _adminMenu.Items.Add(mi);
+            }
+            Admin(L.T("Prompt dei comandi"), "cmd");
+            Admin("PowerShell", "powershell");
+            Admin(L.T("Gestione attività"), "taskmgr");
+            Admin(L.T("Editor del Registro di sistema"), "regedit");
+            Admin(L.T("Servizi"), "services");
+            Admin(L.T("Gestione computer"), "compmgmt");
+            Admin(L.T("Gestione dispositivi"), "devmgmt");
+            ToolTip.SetTip(_adminMenu, L.T("Si apre sul PC remoto già da amministratore, senza la richiesta UAC. Lo permette chi è al PC remoto nelle sue Impostazioni."));
+            menu.Items.Add(_adminMenu);
             var reboot = new MenuItem { Header = L.T("Riavvia il PC remoto…") };
             reboot.Click += (_, _) => AskReboot();
             menu.Items.Add(reboot);
@@ -445,7 +467,8 @@ namespace IpDeskCtrl.UI
 
             // ---- avvisi del PC remoto (permessi, Wayland…) e file ricevuti
             _noteOpen.Click += (_, _) => MainView.OpenPath(_noteFolder ?? Platform.Received);
-            _note.Child = new StackPanel { Children = { _noteText, _noteOpen } };
+            _noteAction.Click += (_, _) => _noteActionFn?.Invoke();
+            _note.Child = new StackPanel { Children = { _noteText, _noteOpen, _noteAction } };
             _note.Background = new SolidColorBrush(Color.FromArgb(220, 120, 60, 0));
             _note.CornerRadius = new CornerRadius(8);
             _note.Padding = new Thickness(12, 8);
@@ -485,6 +508,9 @@ namespace IpDeskCtrl.UI
         private void ShowNote(string text, bool openFolder = false, string? folder = null)
         {
             _noteFolder = folder;
+            _noteAction.IsVisible = false;
+            _noteActionFn = null;
+            _uacNoteShown = false;
             _noteText.Text = text;
             _noteOpen.IsVisible = openFolder && !Platform.IsMobile;
             _note.IsVisible = text.Length > 0;
@@ -638,6 +664,59 @@ namespace IpDeskCtrl.UI
             _view.DrawMode = on;
             if (!on) s?.SendDraw(DrawEvent.Clear, Array.Empty<float>());
             else ShowNote(L.T("Lavagna attiva: disegna col tasto sinistro, clic destro cancella. Il mouse non arriva al PC remoto finché non la chiudi."));
+        }
+
+        // =================================================================== accesso completo (servizio, UAC)
+
+        private void SetNoteAction(string label, Action act)
+        {
+            _noteAction.Content = label;
+            _noteActionFn = act;
+            _noteAction.IsVisible = true;
+            _note.IsVisible = true;
+        }
+
+        private void OnAccessChanged(ViewerSession s)
+        {
+            if (s != _session) return;
+            _installSvcItem.IsVisible = s.RemoteService is 2 or 3;
+            _installSvcItem.IsEnabled = s.RemoteService == 2;
+            _installSvcItem.Header = s.RemoteService == 2
+                ? L.T("Installa il servizio sul PC remoto (accesso completo)…")
+                : L.T("Servizio non installabile da qui: sul PC remoto serve IP-DESK-CTRL installato con l'installatore");
+            _adminMenu.IsVisible = s.RemoteService == 1;
+            _adminMenu.IsEnabled = s.RemoteAdminRun;
+            if (s.RemoteUac)
+            {
+                ShowNote(s.RemoteService == 1
+                    ? "⚠ " + L.T("Richiesta UAC sul PC remoto: la vedi sullo schermo, rispondi Sì o No.")
+                    : "⚠ " + L.T("Richiesta UAC sul PC remoto: senza il servizio di Windows non si vede da qui, deve rispondere chi è al PC."));
+                _uacNoteShown = true;
+                if (s.RemoteService == 2) SetNoteAction(L.T("Installa il servizio sul PC remoto…"), AskInstallService);
+            }
+            else if (_uacNoteShown) ShowNote(s.Note);
+        }
+
+        private void AskInstallService()
+        {
+            var s = _session;
+            if (s == null) return;
+            var ok = Ui.Btn(L.T("Installa"), true);
+            var cancel = Ui.Btn(L.T("Annulla"));
+            var content = Ui.Col(10,
+                Ui.H1(L.T("Accesso completo sul PC remoto")),
+                new TextBlock { TextWrapping = TextWrapping.Wrap, Text = L.T("Il servizio di Windows di IP-DESK-CTRL fa vedere e comandare le richieste UAC, la schermata di blocco, Ctrl+Alt+Canc e i programmi da amministratore.") },
+                new TextBlock { TextWrapping = TextWrapping.Wrap, Text = L.T("Sul PC remoto Windows chiederà il permesso (UAC): chi è davanti deve rispondere Sì, una volta sola. Poi IP-DESK-CTRL si riavvia lì e il collegamento riprende da solo.") },
+                Ui.Row(8, cancel, ok));
+            var dlg = Shell.Current.ShowDialog(L.T("IP-DESK-CTRL · Accesso completo"), content, 480, false);
+            cancel.Click += (_, _) => dlg.Close();
+            ok.Click += (_, _) =>
+            {
+                dlg.Close();
+                if (s != _session) return;
+                s.InstallService();
+                ShowNote(L.T("Richiesta mandata: chi è al PC remoto deve rispondere Sì alla finestra di Windows."));
+            };
         }
 
         private void ToggleRecording()
@@ -1402,7 +1481,13 @@ namespace IpDeskCtrl.UI
                     Dispatcher.UIThread.Post(() => { Interlocked.Exchange(ref _framePosted, 0); _view.UpdateImage(); }, DispatcherPriority.Render);
                 };
                 s.CursorMoved += () => Dispatcher.UIThread.Post(() => _view.InvalidateVisual());
-                s.NoteChanged += () => Dispatcher.UIThread.Post(() => ShowNote(s.Note));
+                s.NoteChanged += () => Dispatcher.UIThread.Post(() =>
+                {
+                    ShowNote(s.Note);
+                    // schermata nera per la UAC e servizio assente: si offre di installarlo
+                    if (s.RemoteService == 2 && s.Note.Contains("UAC")) SetNoteAction(L.T("Installa il servizio sul PC remoto…"), AskInstallService);
+                });
+                s.AccessChanged += () => Dispatcher.UIThread.Post(() => OnAccessChanged(s));
                 s.TransferChanged += t => Dispatcher.UIThread.Post(() => OnTransfer(t));
                 s.RemoteFilesChanged += (count, bytes, first) => Dispatcher.UIThread.Post(() => AutoFetch(s, count, bytes, first));
                 s.FilesReceived += (folder, items, onClip) => Dispatcher.UIThread.Post(() =>
@@ -1482,10 +1567,10 @@ namespace IpDeskCtrl.UI
         }
 
         /// <summary>Dopo il riavvio: controlla sui broker ogni 15 s (per 10 minuti) e si ricollega appena il PC ripubblica l'indirizzo.</summary>
-        private async Task WaitRebootAsync(bool update = false)
+        private async Task WaitRebootAsync(bool update = false, string? customTitle = null, string? customText = null)
         {
-            string title = update ? L.T("Il PC remoto si aggiorna") : L.T("Riavvio in corso");
-            string text = update ? L.T("Il PC remoto installa la nuova versione: mi ricollego appena torna") : L.T("Riavvio in corso, mi ricollego appena torna");
+            string title = customTitle ?? (update ? L.T("Il PC remoto si aggiorna") : L.T("Riavvio in corso"));
+            string text = customText ?? (update ? L.T("Il PC remoto installa la nuova versione: mi ricollego appena torna") : L.T("Riavvio in corso, mi ricollego appena torna"));
             _rebootCts?.Cancel();
             var cts = new CancellationTokenSource();
             _rebootCts = cts;
@@ -1588,6 +1673,7 @@ namespace IpDeskCtrl.UI
             if (_ended) return;
             if (s.RebootRequested) { _ = WaitRebootAsync(); return; }
             if (s.UpdateRequested) { _ = WaitRebootAsync(true); return; }
+            if (s.ServiceInstallRequested) { _ = WaitRebootAsync(true, L.T("Il PC remoto installa il servizio"), L.T("IP-DESK-CTRL si riavvia sul PC remoto con l'accesso completo: mi ricollego appena torna")); return; }
             if (s.State == AcceptState.Accepted || s.State == AcceptState.Waiting)
                 Overlay(L.T("Collegamento terminato"), reason, (L.T("Ricollegati"), true, () => _ = ConnectAsync()), (L.T("Chiudi"), false, Disconnect));
         }

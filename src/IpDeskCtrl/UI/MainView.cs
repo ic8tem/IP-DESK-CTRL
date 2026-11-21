@@ -250,12 +250,20 @@ namespace IpDeskCtrl.UI
             return root;
         }
 
+        /// <summary>Opzione «avvia come amministratore»: solo su Windows, con un avvertimento.</summary>
+        private static Control AdminRunRow(CheckBox c)
+        {
+            c.IsVisible = OperatingSystem.IsWindows() && !Platform.IsMobile;
+            ToolTip.SetTip(c, L.T("Comodo per l'assistenza, ma salta una protezione di Windows: chi comanda può cambiare qualsiasi cosa nel PC senza che tu debba dire Sì. Attivala solo per chi conosci. Funziona solo se il tuo account è amministratore."));
+            return c;
+        }
+
         private Control BuildSettings()
         {
             CheckBox Chk(string text, bool value, Action<bool> set)
             {
                 var c = new CheckBox { Content = text, IsChecked = value };
-                c.IsCheckedChanged += (_, _) => { set(c.IsChecked == true); _s.Save(); _svc?.SendSettings(_s.AcceptIncoming, _s.AllowInput, _s.ShareAudio); };
+                c.IsCheckedChanged += (_, _) => { set(c.IsChecked == true); _s.Save(); _svc?.SendSettings(_s.AcceptIncoming, _s.AllowInput, _s.ShareAudio, _s.AllowResize, _s.AllowAdminRun); };
                 return c;
             }
             var theme = new ComboBox { ItemsSource = Themes.All.Select(t => t.Name).ToList(), SelectedIndex = Math.Max(0, Themes.All.FindIndex(t => t.Key == _s.Theme)), Width = 180, HorizontalAlignment = HorizontalAlignment.Left };
@@ -296,6 +304,7 @@ namespace IpDeskCtrl.UI
                 Chk(L.T("Chi si collega può adattare la risoluzione di questo PC alla sua finestra"), _s.AllowResize, v => _s.AllowResize = v),
                 Chk(L.T("Chi si collega può montare qui una sua cartella come disco"), _s.AllowDrive, v => _s.AllowDrive = v),
                 Chk(L.T("Chi si collega può aprire tunnel di porte attraverso questo PC (rigctld, flrig, web della radio…)"), _s.AllowTunnel, v => _s.AllowTunnel = v),
+                AdminRunRow(Chk(L.T("Chi comanda questo PC può avviare programmi come amministratore senza la richiesta UAC (solo con il servizio)"), _s.AllowAdminRun, v => _s.AllowAdminRun = v)),
                 LanguageRow(),
                 DockRow(),
                 PortsRow(),
@@ -438,7 +447,7 @@ namespace IpDeskCtrl.UI
                 _netDetail.Text = L.F("{0} ha una versione più nuova: il servizio aggiorna IP-DESK-CTRL, il programma si chiude e si riapre.", Identity.Format(n));
             });
             _svc.Lost += () => Dispatcher.UIThread.Post(() => { _svcHosts = 0; _incomingBanner.IsVisible = false; });
-            _svc.SendSettings(_s.AcceptIncoming, _s.AllowInput, _s.ShareAudio);
+            _svc.SendSettings(_s.AcceptIncoming, _s.AllowInput, _s.ShareAudio, _s.AllowResize, _s.AllowAdminRun);
             _svc.Send($"PORTS {_s.ManualPort1} {_s.ManualPort2}");
             if (_s.PasswordHash.Length > 0) _svc.Send($"PWD {_s.PasswordSalt} {_s.PasswordHash} {_s.PasswordIterations}");
             _svc.Send("MQTT " + string.Join(",", _s.MqttBrokers));   // il servizio usa gli stessi broker del programma
