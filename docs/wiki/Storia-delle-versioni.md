@@ -3,6 +3,9 @@
 
 Le versioni con protocollo diverso non si collegano tra loro: aggiorna tutti i dispositivi alla stessa versione principale (la 0.4.1 si collega con la 0.4.0; la 0.5 si collega con la 0.4).
 
+## 0.5.24 — 21 novembre 2026
+- **Appunti nel registro**: quando chi comanda preme Ctrl+C, Ctrl+X o Ctrl+V, sessioni.log del PC comandato scrive cosa c'era negli appunti prima e dopo (testo, quanti file, niente) e dove andrà: verso chi comanda, oppure perché non è cambiato niente (niente selezionato, programma da amministratore senza servizio, schermata protetta di UAC o di blocco). In tutti e due i PC si vede anche quando il testo copiato parte, arriva e finisce negli appunti, quando i file copiati vengono annunciati e se il visore li prende o perché no, e gli errori di lettura degli appunti, che prima venivano ignorati in silenzio.
+
 ## 0.5.23 — 21 novembre 2026
 - **Avviso UAC nella plancia**: quando sul PC remoto si apre una richiesta UAC, il visore lo dice chiaramente: con il servizio «la vedi sullo schermo, rispondi Sì o No», senza il servizio «non si vede da qui, deve rispondere chi è al PC».
 - **Servizio installabile a distanza**: se il PC remoto ha IP-DESK-CTRL installato con l'installatore ma senza il servizio, da Tasti ▾ (o dall'avviso UAC) si chiede di installarlo. Chi è al PC risponde Sì alla richiesta di Windows una volta sola, il programma si riavvia lì con lo stesso numero e il collegamento riprende da solo con l'accesso completo (UAC, schermata di blocco, Ctrl+Alt+Canc, programmi da amministratore).
