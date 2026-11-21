@@ -1,0 +1,19 @@
+PackageIdentifier: ic8tem.IP-DESK-CTRL
+PackageVersion: 0.5.27
+InstallerType: inno
+Scope: machine
+InstallModes: [interactive, silent, silentWithProgress]
+UpgradeBehavior: install
+ProductCode: '{3E8B1C55-9A2D-4C71-B0F4-6D2E5A7C9B13}_is1'
+Installers:
+- Architecture: x64
+  InstallerUrl: https://github.com/ic8tem/IP-DESK-CTRL/releases/download/v0.5.27/IP-DESK-CTRL-0.5.27-win-x64-setup.exe
+  InstallerSha256: 6B203293689FE63F9E6866247BA6871F1AEB3A28C776DFC239A572B972F9051B
+- Architecture: x86
+  InstallerUrl: https://github.com/ic8tem/IP-DESK-CTRL/releases/download/v0.5.27/IP-DESK-CTRL-0.5.27-win-x86-setup.exe
+  InstallerSha256: 60BA340F1478E50D7A90FE1B4951F77B607D4E3FD0DEF6A116EF233BF82DD91C
+- Architecture: arm64
+  InstallerUrl: https://github.com/ic8tem/IP-DESK-CTRL/releases/download/v0.5.27/IP-DESK-CTRL-0.5.27-win-arm64-setup.exe
+  InstallerSha256: 3B7317E6CC769A73FD8143E7D6B92A9A2911A7E50CDD1D556E6488FEDE4605F5
+ManifestType: installer
+ManifestVersion: 1.6.0
