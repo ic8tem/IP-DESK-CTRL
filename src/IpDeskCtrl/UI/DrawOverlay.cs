@@ -43,13 +43,14 @@ namespace IpDeskCtrl.UI
         private static (int x, int y, int w, int h) _rect;
         private static string _from = "";
         private static DispatcherTimer? _idle;
+        private static bool _noTransparency;
 
         /// <summary>Da chiamare sul thread grafico.</summary>
         public static void Show(DrawEvent e)
         {
             if (Platform.IsMobile) return;
             if (e.Op == DrawEvent.Clear) { Close(); return; }
-            if (e.W <= 0 || e.H <= 0) return;
+            if (e.W <= 0 || e.H <= 0 || _noTransparency) return;
             if (_win == null || _rect != (e.X, e.Y, e.W, e.H)) Open(e);
             _from = e.From;
             var c = _canvas!;
@@ -100,7 +101,18 @@ namespace IpDeskCtrl.UI
                 w.Position = new PixelPoint(e.X, e.Y);
                 w.Width = e.W / sc; w.Height = e.H / sc;
             }
-            w.Opened += (_, _) => Fit();
+            w.Opened += (_, _) =>
+            {
+                // senza trasparenza (Linux senza compositore) la finestra coprirebbe lo schermo di nero: niente lavagna
+                if (w.ActualTransparencyLevel == WindowTransparencyLevel.None)
+                {
+                    SessionLog.Write("LAVAGNA non mostrata: il sistema non supporta le finestre trasparenti");
+                    _noTransparency = true;
+                    Close();
+                    return;
+                }
+                Fit();
+            };
             w.ScalingChanged += (_, _) => Fit();
             w.PointerPressed += (_, _) => Close();      // un clic di chi è davanti al PC la toglie subito
             _win = w;
