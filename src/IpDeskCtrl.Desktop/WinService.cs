@@ -406,6 +406,67 @@ namespace IpDeskCtrl.Desktop
             finally { CloseHandle(tok); }
         }
 
+        [DllImport("advapi32.dll", SetLastError = true)]
+        private static extern bool GetTokenInformation(IntPtr token, int cls, out IntPtr info, int length, out int returned);
+        [DllImport("advapi32.dll", SetLastError = true)]
+        private static extern bool GetTokenInformation(IntPtr token, int cls, out int info, int length, out int returned);
+
+        /// <summary>Programmi che chi comanda può avviare come amministratore (nient'altro: niente percorsi arbitrari).</summary>
+        private static string? AdminCommand(string what)
+        {
+            string sys = Environment.SystemDirectory;
+            return what switch
+            {
+                "cmd" => Path.Combine(sys, "cmd.exe"),
+                "powershell" => Path.Combine(sys, @"WindowsPowerShell\v1.0\powershell.exe"),
+                "taskmgr" => Path.Combine(sys, "Taskmgr.exe"),
+                "regedit" => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "regedit.exe"),
+                "services" => $"\"{Path.Combine(sys, "mmc.exe")}\" services.msc",
+                "compmgmt" => $"\"{Path.Combine(sys, "mmc.exe")}\" compmgmt.msc",
+                "devmgmt" => $"\"{Path.Combine(sys, "mmc.exe")}\" devmgmt.msc",
+                _ => null,
+            };
+        }
+
+        /// <summary>
+        /// «Avvia come amministratore» senza UAC: programma della lista, nella sessione della console, con il token
+        /// elevato collegato a quello dell'utente. Solo se l'utente è amministratore (token diviso dalla UAC):
+        /// un utente normale non ha un token elevato e non si va mai oltre i suoi diritti. "" = avviato.
+        /// </summary>
+        public static string AsElevatedUser(string what)
+        {
+            string? cmdLine = AdminCommand(what);
+            if (cmdLine == null) return "programma non previsto";
+            if (!cmdLine.StartsWith('"')) cmdLine = "\"" + cmdLine + "\"";
+            uint session = WTSGetActiveConsoleSessionId();
+            if (session == 0xFFFFFFFF || !WTSQueryUserToken(session, out IntPtr tok)) return "nessun utente collegato a Windows";
+            IntPtr elevated = IntPtr.Zero, env = IntPtr.Zero;
+            try
+            {
+                // 18 = TokenElevationType: 3 = limitato (utente amministratore con la UAC), 1 = utente normale o UAC spenta
+                if (!GetTokenInformation(tok, 18, out int type, 4, out _)) return "tipo di account non leggibile";
+                if (type != 3) return "l'utente collegato non è amministratore (o la UAC è spenta)";
+                // 19 = TokenLinkedToken: il token elevato dello stesso utente (primario, dato che il servizio ha SeTcbPrivilege)
+                if (!GetTokenInformation(tok, 19, out elevated, IntPtr.Size, out _) || elevated == IntPtr.Zero) return "token da amministratore non disponibile";
+                CreateEnvironmentBlock(out env, elevated, false);
+                var si = new STARTUPINFO { cb = Marshal.SizeOf<STARTUPINFO>(), lpDesktop = @"winsta0\default" };
+                var cmd = new StringBuilder(cmdLine);
+                string? home = ConsoleUserHome();
+                if (!CreateProcessAsUser(elevated, null, cmd, IntPtr.Zero, IntPtr.Zero, false, 0x00000010 /* CREATE_NEW_CONSOLE */ | 0x00000400 /* UNICODE_ENVIRONMENT */,
+                        env, home ?? Environment.SystemDirectory, ref si, out var pi))
+                    return new Win32Exception().Message;
+                CloseHandle(pi.hThread);
+                CloseHandle(pi.hProcess);
+                return "";
+            }
+            finally
+            {
+                if (env != IntPtr.Zero) DestroyEnvironmentBlock(env);
+                if (elevated != IntPtr.Zero) CloseHandle(elevated);
+                CloseHandle(tok);
+            }
+        }
+
         public static void AsSystemInSession(uint session, string commandLine)
         {
             const uint TOKEN_ALL = 0xF01FF;

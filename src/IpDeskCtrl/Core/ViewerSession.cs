@@ -196,6 +196,13 @@ namespace IpDeskCtrl.Core
                     RemoteCursor = (r.I32(), r.I32(), r.Bool());
                     CursorMoved?.Invoke();
                     break;
+                case Msg.HostAccess:
+                    RemoteService = r.U8();
+                    RemoteUac = r.U8() == 1;
+                    RemoteAdminRun = r.U8() == 1;
+                    if (RemoteService != 1) ServiceInstallRequested = false;      // installazione non riuscita (il PC rimanda lo stato)
+                    AccessChanged?.Invoke();
+                    break;
                 case Msg.ScreenNote:
                     Note = r.Str();
                     if (Note.Contains("solo guardare")) InputAllowed = false;
@@ -263,6 +270,12 @@ namespace IpDeskCtrl.Core
             if (text.Length == 0) return;
             SessionLog.Write($"CHAT a {Identity.Format(PeerNumber)}: {text}");
             Send(new MsgWriter(Msg.Chat).Str(text).Build());
+        }
+
+        /// <summary>Avvisa il PC remoto che la sessione viene registrata (o non più).</summary>
+        public void SendRecording(bool on)
+        {
+            if (PeerHas("rec")) Send(new MsgWriter(Msg.Recording).U8((byte)(on ? 1 : 0)).Build());
         }
 
         /// <summary>Lavagna: manda un pezzo di tratto (punti in 0..1 dell'immagine, x,y alternati).</summary>
@@ -526,6 +539,22 @@ namespace IpDeskCtrl.Core
         public bool PeerHasTrx { get; private set; }
 
         public void StartTrx() => Send(new MsgWriter(Msg.StartTrx).Build());
+
+        // ---- accesso completo di Windows sul PC remoto
+        /// <summary>0 n/d, 1 servizio attivo, 2 assente ma installabile, 3 assente e non installabile.</summary>
+        public int RemoteService { get; private set; }
+        public bool RemoteUac { get; private set; }
+        public bool RemoteAdminRun { get; private set; }
+        public bool ServiceInstallRequested { get; private set; }
+        public event Action? AccessChanged;
+
+        public void InstallService()
+        {
+            ServiceInstallRequested = true;
+            Send(new MsgWriter(Msg.InstallService).Build());
+        }
+
+        public void RunAdmin(string what) => Send(new MsgWriter(Msg.RunAdmin).Str(what).Build());
 
         public void Reboot()
         {

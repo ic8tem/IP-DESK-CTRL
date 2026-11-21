@@ -42,6 +42,11 @@ namespace IpDeskCtrl.UI
         private readonly TextBox _historyFilter = new() { Watermark = "🔍 " + L.T("Cerca per nome, numero o gruppo") };
         private readonly ComboBox _historySort = new() { MinWidth = 150 };
         private string _incomingNumber = "";
+        private readonly TextBlock _incomingRec = new()
+        {
+            IsVisible = false, TextWrapping = TextWrapping.Wrap, FontWeight = FontWeight.Bold,
+            Foreground = new SolidColorBrush(Color.FromRgb(230, 50, 50)),
+        };
         private readonly Border _incomingBanner = new() { IsVisible = false, CornerRadius = new CornerRadius(10), Padding = new Thickness(14) };
         private readonly TextBlock _incomingText = new() { TextWrapping = TextWrapping.Wrap, FontWeight = FontWeight.Bold };
         private readonly CheckBox _incomingInput = new() { Content = L.T("Mouse e tastiera") };
@@ -160,7 +165,7 @@ namespace IpDeskCtrl.UI
             var chat = Ui.Btn(L.T("Chat"));
             chat.IsVisible = !Platform.IsMobile;
             chat.Click += (_, _) => { if (_incomingNumber.Length > 0) OpenChat(_incomingNumber, null); };
-            _incomingBanner.Child = Ui.Col(8, _incomingText, Ui.Row(10, _incomingInput, chat, stop));
+            _incomingBanner.Child = Ui.Col(8, _incomingText, _incomingRec, Ui.Row(10, _incomingInput, chat, stop));
             col.Children.Add(Ui.Panel(Ui.Col(6,
                 Ui.H2(Platform.IsMobile ? L.T("IL NUMERO DI QUESTO DISPOSITIVO") : L.T("IL NUMERO DI QUESTO PC")),
                 numRow,
@@ -245,12 +250,20 @@ namespace IpDeskCtrl.UI
             return root;
         }
 
+        /// <summary>Opzione «avvia come amministratore»: solo su Windows, con un avvertimento.</summary>
+        private static Control AdminRunRow(CheckBox c)
+        {
+            c.IsVisible = OperatingSystem.IsWindows() && !Platform.IsMobile;
+            ToolTip.SetTip(c, L.T("Comodo per l'assistenza, ma salta una protezione di Windows: chi comanda può cambiare qualsiasi cosa nel PC senza che tu debba dire Sì. Attivala solo per chi conosci. Funziona solo se il tuo account è amministratore."));
+            return c;
+        }
+
         private Control BuildSettings()
         {
             CheckBox Chk(string text, bool value, Action<bool> set)
             {
                 var c = new CheckBox { Content = text, IsChecked = value };
-                c.IsCheckedChanged += (_, _) => { set(c.IsChecked == true); _s.Save(); _svc?.SendSettings(_s.AcceptIncoming, _s.AllowInput, _s.ShareAudio); };
+                c.IsCheckedChanged += (_, _) => { set(c.IsChecked == true); _s.Save(); _svc?.SendSettings(_s.AcceptIncoming, _s.AllowInput, _s.ShareAudio, _s.AllowResize, _s.AllowAdminRun); };
                 return c;
             }
             var theme = new ComboBox { ItemsSource = Themes.All.Select(t => t.Name).ToList(), SelectedIndex = Math.Max(0, Themes.All.FindIndex(t => t.Key == _s.Theme)), Width = 180, HorizontalAlignment = HorizontalAlignment.Left };
@@ -291,6 +304,7 @@ namespace IpDeskCtrl.UI
                 Chk(L.T("Chi si collega può adattare la risoluzione di questo PC alla sua finestra"), _s.AllowResize, v => _s.AllowResize = v),
                 Chk(L.T("Chi si collega può montare qui una sua cartella come disco"), _s.AllowDrive, v => _s.AllowDrive = v),
                 Chk(L.T("Chi si collega può aprire tunnel di porte attraverso questo PC (rigctld, flrig, web della radio…)"), _s.AllowTunnel, v => _s.AllowTunnel = v),
+                AdminRunRow(Chk(L.T("Chi comanda questo PC può avviare programmi come amministratore senza la richiesta UAC (solo con il servizio)"), _s.AllowAdminRun, v => _s.AllowAdminRun = v)),
                 LanguageRow(),
                 DockRow(),
                 PortsRow(),
@@ -379,6 +393,7 @@ namespace IpDeskCtrl.UI
                 _peer.AskAccept = AskAcceptAsync;
                 _peer.HostStarted += hs => Dispatcher.UIThread.Post(() => OnHostStarted(hs));
                 _peer.HostEnded += (hs, why) => Dispatcher.UIThread.Post(() => OnHostEnded(hs, why));
+                _peer.HostRecording += (hs, on) => Dispatcher.UIThread.Post(() => OnRecording(hs.PeerNumber, on));
                 _peer.HostDraw += e => Dispatcher.UIThread.Post(() => DrawOverlay.Show(e));
                 _peer.HostChat += (hs, text) => Dispatcher.UIThread.Post(() => OpenChat(hs.PeerNumber, text));
                 _peer.UpdateRequested += n => _ = ForcedUpdateAsync(n);
@@ -407,6 +422,7 @@ namespace IpDeskCtrl.UI
             if (_svc == null) return;
             _svc.AskAccept = AskAcceptAsync;
             _svc.HostStarted += (n, input) => Dispatcher.UIThread.Post(() => { _svcHosts++; OnServiceHostStarted(n, input); });
+            _svc.RecordingChanged += (n, on) => Dispatcher.UIThread.Post(() => OnRecording(n, on));
             _svc.DrawReceived += e => Dispatcher.UIThread.Post(() => DrawOverlay.Show(e));
             _svc.ChatReceived += (n, text) => Dispatcher.UIThread.Post(() => OpenChat(n, text));
             _svc.HostEnded += (n, why) => Dispatcher.UIThread.Post(() => { DrawOverlay.EndedFor(n); _svcHosts = Math.Max(0, _svcHosts - 1); _incomingBanner.IsVisible = false; RebuildHistory(); });
@@ -431,7 +447,7 @@ namespace IpDeskCtrl.UI
                 _netDetail.Text = L.F("{0} ha una versione più nuova: il servizio aggiorna IP-DESK-CTRL, il programma si chiude e si riapre.", Identity.Format(n));
             });
             _svc.Lost += () => Dispatcher.UIThread.Post(() => { _svcHosts = 0; _incomingBanner.IsVisible = false; });
-            _svc.SendSettings(_s.AcceptIncoming, _s.AllowInput, _s.ShareAudio);
+            _svc.SendSettings(_s.AcceptIncoming, _s.AllowInput, _s.ShareAudio, _s.AllowResize, _s.AllowAdminRun);
             _svc.Send($"PORTS {_s.ManualPort1} {_s.ManualPort2}");
             if (_s.PasswordHash.Length > 0) _svc.Send($"PWD {_s.PasswordSalt} {_s.PasswordHash} {_s.PasswordIterations}");
             _svc.Send("MQTT " + string.Join(",", _s.MqttBrokers));   // il servizio usa gli stessi broker del programma
@@ -1108,6 +1124,21 @@ namespace IpDeskCtrl.UI
             _controlled?.Close();
             _controlled = Shell.Current.ShowCorner(Dialogs.Controlled(hs, who));
             RebuildHistory();
+        }
+
+        /// <summary>Avviso di privacy: chi comanda questo PC sta registrando la sessione.</summary>
+        private void OnRecording(string number, bool on)
+        {
+            if (on)
+            {
+                _incomingRec.Text = "⏺ " + L.F("{0} sta registrando questa sessione in un video: registra quello che compare sullo schermo.", Identity.Format(number));
+                _incomingRec.IsVisible = true;
+                _incomingBanner.IsVisible = true;
+                if (!Platform.IsMobile) Shell.Current.ShowCorner(Ui.Col(6,
+                    new TextBlock { Text = "⏺ " + L.T("Sessione registrata"), FontWeight = FontWeight.Bold, Foreground = _incomingRec.Foreground },
+                    Ui.Sub(L.F("{0} sta registrando in un video quello che compare su questo schermo. Chiudi documenti e messaggi personali, oppure interrompi il collegamento.", Identity.Format(number)), 12)));
+            }
+            else _incomingRec.IsVisible = false;
         }
 
         /// <summary>Chat con chi comanda questo PC: si apre una finestra in primo piano (servizio o programma).</summary>

@@ -36,6 +36,7 @@ namespace IpDeskCtrl.Core
         public event Action<string>? UpdateRequested;        // numero del PC che ha chiesto l'aggiornamento
         public event Action<string, string>? ChatReceived;   // numero, testo
         public event Action<DrawEvent>? DrawReceived;
+        public event Action<string, bool>? RecordingChanged;  // numero, sta registrando
 
         /// <summary>Messaggio di chat a chi comanda questo PC passando dal servizio.</summary>
         public void SendChat(string number, string text) =>
@@ -121,7 +122,8 @@ namespace IpDeskCtrl.Core
             }
         }
 
-        public void SendSettings(bool accept, bool input, bool audio) => Write($"SET {(accept ? 1 : 0)} {(input ? 1 : 0)} {(audio ? 1 : 0)}");
+        public void SendSettings(bool accept, bool input, bool audio, bool resize = true, bool adminRun = false) =>
+            Write($"SET {(accept ? 1 : 0)} {(input ? 1 : 0)} {(audio ? 1 : 0)} {(resize ? 1 : 0)} {(adminRun ? 1 : 0)}");
         public void Kick() => Write("KICK");
         public void SetInput(bool on) => Write("INPUT " + (on ? 1 : 0));
         public void Send(string line) => Write(line);
@@ -155,6 +157,9 @@ namespace IpDeskCtrl.Core
                         }
                         case "UPDATE" when p.Length >= 2:
                             UpdateRequested?.Invoke(p[1]);
+                            break;
+                        case "REC" when p.Length >= 3:
+                            RecordingChanged?.Invoke(p[1], p[2].StartsWith('1'));
                             break;
                         case "DRAW":
                         {

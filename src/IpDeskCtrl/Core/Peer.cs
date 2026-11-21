@@ -508,6 +508,10 @@ namespace IpDeskCtrl.Core
         public event Action<HostSession, string>? HostChat;
         internal void RaiseChat(HostSession hs, string text) => HostChat?.Invoke(hs, text);
 
+        /// <summary>Chi comanda ha iniziato (true) o smesso (false) di registrare la sessione.</summary>
+        public event Action<HostSession, bool>? HostRecording;
+        internal void RaiseRecording(HostSession hs, bool on) => HostRecording?.Invoke(hs, on);
+
         /// <summary>Tratti della lavagna da mostrare sopra lo schermo.</summary>
         public event Action<DrawEvent>? HostDraw;
         internal void RaiseDraw(DrawEvent e) => HostDraw?.Invoke(e);

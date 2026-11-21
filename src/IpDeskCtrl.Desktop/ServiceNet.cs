@@ -84,10 +84,14 @@ namespace IpDeskCtrl.Desktop
                 Platform.UserHome = Launch.ConsoleUserHome;
                 WinHelper.InstallServiceHooks(LaunchHelper);
                 Platform.Reboot = ServiceCommands.RebootNow;
+                Platform.ServiceState = () => 1;
+                Platform.UacPending = ServiceSetup.UacPending;
+                Platform.RunAdmin = Launch.AsElevatedUser;
                 Platform.LaunchTrx = LaunchTrx;
                 _peer = new Peer(me, _s) { AskAccept = AskAsync };
                 _peer.HostStarted += hs => Broadcast($"START {hs.PeerNumber} {(hs.InputAllowed ? 1 : 0)}");
                 _peer.HostEnded += (hs, why) => Broadcast($"END {hs.PeerNumber} {why.Replace('\n', ' ')}");
+                _peer.HostRecording += (hs, on) => Broadcast($"REC {hs.PeerNumber} {(on ? 1 : 0)}");
                 _peer.HostDraw += e => Broadcast(e.ToLine());
                 _peer.HostChat += (hs, text) => Broadcast($"CHAT {hs.PeerNumber} {Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(text))}");
                 _peer.UpdateRequested += OnUpdateRequested;
@@ -212,6 +216,12 @@ namespace IpDeskCtrl.Desktop
                             _s.AcceptIncoming = p[1] == "1";
                             _s.AllowInput = p[2] == "1";
                             _s.ShareAudio = p[3] == "1";
+                            if (p.Length >= 5) _s.AllowResize = p[4] == "1";
+                            if (p.Length >= 6 && _s.AllowAdminRun != (p[5] == "1"))
+                            {
+                                _s.AllowAdminRun = p[5] == "1";
+                                SessionLog.Write("SERVIZIO «avvia come amministratore» per chi comanda: " + (_s.AllowAdminRun ? "permesso" : "non permesso"));
+                            }
                             _s.Save();
                             break;
                         case "PWD" when p.Length >= 2 && _s != null:

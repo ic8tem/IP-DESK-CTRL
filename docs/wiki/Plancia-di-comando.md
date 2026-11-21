@@ -14,7 +14,7 @@ Nella finestra del PC remoto c'è una piccola plancia di comando: **in alto al c
 | **Audio** | Accende o spegne l'audio del PC remoto (32 kHz stereo). |
 | **Microfono** | Manda il tuo microfono al PC remoto (vedi sotto). |
 | **✋** | (telefono e tablet) Tocco e gesti: vedi [Android](Android). |
-| **Tasti ▾** | Ctrl+Alt+Canc, Alt+Tab, Tasto Windows / Cmd, Alt+F4, Ctrl+C, Ctrl+V, Stamp, Esc, **Volume del PC remoto +, −, muto**, *Pannello scorciatoie*, *Riavvia il PC remoto…* |
+| **Tasti ▾** | Ctrl+Alt+Canc, Alt+Tab, Tasto Windows / Cmd, Alt+F4, Ctrl+C, Ctrl+V, Stamp, Esc, **Volume del PC remoto +, −, muto**, *Pannello scorciatoie*, *Installa il servizio sul PC remoto*, *Avvia come amministratore* (vedi [Servizio di Windows](Servizio-di-Windows)), *Riavvia il PC remoto…* |
 | **File ▾** | Prendi i file copiati sul PC remoto, manda quelli copiati qui, scegli file da mandare (vedi [File e appunti](File-e-appunti)). |
 | **Chat** | Apre la chat con chi è davanti al PC remoto: di là si apre una finestra in primo piano. Si apre da sola quando arriva un messaggio. |
 | **✎** | Lavagna: disegni in rosso sullo schermo del PC remoto (vedi sotto). |
@@ -43,6 +43,8 @@ Con **✎** il mouse non comanda più il PC remoto: col tasto sinistro disegni s
 ## Registrazione
 
 Con **⏺** l'immagine del PC remoto va in un video MP4 (H.264, 8 fotogrammi al secondo, senza audio) nella cartella **Video\IP-DESK-CTRL** di questo PC. Si ferma con **⏹ REC** o scollegandosi; se il PC remoto cambia risoluzione si continua in un secondo file («…_parte2.mp4»). Serve ffmpeg, lo stesso del [video compresso](Video).
+
+**Privacy.** Il video riprende tutto quello che compare sullo schermo remoto (documenti, messaggi, dati personali, anche password se vengono mostrate). Prima di partire IP-DESK-CTRL chiede di confermare che chi usa il PC remoto è d'accordo; registra solo con il suo consenso e nel rispetto delle leggi sulla privacy (in Europa il GDPR). Chi è davanti al PC remoto vede un avviso rosso «Sessione registrata» finché la registrazione è attiva (dalla 0.5.23 su entrambi i PC). Il video resta solo su questo PC e non viene mandato da nessuna parte.
 
 ## Risoluzione adatta
 

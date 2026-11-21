@@ -16,6 +16,8 @@ namespace IpDeskCtrl.Desktop
             {
                 // servizio di sistema e processo di supporto (UAC, schermata di blocco): niente finestre
                 if (args[0] == "--service") { WinService.RunAsService(); return; }
+                // chiesto da chi comanda il PC (UAC accettata da chi è al PC): installa il servizio
+                if (args[0] == ServiceSetup.Arg) { Environment.Exit(ServiceSetup.InstallHere()); return; }
                 if (args[0] == "--helper" && args.Length >= 3) { Environment.Exit(Screen.WinHelper.RunHelper(args[1], args[2])); return; }
                 // dall'installatore: scarica ffmpeg nella cartella del programma (lo trovano sia l'utente sia il servizio)
                 if (args[0] == "--scarica-ffmpeg")
@@ -32,7 +34,19 @@ namespace IpDeskCtrl.Desktop
             try
             {
                 if (OperatingSystem.IsLinux()) Screen.ScreenSources.InitLinux();
-                if (OperatingSystem.IsWindows()) Screen.WinHelper.InstallHooks();
+                if (OperatingSystem.IsWindows())
+                {
+                    Screen.WinHelper.InstallHooks();
+                    Core.Platform.ServiceState = ServiceSetup.State;
+                    Core.Platform.UacPending = ServiceSetup.UacPending;
+                    Core.Platform.InstallService = ServiceSetup.InstallAsync;
+                    Core.Platform.RestartApp = () =>
+                    {
+                        try { System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(Environment.ProcessPath!, "--riavvio") { UseShellExecute = false }); }
+                        catch (Exception ex) { Core.SessionLog.Write("SERVIZIO riavvio del programma non riuscito: " + ex.Message); return; }
+                        Environment.Exit(0);
+                    };
+                }
                 // già avviato (magari nascosto vicino all'orologio): gli si chiede di mostrare la finestra e si esce
                 bool restart = Array.IndexOf(args, "--riavvio") >= 0 || Array.IndexOf(args, Core.Updater.AfterUpdateArg) >= 0;
                 bool got = UI.SingleInstance.Acquire();

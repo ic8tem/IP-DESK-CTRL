@@ -178,6 +178,7 @@ namespace IpDeskCtrl.Core
                 _ = Task.Run(PingLoopAsync);
                 _ = Ffmpeg.EncodersAsync();          // prova dei codificatori video in sottofondo (una volta sola)
                 _ = Task.Run(MaintenanceLoopAsync);
+                _ = Task.Run(() => SendAccess(true));
                 _ = Task.Run(ClipboardLoopAsync);
                 _ = Task.Run(ClipboardFilesLoopAsync);
                 var ext = P.PublicIp != null && P.ExternalPort > 0 ? new IPEndPoint(P.PublicIp, P.ExternalPort) : null;
@@ -270,6 +271,15 @@ namespace IpDeskCtrl.Core
                 {
                     int w = r.I32(), h = r.I32();
                     if (_accepted) _ = Task.Run(() => RequestResize(w, h));
+                    break;
+                }
+                case Msg.Recording:
+                {
+                    bool on = r.U8() == 1;
+                    Recording = on;
+                    SessionLog.Write(on ? $"REGISTRAZIONE: {Identity.Format(PeerNumber)} sta registrando questa sessione in un video"
+                                        : $"REGISTRAZIONE: {Identity.Format(PeerNumber)} ha smesso di registrare");
+                    P.RaiseRecording(this, on);
                     break;
                 }
                 case Msg.Draw:
@@ -369,6 +379,8 @@ namespace IpDeskCtrl.Core
                 case Msg.Refresh: _fullNext = true; break;
                 case Msg.FileFetch: _ = Task.Run(SendClipboardFilesAsync); break;
                 case Msg.Reboot: _ = Task.Run(RebootAsync); break;
+                case Msg.InstallService: _ = Task.Run(InstallServiceAsync); break;
+                case Msg.RunAdmin: { string what = r.Str(); _ = Task.Run(() => RunAdmin(what)); break; }
                 case Msg.StartTrx: _ = Task.Run(StartTrx); break;
                 case Msg.AuthResponse: _authReply?.TrySetResult(r.Bytes(Math.Clamp(r.I32(), 0, 64))); break;
                 case Msg.FrameAck:
@@ -426,6 +438,59 @@ namespace IpDeskCtrl.Core
         }
 
         /// <summary>Riavvio chiesto dal visore: solo se può comandare questo PC.</summary>
+        // ------------------------------------------------------------------ accesso completo di Windows
+
+        private (int svc, bool uac, bool admin) _access = (-1, false, false);
+
+        /// <summary>Stato del servizio e della UAC per la plancia del visore: si manda solo quando cambia.</summary>
+        private void SendAccess(bool force = false)
+        {
+            if (!AppVersion.Has(PeerCaps, "access") || Platform.ServiceState == null) return;
+            int svc;
+            bool uac;
+            try { svc = Platform.ServiceState(); uac = Platform.UacPending?.Invoke() == true; }
+            catch { return; }
+            bool admin = Platform.RunAdmin != null && P.S.AllowAdminRun && _allowInput;
+            var now = (svc, uac, admin);
+            if (!force && now == _access) return;
+            if (uac && !_access.uac) SessionLog.Write("UAC richiesta di permesso aperta sul PC" + (svc == 1 ? "" : " (senza servizio: chi comanda non la vede)"));
+            _access = now;
+            Send(new MsgWriter(Msg.HostAccess).U8((byte)svc).U8((byte)(uac ? 1 : 0)).U8((byte)(admin ? 1 : 0)).Build());
+        }
+
+        private async Task InstallServiceAsync()
+        {
+            if (!_accepted || !_allowInput) { Note(L.T("Installazione del servizio rifiutata: hai solo la visione di questo PC.")); SendAccess(true); return; }
+            if (Platform.InstallService == null) { Note(L.T("Il servizio non si può installare da qui.")); SendAccess(true); return; }
+            SessionLog.Write($"SERVIZIO {Identity.Format(PeerNumber)} chiede di installare il servizio di Windows (accesso completo)");
+            Note(L.T("Chi è al PC remoto deve rispondere Sì alla richiesta di Windows (UAC) per installare il servizio…"));
+            string err = await Platform.InstallService();
+            if (err.Length > 0)
+            {
+                Note(L.T("Servizio non installato: ") + err);
+                SessionLog.Write("SERVIZIO non installato: " + err);
+                SendAccess(true);
+                return;
+            }
+            SessionLog.Write("SERVIZIO installato su richiesta di " + Identity.Format(PeerNumber) + ": il programma si riavvia per passargli il collegamento");
+            Send(new MsgWriter(Msg.HostAccess).U8(1).U8(0).U8(0).Build());
+            Note(L.T("Servizio installato: il programma si riavvia, il collegamento riprende da solo."));
+            await Task.Delay(1500);
+            Close(L.T("servizio installato, il programma si riavvia"));
+            Platform.RestartApp?.Invoke();
+        }
+
+        private void RunAdmin(string what)
+        {
+            if (!_accepted || !_allowInput) { Note(L.T("Rifiutato: hai solo la visione di questo PC.")); return; }
+            if (Platform.RunAdmin == null) { Note(L.T("«Avvia come amministratore» funziona solo con il servizio di Windows installato.")); return; }
+            if (!P.S.AllowAdminRun) { Note(L.T("Chi è al PC remoto non ha permesso di avviare programmi come amministratore (Impostazioni).")); return; }
+            SessionLog.Write($"AMMINISTRATORE {Identity.Format(PeerNumber)} avvia «{what}» come amministratore senza UAC");
+            string err = Platform.RunAdmin(what);
+            if (err.Length > 0) { Note(L.T("Non avviato: ") + err); SessionLog.Write("AMMINISTRATORE non avviato: " + err); }
+            else Note(L.F("«{0}» avviato come amministratore.", what));
+        }
+
         private async Task RebootAsync()
         {
             if (!_accepted || !_allowInput) { Note(L.T("Riavvio rifiutato: hai solo la visione di questo PC.")); return; }
@@ -538,6 +603,8 @@ namespace IpDeskCtrl.Core
         }
 
         private bool _drawLogged;
+        /// <summary>Chi comanda sta registrando la sessione (avviso per chi è davanti al PC).</summary>
+        public bool Recording { get; private set; }
         private readonly Dictionary<string, long> _noteLogged = new();
 
         private void Note(string text)
@@ -682,6 +749,7 @@ namespace IpDeskCtrl.Core
             {
                 try { await Task.Delay(3000, Cts.Token); } catch { break; }
                 CheckUdpAlive(TimeSpan.FromSeconds(6));
+                SendAccess();
                 if (Environment.TickCount64 - _statAt > 60000)
                 {
                     _statAt = Environment.TickCount64;

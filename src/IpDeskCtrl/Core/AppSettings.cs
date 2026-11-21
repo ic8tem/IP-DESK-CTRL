@@ -44,7 +44,8 @@ namespace IpDeskCtrl.Core
         public int PasswordIterations { get; set; } = AccessPassword.DefaultIterations;
         public bool AcceptMic { get; set; } = true;        // riproduce qui il microfono di chi si collega
         public string MicOutput { get; set; } = "";        // uscita per quel microfono ("" = cavo virtuale se c'è, altrimenti predefinita)
-        public bool AllowResize { get; set; } = true;      // chi si collega può adattare la risoluzione alla sua finestra
+        public bool AllowResize { get; set; } = true;
+        public bool AllowAdminRun { get; set; }             // chi comanda può avviare programmi come amministratore senza UAC (solo col servizio)      // chi si collega può adattare la risoluzione alla sua finestra
         public bool AllowDrive { get; set; } = true;       // chi si collega può montare qui una sua cartella come disco
         public bool AllowTunnel { get; set; } = true;
         public string Language { get; set; } = "";         // "" = lingua del sistema (una delle 36, altrimenti inglese)
