@@ -725,5 +725,6 @@
  "Aggiornamenti automatici: ogni {0} minuti cerca una nuova versione e la installa da sola (i collegamenti riprendono)": "Automātiskie atjauninājumi: ik pēc {0} minūtēm tiek meklēta jauna versija, un tā instalējas pati (savienojumi turpinās)",
  "Sul PC remoto ci sono file copiati: {0} ({1}).": "Attālajā datorā ir nokopēti faili: {0} ({1}).",
  "Prendili qui": "Paņemt šeit",
- "Prendo i file copiati sul PC remoto…": "Ņemu attālajā datorā nokopētos failus…"
+ "Prendo i file copiati sul PC remoto…": "Ņemu attālajā datorā nokopētos failus…",
+ "grafica integrata Intel ({0}) non usata con {1} monitor collegati: codifica software": "Intel integrētā grafika ({0}) netiek izmantota ar {1} pievienotiem monitoriem: programmatūras kodēšana"
 }

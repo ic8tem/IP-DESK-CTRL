@@ -1060,8 +1060,16 @@ namespace IpDeskCtrl.Core
                     return false;
                 }
                 StopVideo();
-                var enc = Ffmpeg.Choose(encTask.Result, can, _codecWanted);
+                int nMon = Math.Max(1, _monitors.Count);
+                var enc = Ffmpeg.Choose(encTask.Result, can, _codecWanted, nMon);
                 if (Ffmpeg.HwGuard.Suspended != null && !_hwNoted) { _hwNoted = true; Note(L.F("Sul PC remoto: {0}.", Ffmpeg.HwGuard.Suspended)); }
+                else if (Ffmpeg.QuickSyncSkipped(encTask.Result, nMon) && !_hwNoted)
+                {
+                    _hwNoted = true;
+                    string why = L.F("grafica integrata Intel ({0}) non usata con {1} monitor collegati: codifica software", "Quick Sync", nMon);
+                    SessionLog.Write("VIDEO " + why);
+                    Note(L.F("Sul PC remoto: {0}.", why));
+                }
                 if (enc == null)
                 {
                     if (_codecWanted is "h264" or "hevc" or "av1") Note(L.F("{0} non disponibile su uno dei due PC: uso i riquadri.", Ffmpeg.CodecNames[_codecWanted]));

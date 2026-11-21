@@ -725,5 +725,6 @@
  "Aggiornamenti automatici: ogni {0} minuti cerca una nuova versione e la installa da sola (i collegamenti riprendono)": "التحديثات التلقائية: كل {0} دقيقة يُبحث عن إصدار جديد ويُثبَّت من تلقاء نفسه (تستمر الاتصالات)",
  "Sul PC remoto ci sono file copiati: {0} ({1}).": "توجد ملفات منسوخة على الحاسوب البعيد: {0} ({1}).",
  "Prendili qui": "اجلبها إلى هنا",
- "Prendo i file copiati sul PC remoto…": "أجلب الملفات المنسوخة على الحاسوب البعيد…"
+ "Prendo i file copiati sul PC remoto…": "أجلب الملفات المنسوخة على الحاسوب البعيد…",
+ "grafica integrata Intel ({0}) non usata con {1} monitor collegati: codifica software": "لا تُستخدم رسوميات Intel المدمجة ({0}) مع توصيل {1} شاشات: ترميز برمجي"
 }

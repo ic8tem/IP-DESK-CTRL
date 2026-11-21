@@ -725,5 +725,6 @@
  "Aggiornamenti automatici: ogni {0} minuti cerca una nuova versione e la installa da sola (i collegamenti riprendono)": "Actualizări automate: la fiecare {0} de minute se caută o versiune nouă și se instalează singură (conexiunile continuă)",
  "Sul PC remoto ci sono file copiati: {0} ({1}).": "Pe PC-ul de la distanță sunt fișiere copiate: {0} ({1}).",
  "Prendili qui": "Adu-le aici",
- "Prendo i file copiati sul PC remoto…": "Aduc fișierele copiate pe PC-ul de la distanță…"
+ "Prendo i file copiati sul PC remoto…": "Aduc fișierele copiate pe PC-ul de la distanță…",
+ "grafica integrata Intel ({0}) non usata con {1} monitor collegati: codifica software": "grafica integrată Intel ({0}) nu este folosită cu {1} monitoare conectate: codare software"
 }

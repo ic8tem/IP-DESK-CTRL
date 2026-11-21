@@ -725,5 +725,6 @@
  "Aggiornamenti automatici: ogni {0} minuti cerca una nuova versione e la installa da sola (i collegamenti riprendono)": "Automatyczne aktualizacje: co {0} minut szukana jest nowa wersja i instaluje się sama (połączenia trwają dalej)",
  "Sul PC remoto ci sono file copiati: {0} ({1}).": "Na komputerze zdalnym są skopiowane pliki: {0} ({1}).",
  "Prendili qui": "Pobierz tutaj",
- "Prendo i file copiati sul PC remoto…": "Pobieram pliki skopiowane na komputerze zdalnym…"
+ "Prendo i file copiati sul PC remoto…": "Pobieram pliki skopiowane na komputerze zdalnym…",
+ "grafica integrata Intel ({0}) non usata con {1} monitor collegati: codifica software": "zintegrowana grafika Intel ({0}) nieużywana przy {1} podłączonych monitorach: kodowanie programowe"
 }

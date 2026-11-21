@@ -134,6 +134,10 @@ Nella cartella dei dati (Impostazioni › Apri cartella dati): `sessioni.log`, u
 
 Le versioni con protocollo diverso non si collegano tra loro: aggiorna tutti i dispositivi alla stessa versione principale (la 0.4.1 si collega con la 0.4.0; la 0.5 si collega con la 0.4).
 
+### 0.5.31 — 21 novembre 2026
+- **Grafica integrata Intel più prudente**: i blocchi completi del PC visti con Intel Quick Sync sono avvenuti tutti su un PC con tre monitor collegati alla grafica integrata, mentre codificava in H.265 (`hevc_qsv`). Ora, se al PC comandato sono collegati **due o più monitor**, la grafica integrata Intel non si usa per il video e la codifica la fa il processore (x264); a chi comanda compare un avviso. Con **un solo monitor**, in modalità automatica si usa Quick Sync solo per H.264 (`h264_qsv`) e non più per H.265 o AV1. Le schede NVIDIA e AMD non cambiano.
+- **Codifica software sempre pronta**: la prova dei codificatori all'avvio controlla sempre anche x264, x265 e SVT-AV1; prima, se c'era un codificatore hardware per lo stesso formato, quello software non veniva provato e non era disponibile come riserva.
+
 ### 0.5.30 — 21 novembre 2026
 - **Nuove versioni trovate prima**: il controllo passa da ogni 30 minuti a **ogni 5 minuti**. Il controllo frequente guarda solo il rimando della pagina «ultima versione» di GitHub, che non ha limiti; i dettagli si chiedono all'API di GitHub solo quando c'è davvero una versione nuova, così anche più PC dietro la stessa connessione non superano le 60 richieste all'ora concesse senza account.
 - **Collegamenti ripresi anche quando aggiorna il servizio**: se questo PC si aggiorna tramite il servizio di Windows mentre hai collegamenti aperti, il programma si chiude, il servizio lo riapre aggiornato e i collegamenti si riaprono da soli (prima si riprendevano solo con l'aggiornamento fatto dal programma).

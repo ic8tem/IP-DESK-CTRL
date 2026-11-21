@@ -725,5 +725,6 @@
  "Aggiornamenti automatici: ogni {0} minuti cerca una nuova versione e la installa da sola (i collegamenti riprendono)": "자동 업데이트: {0}분마다 새 버전을 찾아 스스로 설치합니다(연결은 계속됨)",
  "Sul PC remoto ci sono file copiati: {0} ({1}).": "원격 PC에 복사된 파일이 있습니다: {0} ({1}).",
  "Prendili qui": "여기로 가져오기",
- "Prendo i file copiati sul PC remoto…": "원격 PC에서 복사한 파일을 가져오는 중…"
+ "Prendo i file copiati sul PC remoto…": "원격 PC에서 복사한 파일을 가져오는 중…",
+ "grafica integrata Intel ({0}) non usata con {1} monitor collegati: codifica software": "모니터 {1}대 연결 시 Intel 내장 그래픽({0})을 사용하지 않음: 소프트웨어 인코딩"
 }

@@ -725,5 +725,6 @@
  "Aggiornamenti automatici: ogni {0} minuti cerca una nuova versione e la installa da sola (i collegamenti riprendono)": "Автообновления: каждые {0} минут ищется новая версия, и она устанавливается сама (подключения продолжаются)",
  "Sul PC remoto ci sono file copiati: {0} ({1}).": "На удалённом ПК есть скопированные файлы: {0} ({1}).",
  "Prendili qui": "Забрать сюда",
- "Prendo i file copiati sul PC remoto…": "Забираю файлы, скопированные на удалённом ПК…"
+ "Prendo i file copiati sul PC remoto…": "Забираю файлы, скопированные на удалённом ПК…",
+ "grafica integrata Intel ({0}) non usata con {1} monitor collegati: codifica software": "встроенная графика Intel ({0}) не используется при {1} подключённых мониторах: программное кодирование"
 }
