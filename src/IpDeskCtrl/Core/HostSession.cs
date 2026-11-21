@@ -418,7 +418,13 @@ namespace IpDeskCtrl.Core
                         break;
                     }
                     case Msg.Wheel: sink.Wheel(r.I32(), r.I32()); break;
-                    case Msg.Key: { int k = r.U16(); bool down = r.Bool(); sink.Key(k, down); _pressed.Key(k, down); break; }
+                    case Msg.Key:
+                    {
+                        int k = r.U16(); bool down = r.Bool(); sink.Key(k, down); _pressed.Key(k, down);
+                        if (k is Input.KeyMap.LeftCtrl or Input.KeyMap.RightCtrl) _ctrlDown = down;
+                        else if (down && _ctrlDown && k is 45 or 46 or 47) _ = Task.Run(() => LogClipKeyAsync(k));
+                        break;
+                    }
                     case Msg.ReleaseAll: _pressed.ReleaseAll(sink); break;
                     case Msg.Text: sink.Text(r.Str()); break;
                 }
@@ -542,6 +548,49 @@ namespace IpDeskCtrl.Core
         }
 
         private List<string> _clipFiles = new();
+        private bool _ctrlDown;
+
+        /// <summary>
+        /// Ctrl+C / Ctrl+X / Ctrl+V arrivati da chi comanda: nel registro cosa c'era negli appunti di questo PC
+        /// prima e dopo, così si vede se la copia è avvenuta e se andrà verso il visore.
+        /// </summary>
+        private async Task LogClipKeyAsync(int k)
+        {
+            string what = k == 46 ? "Ctrl+C (copia)" : k == 45 ? "Ctrl+X (taglia)" : "Ctrl+V (incolla)";
+            var clip = Platform.Clipboard;
+            string extra = Platform.UacPending?.Invoke() == true ? " · c'è una richiesta UAC aperta" : "";
+            if (clip == null) { ClipLog($"{PeerLabel} preme {what}: questo PC non ha appunti accessibili{extra}"); return; }
+            async Task<(string? text, List<string> files, string err)> Snap()
+            {
+                try { return (await clip.GetTextAsync(), await clip.GetFilesAsync(), ""); }
+                catch (Exception ex) { return (null, new List<string>(), ex.Message); }
+            }
+            static string Desc((string? text, List<string> files, string err) s) =>
+                s.err.Length > 0 ? "non leggibili (" + s.err + ")"
+                : s.files.Count > 0 ? $"{s.files.Count} file/cartelle (il primo: {System.IO.Path.GetFileName(s.files[0].TrimEnd('/', '\\'))})"
+                : !string.IsNullOrEmpty(s.text) ? $"testo di {s.text.Length} caratteri"
+                : "vuoti";
+            var before = await Snap();
+            if (k == 47)
+            {
+                ClipLog($"{PeerLabel} preme {what} sul PC: negli appunti ci sono {Desc(before)}{extra}");
+                return;
+            }
+            ClipLog($"{PeerLabel} preme {what} sul PC: prima negli appunti {Desc(before)}{extra}");
+            await Task.Delay(1500);
+            var after = await Snap();
+            bool changed = after.err.Length == 0 && (after.text != before.text || !SamePaths(after.files, before.files));
+            if (!changed)
+            {
+                ClipLog($"dopo {what} gli appunti del PC non sono cambiati ({Desc(after)}): la finestra attiva non ha copiato niente " +
+                        "(niente selezionato, finestra di un programma da amministratore senza il servizio, oppure schermata protetta di UAC o di blocco)");
+                return;
+            }
+            string route = !FilesAllowed ? "non vanno a chi comanda: mouse e tastiera non consentiti"
+                : after.files.Count > 0 ? "li annuncio a chi comanda, che li prende da solo fino a 2 GB"
+                : "il testo va negli appunti di chi comanda entro un secondo";
+            ClipLog($"dopo {what} negli appunti del PC ci sono {Desc(after)}: {route}");
+        }
 
         /// <summary>Ogni 2 secondi: se negli appunti di questo PC ci sono file, lo dice al visore (che può prenderli).</summary>
         private async Task ClipboardFilesLoopAsync()
@@ -560,8 +609,9 @@ namespace IpDeskCtrl.Core
                     var items = files.Count > 0 ? FromPaths(files) : new List<TransferItem>();
                     string first = files.Count > 0 ? System.IO.Path.GetFileName(files[0].TrimEnd('/', '\\')) : "";
                     await SendAsync(new MsgWriter(Msg.FilesAvailable).I32(files.Count).I64(items.Sum(i => i.Size)).Str(first).Build());
+                    if (files.Count > 0) ClipLog($"sul PC ci sono {files.Count} file/cartelle negli appunti ({first}, {items.Sum(i => i.Size) / 1024} kB): annunciati a {PeerLabel}");
                 }
-                catch { }
+                catch (Exception ex) { ClipLog("file negli appunti del PC non leggibili: " + ex.Message, "files"); }
             }
         }
 

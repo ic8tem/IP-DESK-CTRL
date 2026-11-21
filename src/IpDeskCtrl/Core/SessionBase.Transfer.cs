@@ -64,35 +64,66 @@ namespace IpDeskCtrl.Core
 
         // ================================================================== testo degli appunti
 
+        private readonly Dictionary<string, long> _clipLogged = new();
+
+        /// <summary>Riga «APPUNTI» nel registro; quelle ripetitive (errori, rifiuti) al massimo una volta ogni 5 minuti.</summary>
+        protected void ClipLog(string text, string? onceKey = null)
+        {
+            if (onceKey != null)
+            {
+                long now = Environment.TickCount64;
+                lock (_clipLogged)
+                {
+                    if (_clipLogged.TryGetValue(onceKey, out long t) && now - t < 300_000) return;
+                    _clipLogged[onceKey] = now;
+                }
+            }
+            SessionLog.Write("APPUNTI " + text);
+        }
+
+        protected string PeerLabel => Identity.Format(Link.PeerNumber);
+
         /// <summary>Ogni secondo guarda gli appunti di questo PC; se il testo è cambiato lo manda all'altro.</summary>
         protected async Task ClipboardLoopAsync()
         {
             var clip = Platform.Clipboard;
             if (clip == null) return;
-            try { _lastLocalClip = await clip.GetTextAsync(); } catch { }
+            try { _lastLocalClip = await clip.GetTextAsync(); }
+            catch (Exception ex) { ClipLog("di questo PC non leggibili all'inizio della sessione: " + ex.Message, "read0"); }
             while (!Cts.IsCancellationRequested)
             {
                 try { await Task.Delay(1000, Cts.Token); } catch { break; }
-                if (!FilesAllowed) continue;
+                if (!FilesAllowed) { ClipLog("non condivisi con " + PeerLabel + ": mouse e tastiera non consentiti (solo visione)", "denied"); continue; }
                 try
                 {
                     string? t = await clip.GetTextAsync();
                     if (t == null || t == _lastLocalClip) continue;
                     _lastLocalClip = t;
-                    if (t == _lastRemoteClip || t.Length == 0 || t.Length > 1_000_000) continue;
+                    if (t == _lastRemoteClip || t.Length == 0) continue;
+                    if (t.Length > 1_000_000) { ClipLog($"testo copiato su questo PC troppo lungo ({t.Length} caratteri): non mandato"); continue; }
                     await SendAsync(new MsgWriter(Msg.Clipboard).Str(t).Build());
+                    ClipLog($"testo copiato su questo PC ({t.Length} caratteri): mandato negli appunti di {PeerLabel}");
                 }
-                catch { }
+                catch (Exception ex) { ClipLog("di questo PC non leggibili: " + ex.Message, "read"); }
             }
         }
 
         private void OnRemoteClipboard(string text)
         {
             var clip = Platform.Clipboard;
-            if (clip == null || !FilesAllowed) return;
+            if (clip == null) { ClipLog($"testo da {PeerLabel} ({text.Length} caratteri) scartato: su questo PC non ci sono appunti"); return; }
+            if (!FilesAllowed) { ClipLog($"testo da {PeerLabel} scartato: mouse e tastiera non consentiti (solo visione)", "rdenied"); return; }
             _lastRemoteClip = text;
             _lastLocalClip = text;
-            _ = Task.Run(async () => { try { await clip.SetTextAsync(text); } catch { } });
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    await clip.SetTextAsync(text);
+                    ClipLog($"testo da {PeerLabel} ({text.Length} caratteri) messo negli appunti di questo PC");
+                }
+                catch (Exception ex) { ClipLog($"testo da {PeerLabel} non messo negli appunti di questo PC: {ex.Message}"); }
+            });
         }
 
         // ================================================================== invio

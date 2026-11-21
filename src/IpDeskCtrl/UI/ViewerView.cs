@@ -114,7 +114,8 @@ namespace IpDeskCtrl.UI
         // ---- file negli appunti, nei due versi, come con il testo
         /// <summary>Oltre questa dimensione i file copiati sul PC remoto non arrivano da soli: si prendono dal menu File.</summary>
         private const long AutoFetchMax = 2L << 30;
-        private List<string> _localClipFiles = new();      // file negli appunti di questo PC (letti ogni 1,5 s)
+        private List<string> _localClipFiles = new();
+        private bool _clipErrLogged;      // file negli appunti di questo PC (letti ogni 1,5 s)
         private List<string> _exchangedFiles = new();      // ultimi file passati da un PC all'altro: non si rimandano
         private bool _clipPolling;
         private bool _remoteFilesSeen;                     // il primo annuncio (file già copiati prima di collegarsi) non si scarica da solo
@@ -845,14 +846,22 @@ namespace IpDeskCtrl.UI
         {
             bool firstSeen = !_remoteFilesSeen;
             _remoteFilesSeen = true;
-            if (count <= 0 || Platform.IsMobile || !s.InputAllowed || s.State != AcceptState.Accepted) return;
+            if (count <= 0) return;
+            string head = $"APPUNTI il PC remoto annuncia {count} file/cartelle copiati ({first}, {Size(bytes)}): ";
+            if (Platform.IsMobile || !s.InputAllowed || s.State != AcceptState.Accepted)
+            {
+                SessionLog.Write(head + "non li prendo " + (Platform.IsMobile ? "(telefono: usa File › Prendi)" : !s.InputAllowed ? "(hai solo la visione)" : "(sessione non accettata)"));
+                return;
+            }
             if (firstSeen)
             {
+                SessionLog.Write(head + "erano già negli appunti prima del collegamento, non li prendo da solo");
                 ShowNote(L.F("Sul PC remoto erano già copiati {0} elementi: se ti servono, File › «Prendi qui i file copiati sul PC remoto».", count));
                 return;
             }
             if (bytes > AutoFetchMax)
             {
+                SessionLog.Write(head + "oltre 2 GB, non li prendo da solo");
                 ShowNote(L.F("Sul PC remoto hai copiato {0} elementi ({1}): troppi per portarli qui da soli, usa File › «Prendi qui i file copiati sul PC remoto».", count, Size(bytes)), true);
                 return;
             }
@@ -872,7 +881,10 @@ namespace IpDeskCtrl.UI
             _ = Task.Run(async () =>
             {
                 try { var f = await clip.GetFilesAsync(); Dispatcher.UIThread.Post(() => _localClipFiles = f); }
-                catch { }
+                catch (Exception ex)
+                {
+                    if (!_clipErrLogged) { _clipErrLogged = true; SessionLog.Write("APPUNTI di questo PC non leggibili (file): " + ex.Message); }
+                }
                 finally { _clipPolling = false; }
             });
         }
@@ -886,7 +898,11 @@ namespace IpDeskCtrl.UI
             var s = _session;
             if (s == null || s.State != AcceptState.Accepted || !s.InputAllowed || Platform.IsMobile) return false;
             var files = _localClipFiles;
-            if (files.Count == 0 || HostSession.SamePaths(files, _exchangedFiles)) return false;
+            if (files.Count == 0 || HostSession.SamePaths(files, _exchangedFiles))
+            {
+                SessionLog.Write("APPUNTI Ctrl+V nella finestra del visore: " + (files.Count == 0 ? "negli appunti di questo PC non ci sono file" : "i file negli appunti sono già stati scambiati") + ", il tasto passa al PC remoto");
+                return false;
+            }
             _exchangedFiles = new List<string>(files);
             SessionLog.Write($"FILE Ctrl+V nella finestra: mando {files.Count} elementi copiati qui");
             ShowNote(files.Count == 1 ? L.T("Mando il file copiato qui: di là si incolla appena arriva.") : L.F("Mando i {0} elementi copiati qui: di là si incollano appena arrivano.", files.Count));
