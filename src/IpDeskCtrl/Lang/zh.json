@@ -715,5 +715,8 @@
  "Richiesta mandata: chi è al PC remoto deve rispondere Sì alla finestra di Windows.": "请求已发送：远程电脑前的人需要在 Windows 窗口中选择“是”。",
  "Il PC remoto installa il servizio": "远程电脑正在安装服务",
  "IP-DESK-CTRL si riavvia sul PC remoto con l'accesso completo: mi ricollego appena torna": "IP-DESK-CTRL 正在远程电脑上以完全访问重启：它一回来我就重新连接",
- "Windows non concede il riavvio all'account di questo PC (utente senza diritti di arresto o criterio dell'organizzazione). Con il servizio «accesso completo» il riavvio funziona sempre: installalo da Tasti ▾.": "Windows 不允许此电脑的账户重启（用户没有关机权限或受组织策略限制）。安装“完全访问”服务后重启总能成功：从“按键 ▾”安装。"
+ "Windows non concede il riavvio all'account di questo PC (utente senza diritti di arresto o criterio dell'organizzazione). Con il servizio «accesso completo» il riavvio funziona sempre: installalo da Tasti ▾.": "Windows 不允许此电脑的账户重启（用户没有关机权限或受组织策略限制）。安装“完全访问”服务后重启总能成功：从“按键 ▾”安装。",
+ "Collegamento caduto": "连接中断",
+ "{0} · mi ricollego da solo (tentativo {1} di {2})…": "{0} · 正在自动重新连接（第 {1}/{2} 次）…",
+ "Ricollegamento automatico non riuscito.": "自动重新连接失败。"
 }

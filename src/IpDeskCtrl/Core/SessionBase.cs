@@ -40,6 +40,9 @@ namespace IpDeskCtrl.Core
 
         public event Action<string>? Closed;
 
+        /// <summary>Il collegamento è caduto (rete, timeout) senza che l'altro PC lo chiudesse: si può ricollegare da solo.</summary>
+        public bool Dropped { get; private set; }
+
         protected SessionBase(Peer p, SecureLink link)
         {
             P = p;
@@ -61,7 +64,7 @@ namespace IpDeskCtrl.Core
         protected async Task SendAsync(byte[] msg)
         {
             try { await Link.SendAsync(msg, Cts.Token); }
-            catch (Exception) when (!IsClosed) { Close(L.T("collegamento interrotto")); }
+            catch (Exception) when (!IsClosed) { Dropped = true; Close(L.T("collegamento interrotto")); }
             catch { }
         }
 
@@ -71,6 +74,7 @@ namespace IpDeskCtrl.Core
         protected async Task ReceiveLoopAsync()
         {
             string reason = L.T("collegamento chiuso dall'altro PC");
+            bool bye = false;
             try
             {
                 while (!Cts.IsCancellationRequested)
@@ -82,7 +86,7 @@ namespace IpDeskCtrl.Core
                     {
                         case Msg.Ping: Send(new MsgWriter(Msg.Pong).I64(r.I64()).Build()); break;
                         case Msg.Pong: RttMs = (DateTime.UtcNow.Ticks - r.I64()) / 10000.0; break;
-                        case Msg.Bye: reason = r.Str(); Cts.Cancel(); break;
+                        case Msg.Bye: reason = r.Str(); bye = true; Cts.Cancel(); break;
                         case Msg.UdpOffer: { string c = r.Str(); int d = r.I32(); _ = Task.Run(() => OnUdpOfferAsync(c, d)); break; }
                         case Msg.UdpOn: _udpPeer = r.U8() == 1; UdpLog(string.Format("l'altro PC {0} su UDP", (_udpPeer ? "riceve" : "non riceve"))); break;
                         case Msg.Clipboard: OnRemoteClipboard(r.Str()); break;
@@ -97,8 +101,10 @@ namespace IpDeskCtrl.Core
                 }
             }
             catch (OperationCanceledException) { }
-            catch (Exception ex) when (!IsClosed) { reason = L.T("collegamento interrotto (") + ex.Message + ")"; }
+            catch (Exception ex) when (!IsClosed) { reason = L.T("collegamento interrotto (") + ex.Message + ")"; Dropped = true; }
             catch { }
+            // flusso finito senza «arrivederci»: l'altro PC è sparito (crash, rete), non ha chiuso lui
+            if (!bye && !IsClosed && !Cts.IsCancellationRequested) Dropped = true;
             Close(reason);
         }
 

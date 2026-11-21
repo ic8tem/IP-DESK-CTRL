@@ -715,5 +715,8 @@
  "Richiesta mandata: chi è al PC remoto deve rispondere Sì alla finestra di Windows.": "İstek gönderildi: uzak bilgisayarın başındaki kişi Windows penceresinde Evet demeli.",
  "Il PC remoto installa il servizio": "Uzak bilgisayar hizmeti kuruyor",
  "IP-DESK-CTRL si riavvia sul PC remoto con l'accesso completo: mi ricollego appena torna": "IP-DESK-CTRL uzak bilgisayarda tam erişimle yeniden başlıyor: geri döner dönmez yeniden bağlanacağım",
- "Windows non concede il riavvio all'account di questo PC (utente senza diritti di arresto o criterio dell'organizzazione). Con il servizio «accesso completo» il riavvio funziona sempre: installalo da Tasti ▾.": "Windows bu bilgisayarın hesabının yeniden başlatmasına izin vermiyor (kapatma hakkı olmayan kullanıcı veya kuruluş ilkesi). “Tam erişim” hizmetiyle yeniden başlatma her zaman çalışır: Tuşlar ▾ menüsünden kurun."
+ "Windows non concede il riavvio all'account di questo PC (utente senza diritti di arresto o criterio dell'organizzazione). Con il servizio «accesso completo» il riavvio funziona sempre: installalo da Tasti ▾.": "Windows bu bilgisayarın hesabının yeniden başlatmasına izin vermiyor (kapatma hakkı olmayan kullanıcı veya kuruluş ilkesi). “Tam erişim” hizmetiyle yeniden başlatma her zaman çalışır: Tuşlar ▾ menüsünden kurun.",
+ "Collegamento caduto": "Bağlantı koptu",
+ "{0} · mi ricollego da solo (tentativo {1} di {2})…": "{0} · kendiliğinden yeniden bağlanıyorum (deneme {1}/{2})…",
+ "Ricollegamento automatico non riuscito.": "Otomatik yeniden bağlanma başarısız oldu."
 }

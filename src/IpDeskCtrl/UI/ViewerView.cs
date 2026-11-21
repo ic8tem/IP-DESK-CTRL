@@ -208,17 +208,21 @@ namespace IpDeskCtrl.UI
             _viewHost.Children.Add(_view);
             grid.Children.Add(_viewHost);
 
-            // trascinare file sulla vista = mandarli al PC remoto, dove sono stati lasciati
+            // trascinare file sulla vista = mandarli al PC remoto, dove sono stati lasciati.
+            // Il bersaglio è tutta la finestra (sfondo trasparente = colpibile ovunque): prima lo era solo l'immagine,
+            // e sopra le bande nere ai lati, o sopra avvisi e plancia, il trascinamento veniva rifiutato.
+            grid.Background = Brushes.Transparent;
+            DragDrop.SetAllowDrop(grid, true);
             DragDrop.SetAllowDrop(_view, true);
-            _view.AddHandler(DragDrop.DragEnterEvent, (_, e) =>
+            grid.AddHandler(DragDrop.DragEnterEvent, (_, e) =>
             {
                 // nel registro anche l'inizio: se manca, Windows non ha nemmeno consegnato il trascinamento al programma
                 bool files = e.Data.Contains(DataFormats.Files);
                 SessionLog.Write(files ? "FILE trascinamento iniziato sopra la finestra del visore" : "FILE trascinamento sopra il visore, ma non sono file (ignorato)");
             });
-            _view.AddHandler(DragDrop.DragLeaveEvent, (_, _) => SessionLog.Write("FILE trascinamento uscito dalla finestra senza rilasciare"));
-            _view.AddHandler(DragDrop.DragOverEvent, (_, e) => { e.DragEffects = e.Data.Contains(DataFormats.Files) ? DragDropEffects.Copy : DragDropEffects.None; });
-            _view.AddHandler(DragDrop.DropEvent, (_, e) => OnDrop(e));
+            grid.AddHandler(DragDrop.DragLeaveEvent, (_, _) => SessionLog.Write("FILE trascinamento uscito dalla finestra senza rilasciare"));
+            grid.AddHandler(DragDrop.DragOverEvent, (_, e) => { e.DragEffects = e.Data.Contains(DataFormats.Files) ? DragDropEffects.Copy : DragDropEffects.None; });
+            grid.AddHandler(DragDrop.DropEvent, (_, e) => OnDrop(e));
 
             // ---- plancia di comando, in alto al centro
             _fullBtn.Content = L.T("Schermo intero");
@@ -944,6 +948,7 @@ namespace IpDeskCtrl.UI
             var p = e.GetPosition(_view);
             var img = _view.ImagePoint(p);
             if (img != null) s.MouseMove(img.Value.x, img.Value.y);
+            else SessionLog.Write("FILE rilasciati fuori dall'immagine del PC remoto: si incollano dove si trova ora il suo puntatore");
             _ = Task.Run(() => s.SendFilesAsync(SessionBase.FromPaths(paths), TransferPurpose.Drop));
         }
 
@@ -1437,6 +1442,8 @@ namespace IpDeskCtrl.UI
         private static char Symbol(string l)
         {
             string s = l.ToLowerInvariant();
+            // «RAGGIUNGIBILE (…, un servizio non risponde)»: conta l'esito, non il servizio di prova muto
+            if (s.Contains(": raggiungibile (")) return '✓';
             if (s.Contains("non raggiungibil") || s.Contains("non riuscit") || s.Contains("rifiut") || s.Contains("nessuna risposta") ||
                 s.Contains("non risponde") || s.Contains("non trovato") || s.Contains("errore") || s.Contains("scaduto") || s.Contains("annullat") ||
                 s.Contains("non si è aggiornato") || s.Contains("non coincide") || s.Contains("non è questo programma")) return '✗';
@@ -1586,6 +1593,30 @@ namespace IpDeskCtrl.UI
                 (L.T("Annulla"), false, () => { _overlay.IsVisible = false; _view.Focus(); }));
         }
 
+        /// <summary>
+        /// Collegamento caduto per la rete (non chiuso dall'altro PC): ci si ricollega da soli, fino a 6 tentativi in
+        /// circa 3 minuti, senza dover premere «Ricollegati». Se non riesce si torna alla finestra di sempre.
+        /// </summary>
+        private async Task AutoReconnectAsync(string reason)
+        {
+            _rebootCts?.Cancel();
+            var cts = new CancellationTokenSource();
+            _rebootCts = cts;
+            SessionLog.Write($"SESSIONE con {Identity.Format(_number)} caduta ({reason}): mi ricollego da solo");
+            int[] waits = { 2, 5, 10, 20, 40, 60 };
+            for (int i = 0; i < waits.Length && !cts.IsCancellationRequested; i++)
+            {
+                Overlay(L.T("Collegamento caduto"), L.F("{0} · mi ricollego da solo (tentativo {1} di {2})…", reason, i + 1, waits.Length),
+                    (L.T("Annulla"), false, () => { cts.Cancel(); Disconnect(); }));
+                try { await Task.Delay(TimeSpan.FromSeconds(waits[i]), cts.Token); } catch { return; }
+                if (await ConnectAsync(true)) { if (_rebootCts == cts) _rebootCts = null; SessionLog.Write("SESSIONE ricollegata da sola"); return; }
+            }
+            if (cts.IsCancellationRequested) return;
+            SessionLog.Write("SESSIONE ricollegamento automatico non riuscito dopo 6 tentativi");
+            Overlay(L.T("Collegamento terminato"), reason + "\n" + L.T("Ricollegamento automatico non riuscito."),
+                (L.T("Ricollegati"), true, () => _ = ConnectAsync()), (L.T("Chiudi"), false, Disconnect));
+        }
+
         /// <summary>Dopo il riavvio: controlla sui broker ogni 15 s (per 10 minuti) e si ricollega appena il PC ripubblica l'indirizzo.</summary>
         private async Task WaitRebootAsync(bool update = false, string? customTitle = null, string? customText = null)
         {
@@ -1693,6 +1724,7 @@ namespace IpDeskCtrl.UI
             if (_ended) return;
             if (s.RebootRequested) { _ = WaitRebootAsync(); return; }
             if (s.UpdateRequested) { _ = WaitRebootAsync(true); return; }
+            if (s.Dropped && s.State == AcceptState.Accepted) { _ = AutoReconnectAsync(reason); return; }
             if (s.ServiceInstallRequested) { _ = WaitRebootAsync(true, L.T("Il PC remoto installa il servizio"), L.T("IP-DESK-CTRL si riavvia sul PC remoto con l'accesso completo: mi ricollego appena torna")); return; }
             if (s.State == AcceptState.Accepted || s.State == AcceptState.Waiting)
                 Overlay(L.T("Collegamento terminato"), reason, (L.T("Ricollegati"), true, () => _ = ConnectAsync()), (L.T("Chiudi"), false, Disconnect));
