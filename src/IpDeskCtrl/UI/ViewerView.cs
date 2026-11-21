@@ -706,8 +706,13 @@ namespace IpDeskCtrl.UI
         private void OnDrop(DragEventArgs e)
         {
             var s = _session;
-            if (s == null || s.State != AcceptState.Accepted || !s.InputAllowed) return;
+            if (s == null || s.State != AcceptState.Accepted || !s.InputAllowed)
+            {
+                SessionLog.Write("FILE trascinati sul visore ma non inviati: " + (s == null ? "nessuna sessione" : s.State != AcceptState.Accepted ? "sessione non ancora accettata" : "mouse e tastiera non consentiti dal PC remoto"));
+                return;
+            }
             var paths = (e.Data.GetFiles() ?? Enumerable.Empty<IStorageItem>()).Select(i => i.TryGetLocalPath()).Where(p => p != null).Cast<string>().ToList();
+            SessionLog.Write($"FILE trascinati sul visore: {paths.Count} da inviare");
             if (paths.Count == 0) return;
             // il puntatore del PC remoto va dove sono stati lasciati i file: lì verranno incollati
             var p = e.GetPosition(_view);

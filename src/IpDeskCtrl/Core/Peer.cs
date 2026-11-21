@@ -178,7 +178,7 @@ namespace IpDeskCtrl.Core
         {
             try
             {
-                SessionLog.Write($"AVVIO IP-DESK-CTRL {AppVersion.Text} · {AppVersion.Os} · numero {Identity.Format(Me.Number)}");
+                SessionLog.Write($"AVVIO IP-DESK-CTRL {AppVersion.Text} · {AppVersion.Os} · numero {Identity.Format(Me.Number)}" + ElevatedNote());
                 StartRendezvous(ct);
 
                 SetStatus(L.T("Apro la porta sul router…"));
@@ -364,6 +364,23 @@ namespace IpDeskCtrl.Core
         }
 
         // =================================================================== connessioni in arrivo
+
+        /// <summary>
+        /// Su Windows: se il programma gira come amministratore lo si scrive all'avvio. Windows non lascia trascinare
+        /// file da Esplora risorse (che gira senza privilegi) dentro un programma avviato come amministratore.
+        /// </summary>
+        private static string ElevatedNote()
+        {
+            if (!OperatingSystem.IsWindows()) return "";
+            try
+            {
+                using var id = System.Security.Principal.WindowsIdentity.GetCurrent();
+                if (id.IsSystem) return " · servizio (SYSTEM)";
+                return new System.Security.Principal.WindowsPrincipal(id).IsInRole(System.Security.Principal.WindowsBuiltInRole.Administrator)
+                    ? " · AVVIATO COME AMMINISTRATORE: Windows blocca il trascinamento dei file da Esplora risorse" : "";
+            }
+            catch { return ""; }
+        }
 
         private int _accepted;
         private long _probingUntil;
