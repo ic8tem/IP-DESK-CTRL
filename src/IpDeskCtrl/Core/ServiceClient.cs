@@ -38,7 +38,7 @@ namespace IpDeskCtrl.Core
         public event Action<DrawEvent>? DrawReceived;
         public event Action<string, int, int>? DropCatchRequested;   // id, x, y
 
-        public void SendDropped(string id, List<string> paths) =>
+        public void SendDropped(string id, System.Collections.Generic.List<string> paths) =>
             Write($"DROPPED {id} " + (paths.Count == 0 ? "-" : Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(string.Join("\n", paths)))));
         public event Action<string, bool>? RecordingChanged;  // numero, sta registrando
 

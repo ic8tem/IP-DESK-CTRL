@@ -54,7 +54,7 @@ namespace IpDeskCtrl.Core
         public static Func<string>? Reboot { get; set; }
 
         /// <summary>Trascinamento verso chi comanda: finestrella sotto il puntatore (pixel dello schermo), restituisce i file lasciati.</summary>
-        public static Func<int, int, Task<List<string>>>? CatchDrop { get; set; }
+        public static Func<int, int, Task<System.Collections.Generic.List<string>>>? CatchDrop { get; set; }
 
         // ---- accesso completo di Windows (servizio, UAC)
         /// <summary>0 = non c'entra (non Windows), 1 = servizio attivo, 2 = servizio assente ma installabile da qui, 3 = assente e non installabile.</summary>
