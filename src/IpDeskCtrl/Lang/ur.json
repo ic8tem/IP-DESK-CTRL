@@ -722,5 +722,8 @@
  "Sul PC remoto: {0}.": "ریموٹ پی سی پر: {0}۔",
  "codifica con la scheda grafica ({0}) sospesa fino al {1}: il PC si era bloccato mentre la usava": "گرافکس کارڈ سے انکوڈنگ ({0}) {1} تک معطل: اسے استعمال کرتے ہوئے پی سی جام ہو گیا تھا",
  "Trascinamento dal PC remoto: se erano file, arrivano qui in Scaricati e negli appunti (incollali con Ctrl+V)…": "ریموٹ پی سی سے گھسیٹنا: اگر فائلیں تھیں تو یہاں ڈاؤن لوڈز اور کلپ بورڈ میں آئیں گی (Ctrl+V سے چسپاں کریں)…",
- "Aggiornamenti automatici: ogni {0} minuti cerca una nuova versione e la installa da sola (i collegamenti riprendono)": "خودکار اپ ڈیٹس: ہر {0} منٹ بعد نیا ورژن تلاش ہوتا ہے اور خود انسٹال ہو جاتا ہے (کنکشن جاری رہتے ہیں)"
+ "Aggiornamenti automatici: ogni {0} minuti cerca una nuova versione e la installa da sola (i collegamenti riprendono)": "خودکار اپ ڈیٹس: ہر {0} منٹ بعد نیا ورژن تلاش ہوتا ہے اور خود انسٹال ہو جاتا ہے (کنکشن جاری رہتے ہیں)",
+ "Sul PC remoto ci sono file copiati: {0} ({1}).": "ریموٹ پی سی پر کاپی کی گئی فائلیں ہیں: {0} ({1})۔",
+ "Prendili qui": "یہاں لے آئیں",
+ "Prendo i file copiati sul PC remoto…": "ریموٹ پی سی پر کاپی کی گئی فائلیں لا رہا ہوں…"
 }

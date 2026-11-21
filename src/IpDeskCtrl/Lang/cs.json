@@ -722,5 +722,8 @@
  "Sul PC remoto: {0}.": "Na vzdáleném počítači: {0}.",
  "codifica con la scheda grafica ({0}) sospesa fino al {1}: il PC si era bloccato mentre la usava": "kódování grafickou kartou ({0}) pozastaveno do {1}: počítač při jeho používání zamrzl",
  "Trascinamento dal PC remoto: se erano file, arrivano qui in Scaricati e negli appunti (incollali con Ctrl+V)…": "Přetažení ze vzdáleného počítače: pokud to byly soubory, přijdou sem do Stažených souborů a do schránky (vložte je Ctrl+V)…",
- "Aggiornamenti automatici: ogni {0} minuti cerca una nuova versione e la installa da sola (i collegamenti riprendono)": "Automatické aktualizace: každých {0} minut se hledá nová verze a nainstaluje se sama (připojení pokračují)"
+ "Aggiornamenti automatici: ogni {0} minuti cerca una nuova versione e la installa da sola (i collegamenti riprendono)": "Automatické aktualizace: každých {0} minut se hledá nová verze a nainstaluje se sama (připojení pokračují)",
+ "Sul PC remoto ci sono file copiati: {0} ({1}).": "Na vzdáleném počítači jsou zkopírované soubory: {0} ({1}).",
+ "Prendili qui": "Přenést sem",
+ "Prendo i file copiati sul PC remoto…": "Přenáším soubory zkopírované na vzdáleném počítači…"
 }

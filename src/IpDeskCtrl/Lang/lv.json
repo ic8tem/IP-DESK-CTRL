@@ -722,5 +722,8 @@
  "Sul PC remoto: {0}.": "Attālajā datorā: {0}.",
  "codifica con la scheda grafica ({0}) sospesa fino al {1}: il PC si era bloccato mentre la usava": "kodēšana ar grafisko karti ({0}) apturēta līdz {1}: dators bija uzkāries tās lietošanas laikā",
  "Trascinamento dal PC remoto: se erano file, arrivano qui in Scaricati e negli appunti (incollali con Ctrl+V)…": "Vilkšana no attālā datora: ja tie bija faili, tie nonāk šeit mapē Lejupielādes un starpliktuvē (ielīmē ar Ctrl+V)…",
- "Aggiornamenti automatici: ogni {0} minuti cerca una nuova versione e la installa da sola (i collegamenti riprendono)": "Automātiskie atjauninājumi: ik pēc {0} minūtēm tiek meklēta jauna versija, un tā instalējas pati (savienojumi turpinās)"
+ "Aggiornamenti automatici: ogni {0} minuti cerca una nuova versione e la installa da sola (i collegamenti riprendono)": "Automātiskie atjauninājumi: ik pēc {0} minūtēm tiek meklēta jauna versija, un tā instalējas pati (savienojumi turpinās)",
+ "Sul PC remoto ci sono file copiati: {0} ({1}).": "Attālajā datorā ir nokopēti faili: {0} ({1}).",
+ "Prendili qui": "Paņemt šeit",
+ "Prendo i file copiati sul PC remoto…": "Ņemu attālajā datorā nokopētos failus…"
 }

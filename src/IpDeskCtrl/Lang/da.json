@@ -722,5 +722,8 @@
  "Sul PC remoto: {0}.": "På fjern-pc'en: {0}.",
  "codifica con la scheda grafica ({0}) sospesa fino al {1}: il PC si era bloccato mentre la usava": "kodning med grafikkortet ({0}) sat på pause til {1}: pc'en var gået i stå, mens den blev brugt",
  "Trascinamento dal PC remoto: se erano file, arrivano qui in Scaricati e negli appunti (incollali con Ctrl+V)…": "Træk fra fjern-pc'en: hvis det var filer, kommer de her i Overførsler og i udklipsholderen (indsæt med Ctrl+V)…",
- "Aggiornamenti automatici: ogni {0} minuti cerca una nuova versione e la installa da sola (i collegamenti riprendono)": "Automatiske opdateringer: hvert {0}. minut søges der efter en ny version, som installeres af sig selv (forbindelserne fortsætter)"
+ "Aggiornamenti automatici: ogni {0} minuti cerca una nuova versione e la installa da sola (i collegamenti riprendono)": "Automatiske opdateringer: hvert {0}. minut søges der efter en ny version, som installeres af sig selv (forbindelserne fortsætter)",
+ "Sul PC remoto ci sono file copiati: {0} ({1}).": "Der er kopierede filer på fjern-pc'en: {0} ({1}).",
+ "Prendili qui": "Hent dem her",
+ "Prendo i file copiati sul PC remoto…": "Henter filerne, der er kopieret på fjern-pc'en…"
 }

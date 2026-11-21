@@ -722,5 +722,8 @@
  "Sul PC remoto: {0}.": "원격 PC: {0}.",
  "codifica con la scheda grafica ({0}) sospesa fino al {1}: il PC si era bloccato mentre la usava": "그래픽 카드 인코딩({0})이 {1}까지 중지됨: 사용 중 PC가 멈췄기 때문",
  "Trascinamento dal PC remoto: se erano file, arrivano qui in Scaricati e negli appunti (incollali con Ctrl+V)…": "원격 PC에서 끌어오기: 파일이면 이곳의 다운로드 폴더와 클립보드로 옵니다(Ctrl+V로 붙여넣기)…",
- "Aggiornamenti automatici: ogni {0} minuti cerca una nuova versione e la installa da sola (i collegamenti riprendono)": "자동 업데이트: {0}분마다 새 버전을 찾아 스스로 설치합니다(연결은 계속됨)"
+ "Aggiornamenti automatici: ogni {0} minuti cerca una nuova versione e la installa da sola (i collegamenti riprendono)": "자동 업데이트: {0}분마다 새 버전을 찾아 스스로 설치합니다(연결은 계속됨)",
+ "Sul PC remoto ci sono file copiati: {0} ({1}).": "원격 PC에 복사된 파일이 있습니다: {0} ({1}).",
+ "Prendili qui": "여기로 가져오기",
+ "Prendo i file copiati sul PC remoto…": "원격 PC에서 복사한 파일을 가져오는 중…"
 }

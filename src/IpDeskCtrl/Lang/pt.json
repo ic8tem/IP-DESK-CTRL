@@ -722,5 +722,8 @@
  "Sul PC remoto: {0}.": "No PC remoto: {0}.",
  "codifica con la scheda grafica ({0}) sospesa fino al {1}: il PC si era bloccato mentre la usava": "codificação com a placa gráfica ({0}) suspensa até {1}: o PC tinha bloqueado enquanto a usava",
  "Trascinamento dal PC remoto: se erano file, arrivano qui in Scaricati e negli appunti (incollali con Ctrl+V)…": "Arrastar do PC remoto: se eram ficheiros, chegam aqui a Transferências e à área de transferência (cole com Ctrl+V)…",
- "Aggiornamenti automatici: ogni {0} minuti cerca una nuova versione e la installa da sola (i collegamenti riprendono)": "Atualizações automáticas: a cada {0} minutos procura uma nova versão e instala-a sozinha (as ligações retomam)"
+ "Aggiornamenti automatici: ogni {0} minuti cerca una nuova versione e la installa da sola (i collegamenti riprendono)": "Atualizações automáticas: a cada {0} minutos procura uma nova versão e instala-a sozinha (as ligações retomam)",
+ "Sul PC remoto ci sono file copiati: {0} ({1}).": "Há ficheiros copiados no PC remoto: {0} ({1}).",
+ "Prendili qui": "Trazê-los para aqui",
+ "Prendo i file copiati sul PC remoto…": "A trazer os ficheiros copiados no PC remoto…"
 }

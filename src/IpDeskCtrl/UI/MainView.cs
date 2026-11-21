@@ -439,9 +439,22 @@ namespace IpDeskCtrl.UI
                 _netStatus.Text = L.T("Aggiornamento in corso…");
                 _serviceUpdating = true;                     // l'aggiornamento lo fa il servizio: niente finestra doppia
                 _updateDialog?.Close(); _updateDialog = null;
+                // i collegamenti aperti da qui si riaprono da soli quando il servizio riapre il programma aggiornato
+                try
+                {
+                    var open = _viewers.Keys.ToList();
+                    foreach (var v in _viewers.Values) v.PrepareUpdate();
+                    if (open.Count > 0)
+                    {
+                        _s.ResumeViewers = open;
+                        _s.ResumeUntil = DateTime.UtcNow.Add(ResumeState.Window).Ticks;
+                        _s.Save();
+                        SessionLog.Write($"AGGIORNAMENTI {open.Count} collegamenti aperti: li riapro dopo l'aggiornamento");
+                    }
+                }
+                catch (Exception ex) { ErrorLog.Write("Aggiornamento dal servizio, collegamenti da riprendere: " + ex.Message); }
                 // il programma si chiude subito, così l'installatore non aspetta che esca (su 630 705 7520 ci metteva
                 // più di 3 minuti); a installazione finita lo riapre il servizio
-                if (OpenSessions == 0)
                     _ = Task.Run(async () =>
                     {
                         await Task.Delay(5000);

@@ -722,5 +722,8 @@
  "Sul PC remoto: {0}.": "Kaugarvutis: {0}.",
  "codifica con la scheda grafica ({0}) sospesa fino al {1}: il PC si era bloccato mentre la usava": "graafikakaardiga kodeerimine ({0}) peatatud kuni {1}: arvuti oli selle kasutamise ajal hangunud",
  "Trascinamento dal PC remoto: se erano file, arrivano qui in Scaricati e negli appunti (incollali con Ctrl+V)…": "Lohistamine kaugarvutist: kui need olid failid, jõuavad need siia kausta Allalaadimised ja lõikelauale (kleebi Ctrl+V-ga)…",
- "Aggiornamenti automatici: ogni {0} minuti cerca una nuova versione e la installa da sola (i collegamenti riprendono)": "Automaatsed uuendused: iga {0} minuti järel otsitakse uut versiooni ja see paigaldub ise (ühendused jätkuvad)"
+ "Aggiornamenti automatici: ogni {0} minuti cerca una nuova versione e la installa da sola (i collegamenti riprendono)": "Automaatsed uuendused: iga {0} minuti järel otsitakse uut versiooni ja see paigaldub ise (ühendused jätkuvad)",
+ "Sul PC remoto ci sono file copiati: {0} ({1}).": "Kaugarvutis on kopeeritud faile: {0} ({1}).",
+ "Prendili qui": "Too siia",
+ "Prendo i file copiati sul PC remoto…": "Toon kaugarvutis kopeeritud failid…"
 }

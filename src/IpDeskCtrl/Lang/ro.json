@@ -722,5 +722,8 @@
  "Sul PC remoto: {0}.": "Pe PC-ul de la distanță: {0}.",
  "codifica con la scheda grafica ({0}) sospesa fino al {1}: il PC si era bloccato mentre la usava": "codarea cu placa video ({0}) suspendată până la {1}: PC-ul se blocase în timpul folosirii ei",
  "Trascinamento dal PC remoto: se erano file, arrivano qui in Scaricati e negli appunti (incollali con Ctrl+V)…": "Tragere de pe PC-ul de la distanță: dacă erau fișiere, ajung aici în Descărcări și în clipboard (lipește-le cu Ctrl+V)…",
- "Aggiornamenti automatici: ogni {0} minuti cerca una nuova versione e la installa da sola (i collegamenti riprendono)": "Actualizări automate: la fiecare {0} de minute se caută o versiune nouă și se instalează singură (conexiunile continuă)"
+ "Aggiornamenti automatici: ogni {0} minuti cerca una nuova versione e la installa da sola (i collegamenti riprendono)": "Actualizări automate: la fiecare {0} de minute se caută o versiune nouă și se instalează singură (conexiunile continuă)",
+ "Sul PC remoto ci sono file copiati: {0} ({1}).": "Pe PC-ul de la distanță sunt fișiere copiate: {0} ({1}).",
+ "Prendili qui": "Adu-le aici",
+ "Prendo i file copiati sul PC remoto…": "Aduc fișierele copiate pe PC-ul de la distanță…"
 }

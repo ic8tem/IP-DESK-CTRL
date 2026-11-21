@@ -5,6 +5,9 @@ Le versioni con protocollo diverso non si collegano tra loro: aggiorna tutti i d
 
 ## 0.5.30 — 21 novembre 2026
 - **Nuove versioni trovate prima**: il controllo passa da ogni 30 minuti a **ogni 5 minuti**. Il controllo frequente guarda solo il rimando della pagina «ultima versione» di GitHub, che non ha limiti; i dettagli si chiedono all'API di GitHub solo quando c'è davvero una versione nuova, così anche più PC dietro la stessa connessione non superano le 60 richieste all'ora concesse senza account.
+- **Collegamenti ripresi anche quando aggiorna il servizio**: se questo PC si aggiorna tramite il servizio di Windows mentre hai collegamenti aperti, il programma si chiude, il servizio lo riapre aggiornato e i collegamenti si riaprono da soli (prima si riprendevano solo con l'aggiornamento fatto dal programma).
+- **Trascinamento verso di te**: il controllo che il PC remoto lo supporti si fa al momento del trascinamento (prima si faceva troppo presto e restava spento).
+- **File copiati prima del collegamento**: invece di ignorarli in silenzio, il visore avvisa che sul PC remoto ci sono file copiati e mostra il pulsante **Prendili qui**.
 
 ## 0.5.29 — 21 novembre 2026
 - **Trascinamento dal PC remoto verso il tuo**: trascina un file in Esplora file del PC remoto e portalo fuori dalla finestra del visore (o sul bordo, a schermo intero): sul PC remoto una finestrella invisibile raccoglie il file lasciato e lo manda qui, in Scaricati e negli appunti, pronto da incollare con Ctrl+V. Serve la 0.5.29 su tutti e due i PC.

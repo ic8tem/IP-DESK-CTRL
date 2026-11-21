@@ -722,5 +722,8 @@
  "Sul PC remoto: {0}.": "På fjärrdatorn: {0}.",
  "codifica con la scheda grafica ({0}) sospesa fino al {1}: il PC si era bloccato mentre la usava": "kodning med grafikkortet ({0}) pausad till {1}: datorn hade hängt sig medan den användes",
  "Trascinamento dal PC remoto: se erano file, arrivano qui in Scaricati e negli appunti (incollali con Ctrl+V)…": "Dra från fjärrdatorn: om det var filer hamnar de här i Hämtade filer och i urklipp (klistra in med Ctrl+V)…",
- "Aggiornamenti automatici: ogni {0} minuti cerca una nuova versione e la installa da sola (i collegamenti riprendono)": "Automatiska uppdateringar: var {0}:e minut söks en ny version som installeras av sig själv (anslutningarna fortsätter)"
+ "Aggiornamenti automatici: ogni {0} minuti cerca una nuova versione e la installa da sola (i collegamenti riprendono)": "Automatiska uppdateringar: var {0}:e minut söks en ny version som installeras av sig själv (anslutningarna fortsätter)",
+ "Sul PC remoto ci sono file copiati: {0} ({1}).": "Det finns kopierade filer på fjärrdatorn: {0} ({1}).",
+ "Prendili qui": "Hämta hit",
+ "Prendo i file copiati sul PC remoto…": "Hämtar filerna som kopierats på fjärrdatorn…"
 }
