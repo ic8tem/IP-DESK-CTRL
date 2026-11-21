@@ -79,6 +79,9 @@ namespace IpDeskCtrl.UI
         private bool _panelHold, _panelCancel;
         private static int _panelLast;
         private readonly Button _files = new() { Content = L.T("File ▾") };
+        private readonly Button _chatBtn = new() { Content = L.T("Chat") };
+        private ChatPanel? _chat;
+        private int _chatUnread;
         private readonly TextBlock _stats = new() { FontSize = 11, VerticalAlignment = VerticalAlignment.Center, Foreground = Brushes.Gainsboro, MinWidth = 150 };
 
         // tastiera del telefono
@@ -310,6 +313,9 @@ namespace IpDeskCtrl.UI
             keys.Flyout = menu;
             ToolTip.SetTip(keys, L.T("Combinazioni che il tuo sistema non lascerebbe passare. Ctrl+Alt+Canc su Windows richiede il servizio «accesso completo» sul PC remoto."));
 
+            _chatBtn.Click += (_, _) => ToggleChat(_chat?.IsVisible != true);
+            ToolTip.SetTip(_chatBtn, L.T("Scrivi a chi è davanti al PC remoto: gli si apre una finestra di chat."));
+
             _files.Click += (_, _) => ShowFilesMenu();
             ToolTip.SetTip(_files, L.T("Manda file al PC remoto o prendi quelli copiati lì. Puoi anche trascinarli sulla finestra."));
 
@@ -343,7 +349,7 @@ namespace IpDeskCtrl.UI
 
             var bar = new WrapPanel { HorizontalAlignment = HorizontalAlignment.Center };
             _bar = bar;
-            foreach (var c in new Control[] { _fullBtn, minus, _zoom, plus, _monitor, _quality, _codec, _fitRes, _audio, _mic, keyboard, gestures, keys, _files, _tunnelBtn, _radio, refresh, _stats, close, hide })
+            foreach (var c in new Control[] { _fullBtn, minus, _zoom, plus, _monitor, _quality, _codec, _fitRes, _audio, _mic, keyboard, gestures, keys, _files, _chatBtn, _tunnelBtn, _radio, refresh, _stats, close, hide })
             {
                 c.VerticalAlignment = VerticalAlignment.Center;
                 c.Margin = new Thickness(3);
@@ -401,6 +407,19 @@ namespace IpDeskCtrl.UI
             // ---- pannello scorciatoie
             BuildPanel();
             grid.Children.Add(_panel);
+
+            // ---- chat
+            _chat = new ChatPanel(Identity.Format(_number), t => _session?.SendChat(t), true)
+            {
+                Width = Platform.IsMobile ? double.NaN : 340,
+                Margin = new Thickness(12, 60, 12, 12),
+                HorizontalAlignment = Platform.IsMobile ? HorizontalAlignment.Stretch : HorizontalAlignment.Right,
+                VerticalAlignment = VerticalAlignment.Stretch,
+                MaxHeight = 520,
+                IsVisible = false,
+            };
+            _chat.CloseRequested += () => ToggleChat(false);
+            grid.Children.Add(_chat);
 
             // ---- trasferimento di file
             _transfer.Child = new StackPanel { Spacing = 4, Children = { _transferText, _transferBar } };
@@ -590,6 +609,18 @@ namespace IpDeskCtrl.UI
         }
 
         // =================================================================== file
+
+        private void ToggleChat(bool show)
+        {
+            if (_chat == null) return;
+            if (show && _session?.PeerHas("chat") == false)
+            {
+                ShowNote(L.T("La chat richiede IP-DESK-CTRL 0.5.22 o successivo sul PC remoto."));
+                return;
+            }
+            _chat.IsVisible = show;
+            if (show) { _chatUnread = 0; _chatBtn.Content = L.T("Chat"); _chat.FocusInput(); }
+        }
 
         private void ShowFilesMenu()
         {
@@ -1296,6 +1327,14 @@ namespace IpDeskCtrl.UI
                              (onClip ? (Platform.IsMobile ? "." : L.T(": sono negli appunti, incollali con Ctrl+V dove vuoi.")) : "."), true);
                 });
                 s.TunnelMessage += m => Dispatcher.UIThread.Post(() => ShowNote(m));
+                s.ChatReceived += t => Dispatcher.UIThread.Post(() =>
+                {
+                    _chat?.Add(false, t);
+                    if (_chat?.IsVisible == true) return;
+                    _chatUnread++;
+                    _chatBtn.Content = L.T("Chat") + $" ({_chatUnread})";
+                    ToggleChat(true);
+                });
                 s.DriveChanged += (on, where) => Dispatcher.UIThread.Post(() =>
                     ShowNote(on ? L.F("Cartella condivisa: sul PC remoto è il disco {0}.", where)
                         : where.Length > 0 ? L.T("Cartella non montata sul PC remoto: ") + where + "." : L.T("Cartella condivisa tolta.")));

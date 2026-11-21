@@ -70,6 +70,14 @@ namespace IpDeskCtrl.Core
                     PeerCaps = r.AtEnd ? "" : r.Str();
                     break;
                 case Msg.FsResp: _files?.OnResponse(r); break;
+                case Msg.Chat:
+                {
+                    string text = r.Str();
+                    if (text.Length > 4000) text = text[..4000];
+                    SessionLog.Write($"CHAT da {Identity.Format(PeerNumber)}: {text}");
+                    ChatReceived?.Invoke(text);
+                    break;
+                }
                 case Msg.DriveReq:
                 {
                     int id = r.I32(); byte op = r.U8(); string path = r.Str(), path2 = r.Str(); long pos = r.I64();
@@ -246,6 +254,16 @@ namespace IpDeskCtrl.Core
         public void SelectMonitor(int index) => Send(new MsgWriter(Msg.SelectMonitor).I32(index).Build());
 
         // ------------------------------------------------------------------ 0.5: funzioni annunciate dall'altro PC
+
+        /// <summary>Messaggio di chat da chi è davanti al PC remoto.</summary>
+        public event Action<string>? ChatReceived;
+
+        public void SendChat(string text)
+        {
+            if (text.Length == 0) return;
+            SessionLog.Write($"CHAT a {Identity.Format(PeerNumber)}: {text}");
+            Send(new MsgWriter(Msg.Chat).Str(text).Build());
+        }
 
         private DriveClient? _files;
         /// <summary>Gestione file a due pannelli: richieste al PC remoto (null se il PC remoto non la conosce, prima della 0.5.22).</summary>

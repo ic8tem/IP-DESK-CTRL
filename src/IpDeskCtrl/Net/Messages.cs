@@ -85,6 +85,9 @@ namespace IpDeskCtrl.Net
         // ---- gestione file a due pannelli: il visore sfoglia e trasferisce i file del PC remoto (0.5.22+)
         public const byte FsReq = 0x86;          // visore -> host: come DriveReq, percorsi assoluti («» = radice)
         public const byte FsResp = 0x87;         // host -> visore: come DriveResp
+
+        // ---- chat tra chi comanda e chi è davanti al PC (0.5.22+)
+        public const byte Chat = 0x88;           // nei due versi: str testo
     }
 
     public enum AcceptState : byte { Waiting = 0, Accepted = 1, Rejected = 2, Busy = 3, Disabled = 4 }

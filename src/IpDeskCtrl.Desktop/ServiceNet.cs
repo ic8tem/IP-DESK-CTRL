@@ -88,6 +88,7 @@ namespace IpDeskCtrl.Desktop
                 _peer = new Peer(me, _s) { AskAccept = AskAsync };
                 _peer.HostStarted += hs => Broadcast($"START {hs.PeerNumber} {(hs.InputAllowed ? 1 : 0)}");
                 _peer.HostEnded += (hs, why) => Broadcast($"END {hs.PeerNumber} {why.Replace('\n', ' ')}");
+                _peer.HostChat += (hs, text) => Broadcast($"CHAT {hs.PeerNumber} {Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(text))}");
                 _peer.UpdateRequested += OnUpdateRequested;
                 _peer.Start();
                 _life.Register(() => { try { _peer.Dispose(); } catch { } });
@@ -234,6 +235,13 @@ namespace IpDeskCtrl.Desktop
                         case "TRXDONE":
                             SessionLog.Write("SERVIZIO IP-TRX-CTRL nella sessione dell'utente: " + string.Join(' ', p.Skip(1)));
                             break;
+                        case "CHATSEND" when p.Length >= 3 && _peer != null:
+                        {
+                            string text;
+                            try { text = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(p[2])); } catch { break; }
+                            _peer.FindIncoming(p[1])?.SendChat(text);
+                            break;
+                        }
                         case "KICK":
                             _peer?.CloseIncoming("chiuso dall'utente dell'altro PC");
                             break;

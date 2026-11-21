@@ -504,6 +504,17 @@ namespace IpDeskCtrl.Core
             };
         }
 
+        /// <summary>Messaggio di chat da chi comanda questo PC (numero di chi scrive, testo).</summary>
+        public event Action<HostSession, string>? HostChat;
+        internal void RaiseChat(HostSession hs, string text) => HostChat?.Invoke(hs, text);
+
+        /// <summary>La sessione in arrivo di quel numero (principale o in più), se c'è.</summary>
+        public HostSession? FindIncoming(string number)
+        {
+            lock (_hostLock)
+                return _host?.PeerNumber == number ? _host : _observers.FirstOrDefault(o => o.PeerNumber == number);
+        }
+
         /// <summary>Mouse e tastiera concessi o tolti a tutti quelli collegati a questo PC.</summary>
         public void SetIncomingInput(bool on)
         {

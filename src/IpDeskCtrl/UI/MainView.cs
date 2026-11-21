@@ -39,6 +39,7 @@ namespace IpDeskCtrl.UI
         private readonly TextBox _target = new() { Watermark = "123 456 7890", FontSize = 22, MaxLength = 16 };
         private readonly TextBlock _connectInfo = Ui.Sub("");
         private readonly StackPanel _history = new() { Spacing = 8 };
+        private string _incomingNumber = "";
         private readonly Border _incomingBanner = new() { IsVisible = false, CornerRadius = new CornerRadius(10), Padding = new Thickness(14) };
         private readonly TextBlock _incomingText = new() { TextWrapping = TextWrapping.Wrap, FontWeight = FontWeight.Bold };
         private readonly CheckBox _incomingInput = new() { Content = L.T("Mouse e tastiera") };
@@ -154,7 +155,10 @@ namespace IpDeskCtrl.UI
                 _svc?.Kick();
             };
             _incomingBanner.Background = Themes.B(Themes.Current.TxDim);
-            _incomingBanner.Child = Ui.Col(8, _incomingText, Ui.Row(10, _incomingInput, stop));
+            var chat = Ui.Btn(L.T("Chat"));
+            chat.IsVisible = !Platform.IsMobile;
+            chat.Click += (_, _) => { if (_incomingNumber.Length > 0) OpenChat(_incomingNumber, null); };
+            _incomingBanner.Child = Ui.Col(8, _incomingText, Ui.Row(10, _incomingInput, chat, stop));
             col.Children.Add(Ui.Panel(Ui.Col(6,
                 Ui.H2(Platform.IsMobile ? L.T("IL NUMERO DI QUESTO DISPOSITIVO") : L.T("IL NUMERO DI QUESTO PC")),
                 numRow,
@@ -364,6 +368,7 @@ namespace IpDeskCtrl.UI
                 _peer.AskAccept = AskAcceptAsync;
                 _peer.HostStarted += hs => Dispatcher.UIThread.Post(() => OnHostStarted(hs));
                 _peer.HostEnded += (hs, why) => Dispatcher.UIThread.Post(() => OnHostEnded(hs, why));
+                _peer.HostChat += (hs, text) => Dispatcher.UIThread.Post(() => OpenChat(hs.PeerNumber, text));
                 _peer.UpdateRequested += n => _ = ForcedUpdateAsync(n);
                 { var k = Updater.Detect(); _peer.CanUpdateSelf = k != Updater.Kind.None && k != Updater.Kind.Android; }
                 _peer.Start();
@@ -390,6 +395,7 @@ namespace IpDeskCtrl.UI
             if (_svc == null) return;
             _svc.AskAccept = AskAcceptAsync;
             _svc.HostStarted += (n, input) => Dispatcher.UIThread.Post(() => { _svcHosts++; OnServiceHostStarted(n, input); });
+            _svc.ChatReceived += (n, text) => Dispatcher.UIThread.Post(() => OpenChat(n, text));
             _svc.HostEnded += (n, why) => Dispatcher.UIThread.Post(() => { _svcHosts = Math.Max(0, _svcHosts - 1); _incomingBanner.IsVisible = false; RebuildHistory(); });
             _svc.UpdateRequested += n => Dispatcher.UIThread.Post(() =>
             {
@@ -421,6 +427,7 @@ namespace IpDeskCtrl.UI
 
         private void OnServiceHostStarted(string number, bool input)
         {
+            _incomingNumber = number;
             var h = _s.Find(number);
             string who = (h?.Alias.Length > 0 ? h.Alias + " · " : "") + Identity.Format(number);
             _incomingText.Text = L.F("{0} è collegato a questo PC e lo vede", who) + (input ? L.T(" e lo comanda.") : ".");
@@ -1029,6 +1036,7 @@ namespace IpDeskCtrl.UI
 
         private void OnHostStarted(HostSession hs)
         {
+            _incomingNumber = hs.PeerNumber;
             var h = _s.Find(hs.PeerNumber);
             string who = (h?.Alias.Length > 0 ? h.Alias + " · " : "") + Identity.Format(hs.PeerNumber);
             _incomingText.Text = L.F("{0} è collegato a questo PC e lo vede", who) + (hs.InputAllowed ? L.T(" e lo comanda.") : ".");
@@ -1037,6 +1045,27 @@ namespace IpDeskCtrl.UI
             _controlled?.Close();
             _controlled = Shell.Current.ShowCorner(Dialogs.Controlled(hs, who));
             RebuildHistory();
+        }
+
+        /// <summary>Chat con chi comanda questo PC: si apre una finestra in primo piano (servizio o programma).</summary>
+        private void OpenChat(string number, string? received)
+        {
+            if (Platform.IsMobile)
+            {
+                if (received != null) ShowChatNote(number, received);
+                return;
+            }
+            var owner = TopLevel.GetTopLevel(this) as Window;
+            ChatPanel.ShowWindow(owner, number, t =>
+            {
+                if (_svc != null && _peer?.FindIncoming(number) == null) _svc.SendChat(number, t);
+                else _peer?.FindIncoming(number)?.SendChat(t);
+            }, received);
+        }
+
+        private void ShowChatNote(string number, string text)
+        {
+            _netStatus.Text = L.F("Messaggio da {0}: {1}", Identity.Format(number), text);
         }
 
         private void OnHostEnded(HostSession hs, string why)

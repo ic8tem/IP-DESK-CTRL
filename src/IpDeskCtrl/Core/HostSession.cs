@@ -272,6 +272,17 @@ namespace IpDeskCtrl.Core
                     if (_accepted) _ = Task.Run(() => RequestResize(w, h));
                     break;
                 }
+                case Msg.Chat:
+                {
+                    string text = r.Str();
+                    if (_accepted && text.Length > 0)
+                    {
+                        if (text.Length > 4000) text = text[..4000];
+                        SessionLog.Write($"CHAT da {Identity.Format(PeerNumber)}: {text}");
+                        P.RaiseChat(this, text);
+                    }
+                    break;
+                }
                 case Msg.Volume:
                 {
                     int a = r.U8();
@@ -504,6 +515,14 @@ namespace IpDeskCtrl.Core
             return (Math.Clamp(x, a.X, a.X + a.W - 1), Math.Clamp(y, a.Y, a.Y + a.H - 1));
         }
 
+        /// <summary>Messaggio di chat a chi comanda questo PC.</summary>
+        public void SendChat(string text)
+        {
+            if (text.Length == 0 || IsClosed) return;
+            SessionLog.Write($"CHAT a {Identity.Format(PeerNumber)}: {text}");
+            Send(new MsgWriter(Msg.Chat).Str(text).Build());
+        }
+
         private readonly Dictionary<string, long> _noteLogged = new();
 
         private void Note(string text)
@@ -702,6 +721,7 @@ namespace IpDeskCtrl.Core
             _audio?.Dispose();
             lock (_micLock) { _mic?.Dispose(); _mic = null; }
             _resizer.Dispose();
+            if (Platform.FitDisplay != null && _fitW > 0) try { Platform.FitDisplay(null, 0, 0); } catch { }
             CloseDrive(L.T("collegamento chiuso"));
             _tunnels?.CloseAll();
             _video?.Dispose();
@@ -769,7 +789,7 @@ namespace IpDeskCtrl.Core
             try
             {
                 MonitorInfo? mon = _selected >= 0 && _selected < _monitors.Count ? _monitors[_selected] : null;
-                string err = _resizer.Fit(mon, w, h);
+                string err = Platform.FitDisplay?.Invoke(mon, w, h) ?? _resizer.Fit(mon, w, h);
                 if (err.Length > 0) Note(err);
                 Thread.Sleep(800);              // il desktop si ridisegna: poi si rimanda l'elenco dei monitor
                 SendMonitors();
