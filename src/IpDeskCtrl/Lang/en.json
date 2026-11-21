@@ -721,5 +721,9 @@
  "Ricollegamento automatico non riuscito.": "Automatic reconnection failed.",
  "Sul PC remoto: {0}.": "On the remote PC: {0}.",
  "codifica con la scheda grafica ({0}) sospesa fino al {1}: il PC si era bloccato mentre la usava": "encoding with the graphics card ({0}) suspended until {1}: the PC had frozen while using it",
- "Trascinamento dal PC remoto: se erano file, arrivano qui in Scaricati e negli appunti (incollali con Ctrl+V)…": "Drag from the remote PC: if they were files, they arrive here in Downloads and on the clipboard (paste them with Ctrl+V)…"
+ "Trascinamento dal PC remoto: se erano file, arrivano qui in Scaricati e negli appunti (incollali con Ctrl+V)…": "Drag from the remote PC: if they were files, they arrive here in Downloads and on the clipboard (paste them with Ctrl+V)…",
+ "Aggiornamenti automatici: ogni {0} minuti cerca una nuova versione e la installa da sola (i collegamenti riprendono)": "Automatic updates: every {0} minutes it looks for a new version and installs it by itself (connections resume)",
+ "Sul PC remoto ci sono file copiati: {0} ({1}).": "There are copied files on the remote PC: {0} ({1}).",
+ "Prendili qui": "Get them here",
+ "Prendo i file copiati sul PC remoto…": "Getting the files copied on the remote PC…"
 }

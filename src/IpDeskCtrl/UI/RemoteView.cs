@@ -176,7 +176,7 @@ namespace IpDeskCtrl.UI
 
         private bool _leftDown, _dragOut;
         /// <summary>Il PC remoto sa raccogliere un trascinamento portato fuori dalla finestra (0.5.29+).</summary>
-        public bool DragOutEnabled { get; set; }
+        public Func<bool>? DragOutEnabled { get; set; }
         public event Action? DragOutRequested;
 
         private (int x, int y)? ToImage(Point local)
@@ -282,7 +282,7 @@ namespace IpDeskCtrl.UI
             _lastLocal = e.GetPosition(this);
             if (!CanInput) return;
             if (_dragOut) { e.Handled = true; return; }
-            if (_leftDown && DragOutEnabled && e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
+            if (_leftDown && DragOutEnabled?.Invoke() == true && e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
             {
                 // trascinamento portato fuori dall'immagine del PC remoto (o sul bordo, a schermo intero):
                 // di là si raccoglie cosa viene lasciato e i file arrivano qui

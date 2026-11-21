@@ -876,7 +876,9 @@ namespace IpDeskCtrl.UI
             }
             if (firstSeen)
             {
-                SessionLog.Write(head + "erano già negli appunti prima del collegamento, non li prendo da solo");
+                SessionLog.Write(head + "erano già negli appunti prima del collegamento: non li prendo da solo, propongo il pulsante");
+                ShowNote(L.F("Sul PC remoto ci sono file copiati: {0} ({1}).", first, Size(bytes)));
+                SetNoteAction(L.T("Prendili qui"), () => { s.FetchRemoteFiles(); ShowNote(L.T("Prendo i file copiati sul PC remoto…")); });
                 ShowNote(L.F("Sul PC remoto erano già copiati {0} elementi: se ti servono, File › «Prendi qui i file copiati sul PC remoto».", count));
                 return;
             }
@@ -1529,7 +1531,7 @@ namespace IpDeskCtrl.UI
                 var s = new ViewerSession(_peer, link);
                 _session = s;
                 _view.Session = s;
-                _view.DragOutEnabled = s.PeerHas("dragout") && !Platform.IsMobile;
+                _view.DragOutEnabled = () => !Platform.IsMobile && _session?.PeerHas("dragout") == true;
                 if (_view.DrawMode) { _view.DrawMode = false; _drawBtn.IsChecked = false; }
                 s.StateChanged += () => Dispatcher.UIThread.Post(() => OnState(s));
                 s.PasswordRequested += c => Dispatcher.UIThread.Post(() => AskPassword(s, c));

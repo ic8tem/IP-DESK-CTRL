@@ -721,5 +721,9 @@
  "Ricollegamento automatico non riuscito.": "Automatisk ny tilkobling mislyktes.",
  "Sul PC remoto: {0}.": "På den eksterne PC-en: {0}.",
  "codifica con la scheda grafica ({0}) sospesa fino al {1}: il PC si era bloccato mentre la usava": "koding med skjermkortet ({0}) stanset til {1}: PC-en hadde hengt seg mens det ble brukt",
- "Trascinamento dal PC remoto: se erano file, arrivano qui in Scaricati e negli appunti (incollali con Ctrl+V)…": "Dra fra den eksterne PC-en: hvis det var filer, havner de her i Nedlastinger og på utklippstavlen (lim inn med Ctrl+V)…"
+ "Trascinamento dal PC remoto: se erano file, arrivano qui in Scaricati e negli appunti (incollali con Ctrl+V)…": "Dra fra den eksterne PC-en: hvis det var filer, havner de her i Nedlastinger og på utklippstavlen (lim inn med Ctrl+V)…",
+ "Aggiornamenti automatici: ogni {0} minuti cerca una nuova versione e la installa da sola (i collegamenti riprendono)": "Automatiske oppdateringer: hvert {0}. minutt søkes det etter en ny versjon som installeres av seg selv (tilkoblingene fortsetter)",
+ "Sul PC remoto ci sono file copiati: {0} ({1}).": "Det er kopierte filer på den eksterne PC-en: {0} ({1}).",
+ "Prendili qui": "Hent hit",
+ "Prendo i file copiati sul PC remoto…": "Henter filene som er kopiert på den eksterne PC-en…"
 }

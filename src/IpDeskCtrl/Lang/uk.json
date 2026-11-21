@@ -721,5 +721,9 @@
  "Ricollegamento automatico non riuscito.": "Автоматичне перепідключення не вдалося.",
  "Sul PC remoto: {0}.": "На віддаленому ПК: {0}.",
  "codifica con la scheda grafica ({0}) sospesa fino al {1}: il PC si era bloccato mentre la usava": "кодування відеокартою ({0}) призупинено до {1}: ПК зависав під час її використання",
- "Trascinamento dal PC remoto: se erano file, arrivano qui in Scaricati e negli appunti (incollali con Ctrl+V)…": "Перетягування з віддаленого ПК: якщо це були файли, вони прийдуть сюди в «Завантаження» і в буфер обміну (вставте їх Ctrl+V)…"
+ "Trascinamento dal PC remoto: se erano file, arrivano qui in Scaricati e negli appunti (incollali con Ctrl+V)…": "Перетягування з віддаленого ПК: якщо це були файли, вони прийдуть сюди в «Завантаження» і в буфер обміну (вставте їх Ctrl+V)…",
+ "Aggiornamenti automatici: ogni {0} minuti cerca una nuova versione e la installa da sola (i collegamenti riprendono)": "Автооновлення: кожні {0} хвилин шукається нова версія, і вона встановлюється сама (з'єднання тривають)",
+ "Sul PC remoto ci sono file copiati: {0} ({1}).": "На віддаленому ПК є скопійовані файли: {0} ({1}).",
+ "Prendili qui": "Забрати сюди",
+ "Prendo i file copiati sul PC remoto…": "Забираю файли, скопійовані на віддаленому ПК…"
 }

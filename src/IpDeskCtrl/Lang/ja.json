@@ -721,5 +721,9 @@
  "Ricollegamento automatico non riuscito.": "自動再接続に失敗しました。",
  "Sul PC remoto: {0}.": "リモート PC: {0}。",
  "codifica con la scheda grafica ({0}) sospesa fino al {1}: il PC si era bloccato mentre la usava": "グラフィックス カードでのエンコード（{0}）を {1} まで停止: 使用中に PC がフリーズしたため",
- "Trascinamento dal PC remoto: se erano file, arrivano qui in Scaricati e negli appunti (incollali con Ctrl+V)…": "リモート PC からのドラッグ: ファイルならここの「ダウンロード」とクリップボードに届きます（Ctrl+V で貼り付け）…"
+ "Trascinamento dal PC remoto: se erano file, arrivano qui in Scaricati e negli appunti (incollali con Ctrl+V)…": "リモート PC からのドラッグ: ファイルならここの「ダウンロード」とクリップボードに届きます（Ctrl+V で貼り付け）…",
+ "Aggiornamenti automatici: ogni {0} minuti cerca una nuova versione e la installa da sola (i collegamenti riprendono)": "自動更新: {0} 分ごとに新しいバージョンを探して自動でインストールします（接続は継続）",
+ "Sul PC remoto ci sono file copiati: {0} ({1}).": "リモート PC にコピーされたファイルがあります: {0}（{1}）。",
+ "Prendili qui": "ここに取り込む",
+ "Prendo i file copiati sul PC remoto…": "リモート PC でコピーしたファイルを取り込んでいます…"
 }

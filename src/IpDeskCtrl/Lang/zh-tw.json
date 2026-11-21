@@ -721,5 +721,9 @@
  "Ricollegamento automatico non riuscito.": "自動重新連線失敗。",
  "Sul PC remoto: {0}.": "遠端電腦上：{0}。",
  "codifica con la scheda grafica ({0}) sospesa fino al {1}: il PC si era bloccato mentre la usava": "顯示卡編碼（{0}）暫停至 {1}：使用時電腦曾經當機",
- "Trascinamento dal PC remoto: se erano file, arrivano qui in Scaricati e negli appunti (incollali con Ctrl+V)…": "從遠端電腦拖出：如果是檔案，會到達這裡的「下載」資料夾和剪貼簿（用 Ctrl+V 貼上）…"
+ "Trascinamento dal PC remoto: se erano file, arrivano qui in Scaricati e negli appunti (incollali con Ctrl+V)…": "從遠端電腦拖出：如果是檔案，會到達這裡的「下載」資料夾和剪貼簿（用 Ctrl+V 貼上）…",
+ "Aggiornamenti automatici: ogni {0} minuti cerca una nuova versione e la installa da sola (i collegamenti riprendono)": "自動更新：每 {0} 分鐘檢查新版本並自動安裝（連線會繼續）",
+ "Sul PC remoto ci sono file copiati: {0} ({1}).": "遠端電腦上有已複製的檔案：{0}（{1}）。",
+ "Prendili qui": "取到這裡",
+ "Prendo i file copiati sul PC remoto…": "正在取得遠端電腦上複製的檔案…"
 }

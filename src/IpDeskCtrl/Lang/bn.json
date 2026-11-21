@@ -721,5 +721,9 @@
  "Ricollegamento automatico non riuscito.": "স্বয়ংক্রিয় পুনঃসংযোগ ব্যর্থ হয়েছে।",
  "Sul PC remoto: {0}.": "দূরবর্তী পিসিতে: {0}।",
  "codifica con la scheda grafica ({0}) sospesa fino al {1}: il PC si era bloccato mentre la usava": "গ্রাফিক্স কার্ড দিয়ে এনকোডিং ({0}) {1} পর্যন্ত স্থগিত: এটি ব্যবহারের সময় পিসি আটকে গিয়েছিল",
- "Trascinamento dal PC remoto: se erano file, arrivano qui in Scaricati e negli appunti (incollali con Ctrl+V)…": "দূরবর্তী পিসি থেকে টেনে আনা: ফাইল হলে এখানে ডাউনলোড ও ক্লিপবোর্ডে আসবে (Ctrl+V দিয়ে পেস্ট করুন)…"
+ "Trascinamento dal PC remoto: se erano file, arrivano qui in Scaricati e negli appunti (incollali con Ctrl+V)…": "দূরবর্তী পিসি থেকে টেনে আনা: ফাইল হলে এখানে ডাউনলোড ও ক্লিপবোর্ডে আসবে (Ctrl+V দিয়ে পেস্ট করুন)…",
+ "Aggiornamenti automatici: ogni {0} minuti cerca una nuova versione e la installa da sola (i collegamenti riprendono)": "স্বয়ংক্রিয় আপডেট: প্রতি {0} মিনিটে নতুন সংস্করণ খোঁজা হয় এবং নিজেই ইনস্টল হয় (সংযোগ চলতে থাকে)",
+ "Sul PC remoto ci sono file copiati: {0} ({1}).": "দূরবর্তী পিসিতে কপি করা ফাইল আছে: {0} ({1})।",
+ "Prendili qui": "এখানে আনুন",
+ "Prendo i file copiati sul PC remoto…": "দূরবর্তী পিসিতে কপি করা ফাইল আনছি…"
 }
