@@ -1442,6 +1442,8 @@ namespace IpDeskCtrl.UI
         private static char Symbol(string l)
         {
             string s = l.ToLowerInvariant();
+            // «RAGGIUNGIBILE (…, un servizio non risponde)»: conta l'esito, non il servizio di prova muto
+            if (s.Contains(": raggiungibile (")) return '✓';
             if (s.Contains("non raggiungibil") || s.Contains("non riuscit") || s.Contains("rifiut") || s.Contains("nessuna risposta") ||
                 s.Contains("non risponde") || s.Contains("non trovato") || s.Contains("errore") || s.Contains("scaduto") || s.Contains("annullat") ||
                 s.Contains("non si è aggiornato") || s.Contains("non coincide") || s.Contains("non è questo programma")) return '✗';
