@@ -152,6 +152,7 @@ namespace IpDeskCtrl.Screen
                 {
                     var (st, data) = hc.Ask(CmdUserFolder);
                     if (st == 0 && data.Length > 0) Platform.ReceiveFolder = Encoding.UTF8.GetString(data);
+                    else SessionLog.Write("FILE cartella Scaricati dell'utente non letta dal processo di sistema: uso il profilo dell'utente collegato");
                 }
                 return Current == null ? "Il processo di sistema non è partito: lo schermo del PC remoto potrebbe non essere visibile." : "";
             });
@@ -329,6 +330,11 @@ namespace IpDeskCtrl.Screen
                         case CmdClipFiles:
                         {
                             var files = WinClip.GetFiles();
+                            if (files.Count == 0 && WinClip.LastFilesProblem.Length > 0)
+                            {
+                                Reply(bw, 2, Encoding.UTF8.GetBytes(WinClip.LastFilesProblem));
+                                break;
+                            }
                             var ms = new MemoryStream();
                             var w = new BinaryWriter(ms);
                             w.Write(files.Count);
@@ -457,21 +463,69 @@ namespace IpDeskCtrl.Screen
         }
 
         public static string? GetText() => OnClipThread(GetTextHere);
-        public static List<string> GetFiles() => OnClipThread(GetFilesHere) ?? new List<string>();
+        public static List<string> GetFiles()
+        {
+            var r = OnClipThread(GetFilesHere);
+            if (r != null) return r;
+            LastFilesProblem = "nessuna risposta dagli appunti entro 3 secondi (il programma che ha copiato non consegna i file)";
+            return new List<string>();
+        }
         public static bool SetFiles(List<string> paths) => OnClipThread(() => SetFilesHere(paths));
 
         private const uint CF_HDROP = 15;
         [DllImport("shell32.dll", CharSet = CharSet.Unicode)] private static extern uint DragQueryFileW(IntPtr drop, uint index, StringBuilder? file, uint size);
         [DllImport("user32.dll", CharSet = CharSet.Unicode)] private static extern uint RegisterClipboardFormatW(string name);
 
+        [DllImport("user32.dll")] private static extern uint EnumClipboardFormats(uint format);
+        [DllImport("user32.dll", CharSet = CharSet.Unicode)] private static extern int GetClipboardFormatNameW(uint format, StringBuilder name, int max);
+
+        /// <summary>
+        /// Perché l'ultima lettura dei file negli appunti non ha dato niente pur essendoci segni di file
+        /// (CF_HDROP o formati della shell): "" = niente da segnalare.
+        /// </summary>
+        public static string LastFilesProblem { get; set; } = "";
+
+        private static string Formats()
+        {
+            var names = new List<string>();
+            uint f = 0;
+            while ((f = EnumClipboardFormats(f)) != 0 && names.Count < 25)
+            {
+                var sb = new StringBuilder(128);
+                names.Add(GetClipboardFormatNameW(f, sb, 128) > 0 ? sb.ToString() : f switch { 1 => "CF_TEXT", 13 => "CF_UNICODETEXT", 15 => "CF_HDROP", 7 => "CF_OEMTEXT", 16 => "CF_LOCALE", 2 => "CF_BITMAP", 8 => "CF_DIB", 17 => "CF_DIBV5", _ => "#" + f });
+            }
+            return string.Join(", ", names);
+        }
+
         private static List<string> GetFilesHere()
         {
             var list = new List<string>();
-            if (!IsClipboardFormatAvailable(CF_HDROP) || !Open()) return list;
+            LastFilesProblem = "";
+            bool hdrop = IsClipboardFormatAvailable(CF_HDROP);
+            uint shellIds = RegisterClipboardFormatW("Shell IDList Array"), fileNameW = RegisterClipboardFormatW("FileNameW");
+            bool shellHint = IsClipboardFormatAvailable(shellIds) || IsClipboardFormatAvailable(fileNameW);
+            if (!hdrop && !shellHint) return list;
+            if (!Open()) { LastFilesProblem = "appunti occupati da un altro programma (OpenClipboard errore " + Marshal.GetLastWin32Error() + ")"; return list; }
             try
             {
-                IntPtr h = GetClipboardData(CF_HDROP);
-                if (h == IntPtr.Zero) return list;
+                IntPtr h = hdrop ? GetClipboardData(CF_HDROP) : IntPtr.Zero;
+                if (h == IntPtr.Zero && IsClipboardFormatAvailable(fileNameW))
+                {
+                    // un solo file, senza CF_HDROP: il nome completo in FileNameW
+                    IntPtr fn = GetClipboardData(fileNameW);
+                    IntPtr p = fn == IntPtr.Zero ? IntPtr.Zero : GlobalLock(fn);
+                    if (p != IntPtr.Zero)
+                    {
+                        string? one = Marshal.PtrToStringUni(p);
+                        GlobalUnlock(fn);
+                        if (!string.IsNullOrEmpty(one)) { list.Add(one); return list; }
+                    }
+                }
+                if (h == IntPtr.Zero)
+                {
+                    LastFilesProblem = (hdrop ? $"CF_HDROP annunciato ma non consegnato (errore {Marshal.GetLastWin32Error()})" : "file della shell senza CF_HDROP") + " · formati: " + Formats();
+                    return list;
+                }
                 uint n = DragQueryFileW(h, 0xFFFFFFFF, null, 0);
                 for (uint i = 0; i < n; i++)
                 {
@@ -480,7 +534,9 @@ namespace IpDeskCtrl.Screen
                     DragQueryFileW(h, i, sb, len + 1);
                     list.Add(sb.ToString());
                 }
+                if (list.Count == 0) LastFilesProblem = "CF_HDROP vuoto · formati: " + Formats();
             }
+            catch (Exception ex) { LastFilesProblem = "lettura non riuscita: " + ex.Message; }
             finally { CloseClipboard(); }
             return list;
         }
@@ -605,6 +661,7 @@ namespace IpDeskCtrl.Screen
             var c = WinHelper.Current;
             if (c == null) return list;
             var (st, data) = c.Ask(WinHelper.CmdClipFiles);
+            if (st == 2) throw new IOException("processo di sistema: " + Encoding.UTF8.GetString(data));
             if (st != 0 || data.Length < 4) return list;
             var r = new BinaryReader(new MemoryStream(data));
             int n = r.ReadInt32();

@@ -720,5 +720,6 @@
  "{0} · mi ricollego da solo (tentativo {1} di {2})…": "{0} · ühendun ise uuesti (katse {1}/{2})…",
  "Ricollegamento automatico non riuscito.": "Automaatne taasühendus ebaõnnestus.",
  "Sul PC remoto: {0}.": "Kaugarvutis: {0}.",
- "codifica con la scheda grafica ({0}) sospesa fino al {1}: il PC si era bloccato mentre la usava": "graafikakaardiga kodeerimine ({0}) peatatud kuni {1}: arvuti oli selle kasutamise ajal hangunud"
+ "codifica con la scheda grafica ({0}) sospesa fino al {1}: il PC si era bloccato mentre la usava": "graafikakaardiga kodeerimine ({0}) peatatud kuni {1}: arvuti oli selle kasutamise ajal hangunud",
+ "Trascinamento dal PC remoto: se erano file, arrivano qui in Scaricati e negli appunti (incollali con Ctrl+V)…": "Lohistamine kaugarvutist: kui need olid failid, jõuavad need siia kausta Allalaadimised ja lõikelauale (kleebi Ctrl+V-ga)…"
 }

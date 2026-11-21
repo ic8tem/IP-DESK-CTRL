@@ -720,5 +720,6 @@
  "{0} · mi ricollego da solo (tentativo {1} di {2})…": "{0} · ik maak zelf opnieuw verbinding (poging {1} van {2})…",
  "Ricollegamento automatico non riuscito.": "Automatisch opnieuw verbinden mislukt.",
  "Sul PC remoto: {0}.": "Op de externe pc: {0}.",
- "codifica con la scheda grafica ({0}) sospesa fino al {1}: il PC si era bloccato mentre la usava": "codering met de videokaart ({0}) opgeschort tot {1}: de pc was vastgelopen tijdens het gebruik"
+ "codifica con la scheda grafica ({0}) sospesa fino al {1}: il PC si era bloccato mentre la usava": "codering met de videokaart ({0}) opgeschort tot {1}: de pc was vastgelopen tijdens het gebruik",
+ "Trascinamento dal PC remoto: se erano file, arrivano qui in Scaricati e negli appunti (incollali con Ctrl+V)…": "Slepen vanaf de externe pc: als het bestanden waren, komen ze hier in Downloads en op het klembord (plak ze met Ctrl+V)…"
 }

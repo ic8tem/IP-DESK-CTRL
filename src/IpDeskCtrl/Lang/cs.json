@@ -720,5 +720,6 @@
  "{0} · mi ricollego da solo (tentativo {1} di {2})…": "{0} · připojuji se znovu sám (pokus {1} z {2})…",
  "Ricollegamento automatico non riuscito.": "Automatické opětovné připojení se nezdařilo.",
  "Sul PC remoto: {0}.": "Na vzdáleném počítači: {0}.",
- "codifica con la scheda grafica ({0}) sospesa fino al {1}: il PC si era bloccato mentre la usava": "kódování grafickou kartou ({0}) pozastaveno do {1}: počítač při jeho používání zamrzl"
+ "codifica con la scheda grafica ({0}) sospesa fino al {1}: il PC si era bloccato mentre la usava": "kódování grafickou kartou ({0}) pozastaveno do {1}: počítač při jeho používání zamrzl",
+ "Trascinamento dal PC remoto: se erano file, arrivano qui in Scaricati e negli appunti (incollali con Ctrl+V)…": "Přetažení ze vzdáleného počítače: pokud to byly soubory, přijdou sem do Stažených souborů a do schránky (vložte je Ctrl+V)…"
 }

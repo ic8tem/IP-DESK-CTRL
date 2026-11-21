@@ -91,6 +91,7 @@ namespace IpDeskCtrl.Desktop
                 _peer = new Peer(me, _s) { AskAccept = AskAsync };
                 _peer.HostStarted += hs => Broadcast($"START {hs.PeerNumber} {(hs.InputAllowed ? 1 : 0)}");
                 _peer.HostEnded += (hs, why) => Broadcast($"END {hs.PeerNumber} {why.Replace('\n', ' ')}");
+                Platform.CatchDrop = AskAppCatchDropAsync;
                 _peer.HostRecording += (hs, on) => Broadcast($"REC {hs.PeerNumber} {(on ? 1 : 0)}");
                 _peer.HostDraw += e => Broadcast(e.ToLine());
                 _peer.HostChat += (hs, text) => Broadcast($"CHAT {hs.PeerNumber} {Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(text))}");
@@ -183,6 +184,21 @@ namespace IpDeskCtrl.Desktop
                 finally { Interlocked.Exchange(ref _selfUpdating, 0); }
             });
         }
+        private static readonly Dictionary<string, TaskCompletionSource<List<string>>> _drops = new();
+
+        /// <summary>Il servizio non ha finestre sul desktop dell'utente: la finestrella la apre il programma dell'utente.</summary>
+        private static async Task<List<string>> AskAppCatchDropAsync(int x, int y)
+        {
+            string id = Guid.NewGuid().ToString("N")[..8];
+            var tcs = new TaskCompletionSource<List<string>>(TaskCreationOptions.RunContinuationsAsynchronously);
+            lock (_drops) _drops[id] = tcs;
+            Broadcast($"DROPCATCH {id} {x} {y}");
+            var done = await Task.WhenAny(tcs.Task, Task.Delay(8000));
+            lock (_drops) _drops.Remove(id);
+            if (done != tcs.Task) SessionLog.Write("TRASCINAMENTO il programma dell'utente non ha risposto (è aperto?)");
+            return done == tcs.Task ? tcs.Task.Result : new List<string>();
+        }
+
 
         private static void Broadcast(string line)
         {
@@ -246,6 +262,14 @@ namespace IpDeskCtrl.Desktop
                         case "TRXDONE":
                             SessionLog.Write("SERVIZIO IP-TRX-CTRL nella sessione dell'utente: " + string.Join(' ', p.Skip(1)));
                             break;
+                        case "DROPPED" when p.Length >= 2:
+                        {
+                            var list = new List<string>();
+                            if (p.Length >= 3 && p[2] != "-")
+                                try { list = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(p[2])).Split('\n', StringSplitOptions.RemoveEmptyEntries).ToList(); } catch { }
+                            lock (_drops) if (_drops.Remove(p[1], out var t)) t.TrySetResult(list);
+                            break;
+                        }
                         case "CHATSEND" when p.Length >= 3 && _peer != null:
                         {
                             string text;

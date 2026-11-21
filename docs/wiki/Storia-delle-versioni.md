@@ -3,6 +3,11 @@
 
 Le versioni con protocollo diverso non si collegano tra loro: aggiorna tutti i dispositivi alla stessa versione principale (la 0.4.1 si collega con la 0.4.0; la 0.5 si collega con la 0.4).
 
+## 0.5.29 — 21 novembre 2026
+- **Trascinamento dal PC remoto verso il tuo**: trascina un file in Esplora file del PC remoto e portalo fuori dalla finestra del visore (o sul bordo, a schermo intero): sul PC remoto una finestrella invisibile raccoglie il file lasciato e lo manda qui, in Scaricati e negli appunti, pronto da incollare con Ctrl+V. Serve la 0.5.29 su tutti e due i PC.
+- **File ricevuti con il servizio, cartella giusta**: i file trascinati o incollati verso un PC con il servizio di Windows potevano finire in `C:\Windows\system32\config\systemprofile\Downloads`, la cartella del sistema che l'utente non vede. Ora vanno sempre in Scaricati\IP-DESK-CTRL dell'utente collegato.
+- **File copiati sul PC comandato, diagnosi**: se sul PC comandato si copiano file ma il processo di sistema non riesce a leggerli dagli appunti, il registro ora dice perché (appunti occupati, file annunciati ma non consegnati dal programma che li ha copiati, tempo scaduto) ed elenca i formati presenti negli appunti; prima restava tutto in silenzio. Si legge anche il formato «FileNameW» quando manca quello classico dei file.
+
 ## 0.5.28 — 21 novembre 2026
 - **Protezione dai blocchi del driver grafico**: alcuni driver (visto con Intel Quick Sync, `hevc_qsv`) possono bloccare tutto il PC comandato dopo un po' di codifica video in hardware, tanto che serve staccare la corrente. Ora, mentre si codifica in hardware, IP-DESK-CTRL tiene un segnaposto: se il PC viene riacceso e il segnaposto è rimasto, vuol dire che si è spento o bloccato durante la codifica, e per 30 giorni usa solo la codifica software (x264). Lo scrive nel registro e lo dice anche a chi comanda. Per riattivare prima la codifica in hardware basta cancellare `video-hw-sospeso.txt` nella cartella dati.
 

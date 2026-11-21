@@ -720,5 +720,6 @@
  "{0} · mi ricollego da solo (tentativo {1} di {2})…": "{0} · volto a ligar sozinho (tentativa {1} de {2})…",
  "Ricollegamento automatico non riuscito.": "A religação automática falhou.",
  "Sul PC remoto: {0}.": "No PC remoto: {0}.",
- "codifica con la scheda grafica ({0}) sospesa fino al {1}: il PC si era bloccato mentre la usava": "codificação com a placa gráfica ({0}) suspensa até {1}: o PC tinha bloqueado enquanto a usava"
+ "codifica con la scheda grafica ({0}) sospesa fino al {1}: il PC si era bloccato mentre la usava": "codificação com a placa gráfica ({0}) suspensa até {1}: o PC tinha bloqueado enquanto a usava",
+ "Trascinamento dal PC remoto: se erano file, arrivano qui in Scaricati e negli appunti (incollali con Ctrl+V)…": "Arrastar do PC remoto: se eram ficheiros, chegam aqui a Transferências e à área de transferência (cole com Ctrl+V)…"
 }

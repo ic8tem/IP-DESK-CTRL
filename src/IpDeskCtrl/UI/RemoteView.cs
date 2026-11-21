@@ -174,6 +174,11 @@ namespace IpDeskCtrl.UI
 
         public (int x, int y)? ImagePoint(Point local) => ToImage(local);
 
+        private bool _leftDown, _dragOut;
+        /// <summary>Il PC remoto sa raccogliere un trascinamento portato fuori dalla finestra (0.5.29+).</summary>
+        public bool DragOutEnabled { get; set; }
+        public event Action? DragOutRequested;
+
         private (int x, int y)? ToImage(Point local)
         {
             if (_w == 0) return null;
@@ -276,6 +281,22 @@ namespace IpDeskCtrl.UI
             if (e.Pointer.Type == PointerType.Touch) { if (CanInput) TouchMoved(e.Pointer.Id, e.GetPosition(this)); e.Handled = true; return; }
             _lastLocal = e.GetPosition(this);
             if (!CanInput) return;
+            if (_dragOut) { e.Handled = true; return; }
+            if (_leftDown && DragOutEnabled && e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
+            {
+                // trascinamento portato fuori dall'immagine del PC remoto (o sul bordo, a schermo intero):
+                // di là si raccoglie cosa viene lasciato e i file arrivano qui
+                var d = Dest();
+                var q = _lastLocal;
+                if (q.X < d.X - 2 || q.Y < d.Y - 2 || q.X > d.Right + 2 || q.Y > d.Bottom + 2
+                    || q.X <= 0.5 || q.Y <= 0.5 || q.X >= Bounds.Width - 1 || q.Y >= Bounds.Height - 1)
+                {
+                    _dragOut = true;
+                    DragOutRequested?.Invoke();
+                    e.Handled = true;
+                    return;
+                }
+            }
             var p = ToImage(_lastLocal);
             if (p != null) _session!.MouseMove(p.Value.x, p.Value.y);
         }
@@ -301,6 +322,7 @@ namespace IpDeskCtrl.UI
             if (!CanInput) return;
             e.Pointer.Capture(this);
             if (e.Pointer.Type == PointerType.Touch) { TouchPressed(e.Pointer.Id, e.GetPosition(this)); e.Handled = true; return; }
+            if (e.GetCurrentPoint(this).Properties.PointerUpdateKind == PointerUpdateKind.LeftButtonPressed) { _leftDown = true; _dragOut = false; }
             SendButton(e.GetCurrentPoint(this).Properties.PointerUpdateKind, e.GetPosition(this));
             e.Handled = true;
         }
@@ -311,6 +333,12 @@ namespace IpDeskCtrl.UI
             if (_drawMode) { FlushDraw(true); e.Pointer.Capture(null); e.Handled = true; return; }
             if (!CanInput) return;
             if (e.Pointer.Type == PointerType.Touch) { TouchReleased(e.Pointer.Id); e.Handled = true; return; }
+            if (e.GetCurrentPoint(this).Properties.PointerUpdateKind == PointerUpdateKind.LeftButtonReleased)
+            {
+                _leftDown = false;
+                // dopo un trascinamento portato fuori il tasto lo rilascia il PC remoto, sopra la finestrella di raccolta
+                if (_dragOut) { _dragOut = false; e.Pointer.Capture(null); e.Handled = true; return; }
+            }
             SendButton(e.GetCurrentPoint(this).Properties.PointerUpdateKind, e.GetPosition(this));
             e.Handled = true;
         }

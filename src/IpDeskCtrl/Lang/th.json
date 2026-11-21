@@ -720,5 +720,6 @@
  "{0} · mi ricollego da solo (tentativo {1} di {2})…": "{0} · กำลังเชื่อมต่อใหม่เอง (ครั้งที่ {1} จาก {2})…",
  "Ricollegamento automatico non riuscito.": "การเชื่อมต่อใหม่อัตโนมัติไม่สำเร็จ",
  "Sul PC remoto: {0}.": "บนพีซีระยะไกล: {0}",
- "codifica con la scheda grafica ({0}) sospesa fino al {1}: il PC si era bloccato mentre la usava": "ระงับการเข้ารหัสด้วยการ์ดจอ ({0}) จนถึง {1}: พีซีค้างขณะใช้งาน"
+ "codifica con la scheda grafica ({0}) sospesa fino al {1}: il PC si era bloccato mentre la usava": "ระงับการเข้ารหัสด้วยการ์ดจอ ({0}) จนถึง {1}: พีซีค้างขณะใช้งาน",
+ "Trascinamento dal PC remoto: se erano file, arrivano qui in Scaricati e negli appunti (incollali con Ctrl+V)…": "ลากจากพีซีระยะไกล: ถ้าเป็นไฟล์ จะมาที่ดาวน์โหลดและคลิปบอร์ดที่นี่ (วางด้วย Ctrl+V)…"
 }

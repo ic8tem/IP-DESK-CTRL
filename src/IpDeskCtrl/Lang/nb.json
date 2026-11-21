@@ -720,5 +720,6 @@
  "{0} · mi ricollego da solo (tentativo {1} di {2})…": "{0} · kobler til igjen selv (forsøk {1} av {2})…",
  "Ricollegamento automatico non riuscito.": "Automatisk ny tilkobling mislyktes.",
  "Sul PC remoto: {0}.": "På den eksterne PC-en: {0}.",
- "codifica con la scheda grafica ({0}) sospesa fino al {1}: il PC si era bloccato mentre la usava": "koding med skjermkortet ({0}) stanset til {1}: PC-en hadde hengt seg mens det ble brukt"
+ "codifica con la scheda grafica ({0}) sospesa fino al {1}: il PC si era bloccato mentre la usava": "koding med skjermkortet ({0}) stanset til {1}: PC-en hadde hengt seg mens det ble brukt",
+ "Trascinamento dal PC remoto: se erano file, arrivano qui in Scaricati e negli appunti (incollali con Ctrl+V)…": "Dra fra den eksterne PC-en: hvis det var filer, havner de her i Nedlastinger og på utklippstavlen (lim inn med Ctrl+V)…"
 }

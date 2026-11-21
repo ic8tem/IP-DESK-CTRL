@@ -720,5 +720,6 @@
  "{0} · mi ricollego da solo (tentativo {1} di {2})…": "{0} · reconnecting by myself (attempt {1} of {2})…",
  "Ricollegamento automatico non riuscito.": "Automatic reconnection failed.",
  "Sul PC remoto: {0}.": "On the remote PC: {0}.",
- "codifica con la scheda grafica ({0}) sospesa fino al {1}: il PC si era bloccato mentre la usava": "encoding with the graphics card ({0}) suspended until {1}: the PC had frozen while using it"
+ "codifica con la scheda grafica ({0}) sospesa fino al {1}: il PC si era bloccato mentre la usava": "encoding with the graphics card ({0}) suspended until {1}: the PC had frozen while using it",
+ "Trascinamento dal PC remoto: se erano file, arrivano qui in Scaricati e negli appunti (incollali con Ctrl+V)…": "Drag from the remote PC: if they were files, they arrive here in Downloads and on the clipboard (paste them with Ctrl+V)…"
 }

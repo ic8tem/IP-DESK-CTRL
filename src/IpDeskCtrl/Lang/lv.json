@@ -720,5 +720,6 @@
  "{0} · mi ricollego da solo (tentativo {1} di {2})…": "{0} · savienojos atkal pats (mēģinājums {1} no {2})…",
  "Ricollegamento automatico non riuscito.": "Automātiskā atkārtotā savienošana neizdevās.",
  "Sul PC remoto: {0}.": "Attālajā datorā: {0}.",
- "codifica con la scheda grafica ({0}) sospesa fino al {1}: il PC si era bloccato mentre la usava": "kodēšana ar grafisko karti ({0}) apturēta līdz {1}: dators bija uzkāries tās lietošanas laikā"
+ "codifica con la scheda grafica ({0}) sospesa fino al {1}: il PC si era bloccato mentre la usava": "kodēšana ar grafisko karti ({0}) apturēta līdz {1}: dators bija uzkāries tās lietošanas laikā",
+ "Trascinamento dal PC remoto: se erano file, arrivano qui in Scaricati e negli appunti (incollali con Ctrl+V)…": "Vilkšana no attālā datora: ja tie bija faili, tie nonāk šeit mapē Lejupielādes un starpliktuvē (ielīmē ar Ctrl+V)…"
 }
