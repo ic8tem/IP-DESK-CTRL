@@ -714,5 +714,6 @@
  "IP-DESK-CTRL · Accesso completo": "IP-DESK-CTRL · Pilna piekļuve",
  "Richiesta mandata: chi è al PC remoto deve rispondere Sì alla finestra di Windows.": "Pieprasījums nosūtīts: pie attālā datora esošajam Windows logā jāatbild Jā.",
  "Il PC remoto installa il servizio": "Attālais dators instalē pakalpojumu",
- "IP-DESK-CTRL si riavvia sul PC remoto con l'accesso completo: mi ricollego appena torna": "IP-DESK-CTRL restartējas attālajā datorā ar pilnu piekļuvi: atkal savienošos, tiklīdz tas atgriezīsies"
+ "IP-DESK-CTRL si riavvia sul PC remoto con l'accesso completo: mi ricollego appena torna": "IP-DESK-CTRL restartējas attālajā datorā ar pilnu piekļuvi: atkal savienošos, tiklīdz tas atgriezīsies",
+ "Windows non concede il riavvio all'account di questo PC (utente senza diritti di arresto o criterio dell'organizzazione). Con il servizio «accesso completo» il riavvio funziona sempre: installalo da Tasti ▾.": "Windows neļauj šī datora kontam restartēt (lietotājam nav izslēgšanas tiesību vai ir organizācijas politika). Ar pakalpojumu “pilna piekļuve” restartēšana vienmēr darbojas: instalē to no Taustiņi ▾."
 }

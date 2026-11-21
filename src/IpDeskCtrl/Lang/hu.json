@@ -714,5 +714,6 @@
  "IP-DESK-CTRL · Accesso completo": "IP-DESK-CTRL · Teljes hozzáférés",
  "Richiesta mandata: chi è al PC remoto deve rispondere Sì alla finestra di Windows.": "Kérés elküldve: a távoli gép előtt ülőnek Igennel kell válaszolnia a Windows-ablakban.",
  "Il PC remoto installa il servizio": "A távoli gép telepíti a szolgáltatást",
- "IP-DESK-CTRL si riavvia sul PC remoto con l'accesso completo: mi ricollego appena torna": "Az IP-DESK-CTRL teljes hozzáféréssel újraindul a távoli gépen: újrakapcsolódom, amint visszatér"
+ "IP-DESK-CTRL si riavvia sul PC remoto con l'accesso completo: mi ricollego appena torna": "Az IP-DESK-CTRL teljes hozzáféréssel újraindul a távoli gépen: újrakapcsolódom, amint visszatér",
+ "Windows non concede il riavvio all'account di questo PC (utente senza diritti di arresto o criterio dell'organizzazione). Con il servizio «accesso completo» il riavvio funziona sempre: installalo da Tasti ▾.": "A Windows nem engedi ennek a gépnek a fiókjával az újraindítást (leállítási jog nélküli felhasználó vagy szervezeti házirend). A „teljes hozzáférés” szolgáltatással az újraindítás mindig működik: telepítsd a Billentyűk ▾ menüből."
 }

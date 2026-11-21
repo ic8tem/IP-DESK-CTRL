@@ -714,5 +714,6 @@
  "IP-DESK-CTRL · Accesso completo": "IP-DESK-CTRL · Acesso completo",
  "Richiesta mandata: chi è al PC remoto deve rispondere Sì alla finestra di Windows.": "Solicitação enviada: quem está no PC remoto precisa responder Sim na janela do Windows.",
  "Il PC remoto installa il servizio": "O PC remoto está instalando o serviço",
- "IP-DESK-CTRL si riavvia sul PC remoto con l'accesso completo: mi ricollego appena torna": "O IP-DESK-CTRL reinicia no PC remoto com acesso completo: reconecto assim que ele voltar"
+ "IP-DESK-CTRL si riavvia sul PC remoto con l'accesso completo: mi ricollego appena torna": "O IP-DESK-CTRL reinicia no PC remoto com acesso completo: reconecto assim que ele voltar",
+ "Windows non concede il riavvio all'account di questo PC (utente senza diritti di arresto o criterio dell'organizzazione). Con il servizio «accesso completo» il riavvio funziona sempre: installalo da Tasti ▾.": "O Windows não permite que a conta deste PC reinicie (usuário sem direito de desligamento ou política da organização). Com o serviço \"acesso completo\" o reinício sempre funciona: instale-o em Teclas ▾."
 }

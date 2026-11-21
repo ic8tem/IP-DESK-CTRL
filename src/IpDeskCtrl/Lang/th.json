@@ -714,5 +714,6 @@
  "IP-DESK-CTRL · Accesso completo": "IP-DESK-CTRL · เข้าถึงเต็มรูปแบบ",
  "Richiesta mandata: chi è al PC remoto deve rispondere Sì alla finestra di Windows.": "ส่งคำขอแล้ว: ผู้ที่อยู่หน้าพีซีระยะไกลต้องตอบ ใช่ ในหน้าต่างของ Windows",
  "Il PC remoto installa il servizio": "พีซีระยะไกลกำลังติดตั้งบริการ",
- "IP-DESK-CTRL si riavvia sul PC remoto con l'accesso completo: mi ricollego appena torna": "IP-DESK-CTRL กำลังเริ่มใหม่บนพีซีระยะไกลพร้อมการเข้าถึงเต็มรูปแบบ: จะเชื่อมต่อใหม่ทันทีที่กลับมา"
+ "IP-DESK-CTRL si riavvia sul PC remoto con l'accesso completo: mi ricollego appena torna": "IP-DESK-CTRL กำลังเริ่มใหม่บนพีซีระยะไกลพร้อมการเข้าถึงเต็มรูปแบบ: จะเชื่อมต่อใหม่ทันทีที่กลับมา",
+ "Windows non concede il riavvio all'account di questo PC (utente senza diritti di arresto o criterio dell'organizzazione). Con il servizio «accesso completo» il riavvio funziona sempre: installalo da Tasti ▾.": "Windows ไม่อนุญาตให้บัญชีของพีซีเครื่องนี้รีสตาร์ต (ผู้ใช้ไม่มีสิทธิ์ปิดเครื่องหรือมีนโยบายองค์กร) เมื่อมีบริการ «เข้าถึงเต็มรูปแบบ» การรีสตาร์ตจะใช้ได้เสมอ: ติดตั้งจาก ปุ่ม ▾"
 }

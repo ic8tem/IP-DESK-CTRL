@@ -134,6 +134,10 @@ Nella cartella dei dati (Impostazioni › Apri cartella dati): `sessioni.log`, u
 
 Le versioni con protocollo diverso non si collegano tra loro: aggiorna tutti i dispositivi alla stessa versione principale (la 0.4.1 si collega con la 0.4.0; la 0.5 si collega con la 0.4).
 
+### 0.5.25 — 21 novembre 2026
+- **Aggiornamento che non riparte, corretto**: dalla 0.5.21 l'installatore, per chiudere il programma rimasto aperto, chiudeva anche tutti i processi «figli» di IP-DESK-CTRL. Ma l'installatore stesso è figlio di IP-DESK-CTRL (del programma che lo lancia, o del servizio quando si aggiorna da solo): si chiudeva a metà, senza finire l'installazione né riaprire il programma, e il PC restava fuori linea finché qualcuno non lo riavviava a mano. Ora chiude solo il programma e i suoi processi di sistema, non sé stesso.
+- **Riavvio del PC remoto anche con un account senza diritti**: senza il servizio di Windows il riavvio passava solo da shutdown.exe, e se Windows lo negava all'account (utente senza diritti di arresto o criterio dell'organizzazione) non succedeva niente. Ora si provano tre strade: il servizio (funziona sempre, qualunque sia l'account), shutdown.exe e le API di Windows con il privilegio di arresto. Se nessuna funziona il visore lo dice chiaramente e propone di installare il servizio sul PC remoto. Ogni tentativo va nel registro con il motivo.
+
 ### 0.5.24 — 21 novembre 2026
 - **Appunti nel registro**: quando chi comanda preme Ctrl+C, Ctrl+X o Ctrl+V, sessioni.log del PC comandato scrive cosa c'era negli appunti prima e dopo (testo, quanti file, niente) e dove andrà: verso chi comanda, oppure perché non è cambiato niente (niente selezionato, programma da amministratore senza servizio, schermata protetta di UAC o di blocco). In tutti e due i PC si vede anche quando il testo copiato parte, arriva e finisce negli appunti, quando i file copiati vengono annunciati e se il visore li prende o perché no, e gli errori di lettura degli appunti, che prima venivano ignorati in silenzio.
 

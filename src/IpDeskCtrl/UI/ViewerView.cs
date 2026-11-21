@@ -56,6 +56,7 @@ namespace IpDeskCtrl.UI
         private readonly MenuItem _installSvcItem = new() { IsVisible = false };
         private readonly MenuItem _adminMenu = new() { Header = L.T("Avvia come amministratore"), IsVisible = false };
         private bool _uacNoteShown;
+        private DateTime _rebootAskedAt;
         private readonly Button _noteOpen = new() { Content = L.T("Apri cartella"), IsVisible = false, Margin = new Thickness(0, 6, 0, 0) };
         private readonly Border _transfer = new() { IsVisible = false };
         private readonly TextBlock _transferText = new() { Foreground = Brushes.White, FontSize = 12, TextWrapping = TextWrapping.Wrap, MaxWidth = 360 };
@@ -1501,7 +1502,8 @@ namespace IpDeskCtrl.UI
                 {
                     ShowNote(s.Note);
                     // schermata nera per la UAC e servizio assente: si offre di installarlo
-                    if (s.RemoteService == 2 && s.Note.Contains("UAC")) SetNoteAction(L.T("Installa il servizio sul PC remoto…"), AskInstallService);
+                    if (s.RemoteService == 2 && (s.Note.Contains("UAC") || DateTime.UtcNow - _rebootAskedAt < TimeSpan.FromSeconds(30)))
+                        SetNoteAction(L.T("Installa il servizio sul PC remoto…"), AskInstallService);
                 });
                 s.AccessChanged += () => Dispatcher.UIThread.Post(() => OnAccessChanged(s));
                 s.TransferChanged += t => Dispatcher.UIThread.Post(() => OnTransfer(t));
@@ -1576,6 +1578,8 @@ namespace IpDeskCtrl.UI
                 (L.T("Riavvia"), true, () =>
                 {
                     _overlay.IsVisible = false;
+                    _rebootAskedAt = DateTime.UtcNow;
+                    SessionLog.Write($"RIAVVIO chiesto al PC remoto {Identity.Format(_number)}");
                     s.Reboot();
                     ShowNote(L.T("Riavvio chiesto: aspetto che il PC remoto si spenga…"));
                 }),

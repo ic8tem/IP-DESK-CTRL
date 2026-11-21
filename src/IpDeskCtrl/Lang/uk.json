@@ -714,5 +714,6 @@
  "IP-DESK-CTRL · Accesso completo": "IP-DESK-CTRL · Повний доступ",
  "Richiesta mandata: chi è al PC remoto deve rispondere Sì alla finestra di Windows.": "Запит надіслано: той, хто сидить за віддаленим ПК, має відповісти «Так» у вікні Windows.",
  "Il PC remoto installa il servizio": "Віддалений ПК встановлює службу",
- "IP-DESK-CTRL si riavvia sul PC remoto con l'accesso completo: mi ricollego appena torna": "IP-DESK-CTRL перезапускається на віддаленому ПК із повним доступом: перепідключуся, щойно він повернеться"
+ "IP-DESK-CTRL si riavvia sul PC remoto con l'accesso completo: mi ricollego appena torna": "IP-DESK-CTRL перезапускається на віддаленому ПК із повним доступом: перепідключуся, щойно він повернеться",
+ "Windows non concede il riavvio all'account di questo PC (utente senza diritti di arresto o criterio dell'organizzazione). Con il servizio «accesso completo» il riavvio funziona sempre: installalo da Tasti ▾.": "Windows не дозволяє обліковому запису цього ПК перезавантаження (користувач без права завершення роботи або політика організації). Зі службою «повний доступ» перезавантаження працює завжди: встановіть її з меню Клавіші ▾."
 }

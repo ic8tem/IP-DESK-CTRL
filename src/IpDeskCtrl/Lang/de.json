@@ -714,5 +714,6 @@
  "IP-DESK-CTRL · Accesso completo": "IP-DESK-CTRL · Vollzugriff",
  "Richiesta mandata: chi è al PC remoto deve rispondere Sì alla finestra di Windows.": "Anfrage gesendet: Die Person am entfernten PC muss im Windows-Fenster mit Ja antworten.",
  "Il PC remoto installa il servizio": "Der entfernte PC installiert den Dienst",
- "IP-DESK-CTRL si riavvia sul PC remoto con l'accesso completo: mi ricollego appena torna": "IP-DESK-CTRL startet auf dem entfernten PC mit Vollzugriff neu: Ich verbinde mich wieder, sobald er zurück ist"
+ "IP-DESK-CTRL si riavvia sul PC remoto con l'accesso completo: mi ricollego appena torna": "IP-DESK-CTRL startet auf dem entfernten PC mit Vollzugriff neu: Ich verbinde mich wieder, sobald er zurück ist",
+ "Windows non concede il riavvio all'account di questo PC (utente senza diritti di arresto o criterio dell'organizzazione). Con il servizio «accesso completo» il riavvio funziona sempre: installalo da Tasti ▾.": "Windows erlaubt dem Konto dieses PCs keinen Neustart (Benutzer ohne Herunterfahrrecht oder Organisationsrichtlinie). Mit dem Dienst „Vollzugriff“ klappt der Neustart immer: installiere ihn über Tasten ▾."
 }
