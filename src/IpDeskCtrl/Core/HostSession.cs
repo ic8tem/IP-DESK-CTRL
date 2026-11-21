@@ -380,6 +380,7 @@ namespace IpDeskCtrl.Core
                 case Msg.FileFetch: _ = Task.Run(SendClipboardFilesAsync); break;
                 case Msg.Reboot: _ = Task.Run(RebootAsync); break;
                 case Msg.InstallService: _ = Task.Run(InstallServiceAsync); break;
+                case Msg.DragOut: _ = Task.Run(DragOutAsync); break;
                 case Msg.RunAdmin: { string what = r.Str(); _ = Task.Run(() => RunAdmin(what)); break; }
                 case Msg.StartTrx: _ = Task.Run(StartTrx); break;
                 case Msg.AuthResponse: _authReply?.TrySetResult(r.Bytes(Math.Clamp(r.I32(), 0, 64))); break;
@@ -407,12 +408,13 @@ namespace IpDeskCtrl.Core
             {
                 switch (r.Type)
                 {
-                    case Msg.MouseMove: { var (x, y) = Map(r.I32(), r.I32()); sink.MoveTo(x, y); break; }
+                    case Msg.MouseMove: { var (x, y) = Map(r.I32(), r.I32()); sink.MoveTo(x, y); _mouseX = x; _mouseY = y; break; }
                     case Msg.MouseButton:
                     {
                         int b = r.U8(); bool down = r.Bool();
                         var (x, y) = Map(r.I32(), r.I32());
                         sink.MoveTo(x, y);
+                        _mouseX = x; _mouseY = y;
                         sink.Button(b, down);
                         _pressed.Button(b, down);
                         break;
@@ -654,6 +656,40 @@ namespace IpDeskCtrl.Core
 
         private bool _drawLogged;
         private bool _hwNoted;
+        private int _mouseX, _mouseY;
+
+        /// <summary>
+        /// Chi comanda ha trascinato qualcosa fuori dalla finestra del visore: sotto il puntatore si apre una finestrella
+        /// che riceve il «lascia» di Esplora file, poi i file vanno a chi comanda (Scaricati e appunti).
+        /// </summary>
+        private async Task DragOutAsync()
+        {
+            var sink = _input;
+            int x = _mouseX, y = _mouseY;
+            if (!_accepted || !_allowInput || sink == null) return;
+            if (Platform.CatchDrop == null)
+            {
+                sink.Button(Input.MouseBtn.Left, false); _pressed.Button(Input.MouseBtn.Left, false);
+                SessionLog.Write("TRASCINAMENTO verso chi comanda non disponibile su questo PC");
+                return;
+            }
+            SessionLog.Write($"TRASCINAMENTO {PeerLabel} trascina fuori dalla finestra (puntatore a {x},{y}): raccolgo cosa viene lasciato");
+            var catching = Platform.CatchDrop(x, y);
+            await Task.Delay(500);
+            // il trascinamento di Esplora file segue il mouse: qualche passo sopra la finestrella, poi si lascia
+            for (int i = 0; i < 8; i++) { sink.MoveTo(x + (i % 2) * 2, y + (i % 2) * 2); await Task.Delay(50); }
+            sink.Button(Input.MouseBtn.Left, false);
+            _pressed.Button(Input.MouseBtn.Left, false);
+            List<string> paths;
+            try { paths = await Task.WhenAny(catching, Task.Delay(2500)) == catching ? catching.Result : new List<string>(); } catch (Exception ex) { paths = new List<string>(); SessionLog.Write("TRASCINAMENTO raccolta non riuscita: " + ex.Message); }
+            if (paths.Count == 0)
+            {
+                SessionLog.Write("TRASCINAMENTO lasciato senza file (non era un trascinamento di file, o il programma non li consegna)");
+                return;
+            }
+            SessionLog.Write($"TRASCINAMENTO {paths.Count} file lasciati ({System.IO.Path.GetFileName(paths[0].TrimEnd('/', '\\'))}…): li mando a {PeerLabel}");
+            await SendFilesAsync(FromPaths(paths), TransferPurpose.Fetch);
+        }
         /// <summary>Chi comanda sta registrando la sessione (avviso per chi è davanti al PC).</summary>
         public bool Recording { get; private set; }
         private readonly Dictionary<string, long> _noteLogged = new();

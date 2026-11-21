@@ -152,6 +152,7 @@ namespace IpDeskCtrl.Screen
                 {
                     var (st, data) = hc.Ask(CmdUserFolder);
                     if (st == 0 && data.Length > 0) Platform.ReceiveFolder = Encoding.UTF8.GetString(data);
+                    else SessionLog.Write("FILE cartella Scaricati dell'utente non letta dal processo di sistema: uso il profilo dell'utente collegato");
                 }
                 return Current == null ? "Il processo di sistema non è partito: lo schermo del PC remoto potrebbe non essere visibile." : "";
             });

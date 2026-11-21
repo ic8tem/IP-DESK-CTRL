@@ -36,6 +36,10 @@ namespace IpDeskCtrl.Core
         public event Action<string>? UpdateRequested;        // numero del PC che ha chiesto l'aggiornamento
         public event Action<string, string>? ChatReceived;   // numero, testo
         public event Action<DrawEvent>? DrawReceived;
+        public event Action<string, int, int>? DropCatchRequested;   // id, x, y
+
+        public void SendDropped(string id, List<string> paths) =>
+            Write($"DROPPED {id} " + (paths.Count == 0 ? "-" : Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(string.Join("\n", paths)))));
         public event Action<string, bool>? RecordingChanged;  // numero, sta registrando
 
         /// <summary>Messaggio di chat a chi comanda questo PC passando dal servizio.</summary>
@@ -161,6 +165,12 @@ namespace IpDeskCtrl.Core
                         case "REC" when p.Length >= 3:
                             RecordingChanged?.Invoke(p[1], p[2].StartsWith('1'));
                             break;
+                        case "DROPCATCH" when p.Length >= 3:
+                        {
+                            var q = line.Split(' ');
+                            if (q.Length >= 4 && int.TryParse(q[2], out int dx) && int.TryParse(q[3], out int dy)) DropCatchRequested?.Invoke(q[1], dx, dy);
+                            break;
+                        }
                         case "DRAW":
                         {
                             var e = DrawEvent.FromLine(line.Split(' '));

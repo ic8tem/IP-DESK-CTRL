@@ -69,6 +69,8 @@ namespace IpDeskCtrl.UI
         {
             FlowDirection = L.IsRtl ? FlowDirection.RightToLeft : FlowDirection.LeftToRight;   // arabo, ebraico, urdu
             _s = s;
+            // trascinamento dal PC comandato verso chi comanda (senza servizio: la finestrella la apre questo programma)
+            if (!Platform.IsMobile) Platform.CatchDrop ??= (x, y) => Dispatcher.UIThread.InvokeAsync(() => DropCatcher.CatchAsync(x, y));
             Content = Build();
             AttachedToVisualTree += (_, _) => EnsureStarted();
         }
@@ -423,6 +425,11 @@ namespace IpDeskCtrl.UI
             _svc.AskAccept = AskAcceptAsync;
             _svc.HostStarted += (n, input) => Dispatcher.UIThread.Post(() => { _svcHosts++; OnServiceHostStarted(n, input); });
             _svc.RecordingChanged += (n, on) => Dispatcher.UIThread.Post(() => OnRecording(n, on));
+            _svc.DropCatchRequested += (id, x, y) => Dispatcher.UIThread.Post(async () =>
+            {
+                var paths = await DropCatcher.CatchAsync(x, y);
+                _svc?.SendDropped(id, paths);
+            });
             _svc.DrawReceived += e => Dispatcher.UIThread.Post(() => DrawOverlay.Show(e));
             _svc.ChatReceived += (n, text) => Dispatcher.UIThread.Post(() => OpenChat(n, text));
             _svc.HostEnded += (n, why) => Dispatcher.UIThread.Post(() => { DrawOverlay.EndedFor(n); _svcHosts = Math.Max(0, _svcHosts - 1); _incomingBanner.IsVisible = false; RebuildHistory(); });

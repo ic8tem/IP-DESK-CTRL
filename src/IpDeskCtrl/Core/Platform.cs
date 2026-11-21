@@ -53,6 +53,9 @@ namespace IpDeskCtrl.Core
         /// <summary>Riavvio del PC ("" = partito); null = <see cref="Power.Reboot"/> normale.</summary>
         public static Func<string>? Reboot { get; set; }
 
+        /// <summary>Trascinamento verso chi comanda: finestrella sotto il puntatore (pixel dello schermo), restituisce i file lasciati.</summary>
+        public static Func<int, int, Task<List<string>>>? CatchDrop { get; set; }
+
         // ---- accesso completo di Windows (servizio, UAC)
         /// <summary>0 = non c'entra (non Windows), 1 = servizio attivo, 2 = servizio assente ma installabile da qui, 3 = assente e non installabile.</summary>
         public static Func<int>? ServiceState { get; set; }
@@ -76,7 +79,16 @@ namespace IpDeskCtrl.Core
         {
             get
             {
-                string f = ReceiveFolder ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads", "IP-DESK-CTRL");
+                string? f = ReceiveFolder;
+                if (f == null)
+                {
+                    // nel servizio il profilo «proprio» è quello di sistema (C:\Windows\system32\config\systemprofile),
+                    // che l'utente non vede: si usa Scaricati dell'utente collegato a Windows
+                    string? home = null;
+                    try { home = UserHome?.Invoke(); } catch { }
+                    f = Path.Combine(home ?? Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads", "IP-DESK-CTRL");
+                    if (home != null) ReceiveFolder = f;
+                }
                 Directory.CreateDirectory(f);
                 return f;
             }

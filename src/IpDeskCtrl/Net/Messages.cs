@@ -92,6 +92,7 @@ namespace IpDeskCtrl.Net
         public const byte HostAccess = 0x8B;     // host -> visore: u8 servizio (0 n/d, 1 attivo, 2 installabile, 3 non installabile), u8 UAC in corso, u8 «avvia come amministratore» permesso
         public const byte InstallService = 0x8C; // visore -> host: installa il servizio (chi è al PC risponde sì alla UAC)
         public const byte RunAdmin = 0x8D;       // visore -> host: str programma (cmd, powershell, taskmgr, regedit, services, compmgmt, devmgmt)
+        public const byte DragOut = 0x8E;        // visore -> host: il puntatore è uscito dalla finestra col tasto premuto (trascinamento verso chi comanda)
         public const byte Recording = 0x8A;      // visore -> host: u8 1 = sta registrando la sessione, 0 = ha smesso
         public const byte Draw = 0x89;           // visore -> host: u8 op (0 continua, 1 nuovo tratto, 2 cancella), u16 n, n × (u16 x, u16 y) in 0..65535
     }

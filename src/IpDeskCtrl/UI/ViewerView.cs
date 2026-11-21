@@ -358,6 +358,14 @@ namespace IpDeskCtrl.UI
 
             ToolTip.SetTip(_drawBtn, L.T("Lavagna: disegna sullo schermo del PC remoto per indicare qualcosa (tratti rossi). Clic destro per cancellare. Premi di nuovo per tornare a comandare."));
             _view.DrawChunk += (op, pts) => _session?.SendDraw(op, pts);
+            _view.DragOutRequested += () =>
+            {
+                var s = _session;
+                if (s == null) return;
+                SessionLog.Write("TRASCINAMENTO portato fuori dalla finestra del PC remoto: chiedo i file trascinati");
+                s.DragOut();
+                ShowNote(L.T("Trascinamento dal PC remoto: se erano file, arrivano qui in Scaricati e negli appunti (incollali con Ctrl+V)…"));
+            };
             _drawBtn.IsCheckedChanged += (_, _) => SetDrawMode(_drawBtn.IsChecked == true);
 
             _recBtn.IsVisible = !Platform.IsMobile;
@@ -1521,6 +1529,7 @@ namespace IpDeskCtrl.UI
                 var s = new ViewerSession(_peer, link);
                 _session = s;
                 _view.Session = s;
+                _view.DragOutEnabled = s.PeerHas("dragout") && !Platform.IsMobile;
                 if (_view.DrawMode) { _view.DrawMode = false; _drawBtn.IsChecked = false; }
                 s.StateChanged += () => Dispatcher.UIThread.Post(() => OnState(s));
                 s.PasswordRequested += c => Dispatcher.UIThread.Post(() => AskPassword(s, c));

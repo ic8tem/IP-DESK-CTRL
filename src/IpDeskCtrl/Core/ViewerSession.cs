@@ -554,6 +554,8 @@ namespace IpDeskCtrl.Core
             Send(new MsgWriter(Msg.InstallService).Build());
         }
 
+        public void DragOut() => Send(new MsgWriter(Msg.DragOut).Build());
+
         public void RunAdmin(string what) => Send(new MsgWriter(Msg.RunAdmin).Str(what).Build());
 
         public void Reboot()
