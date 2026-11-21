@@ -81,6 +81,8 @@ namespace IpDeskCtrl.UI
         private readonly Button _files = new() { Content = L.T("File ▾") };
         private readonly Button _chatBtn = new() { Content = L.T("Chat") };
         private ChatPanel? _chat;
+        private readonly Button _recBtn = new() { Content = "⏺" };
+        private IpDeskCtrl.Screen.SessionRecorder? _rec;
         private int _chatUnread;
         private readonly TextBlock _stats = new() { FontSize = 11, VerticalAlignment = VerticalAlignment.Center, Foreground = Brushes.Gainsboro, MinWidth = 150 };
 
@@ -163,6 +165,7 @@ namespace IpDeskCtrl.UI
 
         public void Disconnect()
         {
+            StopRecording();
             _visibleTimer.Stop();
             _rebootCts?.Cancel();
             _cts.Cancel();
@@ -316,6 +319,10 @@ namespace IpDeskCtrl.UI
             _chatBtn.Click += (_, _) => ToggleChat(_chat?.IsVisible != true);
             ToolTip.SetTip(_chatBtn, L.T("Scrivi a chi è davanti al PC remoto: gli si apre una finestra di chat."));
 
+            _recBtn.IsVisible = !Platform.IsMobile;
+            ToolTip.SetTip(_recBtn, L.T("Registra la sessione in un video MP4 (cartella Video\\IP-DESK-CTRL). Serve ffmpeg."));
+            _recBtn.Click += (_, _) => ToggleRecording();
+
             _files.Click += (_, _) => ShowFilesMenu();
             ToolTip.SetTip(_files, L.T("Manda file al PC remoto o prendi quelli copiati lì. Puoi anche trascinarli sulla finestra."));
 
@@ -349,7 +356,7 @@ namespace IpDeskCtrl.UI
 
             var bar = new WrapPanel { HorizontalAlignment = HorizontalAlignment.Center };
             _bar = bar;
-            foreach (var c in new Control[] { _fullBtn, minus, _zoom, plus, _monitor, _quality, _codec, _fitRes, _audio, _mic, keyboard, gestures, keys, _files, _chatBtn, _tunnelBtn, _radio, refresh, _stats, close, hide })
+            foreach (var c in new Control[] { _fullBtn, minus, _zoom, plus, _monitor, _quality, _codec, _fitRes, _audio, _mic, keyboard, gestures, keys, _files, _chatBtn, _recBtn, _tunnelBtn, _radio, refresh, _stats, close, hide })
             {
                 c.VerticalAlignment = VerticalAlignment.Center;
                 c.Margin = new Thickness(3);
@@ -432,7 +439,7 @@ namespace IpDeskCtrl.UI
             grid.Children.Add(_transfer);
 
             // ---- avvisi del PC remoto (permessi, Wayland…) e file ricevuti
-            _noteOpen.Click += (_, _) => MainView.OpenPath(Platform.Received);
+            _noteOpen.Click += (_, _) => MainView.OpenPath(_noteFolder ?? Platform.Received);
             _note.Child = new StackPanel { Children = { _noteText, _noteOpen } };
             _note.Background = new SolidColorBrush(Color.FromArgb(220, 120, 60, 0));
             _note.CornerRadius = new CornerRadius(8);
@@ -468,8 +475,11 @@ namespace IpDeskCtrl.UI
             return b;
         }
 
-        private void ShowNote(string text, bool openFolder = false)
+        private string? _noteFolder;
+
+        private void ShowNote(string text, bool openFolder = false, string? folder = null)
         {
+            _noteFolder = folder;
             _noteText.Text = text;
             _noteOpen.IsVisible = openFolder && !Platform.IsMobile;
             _note.IsVisible = text.Length > 0;
@@ -609,6 +619,30 @@ namespace IpDeskCtrl.UI
         }
 
         // =================================================================== file
+
+        private void ToggleRecording()
+        {
+            if (_rec != null) { StopRecording(); return; }
+            var s = _session;
+            if (s == null) return;
+            var r = IpDeskCtrl.Screen.SessionRecorder.Start(s.Decoder, Identity.Format(_number), out string err);
+            if (r == null) { ShowNote(L.T("Registrazione non avviata: ") + err + "."); return; }
+            _rec = r;
+            _recBtn.Content = "⏹ REC";
+            _recBtn.Foreground = Brushes.Red;
+            ShowNote(L.F("Registrazione in corso in {0}", IpDeskCtrl.Screen.SessionRecorder.Folder));
+        }
+
+        private void StopRecording()
+        {
+            var r = _rec;
+            if (r == null) return;
+            _rec = null;
+            r.Dispose();
+            _recBtn.Content = "⏺";
+            _recBtn.ClearValue(Button.ForegroundProperty);
+            ShowNote(L.T("Registrazione salvata: ") + r.File, true, IpDeskCtrl.Screen.SessionRecorder.Folder);
+        }
 
         private void ToggleChat(bool show)
         {
@@ -1498,6 +1532,7 @@ namespace IpDeskCtrl.UI
         private void OnClosed(ViewerSession s, string reason)
         {
             if (s != _session) return;
+            StopRecording();
             HistoryChanged?.Invoke();
             if (_ended) return;
             if (s.RebootRequested) { _ = WaitRebootAsync(); return; }

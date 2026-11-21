@@ -39,6 +39,8 @@ namespace IpDeskCtrl.UI
         private readonly TextBox _target = new() { Watermark = "123 456 7890", FontSize = 22, MaxLength = 16 };
         private readonly TextBlock _connectInfo = Ui.Sub("");
         private readonly StackPanel _history = new() { Spacing = 8 };
+        private readonly TextBox _historyFilter = new() { Watermark = "🔍 " + L.T("Cerca per nome, numero o gruppo") };
+        private readonly ComboBox _historySort = new() { MinWidth = 150 };
         private string _incomingNumber = "";
         private readonly Border _incomingBanner = new() { IsVisible = false, CornerRadius = new CornerRadius(10), Padding = new Thickness(14) };
         private readonly TextBlock _incomingText = new() { TextWrapping = TextWrapping.Wrap, FontWeight = FontWeight.Bold };
@@ -224,7 +226,16 @@ namespace IpDeskCtrl.UI
                 dock.Children.Add(hTitle);
                 hHead = dock;
             }
-            col.Children.Add(Ui.Panel(Ui.Col(10, hHead, _history)));
+            _historySort.ItemsSource = new[] { L.T("Ultimo collegamento"), L.T("Nome"), L.T("In linea prima") };
+            _historySort.SelectedIndex = Math.Clamp(_s.HistorySort, 0, 2);
+            _historySort.SelectionChanged += (_, _) => { _s.HistorySort = Math.Max(0, _historySort.SelectedIndex); _s.Save(); RebuildHistory(); };
+            _historyFilter.TextChanged += (_, _) => RebuildHistory();
+            var fRow = new DockPanel();
+            _historySort.Margin = new Thickness(8, 0, 0, 0);
+            DockPanel.SetDock(_historySort, Dock.Right);
+            fRow.Children.Add(_historySort);
+            fRow.Children.Add(_historyFilter);
+            col.Children.Add(Ui.Panel(Ui.Col(10, hHead, fRow, _history)));
 
             // ---- impostazioni
             col.Children.Add(Ui.Panel(BuildSettings()));
@@ -514,8 +525,36 @@ namespace IpDeskCtrl.UI
                 _history.Children.Add(Ui.Sub(L.T("Ancora nessun collegamento. I PC a cui ti colleghi e quelli che si collegano a te compariranno qui.")));
                 return;
             }
-            foreach (var h in _s.History.OrderByDescending(x => x.LastUtc).ToList())
-                _history.Children.Add(HistoryRow(h));
+            string q = (_historyFilter.Text ?? "").Trim();
+            string qd = Identity.Clean(q);
+            bool Online(HistoryEntry h) => _presence.TryGetValue(h.Number, out var a) && a != null && a.Value < TimeSpan.FromMinutes(8);
+            var list = _s.History.Where(h => q.Length == 0
+                    || h.Alias.Contains(q, StringComparison.OrdinalIgnoreCase)
+                    || h.Group.Contains(q, StringComparison.OrdinalIgnoreCase)
+                    || (qd.Length > 0 && h.Number.Contains(qd))).ToList();
+            IEnumerable<HistoryEntry> sorted = _historySort.SelectedIndex switch
+            {
+                1 => list.OrderBy(h => h.Alias.Length > 0 ? h.Alias : h.Number, StringComparer.CurrentCultureIgnoreCase),
+                2 => list.OrderByDescending(Online).ThenByDescending(h => h.LastUtc),
+                _ => list.OrderByDescending(h => h.LastUtc),
+            };
+            if (list.Count == 0) { _history.Children.Add(Ui.Sub(L.T("Nessun PC corrisponde alla ricerca."))); return; }
+            // i PC con un gruppo stanno sotto il titolo del gruppo, gli altri in fondo
+            var groups = sorted.GroupBy(h => h.Group.Trim()).OrderBy(g => g.Key.Length == 0).ThenBy(g => g.Key, StringComparer.CurrentCultureIgnoreCase).ToList();
+            bool titles = groups.Count > 1 || groups[0].Key.Length > 0;
+            foreach (var g in groups)
+            {
+                if (titles)
+                {
+                    int on = g.Count(Online);
+                    _history.Children.Add(new TextBlock
+                    {
+                        Text = (g.Key.Length > 0 ? g.Key : L.T("Senza gruppo")) + $"  ·  {g.Count()}" + (on > 0 ? L.F(" · {0} in linea", on) : ""),
+                        FontWeight = FontWeight.Bold, FontSize = 13, Margin = new Thickness(2, 6, 0, 0), Opacity = 0.8,
+                    });
+                }
+                foreach (var h in g) _history.Children.Add(HistoryRow(h));
+            }
         }
 
         private Control HistoryRow(HistoryEntry h)
@@ -563,10 +602,13 @@ namespace IpDeskCtrl.UI
                 _connectInfo.Text = L.T("Accensione di ") + title + "…";
                 _connectInfo.Text = await _peer.WakeAsync(h, _life.Token);
             };
+            var group = new MenuItem { Header = h.Group.Length > 0 ? L.F("Gruppo: {0}…", h.Group) : L.T("Metti in un gruppo…") };
+            group.Click += (_, _) => AskGroup(h);
             var remove = new MenuItem { Header = L.T("Togli dallo storico") };
             remove.Click += (_, _) => { _s.History.Remove(h); _s.Save(); RebuildHistory(); };
             var flyout = new MenuFlyout();
             flyout.Items.Add(wake);
+            flyout.Items.Add(group);
             flyout.Items.Add(unattended);
             flyout.Items.Add(remove);
             more.Flyout = flyout;
@@ -616,6 +658,25 @@ namespace IpDeskCtrl.UI
                 edit.AttachedToVisualTree += (_, _) => { edit.Focus(); edit.SelectAll(); };
             };
             return box;
+        }
+
+        /// <summary>Sceglie il gruppo della rubrica: uno esistente o uno nuovo; vuoto = senza gruppo.</summary>
+        private void AskGroup(HistoryEntry h)
+        {
+            var existing = _s.History.Select(x => x.Group.Trim()).Where(g => g.Length > 0).Distinct().OrderBy(g => g).ToList();
+            var box = new AutoCompleteBox { Text = h.Group, ItemsSource = existing, Watermark = L.T("Es. Stazione, Ufficio, Famiglia"), MinWidth = 260, FilterMode = AutoCompleteFilterMode.ContainsOrdinal, MinimumPrefixLength = 0 };
+            var ok = Ui.Btn(L.T("Salva"), true);
+            var none = Ui.Btn(L.T("Senza gruppo"));
+            var content = Ui.Col(12,
+                Ui.H1(L.T("Gruppo della rubrica")),
+                Ui.Sub((h.Alias.Length > 0 ? h.Alias + " · " : "") + Identity.Format(h.Number), 12),
+                box,
+                Ui.Row(8, none, ok));
+            var dlg = Shell.Current.ShowDialog(L.T("IP-DESK-CTRL · Gruppo"), content, 380, false);
+            void Save(string g) { h.Group = g.Trim(); _s.Save(); RebuildHistory(); dlg.Close(); }
+            ok.Click += (_, _) => Save(box.Text ?? "");
+            none.Click += (_, _) => Save("");
+            box.KeyDown += (_, e) => { if (e.Key == Key.Enter) Save(box.Text ?? ""); };
         }
 
         // =================================================================== QR del numero
