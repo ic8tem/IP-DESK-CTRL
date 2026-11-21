@@ -87,7 +87,8 @@ namespace IpDeskCtrl.Core
         protected async Task ClipboardLoopAsync()
         {
             var clip = Platform.Clipboard;
-            if (clip == null) return;
+            if (clip == null) { ClipLog($"condivisione con {PeerLabel} non attiva: questo processo non ha accesso agli appunti"); return; }
+            ClipLog($"condivisione con {PeerLabel} attiva (testo ogni secondo; file " + (FilesAllowed ? "sì" : "no, solo visione") + $") · {clip.GetType().Name}");
             try { _lastLocalClip = await clip.GetTextAsync(); }
             catch (Exception ex) { ClipLog("di questo PC non leggibili all'inizio della sessione: " + ex.Message, "read0"); }
             while (!Cts.IsCancellationRequested)

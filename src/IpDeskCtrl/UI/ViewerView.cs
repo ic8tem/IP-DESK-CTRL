@@ -208,17 +208,21 @@ namespace IpDeskCtrl.UI
             _viewHost.Children.Add(_view);
             grid.Children.Add(_viewHost);
 
-            // trascinare file sulla vista = mandarli al PC remoto, dove sono stati lasciati
+            // trascinare file sulla vista = mandarli al PC remoto, dove sono stati lasciati.
+            // Il bersaglio è tutta la finestra (sfondo trasparente = colpibile ovunque): prima lo era solo l'immagine,
+            // e sopra le bande nere ai lati, o sopra avvisi e plancia, il trascinamento veniva rifiutato.
+            grid.Background = Brushes.Transparent;
+            DragDrop.SetAllowDrop(grid, true);
             DragDrop.SetAllowDrop(_view, true);
-            _view.AddHandler(DragDrop.DragEnterEvent, (_, e) =>
+            grid.AddHandler(DragDrop.DragEnterEvent, (_, e) =>
             {
                 // nel registro anche l'inizio: se manca, Windows non ha nemmeno consegnato il trascinamento al programma
                 bool files = e.Data.Contains(DataFormats.Files);
                 SessionLog.Write(files ? "FILE trascinamento iniziato sopra la finestra del visore" : "FILE trascinamento sopra il visore, ma non sono file (ignorato)");
             });
-            _view.AddHandler(DragDrop.DragLeaveEvent, (_, _) => SessionLog.Write("FILE trascinamento uscito dalla finestra senza rilasciare"));
-            _view.AddHandler(DragDrop.DragOverEvent, (_, e) => { e.DragEffects = e.Data.Contains(DataFormats.Files) ? DragDropEffects.Copy : DragDropEffects.None; });
-            _view.AddHandler(DragDrop.DropEvent, (_, e) => OnDrop(e));
+            grid.AddHandler(DragDrop.DragLeaveEvent, (_, _) => SessionLog.Write("FILE trascinamento uscito dalla finestra senza rilasciare"));
+            grid.AddHandler(DragDrop.DragOverEvent, (_, e) => { e.DragEffects = e.Data.Contains(DataFormats.Files) ? DragDropEffects.Copy : DragDropEffects.None; });
+            grid.AddHandler(DragDrop.DropEvent, (_, e) => OnDrop(e));
 
             // ---- plancia di comando, in alto al centro
             _fullBtn.Content = L.T("Schermo intero");
@@ -944,6 +948,7 @@ namespace IpDeskCtrl.UI
             var p = e.GetPosition(_view);
             var img = _view.ImagePoint(p);
             if (img != null) s.MouseMove(img.Value.x, img.Value.y);
+            else SessionLog.Write("FILE rilasciati fuori dall'immagine del PC remoto: si incollano dove si trova ora il suo puntatore");
             _ = Task.Run(() => s.SendFilesAsync(SessionBase.FromPaths(paths), TransferPurpose.Drop));
         }
 
