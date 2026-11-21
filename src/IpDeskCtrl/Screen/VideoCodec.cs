@@ -105,8 +105,78 @@ namespace IpDeskCtrl.Screen
             ("h264", "libx264", false), ("hevc", "libx265", false), ("av1", "libsvtav1", false),
         };
 
+        // ------------------------------------------------------------------ guardia della codifica in hardware
+
+        /// <summary>
+        /// Alcuni driver grafici (visto con Intel Quick Sync, hevc_qsv) bloccano tutto il PC dopo un po' di codifica
+        /// in hardware: niente più eventi in Windows, serve staccare la corrente. Mentre si codifica in hardware c'è
+        /// un file «segnaposto»; se all'avvio il segnaposto c'è ancora e il PC è stato riacceso dopo l'ultimo
+        /// aggiornamento del segnaposto, il PC si è spento o bloccato durante la codifica in hardware: per 30 giorni
+        /// si usa solo la codifica software (x264), più pesante per il processore ma senza il driver grafico.
+        /// </summary>
+        public static class HwGuard
+        {
+            private static string Dir => DataPaths.Root ?? AppSettings.Folder;
+            private static string Marker => System.IO.Path.Combine(Dir, "video-hw-in-uso.txt");
+            private static string BlockFile => System.IO.Path.Combine(Dir, "video-hw-sospeso.txt");
+            private static int _active;
+            private static Timer? _touch;
+
+            /// <summary>Codifica in hardware sospesa: motivo da mostrare, null = permessa.</summary>
+            public static string? Suspended { get; private set; }
+
+            /// <summary>Da chiamare prima di cercare i codificatori.</summary>
+            public static void CheckAtStartup()
+            {
+                try
+                {
+                    var boot = DateTime.UtcNow - TimeSpan.FromMilliseconds(Environment.TickCount64);
+                    if (File.Exists(Marker))
+                    {
+                        var last = File.GetLastWriteTimeUtc(Marker);
+                        string enc = File.ReadAllText(Marker).Trim();
+                        File.Delete(Marker);
+                        if (boot > last)
+                        {
+                            File.WriteAllText(BlockFile, $"{DateTime.UtcNow:o}\n{enc}\nultimo segno {last:o}, riacceso {boot:o}");
+                            SessionLog.Write($"VIDEO il PC si è spento o bloccato mentre codificava in hardware con {enc} (ultimo segno {last.ToLocalTime():dd/MM HH:mm}, riacceso {boot.ToLocalTime():dd/MM HH:mm}): per 30 giorni uso solo la codifica software");
+                        }
+                    }
+                    if (File.Exists(BlockFile))
+                    {
+                        var since = File.GetLastWriteTimeUtc(BlockFile);
+                        if (DateTime.UtcNow - since < TimeSpan.FromDays(30))
+                        {
+                            string enc = File.ReadAllLines(BlockFile).Skip(1).FirstOrDefault() ?? "hardware";
+                            Suspended = L.F("codifica con la scheda grafica ({0}) sospesa fino al {1}: il PC si era bloccato mentre la usava", enc, since.AddDays(30).ToLocalTime().ToString("dd/MM"));
+                            SessionLog.Write("VIDEO " + Suspended + $" (per riattivarla cancella {BlockFile})");
+                        }
+                        else File.Delete(BlockFile);
+                    }
+                }
+                catch (Exception ex) { SessionLog.Write("VIDEO guardia della codifica in hardware non leggibile: " + ex.Message); }
+            }
+
+            /// <summary>Inizio di una codifica in hardware: segnaposto rinnovato ogni minuto.</summary>
+            public static void Begin(string encoder)
+            {
+                if (Interlocked.Increment(ref _active) != 1) return;
+                try { File.WriteAllText(Marker, encoder); } catch { }
+                _touch = new Timer(_ => { try { File.SetLastWriteTimeUtc(Marker, DateTime.UtcNow); } catch { } }, null, 60_000, 60_000);
+            }
+
+            public static void End()
+            {
+                if (Interlocked.Decrement(ref _active) > 0) return;
+                _active = 0;
+                _touch?.Dispose(); _touch = null;
+                try { File.Delete(Marker); } catch { }
+            }
+        }
+
         private static List<Encoder> ProbeEncoders()
         {
+            HwGuard.CheckAtStartup();
             var ok = new List<Encoder>();
             string? exe = Path;
             if (exe == null) return ok;
@@ -114,6 +184,7 @@ namespace IpDeskCtrl.Screen
             foreach (var (codec, name, hw) in Candidates)
             {
                 if (!list.Contains(" " + name + " ")) continue;
+                if (hw && HwGuard.Suspended != null) continue;
                 if (ok.Any(e => e.Codec == codec && e.Hardware)) continue;     // per ogni codec basta un hardware
                 string args = $"-hide_banner -loglevel error -f lavfi -i testsrc2=s=640x360:r=25 -frames:v 8 -an -c:v {name} {Options(name)} -pix_fmt {(hw ? "nv12" : "yuv420p")} -f null -";
                 using var p = Start(exe, args, false);
@@ -263,11 +334,13 @@ namespace IpDeskCtrl.Screen
         public VideoEncoder(Ffmpeg.Encoder enc, int w, int h, int kbps, Action<byte[]> output)
         {
             Codec = enc.Codec; Width = w; Height = h;
+            _hw = enc.Hardware;
             string args = $"-hide_banner -loglevel error -f rawvideo -pix_fmt bgra -s {w}x{h} -r 25 -i - -an " +
                           $"-c:v {enc.Name} {Ffmpeg.Options(enc.Name)} -pix_fmt {(enc.Hardware ? "nv12" : "yuv420p")} " +
                           $"-g 75 -bf 0 -b:v {kbps}k -maxrate {kbps}k -bufsize {Math.Max(200, kbps / 2)}k " +
                           $"-flush_packets 1 -f {Ffmpeg.Format(enc.Codec)} -";
             _p = Ffmpeg.Start(Ffmpeg.Path!, args, true) ?? throw new IOException(L.T("ffmpeg non avviabile"));
+            if (_hw) Ffmpeg.HwGuard.Begin(enc.Name);
             _in = _p.StandardInput.BaseStream;
             var err = _p.StandardError;
             _ = Task.Run(async () => { try { string e = await err.ReadToEndAsync(); if (e.Trim().Length > 0) Error = e.Trim(); } catch { } });
@@ -301,11 +374,16 @@ namespace IpDeskCtrl.Screen
             catch { Failed = true; return false; }
         }
 
+        private readonly bool _hw;
+        private int _disposed;
+
         public void Dispose()
         {
+            if (Interlocked.Exchange(ref _disposed, 1) == 1) return;
             try { _in.Close(); } catch { }
             try { if (!_p.WaitForExit(500)) _p.Kill(); } catch { }
             _p.Dispose();
+            if (_hw) Ffmpeg.HwGuard.End();
         }
     }
 

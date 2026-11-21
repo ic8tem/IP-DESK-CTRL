@@ -718,5 +718,7 @@
  "Windows non concede il riavvio all'account di questo PC (utente senza diritti di arresto o criterio dell'organizzazione). Con il servizio «accesso completo» il riavvio funziona sempre: installalo da Tasti ▾.": "Windows לא מתיר לחשבון של מחשב זה לאתחל (משתמש בלי הרשאת כיבוי או מדיניות הארגון). עם השירות «גישה מלאה» האתחול תמיד עובד: התקינו אותו מתפריט מקשים ▾.",
  "Collegamento caduto": "החיבור נפל",
  "{0} · mi ricollego da solo (tentativo {1} di {2})…": "{0} · מתחבר מחדש לבד (ניסיון {1} מתוך {2})…",
- "Ricollegamento automatico non riuscito.": "החיבור מחדש האוטומטי נכשל."
+ "Ricollegamento automatico non riuscito.": "החיבור מחדש האוטומטי נכשל.",
+ "Sul PC remoto: {0}.": "במחשב המרוחק: {0}.",
+ "codifica con la scheda grafica ({0}) sospesa fino al {1}: il PC si era bloccato mentre la usava": "הקידוד בכרטיס המסך ({0}) מושהה עד {1}: המחשב קפא בזמן השימוש בו"
 }

@@ -718,5 +718,7 @@
  "Windows non concede il riavvio all'account di questo PC (utente senza diritti di arresto o criterio dell'organizzazione). Con il servizio «accesso completo» il riavvio funziona sempre: installalo da Tasti ▾.": "Hindi pinapayagan ng Windows ang account ng PC na ito na mag-restart (user na walang karapatang mag-shutdown o patakaran ng organisasyon). Sa serbisyong “buong access” laging gumagana ang restart: i-install ito mula sa Mga Key ▾.",
  "Collegamento caduto": "Naputol ang koneksyon",
  "{0} · mi ricollego da solo (tentativo {1} di {2})…": "{0} · kusang kumokonekta muli (subok {1} sa {2})…",
- "Ricollegamento automatico non riuscito.": "Nabigo ang awtomatikong muling pagkonekta."
+ "Ricollegamento automatico non riuscito.": "Nabigo ang awtomatikong muling pagkonekta.",
+ "Sul PC remoto: {0}.": "Sa remote na PC: {0}.",
+ "codifica con la scheda grafica ({0}) sospesa fino al {1}: il PC si era bloccato mentre la usava": "sinuspinde ang encoding gamit ang graphics card ({0}) hanggang {1}: nag-freeze ang PC habang ginagamit ito"
 }

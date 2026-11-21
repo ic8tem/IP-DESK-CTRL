@@ -718,5 +718,7 @@
  "Windows non concede il riavvio all'account di questo PC (utente senza diritti di arresto o criterio dell'organizzazione). Con il servizio «accesso completo» il riavvio funziona sempre: installalo da Tasti ▾.": "Windows ei luba selle arvuti kontol taaskäivitada (kasutajal pole väljalülitamise õigust või kehtib organisatsiooni poliitika). Teenusega „täielik juurdepääs“ toimib taaskäivitus alati: paigalda see menüüst Klahvid ▾.",
  "Collegamento caduto": "Ühendus katkes",
  "{0} · mi ricollego da solo (tentativo {1} di {2})…": "{0} · ühendun ise uuesti (katse {1}/{2})…",
- "Ricollegamento automatico non riuscito.": "Automaatne taasühendus ebaõnnestus."
+ "Ricollegamento automatico non riuscito.": "Automaatne taasühendus ebaõnnestus.",
+ "Sul PC remoto: {0}.": "Kaugarvutis: {0}.",
+ "codifica con la scheda grafica ({0}) sospesa fino al {1}: il PC si era bloccato mentre la usava": "graafikakaardiga kodeerimine ({0}) peatatud kuni {1}: arvuti oli selle kasutamise ajal hangunud"
 }

@@ -718,5 +718,7 @@
  "Windows non concede il riavvio all'account di questo PC (utente senza diritti di arresto o criterio dell'organizzazione). Con il servizio «accesso completo» il riavvio funziona sempre: installalo da Tasti ▾.": "Windows laat nie hierdie rekenaar se rekening toe om te herbegin nie (gebruiker sonder afskakelregte of ’n organisasiebeleid). Met die “volle toegang”-diens werk herbegin altyd: installeer dit via Sleutels ▾.",
  "Collegamento caduto": "Verbinding het weggeval",
  "{0} · mi ricollego da solo (tentativo {1} di {2})…": "{0} · koppel self weer (poging {1} van {2})…",
- "Ricollegamento automatico non riuscito.": "Outomatiese herverbinding het misluk."
+ "Ricollegamento automatico non riuscito.": "Outomatiese herverbinding het misluk.",
+ "Sul PC remoto: {0}.": "Op die afgeleë rekenaar: {0}.",
+ "codifica con la scheda grafica ({0}) sospesa fino al {1}: il PC si era bloccato mentre la usava": "kodering met die grafiese kaart ({0}) opgeskort tot {1}: die rekenaar het gevries terwyl dit gebruik is"
 }

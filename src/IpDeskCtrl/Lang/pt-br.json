@@ -718,5 +718,7 @@
  "Windows non concede il riavvio all'account di questo PC (utente senza diritti di arresto o criterio dell'organizzazione). Con il servizio «accesso completo» il riavvio funziona sempre: installalo da Tasti ▾.": "O Windows não permite que a conta deste PC reinicie (usuário sem direito de desligamento ou política da organização). Com o serviço \"acesso completo\" o reinício sempre funciona: instale-o em Teclas ▾.",
  "Collegamento caduto": "Conexão caiu",
  "{0} · mi ricollego da solo (tentativo {1} di {2})…": "{0} · reconectando sozinho (tentativa {1} de {2})…",
- "Ricollegamento automatico non riuscito.": "A reconexão automática falhou."
+ "Ricollegamento automatico non riuscito.": "A reconexão automática falhou.",
+ "Sul PC remoto: {0}.": "No PC remoto: {0}.",
+ "codifica con la scheda grafica ({0}) sospesa fino al {1}: il PC si era bloccato mentre la usava": "codificação com a placa de vídeo ({0}) suspensa até {1}: o PC travou enquanto a usava"
 }

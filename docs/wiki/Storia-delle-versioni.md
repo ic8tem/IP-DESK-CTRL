@@ -3,6 +3,9 @@
 
 Le versioni con protocollo diverso non si collegano tra loro: aggiorna tutti i dispositivi alla stessa versione principale (la 0.4.1 si collega con la 0.4.0; la 0.5 si collega con la 0.4).
 
+## 0.5.28 — 21 novembre 2026
+- **Protezione dai blocchi del driver grafico**: alcuni driver (visto con Intel Quick Sync, `hevc_qsv`) possono bloccare tutto il PC comandato dopo un po' di codifica video in hardware, tanto che serve staccare la corrente. Ora, mentre si codifica in hardware, IP-DESK-CTRL tiene un segnaposto: se il PC viene riacceso e il segnaposto è rimasto, vuol dire che si è spento o bloccato durante la codifica, e per 30 giorni usa solo la codifica software (x264). Lo scrive nel registro e lo dice anche a chi comanda. Per riattivare prima la codifica in hardware basta cancellare `video-hw-sospeso.txt` nella cartella dati.
+
 ## 0.5.27 — 21 novembre 2026
 - **Trascinamento dei file, diagnosi e riserva**: all'apertura del visore il registro dice se la finestra ha il bersaglio di trascinamento di Windows (OLE) e a che livello gira il programma (utente normale o amministratore). Se il bersaglio manca, o il programma gira da amministratore (Windows blocca il trascinamento da Esplora risorse verso i programmi da amministratore), i file si accettano anche con il vecchio sistema di Windows (WM_DROPFILES), che Windows lascia passare se lo si permette.
 - **Installatore**: «Avvia IP-DESK-CTRL» a fine installazione apre il programma da utente normale e non più da amministratore.

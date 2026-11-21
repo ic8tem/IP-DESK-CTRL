@@ -718,5 +718,7 @@
  "Windows non concede il riavvio all'account di questo PC (utente senza diritti di arresto o criterio dell'organizzazione). Con il servizio «accesso completo» il riavvio funziona sempre: installalo da Tasti ▾.": "Windows staat het account van deze pc niet toe opnieuw op te starten (gebruiker zonder afsluitrecht of organisatiebeleid). Met de service ‘volledige toegang’ werkt opnieuw opstarten altijd: installeer hem via Toetsen ▾.",
  "Collegamento caduto": "Verbinding verbroken",
  "{0} · mi ricollego da solo (tentativo {1} di {2})…": "{0} · ik maak zelf opnieuw verbinding (poging {1} van {2})…",
- "Ricollegamento automatico non riuscito.": "Automatisch opnieuw verbinden mislukt."
+ "Ricollegamento automatico non riuscito.": "Automatisch opnieuw verbinden mislukt.",
+ "Sul PC remoto: {0}.": "Op de externe pc: {0}.",
+ "codifica con la scheda grafica ({0}) sospesa fino al {1}: il PC si era bloccato mentre la usava": "codering met de videokaart ({0}) opgeschort tot {1}: de pc was vastgelopen tijdens het gebruik"
 }

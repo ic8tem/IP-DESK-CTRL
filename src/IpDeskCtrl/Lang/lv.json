@@ -718,5 +718,7 @@
  "Windows non concede il riavvio all'account di questo PC (utente senza diritti di arresto o criterio dell'organizzazione). Con il servizio «accesso completo» il riavvio funziona sempre: installalo da Tasti ▾.": "Windows neļauj šī datora kontam restartēt (lietotājam nav izslēgšanas tiesību vai ir organizācijas politika). Ar pakalpojumu “pilna piekļuve” restartēšana vienmēr darbojas: instalē to no Taustiņi ▾.",
  "Collegamento caduto": "Savienojums pārtrūka",
  "{0} · mi ricollego da solo (tentativo {1} di {2})…": "{0} · savienojos atkal pats (mēģinājums {1} no {2})…",
- "Ricollegamento automatico non riuscito.": "Automātiskā atkārtotā savienošana neizdevās."
+ "Ricollegamento automatico non riuscito.": "Automātiskā atkārtotā savienošana neizdevās.",
+ "Sul PC remoto: {0}.": "Attālajā datorā: {0}.",
+ "codifica con la scheda grafica ({0}) sospesa fino al {1}: il PC si era bloccato mentre la usava": "kodēšana ar grafisko karti ({0}) apturēta līdz {1}: dators bija uzkāries tās lietošanas laikā"
 }

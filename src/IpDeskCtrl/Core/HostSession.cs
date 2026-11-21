@@ -653,6 +653,7 @@ namespace IpDeskCtrl.Core
         }
 
         private bool _drawLogged;
+        private bool _hwNoted;
         /// <summary>Chi comanda sta registrando la sessione (avviso per chi è davanti al PC).</summary>
         public bool Recording { get; private set; }
         private readonly Dictionary<string, long> _noteLogged = new();
@@ -1024,6 +1025,7 @@ namespace IpDeskCtrl.Core
                 }
                 StopVideo();
                 var enc = Ffmpeg.Choose(encTask.Result, can, _codecWanted);
+                if (Ffmpeg.HwGuard.Suspended != null && !_hwNoted) { _hwNoted = true; Note(L.F("Sul PC remoto: {0}.", Ffmpeg.HwGuard.Suspended)); }
                 if (enc == null)
                 {
                     if (_codecWanted is "h264" or "hevc" or "av1") Note(L.F("{0} non disponibile su uno dei due PC: uso i riquadri.", Ffmpeg.CodecNames[_codecWanted]));

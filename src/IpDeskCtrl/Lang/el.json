@@ -718,5 +718,7 @@
  "Windows non concede il riavvio all'account di questo PC (utente senza diritti di arresto o criterio dell'organizzazione). Con il servizio «accesso completo» il riavvio funziona sempre: installalo da Tasti ▾.": "Τα Windows δεν επιτρέπουν στον λογαριασμό αυτού του υπολογιστή την επανεκκίνηση (χρήστης χωρίς δικαίωμα τερματισμού ή πολιτική του οργανισμού). Με την υπηρεσία «πλήρης πρόσβαση» η επανεκκίνηση λειτουργεί πάντα: εγκαταστήστε τη από τα Πλήκτρα ▾.",
  "Collegamento caduto": "Η σύνδεση διακόπηκε",
  "{0} · mi ricollego da solo (tentativo {1} di {2})…": "{0} · επανασυνδέομαι μόνος (προσπάθεια {1} από {2})…",
- "Ricollegamento automatico non riuscito.": "Η αυτόματη επανασύνδεση απέτυχε."
+ "Ricollegamento automatico non riuscito.": "Η αυτόματη επανασύνδεση απέτυχε.",
+ "Sul PC remoto: {0}.": "Στον απομακρυσμένο υπολογιστή: {0}.",
+ "codifica con la scheda grafica ({0}) sospesa fino al {1}: il PC si era bloccato mentre la usava": "η κωδικοποίηση με την κάρτα γραφικών ({0}) αναστέλλεται έως {1}: ο υπολογιστής είχε κολλήσει ενώ τη χρησιμοποιούσε"
 }

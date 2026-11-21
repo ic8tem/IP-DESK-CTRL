@@ -718,5 +718,7 @@
  "Windows non concede il riavvio all'account di questo PC (utente senza diritti di arresto o criterio dell'organizzazione). Con il servizio «accesso completo» il riavvio funziona sempre: installalo da Tasti ▾.": "A Windows nem engedi ennek a gépnek a fiókjával az újraindítást (leállítási jog nélküli felhasználó vagy szervezeti házirend). A „teljes hozzáférés” szolgáltatással az újraindítás mindig működik: telepítsd a Billentyűk ▾ menüből.",
  "Collegamento caduto": "A kapcsolat megszakadt",
  "{0} · mi ricollego da solo (tentativo {1} di {2})…": "{0} · magamtól újracsatlakozom ({1}/{2}. próbálkozás)…",
- "Ricollegamento automatico non riuscito.": "Az automatikus újracsatlakozás nem sikerült."
+ "Ricollegamento automatico non riuscito.": "Az automatikus újracsatlakozás nem sikerült.",
+ "Sul PC remoto: {0}.": "A távoli gépen: {0}.",
+ "codifica con la scheda grafica ({0}) sospesa fino al {1}: il PC si era bloccato mentre la usava": "a videokártyás kódolás ({0}) szüneteltetve {1}-ig: a gép lefagyott használat közben"
 }
