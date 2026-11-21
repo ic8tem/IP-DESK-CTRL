@@ -134,6 +134,10 @@ Nella cartella dei dati (Impostazioni › Apri cartella dati): `sessioni.log`, u
 
 Le versioni con protocollo diverso non si collegano tra loro: aggiorna tutti i dispositivi alla stessa versione principale (la 0.4.1 si collega con la 0.4.0; la 0.5 si collega con la 0.4).
 
+### 0.5.27 — 21 novembre 2026
+- **Trascinamento dei file, diagnosi e riserva**: all'apertura del visore il registro dice se la finestra ha il bersaglio di trascinamento di Windows (OLE) e a che livello gira il programma (utente normale o amministratore). Se il bersaglio manca, o il programma gira da amministratore (Windows blocca il trascinamento da Esplora risorse verso i programmi da amministratore), i file si accettano anche con il vecchio sistema di Windows (WM_DROPFILES), che Windows lascia passare se lo si permette.
+- **Installatore**: «Avvia IP-DESK-CTRL» a fine installazione apre il programma da utente normale e non più da amministratore.
+
 ### 0.5.26 — 21 novembre 2026
 - **Ricollegamento automatico**: se il collegamento cade per la rete («collegamento interrotto», tempo scaduto) e non perché l'altro PC l'ha chiuso, il visore si ricollega da solo: fino a 6 tentativi in circa 3 minuti, con «Annulla» sempre disponibile. Solo se non ci riesce compare la finestra «Collegamento terminato» con «Ricollegati».
 - **Trascinamento su tutta la finestra**: i file si possono lasciare in qualsiasi punto della finestra del visore. Prima erano accettati solo sopra l'immagine del PC remoto: sulle bande ai lati, sopra la plancia o sopra un avviso Windows rifiutava il trascinamento.

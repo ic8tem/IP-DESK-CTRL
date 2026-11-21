@@ -202,6 +202,14 @@ namespace IpDeskCtrl.UI
 
         // =================================================================== costruzione
 
+        protected override void OnAttachedToVisualTree(Avalonia.VisualTreeAttachmentEventArgs e)
+        {
+            base.OnAttachedToVisualTree(e);
+            var top = TopLevel.GetTopLevel(this);
+            if (top != null && !Platform.IsMobile)
+                Dispatcher.UIThread.Post(() => NativeDrop.Attach(top, (paths, pt) => OnNativeDrop(paths, pt)), DispatcherPriority.Background);
+        }
+
         private Control Build()
         {
             var grid = new Grid();
@@ -942,10 +950,28 @@ namespace IpDeskCtrl.UI
                 return;
             }
             var paths = (e.Data.GetFiles() ?? Enumerable.Empty<IStorageItem>()).Select(i => i.TryGetLocalPath()).Where(p => p != null).Cast<string>().ToList();
+            SendDropped(s, paths, e.GetPosition(_view));
+        }
+
+        /// <summary>File rilasciati sulla finestra (trascinamento OLE di Avalonia o riserva WM_DROPFILES di Windows).</summary>
+        private void OnNativeDrop(List<string> paths, Point inWindow)
+        {
+            var s = _session;
+            if (s == null || s.State != AcceptState.Accepted || !s.InputAllowed)
+            {
+                SessionLog.Write("FILE trascinati sul visore ma non inviati: " + (s == null ? "nessuna sessione" : s.State != AcceptState.Accepted ? "sessione non ancora accettata" : "mouse e tastiera non consentiti dal PC remoto"));
+                return;
+            }
+            var top = TopLevel.GetTopLevel(this);
+            var p = top != null ? top.TranslatePoint(inWindow, _view) ?? new Point(-1, -1) : new Point(-1, -1);
+            SendDropped(s, paths, p);
+        }
+
+        private void SendDropped(ViewerSession s, List<string> paths, Point p)
+        {
             SessionLog.Write($"FILE trascinati sul visore: {paths.Count} da inviare");
             if (paths.Count == 0) return;
             // il puntatore del PC remoto va dove sono stati lasciati i file: lì verranno incollati
-            var p = e.GetPosition(_view);
             var img = _view.ImagePoint(p);
             if (img != null) s.MouseMove(img.Value.x, img.Value.y);
             else SessionLog.Write("FILE rilasciati fuori dall'immagine del PC remoto: si incollano dove si trova ora il suo puntatore");
