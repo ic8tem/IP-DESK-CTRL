@@ -715,5 +715,8 @@
  "Richiesta mandata: chi è al PC remoto deve rispondere Sì alla finestra di Windows.": "Prośba wysłana: osoba przy komputerze zdalnym musi odpowiedzieć Tak w oknie Windows.",
  "Il PC remoto installa il servizio": "Komputer zdalny instaluje usługę",
  "IP-DESK-CTRL si riavvia sul PC remoto con l'accesso completo: mi ricollego appena torna": "IP-DESK-CTRL uruchamia się ponownie na komputerze zdalnym z pełnym dostępem: połączę się znowu, gdy wróci",
- "Windows non concede il riavvio all'account di questo PC (utente senza diritti di arresto o criterio dell'organizzazione). Con il servizio «accesso completo» il riavvio funziona sempre: installalo da Tasti ▾.": "Windows nie pozwala kontu tego komputera na ponowne uruchomienie (użytkownik bez prawa wyłączania lub zasady organizacji). Z usługą „pełny dostęp” ponowne uruchomienie działa zawsze: zainstaluj ją z menu Klawisze ▾."
+ "Windows non concede il riavvio all'account di questo PC (utente senza diritti di arresto o criterio dell'organizzazione). Con il servizio «accesso completo» il riavvio funziona sempre: installalo da Tasti ▾.": "Windows nie pozwala kontu tego komputera na ponowne uruchomienie (użytkownik bez prawa wyłączania lub zasady organizacji). Z usługą „pełny dostęp” ponowne uruchomienie działa zawsze: zainstaluj ją z menu Klawisze ▾.",
+ "Collegamento caduto": "Połączenie zerwane",
+ "{0} · mi ricollego da solo (tentativo {1} di {2})…": "{0} · łączę się ponownie sam (próba {1} z {2})…",
+ "Ricollegamento automatico non riuscito.": "Automatyczne ponowne połączenie nie powiodło się."
 }

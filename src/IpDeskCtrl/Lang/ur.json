@@ -715,5 +715,8 @@
  "Richiesta mandata: chi è al PC remoto deve rispondere Sì alla finestra di Windows.": "درخواست بھیج دی گئی: ریموٹ پی سی کے سامنے بیٹھے شخص کو Windows ونڈو میں ہاں کہنا ہوگا۔",
  "Il PC remoto installa il servizio": "ریموٹ پی سی سروس انسٹال کر رہا ہے",
  "IP-DESK-CTRL si riavvia sul PC remoto con l'accesso completo: mi ricollego appena torna": "IP-DESK-CTRL ریموٹ پی سی پر مکمل رسائی کے ساتھ دوبارہ شروع ہو رہا ہے: واپس آتے ہی دوبارہ جڑ جاؤں گا",
- "Windows non concede il riavvio all'account di questo PC (utente senza diritti di arresto o criterio dell'organizzazione). Con il servizio «accesso completo» il riavvio funziona sempre: installalo da Tasti ▾.": "Windows اس پی سی کے اکاؤنٹ کو دوبارہ شروع کرنے نہیں دیتا (بند کرنے کے حق کے بغیر صارف یا ادارے کی پالیسی)۔ «مکمل رسائی» سروس کے ساتھ دوبارہ شروع ہمیشہ کام کرتا ہے: اسے کیز ▾ سے انسٹال کریں۔"
+ "Windows non concede il riavvio all'account di questo PC (utente senza diritti di arresto o criterio dell'organizzazione). Con il servizio «accesso completo» il riavvio funziona sempre: installalo da Tasti ▾.": "Windows اس پی سی کے اکاؤنٹ کو دوبارہ شروع کرنے نہیں دیتا (بند کرنے کے حق کے بغیر صارف یا ادارے کی پالیسی)۔ «مکمل رسائی» سروس کے ساتھ دوبارہ شروع ہمیشہ کام کرتا ہے: اسے کیز ▾ سے انسٹال کریں۔",
+ "Collegamento caduto": "کنکشن ٹوٹ گیا",
+ "{0} · mi ricollego da solo (tentativo {1} di {2})…": "{0} · خود دوبارہ جڑ رہا ہوں (کوشش {1} از {2})…",
+ "Ricollegamento automatico non riuscito.": "خودکار دوبارہ کنکشن ناکام رہا۔"
 }

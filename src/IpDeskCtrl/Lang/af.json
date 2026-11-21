@@ -715,5 +715,8 @@
  "Richiesta mandata: chi è al PC remoto deve rispondere Sì alla finestra di Windows.": "Versoek gestuur: wie by die afgeleë rekenaar sit, moet Ja in die Windows-venster antwoord.",
  "Il PC remoto installa il servizio": "Die afgeleë rekenaar installeer die diens",
  "IP-DESK-CTRL si riavvia sul PC remoto con l'accesso completo: mi ricollego appena torna": "IP-DESK-CTRL herbegin op die afgeleë rekenaar met volle toegang: ek koppel weer sodra dit terug is",
- "Windows non concede il riavvio all'account di questo PC (utente senza diritti di arresto o criterio dell'organizzazione). Con il servizio «accesso completo» il riavvio funziona sempre: installalo da Tasti ▾.": "Windows laat nie hierdie rekenaar se rekening toe om te herbegin nie (gebruiker sonder afskakelregte of ’n organisasiebeleid). Met die “volle toegang”-diens werk herbegin altyd: installeer dit via Sleutels ▾."
+ "Windows non concede il riavvio all'account di questo PC (utente senza diritti di arresto o criterio dell'organizzazione). Con il servizio «accesso completo» il riavvio funziona sempre: installalo da Tasti ▾.": "Windows laat nie hierdie rekenaar se rekening toe om te herbegin nie (gebruiker sonder afskakelregte of ’n organisasiebeleid). Met die “volle toegang”-diens werk herbegin altyd: installeer dit via Sleutels ▾.",
+ "Collegamento caduto": "Verbinding het weggeval",
+ "{0} · mi ricollego da solo (tentativo {1} di {2})…": "{0} · koppel self weer (poging {1} van {2})…",
+ "Ricollegamento automatico non riuscito.": "Outomatiese herverbinding het misluk."
 }

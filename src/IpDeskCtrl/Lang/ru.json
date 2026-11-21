@@ -715,5 +715,8 @@
  "Richiesta mandata: chi è al PC remoto deve rispondere Sì alla finestra di Windows.": "Запрос отправлен: тот, кто сидит за удалённым ПК, должен ответить «Да» в окне Windows.",
  "Il PC remoto installa il servizio": "Удалённый ПК устанавливает службу",
  "IP-DESK-CTRL si riavvia sul PC remoto con l'accesso completo: mi ricollego appena torna": "IP-DESK-CTRL перезапускается на удалённом ПК с полным доступом: переподключусь, как только он вернётся",
- "Windows non concede il riavvio all'account di questo PC (utente senza diritti di arresto o criterio dell'organizzazione). Con il servizio «accesso completo» il riavvio funziona sempre: installalo da Tasti ▾.": "Windows не разрешает учётной записи этого ПК перезагрузку (пользователь без права завершения работы или политика организации). Со службой «полный доступ» перезагрузка работает всегда: установите её из меню Клавиши ▾."
+ "Windows non concede il riavvio all'account di questo PC (utente senza diritti di arresto o criterio dell'organizzazione). Con il servizio «accesso completo» il riavvio funziona sempre: installalo da Tasti ▾.": "Windows не разрешает учётной записи этого ПК перезагрузку (пользователь без права завершения работы или политика организации). Со службой «полный доступ» перезагрузка работает всегда: установите её из меню Клавиши ▾.",
+ "Collegamento caduto": "Соединение прервалось",
+ "{0} · mi ricollego da solo (tentativo {1} di {2})…": "{0} · переподключаюсь сам (попытка {1} из {2})…",
+ "Ricollegamento automatico non riuscito.": "Автоматическое переподключение не удалось."
 }

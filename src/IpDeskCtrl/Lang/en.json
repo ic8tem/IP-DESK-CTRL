@@ -715,5 +715,8 @@
  "Richiesta mandata: chi è al PC remoto deve rispondere Sì alla finestra di Windows.": "Request sent: the person at the remote PC must answer Yes in the Windows prompt.",
  "Il PC remoto installa il servizio": "The remote PC is installing the service",
  "IP-DESK-CTRL si riavvia sul PC remoto con l'accesso completo: mi ricollego appena torna": "IP-DESK-CTRL restarts on the remote PC with full access: I will reconnect as soon as it is back",
- "Windows non concede il riavvio all'account di questo PC (utente senza diritti di arresto o criterio dell'organizzazione). Con il servizio «accesso completo» il riavvio funziona sempre: installalo da Tasti ▾.": "Windows does not let this PC's account restart it (user without shutdown rights or an organization policy). With the “full access” service restarting always works: install it from Keys ▾."
+ "Windows non concede il riavvio all'account di questo PC (utente senza diritti di arresto o criterio dell'organizzazione). Con il servizio «accesso completo» il riavvio funziona sempre: installalo da Tasti ▾.": "Windows does not let this PC's account restart it (user without shutdown rights or an organization policy). With the “full access” service restarting always works: install it from Keys ▾.",
+ "Collegamento caduto": "Connection dropped",
+ "{0} · mi ricollego da solo (tentativo {1} di {2})…": "{0} · reconnecting by myself (attempt {1} of {2})…",
+ "Ricollegamento automatico non riuscito.": "Automatic reconnection failed."
 }

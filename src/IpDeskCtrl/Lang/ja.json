@@ -715,5 +715,8 @@
  "Richiesta mandata: chi è al PC remoto deve rispondere Sì alla finestra di Windows.": "要求を送信しました: リモート PC の前の人が Windows のウィンドウで「はい」を選ぶ必要があります。",
  "Il PC remoto installa il servizio": "リモート PC がサービスをインストールしています",
  "IP-DESK-CTRL si riavvia sul PC remoto con l'accesso completo: mi ricollego appena torna": "IP-DESK-CTRL がリモート PC でフル アクセス付きで再起動しています: 戻りしだい再接続します",
- "Windows non concede il riavvio all'account di questo PC (utente senza diritti di arresto o criterio dell'organizzazione). Con il servizio «accesso completo» il riavvio funziona sempre: installalo da Tasti ▾.": "Windows がこの PC のアカウントに再起動を許可していません（シャットダウン権限のないユーザー、または組織のポリシー）。「フル アクセス」サービスがあれば再起動は常にできます: キー ▾ からインストールしてください。"
+ "Windows non concede il riavvio all'account di questo PC (utente senza diritti di arresto o criterio dell'organizzazione). Con il servizio «accesso completo» il riavvio funziona sempre: installalo da Tasti ▾.": "Windows がこの PC のアカウントに再起動を許可していません（シャットダウン権限のないユーザー、または組織のポリシー）。「フル アクセス」サービスがあれば再起動は常にできます: キー ▾ からインストールしてください。",
+ "Collegamento caduto": "接続が切れました",
+ "{0} · mi ricollego da solo (tentativo {1} di {2})…": "{0} · 自動で再接続しています（{1}/{2} 回目）…",
+ "Ricollegamento automatico non riuscito.": "自動再接続に失敗しました。"
 }

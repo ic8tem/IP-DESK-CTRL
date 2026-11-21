@@ -715,5 +715,8 @@
  "Richiesta mandata: chi è al PC remoto deve rispondere Sì alla finestra di Windows.": "Pedido enviado: quem está no PC remoto tem de responder Sim na janela do Windows.",
  "Il PC remoto installa il servizio": "O PC remoto está a instalar o serviço",
  "IP-DESK-CTRL si riavvia sul PC remoto con l'accesso completo: mi ricollego appena torna": "O IP-DESK-CTRL reinicia no PC remoto com acesso completo: volto a ligar assim que regressar",
- "Windows non concede il riavvio all'account di questo PC (utente senza diritti di arresto o criterio dell'organizzazione). Con il servizio «accesso completo» il riavvio funziona sempre: installalo da Tasti ▾.": "O Windows não permite reiniciar à conta deste PC (utilizador sem direito de encerramento ou política da organização). Com o serviço «acesso completo» o reinício funciona sempre: instale-o em Teclas ▾."
+ "Windows non concede il riavvio all'account di questo PC (utente senza diritti di arresto o criterio dell'organizzazione). Con il servizio «accesso completo» il riavvio funziona sempre: installalo da Tasti ▾.": "O Windows não permite reiniciar à conta deste PC (utilizador sem direito de encerramento ou política da organização). Com o serviço «acesso completo» o reinício funciona sempre: instale-o em Teclas ▾.",
+ "Collegamento caduto": "Ligação caiu",
+ "{0} · mi ricollego da solo (tentativo {1} di {2})…": "{0} · volto a ligar sozinho (tentativa {1} de {2})…",
+ "Ricollegamento automatico non riuscito.": "A religação automática falhou."
 }

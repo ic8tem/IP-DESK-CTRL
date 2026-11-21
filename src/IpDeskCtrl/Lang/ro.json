@@ -715,5 +715,8 @@
  "Richiesta mandata: chi è al PC remoto deve rispondere Sì alla finestra di Windows.": "Cerere trimisă: cine este la PC-ul de la distanță trebuie să răspundă Da în fereastra Windows.",
  "Il PC remoto installa il servizio": "PC-ul de la distanță instalează serviciul",
  "IP-DESK-CTRL si riavvia sul PC remoto con l'accesso completo: mi ricollego appena torna": "IP-DESK-CTRL repornește pe PC-ul de la distanță cu acces complet: mă reconectez imediat ce revine",
- "Windows non concede il riavvio all'account di questo PC (utente senza diritti di arresto o criterio dell'organizzazione). Con il servizio «accesso completo» il riavvio funziona sempre: installalo da Tasti ▾.": "Windows nu permite contului acestui PC repornirea (utilizator fără drept de oprire sau politică a organizației). Cu serviciul „acces complet” repornirea funcționează mereu: instalează-l din Taste ▾."
+ "Windows non concede il riavvio all'account di questo PC (utente senza diritti di arresto o criterio dell'organizzazione). Con il servizio «accesso completo» il riavvio funziona sempre: installalo da Tasti ▾.": "Windows nu permite contului acestui PC repornirea (utilizator fără drept de oprire sau politică a organizației). Cu serviciul „acces complet” repornirea funcționează mereu: instalează-l din Taste ▾.",
+ "Collegamento caduto": "Conexiunea a căzut",
+ "{0} · mi ricollego da solo (tentativo {1} di {2})…": "{0} · mă reconectez singur (încercarea {1} din {2})…",
+ "Ricollegamento automatico non riuscito.": "Reconectarea automată nu a reușit."
 }

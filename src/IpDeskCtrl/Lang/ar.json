@@ -715,5 +715,8 @@
  "Richiesta mandata: chi è al PC remoto deve rispondere Sì alla finestra di Windows.": "أُرسل الطلب: يجب أن يجيب من يجلس أمام الحاسوب البعيد بـ«نعم» في نافذة Windows.",
  "Il PC remoto installa il servizio": "الحاسوب البعيد يثبّت الخدمة",
  "IP-DESK-CTRL si riavvia sul PC remoto con l'accesso completo: mi ricollego appena torna": "يُعاد تشغيل IP-DESK-CTRL على الحاسوب البعيد بوصول كامل: سأعيد الاتصال فور عودته",
- "Windows non concede il riavvio all'account di questo PC (utente senza diritti di arresto o criterio dell'organizzazione). Con il servizio «accesso completo» il riavvio funziona sempre: installalo da Tasti ▾.": "لا يسمح Windows لحساب هذا الحاسوب بإعادة التشغيل (مستخدم بلا حق إيقاف التشغيل أو سياسة المؤسسة). مع خدمة «الوصول الكامل» تعمل إعادة التشغيل دائمًا: ثبّتها من المفاتيح ▾."
+ "Windows non concede il riavvio all'account di questo PC (utente senza diritti di arresto o criterio dell'organizzazione). Con il servizio «accesso completo» il riavvio funziona sempre: installalo da Tasti ▾.": "لا يسمح Windows لحساب هذا الحاسوب بإعادة التشغيل (مستخدم بلا حق إيقاف التشغيل أو سياسة المؤسسة). مع خدمة «الوصول الكامل» تعمل إعادة التشغيل دائمًا: ثبّتها من المفاتيح ▾.",
+ "Collegamento caduto": "انقطع الاتصال",
+ "{0} · mi ricollego da solo (tentativo {1} di {2})…": "{0} · أعيد الاتصال تلقائيًا (المحاولة {1} من {2})…",
+ "Ricollegamento automatico non riuscito.": "فشلت إعادة الاتصال التلقائية."
 }

@@ -1593,6 +1593,30 @@ namespace IpDeskCtrl.UI
                 (L.T("Annulla"), false, () => { _overlay.IsVisible = false; _view.Focus(); }));
         }
 
+        /// <summary>
+        /// Collegamento caduto per la rete (non chiuso dall'altro PC): ci si ricollega da soli, fino a 6 tentativi in
+        /// circa 3 minuti, senza dover premere «Ricollegati». Se non riesce si torna alla finestra di sempre.
+        /// </summary>
+        private async Task AutoReconnectAsync(string reason)
+        {
+            _rebootCts?.Cancel();
+            var cts = new CancellationTokenSource();
+            _rebootCts = cts;
+            SessionLog.Write($"SESSIONE con {Identity.Format(_number)} caduta ({reason}): mi ricollego da solo");
+            int[] waits = { 2, 5, 10, 20, 40, 60 };
+            for (int i = 0; i < waits.Length && !cts.IsCancellationRequested; i++)
+            {
+                Overlay(L.T("Collegamento caduto"), L.F("{0} · mi ricollego da solo (tentativo {1} di {2})…", reason, i + 1, waits.Length),
+                    (L.T("Annulla"), false, () => { cts.Cancel(); Disconnect(); }));
+                try { await Task.Delay(TimeSpan.FromSeconds(waits[i]), cts.Token); } catch { return; }
+                if (await ConnectAsync(true)) { if (_rebootCts == cts) _rebootCts = null; SessionLog.Write("SESSIONE ricollegata da sola"); return; }
+            }
+            if (cts.IsCancellationRequested) return;
+            SessionLog.Write("SESSIONE ricollegamento automatico non riuscito dopo 6 tentativi");
+            Overlay(L.T("Collegamento terminato"), reason + "\n" + L.T("Ricollegamento automatico non riuscito."),
+                (L.T("Ricollegati"), true, () => _ = ConnectAsync()), (L.T("Chiudi"), false, Disconnect));
+        }
+
         /// <summary>Dopo il riavvio: controlla sui broker ogni 15 s (per 10 minuti) e si ricollega appena il PC ripubblica l'indirizzo.</summary>
         private async Task WaitRebootAsync(bool update = false, string? customTitle = null, string? customText = null)
         {
@@ -1700,6 +1724,7 @@ namespace IpDeskCtrl.UI
             if (_ended) return;
             if (s.RebootRequested) { _ = WaitRebootAsync(); return; }
             if (s.UpdateRequested) { _ = WaitRebootAsync(true); return; }
+            if (s.Dropped && s.State == AcceptState.Accepted) { _ = AutoReconnectAsync(reason); return; }
             if (s.ServiceInstallRequested) { _ = WaitRebootAsync(true, L.T("Il PC remoto installa il servizio"), L.T("IP-DESK-CTRL si riavvia sul PC remoto con l'accesso completo: mi ricollego appena torna")); return; }
             if (s.State == AcceptState.Accepted || s.State == AcceptState.Waiting)
                 Overlay(L.T("Collegamento terminato"), reason, (L.T("Ricollegati"), true, () => _ = ConnectAsync()), (L.T("Chiudi"), false, Disconnect));

@@ -134,6 +134,12 @@ Nella cartella dei dati (Impostazioni › Apri cartella dati): `sessioni.log`, u
 
 Le versioni con protocollo diverso non si collegano tra loro: aggiorna tutti i dispositivi alla stessa versione principale (la 0.4.1 si collega con la 0.4.0; la 0.5 si collega con la 0.4).
 
+### 0.5.26 — 21 novembre 2026
+- **Ricollegamento automatico**: se il collegamento cade per la rete («collegamento interrotto», tempo scaduto) e non perché l'altro PC l'ha chiuso, il visore si ricollega da solo: fino a 6 tentativi in circa 3 minuti, con «Annulla» sempre disponibile. Solo se non ci riesce compare la finestra «Collegamento terminato» con «Ricollegati».
+- **Trascinamento su tutta la finestra**: i file si possono lasciare in qualsiasi punto della finestra del visore. Prima erano accettati solo sopra l'immagine del PC remoto: sulle bande ai lati, sopra la plancia o sopra un avviso Windows rifiutava il trascinamento.
+- **Appunti nel registro all'inizio della sessione**: una riga dice se la condivisione degli appunti con l'altro PC è attiva, se vale anche per i file e quale sistema di appunti si usa; se non è attiva, perché.
+- **Registro del collegamento**: la verifica esterna della porta «RAGGIUNGIBILE» compariva con ✗ rossa quando uno dei due servizi di prova non rispondeva; ora ha la ✓.
+
 ### 0.5.25 — 21 novembre 2026
 - **Aggiornamento che non riparte, corretto**: dalla 0.5.21 l'installatore, per chiudere il programma rimasto aperto, chiudeva anche tutti i processi «figli» di IP-DESK-CTRL. Ma l'installatore stesso è figlio di IP-DESK-CTRL (del programma che lo lancia, o del servizio quando si aggiorna da solo): si chiudeva a metà, senza finire l'installazione né riaprire il programma, e il PC restava fuori linea finché qualcuno non lo riavviava a mano. Ora chiude solo il programma e i suoi processi di sistema, non sé stesso.
 - **Riavvio del PC remoto anche con un account senza diritti**: senza il servizio di Windows il riavvio passava solo da shutdown.exe, e se Windows lo negava all'account (utente senza diritti di arresto o criterio dell'organizzazione) non succedeva niente. Ora si provano tre strade: il servizio (funziona sempre, qualunque sia l'account), shutdown.exe e le API di Windows con il privilegio di arresto. Se nessuna funziona il visore lo dice chiaramente e propone di installare il servizio sul PC remoto. Ogni tentativo va nel registro con il motivo.

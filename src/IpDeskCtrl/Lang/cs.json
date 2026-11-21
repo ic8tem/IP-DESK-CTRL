@@ -715,5 +715,8 @@
  "Richiesta mandata: chi è al PC remoto deve rispondere Sì alla finestra di Windows.": "Žádost odeslána: ten, kdo sedí u vzdáleného počítače, musí v okně Windows odpovědět Ano.",
  "Il PC remoto installa il servizio": "Vzdálený počítač instaluje službu",
  "IP-DESK-CTRL si riavvia sul PC remoto con l'accesso completo: mi ricollego appena torna": "IP-DESK-CTRL se na vzdáleném počítači restartuje s plným přístupem: znovu se připojím, jakmile bude zpět",
- "Windows non concede il riavvio all'account di questo PC (utente senza diritti di arresto o criterio dell'organizzazione). Con il servizio «accesso completo» il riavvio funziona sempre: installalo da Tasti ▾.": "Windows účtu tohoto počítače nedovolí restart (uživatel bez práva vypnutí nebo zásada organizace). Se službou „plný přístup“ restart funguje vždy: nainstalujte ji z nabídky Klávesy ▾."
+ "Windows non concede il riavvio all'account di questo PC (utente senza diritti di arresto o criterio dell'organizzazione). Con il servizio «accesso completo» il riavvio funziona sempre: installalo da Tasti ▾.": "Windows účtu tohoto počítače nedovolí restart (uživatel bez práva vypnutí nebo zásada organizace). Se službou „plný přístup“ restart funguje vždy: nainstalujte ji z nabídky Klávesy ▾.",
+ "Collegamento caduto": "Spojení spadlo",
+ "{0} · mi ricollego da solo (tentativo {1} di {2})…": "{0} · připojuji se znovu sám (pokus {1} z {2})…",
+ "Ricollegamento automatico non riuscito.": "Automatické opětovné připojení se nezdařilo."
 }

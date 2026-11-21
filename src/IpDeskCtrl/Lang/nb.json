@@ -715,5 +715,8 @@
  "Richiesta mandata: chi è al PC remoto deve rispondere Sì alla finestra di Windows.": "Forespørsel sendt: den som sitter ved den eksterne PC-en må svare Ja i Windows-vinduet.",
  "Il PC remoto installa il servizio": "Den eksterne PC-en installerer tjenesten",
  "IP-DESK-CTRL si riavvia sul PC remoto con l'accesso completo: mi ricollego appena torna": "IP-DESK-CTRL starter på nytt på den eksterne PC-en med full tilgang: jeg kobler til igjen så snart den er tilbake",
- "Windows non concede il riavvio all'account di questo PC (utente senza diritti di arresto o criterio dell'organizzazione). Con il servizio «accesso completo» il riavvio funziona sempre: installalo da Tasti ▾.": "Windows lar ikke kontoen på denne PC-en starte på nytt (bruker uten rett til å slå av eller en organisasjonspolicy). Med tjenesten «full tilgang» virker omstart alltid: installer den fra Taster ▾."
+ "Windows non concede il riavvio all'account di questo PC (utente senza diritti di arresto o criterio dell'organizzazione). Con il servizio «accesso completo» il riavvio funziona sempre: installalo da Tasti ▾.": "Windows lar ikke kontoen på denne PC-en starte på nytt (bruker uten rett til å slå av eller en organisasjonspolicy). Med tjenesten «full tilgang» virker omstart alltid: installer den fra Taster ▾.",
+ "Collegamento caduto": "Tilkoblingen falt ut",
+ "{0} · mi ricollego da solo (tentativo {1} di {2})…": "{0} · kobler til igjen selv (forsøk {1} av {2})…",
+ "Ricollegamento automatico non riuscito.": "Automatisk ny tilkobling mislyktes."
 }
