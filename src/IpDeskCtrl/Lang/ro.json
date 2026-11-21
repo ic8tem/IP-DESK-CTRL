@@ -720,5 +720,6 @@
  "{0} · mi ricollego da solo (tentativo {1} di {2})…": "{0} · mă reconectez singur (încercarea {1} din {2})…",
  "Ricollegamento automatico non riuscito.": "Reconectarea automată nu a reușit.",
  "Sul PC remoto: {0}.": "Pe PC-ul de la distanță: {0}.",
- "codifica con la scheda grafica ({0}) sospesa fino al {1}: il PC si era bloccato mentre la usava": "codarea cu placa video ({0}) suspendată până la {1}: PC-ul se blocase în timpul folosirii ei"
+ "codifica con la scheda grafica ({0}) sospesa fino al {1}: il PC si era bloccato mentre la usava": "codarea cu placa video ({0}) suspendată până la {1}: PC-ul se blocase în timpul folosirii ei",
+ "Trascinamento dal PC remoto: se erano file, arrivano qui in Scaricati e negli appunti (incollali con Ctrl+V)…": "Tragere de pe PC-ul de la distanță: dacă erau fișiere, ajung aici în Descărcări și în clipboard (lipește-le cu Ctrl+V)…"
 }

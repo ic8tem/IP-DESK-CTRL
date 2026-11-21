@@ -720,5 +720,6 @@
  "{0} · mi ricollego da solo (tentativo {1} di {2})…": "{0} · أعيد الاتصال تلقائيًا (المحاولة {1} من {2})…",
  "Ricollegamento automatico non riuscito.": "فشلت إعادة الاتصال التلقائية.",
  "Sul PC remoto: {0}.": "على الحاسوب البعيد: {0}.",
- "codifica con la scheda grafica ({0}) sospesa fino al {1}: il PC si era bloccato mentre la usava": "الترميز ببطاقة الرسوميات ({0}) معلّق حتى {1}: تجمّد الحاسوب أثناء استخدامها"
+ "codifica con la scheda grafica ({0}) sospesa fino al {1}: il PC si era bloccato mentre la usava": "الترميز ببطاقة الرسوميات ({0}) معلّق حتى {1}: تجمّد الحاسوب أثناء استخدامها",
+ "Trascinamento dal PC remoto: se erano file, arrivano qui in Scaricati e negli appunti (incollali con Ctrl+V)…": "سحب من الحاسوب البعيد: إن كانت ملفات فستصل هنا إلى التنزيلات والحافظة (الصقها بـ Ctrl+V)…"
 }

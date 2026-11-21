@@ -720,5 +720,6 @@
  "{0} · mi ricollego da solo (tentativo {1} di {2})…": "{0} · מתחבר מחדש לבד (ניסיון {1} מתוך {2})…",
  "Ricollegamento automatico non riuscito.": "החיבור מחדש האוטומטי נכשל.",
  "Sul PC remoto: {0}.": "במחשב המרוחק: {0}.",
- "codifica con la scheda grafica ({0}) sospesa fino al {1}: il PC si era bloccato mentre la usava": "הקידוד בכרטיס המסך ({0}) מושהה עד {1}: המחשב קפא בזמן השימוש בו"
+ "codifica con la scheda grafica ({0}) sospesa fino al {1}: il PC si era bloccato mentre la usava": "הקידוד בכרטיס המסך ({0}) מושהה עד {1}: המחשב קפא בזמן השימוש בו",
+ "Trascinamento dal PC remoto: se erano file, arrivano qui in Scaricati e negli appunti (incollali con Ctrl+V)…": "גרירה מהמחשב המרוחק: אם אלה היו קבצים, הם יגיעו לכאן להורדות וללוח (הדביקו עם Ctrl+V)…"
 }

@@ -720,5 +720,6 @@
  "{0} · mi ricollego da solo (tentativo {1} di {2})…": "{0} · خود دوبارہ جڑ رہا ہوں (کوشش {1} از {2})…",
  "Ricollegamento automatico non riuscito.": "خودکار دوبارہ کنکشن ناکام رہا۔",
  "Sul PC remoto: {0}.": "ریموٹ پی سی پر: {0}۔",
- "codifica con la scheda grafica ({0}) sospesa fino al {1}: il PC si era bloccato mentre la usava": "گرافکس کارڈ سے انکوڈنگ ({0}) {1} تک معطل: اسے استعمال کرتے ہوئے پی سی جام ہو گیا تھا"
+ "codifica con la scheda grafica ({0}) sospesa fino al {1}: il PC si era bloccato mentre la usava": "گرافکس کارڈ سے انکوڈنگ ({0}) {1} تک معطل: اسے استعمال کرتے ہوئے پی سی جام ہو گیا تھا",
+ "Trascinamento dal PC remoto: se erano file, arrivano qui in Scaricati e negli appunti (incollali con Ctrl+V)…": "ریموٹ پی سی سے گھسیٹنا: اگر فائلیں تھیں تو یہاں ڈاؤن لوڈز اور کلپ بورڈ میں آئیں گی (Ctrl+V سے چسپاں کریں)…"
 }

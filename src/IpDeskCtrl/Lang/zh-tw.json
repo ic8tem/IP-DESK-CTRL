@@ -720,5 +720,6 @@
  "{0} · mi ricollego da solo (tentativo {1} di {2})…": "{0} · 正在自動重新連線（第 {1}/{2} 次）…",
  "Ricollegamento automatico non riuscito.": "自動重新連線失敗。",
  "Sul PC remoto: {0}.": "遠端電腦上：{0}。",
- "codifica con la scheda grafica ({0}) sospesa fino al {1}: il PC si era bloccato mentre la usava": "顯示卡編碼（{0}）暫停至 {1}：使用時電腦曾經當機"
+ "codifica con la scheda grafica ({0}) sospesa fino al {1}: il PC si era bloccato mentre la usava": "顯示卡編碼（{0}）暫停至 {1}：使用時電腦曾經當機",
+ "Trascinamento dal PC remoto: se erano file, arrivano qui in Scaricati e negli appunti (incollali con Ctrl+V)…": "從遠端電腦拖出：如果是檔案，會到達這裡的「下載」資料夾和剪貼簿（用 Ctrl+V 貼上）…"
 }

@@ -720,5 +720,6 @@
  "{0} · mi ricollego da solo (tentativo {1} di {2})…": "{0} · łączę się ponownie sam (próba {1} z {2})…",
  "Ricollegamento automatico non riuscito.": "Automatyczne ponowne połączenie nie powiodło się.",
  "Sul PC remoto: {0}.": "Na komputerze zdalnym: {0}.",
- "codifica con la scheda grafica ({0}) sospesa fino al {1}: il PC si era bloccato mentre la usava": "kodowanie kartą graficzną ({0}) wstrzymane do {1}: komputer zawiesił się podczas jego używania"
+ "codifica con la scheda grafica ({0}) sospesa fino al {1}: il PC si era bloccato mentre la usava": "kodowanie kartą graficzną ({0}) wstrzymane do {1}: komputer zawiesił się podczas jego używania",
+ "Trascinamento dal PC remoto: se erano file, arrivano qui in Scaricati e negli appunti (incollali con Ctrl+V)…": "Przeciąganie z komputera zdalnego: jeśli to były pliki, trafiają tutaj do Pobranych i do schowka (wklej je Ctrl+V)…"
 }

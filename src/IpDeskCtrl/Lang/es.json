@@ -720,5 +720,6 @@
  "{0} · mi ricollego da solo (tentativo {1} di {2})…": "{0} · me reconecto solo (intento {1} de {2})…",
  "Ricollegamento automatico non riuscito.": "La reconexión automática no se logró.",
  "Sul PC remoto: {0}.": "En el PC remoto: {0}.",
- "codifica con la scheda grafica ({0}) sospesa fino al {1}: il PC si era bloccato mentre la usava": "codificación con la tarjeta gráfica ({0}) suspendida hasta el {1}: el PC se había bloqueado mientras la usaba"
+ "codifica con la scheda grafica ({0}) sospesa fino al {1}: il PC si era bloccato mentre la usava": "codificación con la tarjeta gráfica ({0}) suspendida hasta el {1}: el PC se había bloqueado mientras la usaba",
+ "Trascinamento dal PC remoto: se erano file, arrivano qui in Scaricati e negli appunti (incollali con Ctrl+V)…": "Arrastre desde el PC remoto: si eran archivos, llegan aquí a Descargas y al portapapeles (pégalos con Ctrl+V)…"
 }

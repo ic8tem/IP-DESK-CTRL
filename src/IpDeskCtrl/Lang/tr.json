@@ -720,5 +720,6 @@
  "{0} · mi ricollego da solo (tentativo {1} di {2})…": "{0} · kendiliğinden yeniden bağlanıyorum (deneme {1}/{2})…",
  "Ricollegamento automatico non riuscito.": "Otomatik yeniden bağlanma başarısız oldu.",
  "Sul PC remoto: {0}.": "Uzak bilgisayarda: {0}.",
- "codifica con la scheda grafica ({0}) sospesa fino al {1}: il PC si era bloccato mentre la usava": "ekran kartıyla kodlama ({0}) {1} tarihine kadar askıya alındı: bilgisayar kullanırken donmuştu"
+ "codifica con la scheda grafica ({0}) sospesa fino al {1}: il PC si era bloccato mentre la usava": "ekran kartıyla kodlama ({0}) {1} tarihine kadar askıya alındı: bilgisayar kullanırken donmuştu",
+ "Trascinamento dal PC remoto: se erano file, arrivano qui in Scaricati e negli appunti (incollali con Ctrl+V)…": "Uzak bilgisayardan sürükleme: dosyaysa buraya İndirilenler'e ve panoya gelir (Ctrl+V ile yapıştırın)…"
 }

@@ -720,5 +720,6 @@
  "{0} · mi ricollego da solo (tentativo {1} di {2})…": "{0} · επανασυνδέομαι μόνος (προσπάθεια {1} από {2})…",
  "Ricollegamento automatico non riuscito.": "Η αυτόματη επανασύνδεση απέτυχε.",
  "Sul PC remoto: {0}.": "Στον απομακρυσμένο υπολογιστή: {0}.",
- "codifica con la scheda grafica ({0}) sospesa fino al {1}: il PC si era bloccato mentre la usava": "η κωδικοποίηση με την κάρτα γραφικών ({0}) αναστέλλεται έως {1}: ο υπολογιστής είχε κολλήσει ενώ τη χρησιμοποιούσε"
+ "codifica con la scheda grafica ({0}) sospesa fino al {1}: il PC si era bloccato mentre la usava": "η κωδικοποίηση με την κάρτα γραφικών ({0}) αναστέλλεται έως {1}: ο υπολογιστής είχε κολλήσει ενώ τη χρησιμοποιούσε",
+ "Trascinamento dal PC remoto: se erano file, arrivano qui in Scaricati e negli appunti (incollali con Ctrl+V)…": "Μεταφορά από τον απομακρυσμένο υπολογιστή: αν ήταν αρχεία, φτάνουν εδώ στις Λήψεις και στο πρόχειρο (επικόλληση με Ctrl+V)…"
 }

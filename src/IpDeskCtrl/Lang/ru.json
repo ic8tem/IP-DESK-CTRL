@@ -720,5 +720,6 @@
  "{0} · mi ricollego da solo (tentativo {1} di {2})…": "{0} · переподключаюсь сам (попытка {1} из {2})…",
  "Ricollegamento automatico non riuscito.": "Автоматическое переподключение не удалось.",
  "Sul PC remoto: {0}.": "На удалённом ПК: {0}.",
- "codifica con la scheda grafica ({0}) sospesa fino al {1}: il PC si era bloccato mentre la usava": "кодирование видеокартой ({0}) приостановлено до {1}: ПК зависал при её использовании"
+ "codifica con la scheda grafica ({0}) sospesa fino al {1}: il PC si era bloccato mentre la usava": "кодирование видеокартой ({0}) приостановлено до {1}: ПК зависал при её использовании",
+ "Trascinamento dal PC remoto: se erano file, arrivano qui in Scaricati e negli appunti (incollali con Ctrl+V)…": "Перетаскивание с удалённого ПК: если это были файлы, они придут сюда в «Загрузки» и в буфер обмена (вставьте их Ctrl+V)…"
 }
