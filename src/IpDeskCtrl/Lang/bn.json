@@ -664,5 +664,16 @@
  "Nessuna strada diretta: provo a passare dal broker MQTT (relè, lento ma funziona quasi sempre)…": "সরাসরি পথ নেই: MQTT ব্রোকারের মাধ্যমে চেষ্টা (রিলে, ধীর তবে প্রায় সবসময় কাজ করে)…",
  "Lavagna: disegna sullo schermo del PC remoto per indicare qualcosa (tratti rossi). Clic destro per cancellare. Premi di nuovo per tornare a comandare.": "হোয়াইটবোর্ড: কিছু দেখাতে দূরবর্তী পিসির পর্দায় আঁকুন (লাল দাগ)। ডান ক্লিক মুছে দেয়। আবার নিয়ন্ত্রণে ফিরতে আবার চাপুন।",
  "La lavagna richiede IP-DESK-CTRL 0.5.22 o successivo sul PC remoto.": "হোয়াইটবোর্ডের জন্য দূরবর্তী পিসিতে IP-DESK-CTRL 0.5.22 বা নতুন দরকার।",
- "Lavagna attiva: disegna col tasto sinistro, clic destro cancella. Il mouse non arriva al PC remoto finché non la chiudi.": "হোয়াইটবোর্ড চালু: বাঁ বোতামে আঁকুন, ডান ক্লিক মুছে দেয়। বন্ধ না করা পর্যন্ত মাউস দূরবর্তী পিসিতে পৌঁছায় না।"
+ "Lavagna attiva: disegna col tasto sinistro, clic destro cancella. Il mouse non arriva al PC remoto finché non la chiudi.": "হোয়াইটবোর্ড চালু: বাঁ বোতামে আঁকুন, ডান ক্লিক মুছে দেয়। বন্ধ না করা পর্যন্ত মাউস দূরবর্তী পিসিতে পৌঁছায় না।",
+ "{0} sta registrando questa sessione in un video: registra quello che compare sullo schermo.": "{0} এই সেশনটি ভিডিওতে রেকর্ড করছেন: পর্দায় যা দেখা যায় সবই রেকর্ড হয়।",
+ "Sessione registrata": "সেশন রেকর্ড হচ্ছে",
+ "{0} sta registrando in un video quello che compare su questo schermo. Chiudi documenti e messaggi personali, oppure interrompi il collegamento.": "{0} এই পর্দায় যা দেখা যায় তা ভিডিওতে রেকর্ড করছেন। ব্যক্তিগত নথি ও বার্তা বন্ধ করুন, অথবা সংযোগ বন্ধ করুন।",
+ "Chi usa il PC remoto è d'accordo che la sessione venga registrata.": "দূরবর্তী পিসির ব্যবহারকারী সেশন রেকর্ড করতে সম্মত।",
+ "Registra": "রেকর্ড করুন",
+ "Registrazione e privacy": "রেকর্ডিং ও গোপনীয়তা",
+ "Il video riprende tutto quello che compare sullo schermo del PC remoto: documenti, messaggi, posta, dati personali e anche password se vengono mostrate.": "ভিডিওটি দূরবর্তী পিসির পর্দায় যা দেখা যায় সবই রেকর্ড করে: নথি, বার্তা, ইমেল, ব্যক্তিগত তথ্য এবং দেখানো হলে পাসওয়ার্ডও।",
+ "Registra solo con il consenso di chi usa quel PC e rispettando le leggi sulla privacy (in Europa il GDPR). La responsabilità dell'uso del video è tua.": "কেবল সেই পিসির ব্যবহারকারীর সম্মতিতে এবং গোপনীয়তা আইন মেনে রেকর্ড করুন (ইউরোপে GDPR)। ভিডিওর ব্যবহারের দায় আপনার।",
+ "Chi è davanti al PC remoto vedrà un avviso che la sessione viene registrata. Il video resta solo su questo PC, nella cartella Video\\IP-DESK-CTRL, e non viene mandato da nessuna parte.": "দূরবর্তী পিসির সামনে যিনি আছেন তিনি একটি বিজ্ঞপ্তি দেখবেন যে সেশন রেকর্ড হচ্ছে। ভিডিওটি কেবল এই পিসিতে Videos\\IP-DESK-CTRL ফোল্ডারে থাকে এবং কোথাও পাঠানো হয় না।",
+ "Attenzione: il PC remoto ha una versione che non mostra l'avviso di registrazione. Avvisa tu chi lo usa. Il video resta solo su questo PC, nella cartella Video\\IP-DESK-CTRL.": "সতর্কতা: দূরবর্তী পিসির সংস্করণ রেকর্ডিংয়ের বিজ্ঞপ্তি দেখায় না। ব্যবহারকারীকে নিজে জানান। ভিডিওটি কেবল এই পিসিতে Videos\\IP-DESK-CTRL ফোল্ডারে থাকে।",
+ "IP-DESK-CTRL · Registrazione": "IP-DESK-CTRL · রেকর্ডিং"
 }

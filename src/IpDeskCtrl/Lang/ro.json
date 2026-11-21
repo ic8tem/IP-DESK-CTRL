@@ -664,5 +664,16 @@
  "Nessuna strada diretta: provo a passare dal broker MQTT (relè, lento ma funziona quasi sempre)…": "Nicio cale directă: încerc prin brokerul MQTT (releu, lent dar funcționează aproape mereu)…",
  "Lavagna: disegna sullo schermo del PC remoto per indicare qualcosa (tratti rossi). Clic destro per cancellare. Premi di nuovo per tornare a comandare.": "Tablă: desenează pe ecranul PC-ului de la distanță pentru a indica ceva (linii roșii). Clic dreapta șterge. Apasă din nou pentru a reveni la control.",
  "La lavagna richiede IP-DESK-CTRL 0.5.22 o successivo sul PC remoto.": "Tabla necesită IP-DESK-CTRL 0.5.22 sau mai nou pe PC-ul de la distanță.",
- "Lavagna attiva: disegna col tasto sinistro, clic destro cancella. Il mouse non arriva al PC remoto finché non la chiudi.": "Tablă activă: desenează cu butonul stâng, clic dreapta șterge. Mouse-ul nu ajunge la PC-ul de la distanță până nu o închizi."
+ "Lavagna attiva: disegna col tasto sinistro, clic destro cancella. Il mouse non arriva al PC remoto finché non la chiudi.": "Tablă activă: desenează cu butonul stâng, clic dreapta șterge. Mouse-ul nu ajunge la PC-ul de la distanță până nu o închizi.",
+ "{0} sta registrando questa sessione in un video: registra quello che compare sullo schermo.": "{0} înregistrează această sesiune într-un video: se înregistrează tot ce apare pe ecran.",
+ "Sessione registrata": "Sesiune înregistrată",
+ "{0} sta registrando in un video quello che compare su questo schermo. Chiudi documenti e messaggi personali, oppure interrompi il collegamento.": "{0} înregistrează într-un video ce apare pe acest ecran. Închide documentele și mesajele personale sau întrerupe conexiunea.",
+ "Chi usa il PC remoto è d'accordo che la sessione venga registrata.": "Cine folosește PC-ul de la distanță este de acord ca sesiunea să fie înregistrată.",
+ "Registra": "Înregistrează",
+ "Registrazione e privacy": "Înregistrare și confidențialitate",
+ "Il video riprende tutto quello che compare sullo schermo del PC remoto: documenti, messaggi, posta, dati personali e anche password se vengono mostrate.": "Videoclipul înregistrează tot ce apare pe ecranul PC-ului de la distanță: documente, mesaje, e-mail, date personale și chiar parole, dacă sunt afișate.",
+ "Registra solo con il consenso di chi usa quel PC e rispettando le leggi sulla privacy (in Europa il GDPR). La responsabilità dell'uso del video è tua.": "Înregistrează doar cu consimțământul celui care folosește acel PC și respectând legile privind confidențialitatea (în Europa, GDPR). Responsabilitatea folosirii videoclipului îți aparține.",
+ "Chi è davanti al PC remoto vedrà un avviso che la sessione viene registrata. Il video resta solo su questo PC, nella cartella Video\\IP-DESK-CTRL, e non viene mandato da nessuna parte.": "Cine se află la PC-ul de la distanță va vedea un aviz că sesiunea este înregistrată. Videoclipul rămâne doar pe acest PC, în dosarul Videoclipuri\\IP-DESK-CTRL, și nu este trimis nicăieri.",
+ "Attenzione: il PC remoto ha una versione che non mostra l'avviso di registrazione. Avvisa tu chi lo usa. Il video resta solo su questo PC, nella cartella Video\\IP-DESK-CTRL.": "Atenție: PC-ul de la distanță are o versiune care nu afișează avizul de înregistrare. Anunță tu persoana care îl folosește. Videoclipul rămâne doar pe acest PC, în dosarul Videoclipuri\\IP-DESK-CTRL.",
+ "IP-DESK-CTRL · Registrazione": "IP-DESK-CTRL · Înregistrare"
 }

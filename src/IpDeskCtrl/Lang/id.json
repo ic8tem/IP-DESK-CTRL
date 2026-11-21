@@ -664,5 +664,16 @@
  "Nessuna strada diretta: provo a passare dal broker MQTT (relè, lento ma funziona quasi sempre)…": "Tidak ada jalur langsung: mencoba lewat broker MQTT (relai, lambat tapi hampir selalu berhasil)…",
  "Lavagna: disegna sullo schermo del PC remoto per indicare qualcosa (tratti rossi). Clic destro per cancellare. Premi di nuovo per tornare a comandare.": "Papan tulis: gambar di layar PC jarak jauh untuk menunjukkan sesuatu (garis merah). Klik kanan menghapus. Tekan lagi untuk kembali mengendalikan.",
  "La lavagna richiede IP-DESK-CTRL 0.5.22 o successivo sul PC remoto.": "Papan tulis memerlukan IP-DESK-CTRL 0.5.22 atau lebih baru di PC jarak jauh.",
- "Lavagna attiva: disegna col tasto sinistro, clic destro cancella. Il mouse non arriva al PC remoto finché non la chiudi.": "Papan tulis aktif: gambar dengan tombol kiri, klik kanan menghapus. Mouse tidak sampai ke PC jarak jauh sampai Anda menutupnya."
+ "Lavagna attiva: disegna col tasto sinistro, clic destro cancella. Il mouse non arriva al PC remoto finché non la chiudi.": "Papan tulis aktif: gambar dengan tombol kiri, klik kanan menghapus. Mouse tidak sampai ke PC jarak jauh sampai Anda menutupnya.",
+ "{0} sta registrando questa sessione in un video: registra quello che compare sullo schermo.": "{0} sedang merekam sesi ini ke video: semua yang tampil di layar ikut terekam.",
+ "Sessione registrata": "Sesi sedang direkam",
+ "{0} sta registrando in un video quello che compare su questo schermo. Chiudi documenti e messaggi personali, oppure interrompi il collegamento.": "{0} sedang merekam apa yang tampil di layar ini. Tutup dokumen dan pesan pribadi, atau akhiri koneksi.",
+ "Chi usa il PC remoto è d'accordo che la sessione venga registrata.": "Pengguna PC jarak jauh setuju sesi ini direkam.",
+ "Registra": "Rekam",
+ "Registrazione e privacy": "Perekaman dan privasi",
+ "Il video riprende tutto quello che compare sullo schermo del PC remoto: documenti, messaggi, posta, dati personali e anche password se vengono mostrate.": "Video merekam semua yang tampil di layar PC jarak jauh: dokumen, pesan, email, data pribadi, bahkan kata sandi jika ditampilkan.",
+ "Registra solo con il consenso di chi usa quel PC e rispettando le leggi sulla privacy (in Europa il GDPR). La responsabilità dell'uso del video è tua.": "Rekam hanya dengan persetujuan pengguna PC tersebut dan sesuai hukum privasi (di Eropa GDPR, di Indonesia UU PDP). Penggunaan video menjadi tanggung jawab Anda.",
+ "Chi è davanti al PC remoto vedrà un avviso che la sessione viene registrata. Il video resta solo su questo PC, nella cartella Video\\IP-DESK-CTRL, e non viene mandato da nessuna parte.": "Orang di depan PC jarak jauh akan melihat pemberitahuan bahwa sesi sedang direkam. Video hanya tersimpan di PC ini, di folder Video\\IP-DESK-CTRL, dan tidak dikirim ke mana pun.",
+ "Attenzione: il PC remoto ha una versione che non mostra l'avviso di registrazione. Avvisa tu chi lo usa. Il video resta solo su questo PC, nella cartella Video\\IP-DESK-CTRL.": "Perhatian: PC jarak jauh memakai versi yang tidak menampilkan pemberitahuan perekaman. Beri tahu sendiri penggunanya. Video hanya tersimpan di PC ini, di folder Video\\IP-DESK-CTRL.",
+ "IP-DESK-CTRL · Registrazione": "IP-DESK-CTRL · Perekaman"
 }

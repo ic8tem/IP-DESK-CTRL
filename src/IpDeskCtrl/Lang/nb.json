@@ -664,5 +664,16 @@
  "Nessuna strada diretta: provo a passare dal broker MQTT (relè, lento ma funziona quasi sempre)…": "Ingen direkte vei: prøver via MQTT-megleren (relé, tregt, men virker nesten alltid)…",
  "Lavagna: disegna sullo schermo del PC remoto per indicare qualcosa (tratti rossi). Clic destro per cancellare. Premi di nuovo per tornare a comandare.": "Tavle: tegn på skjermen til den eksterne PC-en for å vise noe (røde streker). Høyreklikk sletter. Trykk igjen for å styre igjen.",
  "La lavagna richiede IP-DESK-CTRL 0.5.22 o successivo sul PC remoto.": "Tavlen krever IP-DESK-CTRL 0.5.22 eller nyere på den eksterne PC-en.",
- "Lavagna attiva: disegna col tasto sinistro, clic destro cancella. Il mouse non arriva al PC remoto finché non la chiudi.": "Tavle på: tegn med venstre knapp, høyreklikk sletter. Musen når ikke den eksterne PC-en før du lukker den."
+ "Lavagna attiva: disegna col tasto sinistro, clic destro cancella. Il mouse non arriva al PC remoto finché non la chiudi.": "Tavle på: tegn med venstre knapp, høyreklikk sletter. Musen når ikke den eksterne PC-en før du lukker den.",
+ "{0} sta registrando questa sessione in un video: registra quello che compare sullo schermo.": "{0} tar opp denne økten som video: alt som vises på skjermen, tas opp.",
+ "Sessione registrata": "Økten tas opp",
+ "{0} sta registrando in un video quello che compare su questo schermo. Chiudi documenti e messaggi personali, oppure interrompi il collegamento.": "{0} tar opp det som vises på denne skjermen. Lukk personlige dokumenter og meldinger, eller avslutt tilkoblingen.",
+ "Chi usa il PC remoto è d'accordo che la sessione venga registrata.": "Den som bruker den eksterne PC-en, samtykker i at økten tas opp.",
+ "Registra": "Ta opp",
+ "Registrazione e privacy": "Opptak og personvern",
+ "Il video riprende tutto quello che compare sullo schermo del PC remoto: documenti, messaggi, posta, dati personali e anche password se vengono mostrate.": "Videoen tar opp alt som vises på skjermen til den eksterne PC-en: dokumenter, meldinger, e-post, personopplysninger og til og med passord hvis de vises.",
+ "Registra solo con il consenso di chi usa quel PC e rispettando le leggi sulla privacy (in Europa il GDPR). La responsabilità dell'uso del video è tua.": "Ta bare opp med samtykke fra den som bruker PC-en og i samsvar med personvernlovene (i Europa GDPR). Du er ansvarlig for hvordan videoen brukes.",
+ "Chi è davanti al PC remoto vedrà un avviso che la sessione viene registrata. Il video resta solo su questo PC, nella cartella Video\\IP-DESK-CTRL, e non viene mandato da nessuna parte.": "Den som sitter ved den eksterne PC-en, ser et varsel om at økten tas opp. Videoen blir bare på denne PC-en, i mappen Videoer\\IP-DESK-CTRL, og sendes ingen steder.",
+ "Attenzione: il PC remoto ha una versione che non mostra l'avviso di registrazione. Avvisa tu chi lo usa. Il video resta solo su questo PC, nella cartella Video\\IP-DESK-CTRL.": "Merk: den eksterne PC-en har en versjon som ikke viser opptaksvarselet. Si fra selv til den som bruker den. Videoen blir bare på denne PC-en, i mappen Videoer\\IP-DESK-CTRL.",
+ "IP-DESK-CTRL · Registrazione": "IP-DESK-CTRL · Opptak"
 }

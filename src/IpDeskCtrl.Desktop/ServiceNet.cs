@@ -88,6 +88,7 @@ namespace IpDeskCtrl.Desktop
                 _peer = new Peer(me, _s) { AskAccept = AskAsync };
                 _peer.HostStarted += hs => Broadcast($"START {hs.PeerNumber} {(hs.InputAllowed ? 1 : 0)}");
                 _peer.HostEnded += (hs, why) => Broadcast($"END {hs.PeerNumber} {why.Replace('\n', ' ')}");
+                _peer.HostRecording += (hs, on) => Broadcast($"REC {hs.PeerNumber} {(on ? 1 : 0)}");
                 _peer.HostDraw += e => Broadcast(e.ToLine());
                 _peer.HostChat += (hs, text) => Broadcast($"CHAT {hs.PeerNumber} {Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(text))}");
                 _peer.UpdateRequested += OnUpdateRequested;

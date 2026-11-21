@@ -664,5 +664,16 @@
  "Nessuna strada diretta: provo a passare dal broker MQTT (relè, lento ma funziona quasi sempre)…": "Walang direktang daan: sinusubukan sa MQTT broker (relay, mabagal pero halos laging gumagana)…",
  "Lavagna: disegna sullo schermo del PC remoto per indicare qualcosa (tratti rossi). Clic destro per cancellare. Premi di nuovo per tornare a comandare.": "Whiteboard: gumuhit sa screen ng remote na PC para magturo ng isang bagay (pulang guhit). Right-click para burahin. Pindutin muli para bumalik sa pagkontrol.",
  "La lavagna richiede IP-DESK-CTRL 0.5.22 o successivo sul PC remoto.": "Kailangan ng whiteboard ang IP-DESK-CTRL 0.5.22 o mas bago sa remote na PC.",
- "Lavagna attiva: disegna col tasto sinistro, clic destro cancella. Il mouse non arriva al PC remoto finché non la chiudi.": "Naka-on ang whiteboard: gumuhit gamit ang kaliwang button, nagbubura ang right-click. Hindi umaabot ang mouse sa remote na PC hanggang isara mo ito."
+ "Lavagna attiva: disegna col tasto sinistro, clic destro cancella. Il mouse non arriva al PC remoto finché non la chiudi.": "Naka-on ang whiteboard: gumuhit gamit ang kaliwang button, nagbubura ang right-click. Hindi umaabot ang mouse sa remote na PC hanggang isara mo ito.",
+ "{0} sta registrando questa sessione in un video: registra quello che compare sullo schermo.": "Nire-record ni {0} ang session na ito sa video: nare-record ang lahat ng lumalabas sa screen.",
+ "Sessione registrata": "Nire-record ang session",
+ "{0} sta registrando in un video quello che compare su questo schermo. Chiudi documenti e messaggi personali, oppure interrompi il collegamento.": "Nire-record ni {0} sa video ang lumalabas sa screen na ito. Isara ang mga personal na dokumento at mensahe, o tapusin ang koneksyon.",
+ "Chi usa il PC remoto è d'accordo che la sessione venga registrata.": "Pumapayag ang gumagamit ng remote na PC na i-record ang session.",
+ "Registra": "I-record",
+ "Registrazione e privacy": "Pag-record at privacy",
+ "Il video riprende tutto quello che compare sullo schermo del PC remoto: documenti, messaggi, posta, dati personali e anche password se vengono mostrate.": "Nire-record ng video ang lahat ng lumalabas sa screen ng remote na PC: mga dokumento, mensahe, email, personal na data at pati mga password kung ipinapakita.",
+ "Registra solo con il consenso di chi usa quel PC e rispettando le leggi sulla privacy (in Europa il GDPR). La responsabilità dell'uso del video è tua.": "Mag-record lamang nang may pahintulot ng gumagamit ng PC na iyon at ayon sa mga batas sa privacy (sa Europa, ang GDPR; sa Pilipinas, ang Data Privacy Act). Ikaw ang may pananagutan sa paggamit ng video.",
+ "Chi è davanti al PC remoto vedrà un avviso che la sessione viene registrata. Il video resta solo su questo PC, nella cartella Video\\IP-DESK-CTRL, e non viene mandato da nessuna parte.": "Makakakita ng abiso ang nasa harap ng remote na PC na nire-record ang session. Nananatili lamang ang video sa PC na ito, sa folder na Videos\\IP-DESK-CTRL, at hindi ipinapadala kahit saan.",
+ "Attenzione: il PC remoto ha una versione che non mostra l'avviso di registrazione. Avvisa tu chi lo usa. Il video resta solo su questo PC, nella cartella Video\\IP-DESK-CTRL.": "Paalala: ang remote na PC ay may bersyong hindi nagpapakita ng abiso ng pag-record. Ikaw mismo ang magsabi sa gumagamit nito. Nananatili lamang ang video sa PC na ito, sa folder na Videos\\IP-DESK-CTRL.",
+ "IP-DESK-CTRL · Registrazione": "IP-DESK-CTRL · Pag-record"
 }

@@ -664,5 +664,16 @@
  "Nessuna strada diretta: provo a passare dal broker MQTT (relè, lento ma funziona quasi sempre)…": "Otseteed pole: proovin MQTT-maakleri kaudu (relee, aeglane, kuid töötab peaaegu alati)…",
  "Lavagna: disegna sullo schermo del PC remoto per indicare qualcosa (tratti rossi). Clic destro per cancellare. Premi di nuovo per tornare a comandare.": "Tahvel: joonista kaugarvuti ekraanile, et midagi näidata (punased jooned). Paremklõps kustutab. Vajuta uuesti, et taas juhtida.",
  "La lavagna richiede IP-DESK-CTRL 0.5.22 o successivo sul PC remoto.": "Tahvel vajab kaugarvutis IP-DESK-CTRL 0.5.22 või uuemat.",
- "Lavagna attiva: disegna col tasto sinistro, clic destro cancella. Il mouse non arriva al PC remoto finché non la chiudi.": "Tahvel sees: joonista vasaku nupuga, paremklõps kustutab. Hiir ei jõua kaugarvutisse enne, kui selle sulged."
+ "Lavagna attiva: disegna col tasto sinistro, clic destro cancella. Il mouse non arriva al PC remoto finché non la chiudi.": "Tahvel sees: joonista vasaku nupuga, paremklõps kustutab. Hiir ei jõua kaugarvutisse enne, kui selle sulged.",
+ "{0} sta registrando questa sessione in un video: registra quello che compare sullo schermo.": "{0} salvestab seda seanssi videona: kõik ekraanil kuvatav salvestatakse.",
+ "Sessione registrata": "Seanssi salvestatakse",
+ "{0} sta registrando in un video quello che compare su questo schermo. Chiudi documenti e messaggi personali, oppure interrompi il collegamento.": "{0} salvestab videona selle ekraani sisu. Sulge isiklikud dokumendid ja sõnumid või katkesta ühendus.",
+ "Chi usa il PC remoto è d'accordo che la sessione venga registrata.": "Kaugarvuti kasutaja on nõus, et seanss salvestatakse.",
+ "Registra": "Salvesta",
+ "Registrazione e privacy": "Salvestamine ja privaatsus",
+ "Il video riprende tutto quello che compare sullo schermo del PC remoto: documenti, messaggi, posta, dati personali e anche password se vengono mostrate.": "Video salvestab kõik, mis kaugarvuti ekraanil kuvatakse: dokumendid, sõnumid, e-kirjad, isikuandmed ja isegi paroolid, kui need on näha.",
+ "Registra solo con il consenso di chi usa quel PC e rispettando le leggi sulla privacy (in Europa il GDPR). La responsabilità dell'uso del video è tua.": "Salvesta ainult selle arvuti kasutaja nõusolekul ja kooskõlas andmekaitseseadustega (Euroopas GDPR). Video kasutamise eest vastutad sina.",
+ "Chi è davanti al PC remoto vedrà un avviso che la sessione viene registrata. Il video resta solo su questo PC, nella cartella Video\\IP-DESK-CTRL, e non viene mandato da nessuna parte.": "Kaugarvuti taga istuja näeb teadet, et seanssi salvestatakse. Video jääb ainult sellesse arvutisse kausta Videod\\IP-DESK-CTRL ja seda ei saadeta kuhugi.",
+ "Attenzione: il PC remoto ha una versione che non mostra l'avviso di registrazione. Avvisa tu chi lo usa. Il video resta solo su questo PC, nella cartella Video\\IP-DESK-CTRL.": "Tähelepanu: kaugarvutis on versioon, mis salvestamise teadet ei näita. Teavita kasutajat ise. Video jääb ainult sellesse arvutisse kausta Videod\\IP-DESK-CTRL.",
+ "IP-DESK-CTRL · Registrazione": "IP-DESK-CTRL · Salvestamine"
 }

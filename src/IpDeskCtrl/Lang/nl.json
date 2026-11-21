@@ -664,5 +664,16 @@
  "Nessuna strada diretta: provo a passare dal broker MQTT (relè, lento ma funziona quasi sempre)…": "Geen directe route: probeer via de MQTT-broker (relay, traag maar werkt bijna altijd)…",
  "Lavagna: disegna sullo schermo del PC remoto per indicare qualcosa (tratti rossi). Clic destro per cancellare. Premi di nuovo per tornare a comandare.": "Whiteboard: teken op het scherm van de externe pc om iets aan te wijzen (rode lijnen). Rechtsklik wist. Druk opnieuw om weer te bedienen.",
  "La lavagna richiede IP-DESK-CTRL 0.5.22 o successivo sul PC remoto.": "Het whiteboard vereist IP-DESK-CTRL 0.5.22 of nieuwer op de externe pc.",
- "Lavagna attiva: disegna col tasto sinistro, clic destro cancella. Il mouse non arriva al PC remoto finché non la chiudi.": "Whiteboard aan: teken met de linkerknop, rechtsklik wist. De muis bereikt de externe pc pas als je het sluit."
+ "Lavagna attiva: disegna col tasto sinistro, clic destro cancella. Il mouse non arriva al PC remoto finché non la chiudi.": "Whiteboard aan: teken met de linkerknop, rechtsklik wist. De muis bereikt de externe pc pas als je het sluit.",
+ "{0} sta registrando questa sessione in un video: registra quello che compare sullo schermo.": "{0} neemt deze sessie op als video: alles wat op het scherm staat wordt vastgelegd.",
+ "Sessione registrata": "Sessie wordt opgenomen",
+ "{0} sta registrando in un video quello che compare su questo schermo. Chiudi documenti e messaggi personali, oppure interrompi il collegamento.": "{0} neemt op wat op dit scherm verschijnt. Sluit persoonlijke documenten en berichten, of verbreek de verbinding.",
+ "Chi usa il PC remoto è d'accordo che la sessione venga registrata.": "Wie de externe pc gebruikt, gaat ermee akkoord dat de sessie wordt opgenomen.",
+ "Registra": "Opnemen",
+ "Registrazione e privacy": "Opname en privacy",
+ "Il video riprende tutto quello che compare sullo schermo del PC remoto: documenti, messaggi, posta, dati personali e anche password se vengono mostrate.": "De video legt alles vast wat op het scherm van de externe pc verschijnt: documenten, berichten, e-mail, persoonsgegevens en zelfs wachtwoorden als ze worden getoond.",
+ "Registra solo con il consenso di chi usa quel PC e rispettando le leggi sulla privacy (in Europa il GDPR). La responsabilità dell'uso del video è tua.": "Neem alleen op met toestemming van wie die pc gebruikt en volgens de privacywetgeving (in Europa de AVG). Je bent zelf verantwoordelijk voor het gebruik van de video.",
+ "Chi è davanti al PC remoto vedrà un avviso che la sessione viene registrata. Il video resta solo su questo PC, nella cartella Video\\IP-DESK-CTRL, e non viene mandato da nessuna parte.": "Wie achter de externe pc zit, ziet een melding dat de sessie wordt opgenomen. De video blijft alleen op deze pc, in de map Video's\\IP-DESK-CTRL, en wordt nergens heen gestuurd.",
+ "Attenzione: il PC remoto ha una versione che non mostra l'avviso di registrazione. Avvisa tu chi lo usa. Il video resta solo su questo PC, nella cartella Video\\IP-DESK-CTRL.": "Let op: de externe pc heeft een versie die de opnamemelding niet toont. Waarschuw zelf wie hem gebruikt. De video blijft alleen op deze pc, in de map Video's\\IP-DESK-CTRL.",
+ "IP-DESK-CTRL · Registrazione": "IP-DESK-CTRL · Opname"
 }

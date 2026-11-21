@@ -664,5 +664,16 @@
  "Nessuna strada diretta: provo a passare dal broker MQTT (relè, lento ma funziona quasi sempre)…": "Nincs közvetlen út: a MQTT-brókeren keresztül próbálom (átjátszó, lassú, de szinte mindig működik)…",
  "Lavagna: disegna sullo schermo del PC remoto per indicare qualcosa (tratti rossi). Clic destro per cancellare. Premi di nuovo per tornare a comandare.": "Tábla: rajzolj a távoli gép képernyőjére, hogy megmutass valamit (piros vonalak). Jobb klikk töröl. Nyomd meg újra, hogy ismét irányíts.",
  "La lavagna richiede IP-DESK-CTRL 0.5.22 o successivo sul PC remoto.": "A táblához a távoli gépen IP-DESK-CTRL 0.5.22 vagy újabb kell.",
- "Lavagna attiva: disegna col tasto sinistro, clic destro cancella. Il mouse non arriva al PC remoto finché non la chiudi.": "Tábla bekapcsolva: rajzolj a bal gombbal, jobb klikk töröl. Az egér nem jut el a távoli géphez, amíg be nem zárod."
+ "Lavagna attiva: disegna col tasto sinistro, clic destro cancella. Il mouse non arriva al PC remoto finché non la chiudi.": "Tábla bekapcsolva: rajzolj a bal gombbal, jobb klikk töröl. Az egér nem jut el a távoli géphez, amíg be nem zárod.",
+ "{0} sta registrando questa sessione in un video: registra quello che compare sullo schermo.": "{0} videóra rögzíti ezt a munkamenetet: minden rögzül, ami a képernyőn látszik.",
+ "Sessione registrata": "A munkamenet rögzítése folyik",
+ "{0} sta registrando in un video quello che compare su questo schermo. Chiudi documenti e messaggi personali, oppure interrompi il collegamento.": "{0} videóra rögzíti, ami ezen a képernyőn megjelenik. Zárd be a személyes dokumentumokat és üzeneteket, vagy bontsd a kapcsolatot.",
+ "Chi usa il PC remoto è d'accordo che la sessione venga registrata.": "A távoli gép használója hozzájárul a munkamenet rögzítéséhez.",
+ "Registra": "Rögzítés",
+ "Registrazione e privacy": "Rögzítés és adatvédelem",
+ "Il video riprende tutto quello che compare sullo schermo del PC remoto: documenti, messaggi, posta, dati personali e anche password se vengono mostrate.": "A videó mindent rögzít, ami a távoli gép képernyőjén megjelenik: dokumentumokat, üzeneteket, leveleket, személyes adatokat, sőt a jelszavakat is, ha megjelennek.",
+ "Registra solo con il consenso di chi usa quel PC e rispettando le leggi sulla privacy (in Europa il GDPR). La responsabilità dell'uso del video è tua.": "Csak a gép használójának hozzájárulásával és az adatvédelmi törvények betartásával rögzíts (Európában GDPR). A videó felhasználásáért te felelsz.",
+ "Chi è davanti al PC remoto vedrà un avviso che la sessione viene registrata. Il video resta solo su questo PC, nella cartella Video\\IP-DESK-CTRL, e non viene mandato da nessuna parte.": "A távoli gép előtt ülő értesítést lát arról, hogy a munkamenetet rögzítik. A videó csak ezen a gépen marad, a Videók\\IP-DESK-CTRL mappában, és sehová nem kerül elküldésre.",
+ "Attenzione: il PC remoto ha una versione che non mostra l'avviso di registrazione. Avvisa tu chi lo usa. Il video resta solo su questo PC, nella cartella Video\\IP-DESK-CTRL.": "Figyelem: a távoli gépen olyan verzió fut, amely nem mutatja a rögzítési értesítést. Szólj te a használójának. A videó csak ezen a gépen marad, a Videók\\IP-DESK-CTRL mappában.",
+ "IP-DESK-CTRL · Registrazione": "IP-DESK-CTRL · Rögzítés"
 }

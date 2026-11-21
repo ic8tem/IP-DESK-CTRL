@@ -44,6 +44,8 @@ Con **✎** il mouse non comanda più il PC remoto: col tasto sinistro disegni s
 
 Con **⏺** l'immagine del PC remoto va in un video MP4 (H.264, 8 fotogrammi al secondo, senza audio) nella cartella **Video\IP-DESK-CTRL** di questo PC. Si ferma con **⏹ REC** o scollegandosi; se il PC remoto cambia risoluzione si continua in un secondo file («…_parte2.mp4»). Serve ffmpeg, lo stesso del [video compresso](Video).
 
+**Privacy.** Il video riprende tutto quello che compare sullo schermo remoto (documenti, messaggi, dati personali, anche password se vengono mostrate). Prima di partire IP-DESK-CTRL chiede di confermare che chi usa il PC remoto è d'accordo; registra solo con il suo consenso e nel rispetto delle leggi sulla privacy (in Europa il GDPR). Chi è davanti al PC remoto vede un avviso rosso «Sessione registrata» finché la registrazione è attiva (dalla 0.5.23 su entrambi i PC). Il video resta solo su questo PC e non viene mandato da nessuna parte.
+
 ## Risoluzione adatta
 
 Con **Risoluzione adatta** il PC remoto passa, tra le risoluzioni che il suo monitor supporta, a quella con le proporzioni più vicine alla tua finestra (o al telefono, anche in verticale). Ridimensionando la finestra si riadatta. A fine collegamento, o spegnendo il pulsante, torna com'era. Funziona su **Windows** (anche con il servizio, dalla 0.5.22) e **Linux con X11**; serve un solo schermo scelto (non «Tutti gli schermi»). Chi è al PC remoto può impedirlo (Impostazioni).

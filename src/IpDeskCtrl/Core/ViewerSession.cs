@@ -265,6 +265,12 @@ namespace IpDeskCtrl.Core
             Send(new MsgWriter(Msg.Chat).Str(text).Build());
         }
 
+        /// <summary>Avvisa il PC remoto che la sessione viene registrata (o non più).</summary>
+        public void SendRecording(bool on)
+        {
+            if (PeerHas("rec")) Send(new MsgWriter(Msg.Recording).U8((byte)(on ? 1 : 0)).Build());
+        }
+
         /// <summary>Lavagna: manda un pezzo di tratto (punti in 0..1 dell'immagine, x,y alternati).</summary>
         public void SendDraw(byte op, IReadOnlyList<float> pts)
         {

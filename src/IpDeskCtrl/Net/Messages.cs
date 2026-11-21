@@ -88,6 +88,7 @@ namespace IpDeskCtrl.Net
 
         // ---- chat tra chi comanda e chi è davanti al PC (0.5.22+)
         public const byte Chat = 0x88;           // nei due versi: str testo
+        public const byte Recording = 0x8A;      // visore -> host: u8 1 = sta registrando la sessione, 0 = ha smesso
         public const byte Draw = 0x89;           // visore -> host: u8 op (0 continua, 1 nuovo tratto, 2 cancella), u16 n, n × (u16 x, u16 y) in 0..65535
     }
 

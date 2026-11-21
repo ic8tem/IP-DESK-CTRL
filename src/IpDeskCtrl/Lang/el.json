@@ -664,5 +664,16 @@
  "Nessuna strada diretta: provo a passare dal broker MQTT (relè, lento ma funziona quasi sempre)…": "Καμία άμεση διαδρομή: δοκιμή μέσω του MQTT broker (αναμετάδοση, αργή αλλά λειτουργεί σχεδόν πάντα)…",
  "Lavagna: disegna sullo schermo del PC remoto per indicare qualcosa (tratti rossi). Clic destro per cancellare. Premi di nuovo per tornare a comandare.": "Πίνακας: σχεδιάστε στην οθόνη του απομακρυσμένου υπολογιστή για να δείξετε κάτι (κόκκινες γραμμές). Το δεξί κλικ σβήνει. Πατήστε ξανά για να επιστρέψετε στον έλεγχο.",
  "La lavagna richiede IP-DESK-CTRL 0.5.22 o successivo sul PC remoto.": "Ο πίνακας απαιτεί IP-DESK-CTRL 0.5.22 ή νεότερο στον απομακρυσμένο υπολογιστή.",
- "Lavagna attiva: disegna col tasto sinistro, clic destro cancella. Il mouse non arriva al PC remoto finché non la chiudi.": "Πίνακας ενεργός: σχεδιάστε με το αριστερό κουμπί, το δεξί κλικ σβήνει. Το ποντίκι δεν φτάνει στον απομακρυσμένο υπολογιστή μέχρι να τον κλείσετε."
+ "Lavagna attiva: disegna col tasto sinistro, clic destro cancella. Il mouse non arriva al PC remoto finché non la chiudi.": "Πίνακας ενεργός: σχεδιάστε με το αριστερό κουμπί, το δεξί κλικ σβήνει. Το ποντίκι δεν φτάνει στον απομακρυσμένο υπολογιστή μέχρι να τον κλείσετε.",
+ "{0} sta registrando questa sessione in un video: registra quello che compare sullo schermo.": "Ο/Η {0} καταγράφει αυτή τη συνεδρία σε βίντεο: καταγράφεται ό,τι εμφανίζεται στην οθόνη.",
+ "Sessione registrata": "Η συνεδρία καταγράφεται",
+ "{0} sta registrando in un video quello che compare su questo schermo. Chiudi documenti e messaggi personali, oppure interrompi il collegamento.": "Ο/Η {0} καταγράφει σε βίντεο ό,τι εμφανίζεται σε αυτή την οθόνη. Κλείστε προσωπικά έγγραφα και μηνύματα ή τερματίστε τη σύνδεση.",
+ "Chi usa il PC remoto è d'accordo che la sessione venga registrata.": "Όποιος χρησιμοποιεί τον απομακρυσμένο υπολογιστή συμφωνεί να καταγραφεί η συνεδρία.",
+ "Registra": "Καταγραφή",
+ "Registrazione e privacy": "Καταγραφή και ιδιωτικότητα",
+ "Il video riprende tutto quello che compare sullo schermo del PC remoto: documenti, messaggi, posta, dati personali e anche password se vengono mostrate.": "Το βίντεο καταγράφει ό,τι εμφανίζεται στην οθόνη του απομακρυσμένου υπολογιστή: έγγραφα, μηνύματα, email, προσωπικά δεδομένα, ακόμη και κωδικούς αν εμφανιστούν.",
+ "Registra solo con il consenso di chi usa quel PC e rispettando le leggi sulla privacy (in Europa il GDPR). La responsabilità dell'uso del video è tua.": "Καταγράφετε μόνο με τη συγκατάθεση όποιου χρησιμοποιεί τον υπολογιστή και σύμφωνα με τους νόμους για την ιδιωτικότητα (στην Ευρώπη ο ΓΚΠΔ). Την ευθύνη για τη χρήση του βίντεο την έχετε εσείς.",
+ "Chi è davanti al PC remoto vedrà un avviso che la sessione viene registrata. Il video resta solo su questo PC, nella cartella Video\\IP-DESK-CTRL, e non viene mandato da nessuna parte.": "Όποιος βρίσκεται στον απομακρυσμένο υπολογιστή θα δει ειδοποίηση ότι η συνεδρία καταγράφεται. Το βίντεο μένει μόνο σε αυτόν τον υπολογιστή, στον φάκελο Βίντεο\\IP-DESK-CTRL, και δεν αποστέλλεται πουθενά.",
+ "Attenzione: il PC remoto ha una versione che non mostra l'avviso di registrazione. Avvisa tu chi lo usa. Il video resta solo su questo PC, nella cartella Video\\IP-DESK-CTRL.": "Προσοχή: ο απομακρυσμένος υπολογιστής έχει έκδοση που δεν δείχνει την ειδοποίηση καταγραφής. Ενημερώστε εσείς τον χρήστη. Το βίντεο μένει μόνο σε αυτόν τον υπολογιστή, στον φάκελο Βίντεο\\IP-DESK-CTRL.",
+ "IP-DESK-CTRL · Registrazione": "IP-DESK-CTRL · Καταγραφή"
 }

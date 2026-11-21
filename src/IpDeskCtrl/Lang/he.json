@@ -664,5 +664,16 @@
  "Nessuna strada diretta: provo a passare dal broker MQTT (relè, lento ma funziona quasi sempre)…": "אין נתיב ישיר: מנסה דרך מתווך MQTT (ממסר, איטי אבל כמעט תמיד עובד)…",
  "Lavagna: disegna sullo schermo del PC remoto per indicare qualcosa (tratti rossi). Clic destro per cancellare. Premi di nuovo per tornare a comandare.": "לוח: ציירו על מסך המחשב המרוחק כדי להצביע על משהו (קווים אדומים). לחיצה ימנית מוחקת. לחצו שוב כדי לחזור לשליטה.",
  "La lavagna richiede IP-DESK-CTRL 0.5.22 o successivo sul PC remoto.": "הלוח דורש IP-DESK-CTRL 0.5.22 ומעלה במחשב המרוחק.",
- "Lavagna attiva: disegna col tasto sinistro, clic destro cancella. Il mouse non arriva al PC remoto finché non la chiudi.": "הלוח פעיל: ציירו בכפתור השמאלי, לחיצה ימנית מוחקת. העכבר לא מגיע למחשב המרוחק עד שתסגרו אותו."
+ "Lavagna attiva: disegna col tasto sinistro, clic destro cancella. Il mouse non arriva al PC remoto finché non la chiudi.": "הלוח פעיל: ציירו בכפתור השמאלי, לחיצה ימנית מוחקת. העכבר לא מגיע למחשב המרוחק עד שתסגרו אותו.",
+ "{0} sta registrando questa sessione in un video: registra quello che compare sullo schermo.": "{0} מקליט/ה את ההפעלה הזו לווידאו: כל מה שמוצג על המסך מוקלט.",
+ "Sessione registrata": "ההפעלה מוקלטת",
+ "{0} sta registrando in un video quello che compare su questo schermo. Chiudi documenti e messaggi personali, oppure interrompi il collegamento.": "{0} מקליט/ה לווידאו את מה שמופיע על המסך הזה. סגרו מסמכים והודעות אישיים, או נתקו את החיבור.",
+ "Chi usa il PC remoto è d'accordo che la sessione venga registrata.": "מי שמשתמש במחשב המרוחק מסכים שההפעלה תוקלט.",
+ "Registra": "הקלטה",
+ "Registrazione e privacy": "הקלטה ופרטיות",
+ "Il video riprende tutto quello che compare sullo schermo del PC remoto: documenti, messaggi, posta, dati personali e anche password se vengono mostrate.": "הווידאו מקליט את כל מה שמופיע על מסך המחשב המרוחק: מסמכים, הודעות, דואר, מידע אישי ואפילו סיסמאות אם הן מוצגות.",
+ "Registra solo con il consenso di chi usa quel PC e rispettando le leggi sulla privacy (in Europa il GDPR). La responsabilità dell'uso del video è tua.": "הקליטו רק בהסכמת מי שמשתמש במחשב ובהתאם לחוקי הפרטיות (באירופה GDPR). האחריות לשימוש בווידאו היא שלכם.",
+ "Chi è davanti al PC remoto vedrà un avviso che la sessione viene registrata. Il video resta solo su questo PC, nella cartella Video\\IP-DESK-CTRL, e non viene mandato da nessuna parte.": "מי שיושב מול המחשב המרוחק יראה הודעה שההפעלה מוקלטת. הווידאו נשאר רק במחשב הזה, בתיקייה סרטונים\\IP-DESK-CTRL, ולא נשלח לשום מקום.",
+ "Attenzione: il PC remoto ha una versione che non mostra l'avviso di registrazione. Avvisa tu chi lo usa. Il video resta solo su questo PC, nella cartella Video\\IP-DESK-CTRL.": "שימו לב: במחשב המרוחק גרסה שלא מציגה את הודעת ההקלטה. הודיעו בעצמכם למי שמשתמש בו. הווידאו נשאר רק במחשב הזה, בתיקייה סרטונים\\IP-DESK-CTRL.",
+ "IP-DESK-CTRL · Registrazione": "IP-DESK-CTRL · הקלטה"
 }

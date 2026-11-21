@@ -664,5 +664,16 @@
  "Nessuna strada diretta: provo a passare dal broker MQTT (relè, lento ma funziona quasi sempre)…": "No direct route: trying through the MQTT broker (relay, slow but almost always works)…",
  "Lavagna: disegna sullo schermo del PC remoto per indicare qualcosa (tratti rossi). Clic destro per cancellare. Premi di nuovo per tornare a comandare.": "Whiteboard: draw on the remote PC's screen to point something out (red strokes). Right-click to clear. Press again to go back to controlling.",
  "La lavagna richiede IP-DESK-CTRL 0.5.22 o successivo sul PC remoto.": "The whiteboard needs IP-DESK-CTRL 0.5.22 or later on the remote PC.",
- "Lavagna attiva: disegna col tasto sinistro, clic destro cancella. Il mouse non arriva al PC remoto finché non la chiudi.": "Whiteboard on: draw with the left button, right-click clears. The mouse does not reach the remote PC until you close it."
+ "Lavagna attiva: disegna col tasto sinistro, clic destro cancella. Il mouse non arriva al PC remoto finché non la chiudi.": "Whiteboard on: draw with the left button, right-click clears. The mouse does not reach the remote PC until you close it.",
+ "{0} sta registrando questa sessione in un video: registra quello che compare sullo schermo.": "{0} is recording this session to a video: everything shown on screen is captured.",
+ "Sessione registrata": "Session recorded",
+ "{0} sta registrando in un video quello che compare su questo schermo. Chiudi documenti e messaggi personali, oppure interrompi il collegamento.": "{0} is recording to a video what appears on this screen. Close personal documents and messages, or end the connection.",
+ "Chi usa il PC remoto è d'accordo che la sessione venga registrata.": "The person using the remote PC agrees that the session is recorded.",
+ "Registra": "Record",
+ "Registrazione e privacy": "Recording and privacy",
+ "Il video riprende tutto quello che compare sullo schermo del PC remoto: documenti, messaggi, posta, dati personali e anche password se vengono mostrate.": "The video captures everything shown on the remote PC's screen: documents, messages, e-mail, personal data and even passwords if they are displayed.",
+ "Registra solo con il consenso di chi usa quel PC e rispettando le leggi sulla privacy (in Europa il GDPR). La responsabilità dell'uso del video è tua.": "Record only with the consent of the person using that PC and in compliance with privacy laws (in Europe, the GDPR). You are responsible for how the video is used.",
+ "Chi è davanti al PC remoto vedrà un avviso che la sessione viene registrata. Il video resta solo su questo PC, nella cartella Video\\IP-DESK-CTRL, e non viene mandato da nessuna parte.": "The person at the remote PC will see a notice that the session is being recorded. The video stays only on this PC, in the Videos\\IP-DESK-CTRL folder, and is not sent anywhere.",
+ "Attenzione: il PC remoto ha una versione che non mostra l'avviso di registrazione. Avvisa tu chi lo usa. Il video resta solo su questo PC, nella cartella Video\\IP-DESK-CTRL.": "Warning: the remote PC has a version that does not show the recording notice. Tell the person using it yourself. The video stays only on this PC, in the Videos\\IP-DESK-CTRL folder.",
+ "IP-DESK-CTRL · Registrazione": "IP-DESK-CTRL · Recording"
 }

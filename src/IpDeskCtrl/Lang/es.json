@@ -664,5 +664,16 @@
  "Nessuna strada diretta: provo a passare dal broker MQTT (relè, lento ma funziona quasi sempre)…": "Sin ruta directa: pruebo a través del bróker MQTT (relé, lento pero casi siempre funciona)…",
  "Lavagna: disegna sullo schermo del PC remoto per indicare qualcosa (tratti rossi). Clic destro per cancellare. Premi di nuovo per tornare a comandare.": "Pizarra: dibuja en la pantalla del PC remoto para señalar algo (trazos rojos). Clic derecho para borrar. Pulsa de nuevo para volver a controlar.",
  "La lavagna richiede IP-DESK-CTRL 0.5.22 o successivo sul PC remoto.": "La pizarra requiere IP-DESK-CTRL 0.5.22 o posterior en el PC remoto.",
- "Lavagna attiva: disegna col tasto sinistro, clic destro cancella. Il mouse non arriva al PC remoto finché non la chiudi.": "Pizarra activa: dibuja con el botón izquierdo, el clic derecho borra. El ratón no llega al PC remoto hasta que la cierres."
+ "Lavagna attiva: disegna col tasto sinistro, clic destro cancella. Il mouse non arriva al PC remoto finché non la chiudi.": "Pizarra activa: dibuja con el botón izquierdo, el clic derecho borra. El ratón no llega al PC remoto hasta que la cierres.",
+ "{0} sta registrando questa sessione in un video: registra quello che compare sullo schermo.": "{0} está grabando esta sesión en vídeo: se graba todo lo que aparece en pantalla.",
+ "Sessione registrata": "Sesión grabada",
+ "{0} sta registrando in un video quello che compare su questo schermo. Chiudi documenti e messaggi personali, oppure interrompi il collegamento.": "{0} está grabando en vídeo lo que aparece en esta pantalla. Cierra documentos y mensajes personales, o termina la conexión.",
+ "Chi usa il PC remoto è d'accordo che la sessione venga registrata.": "Quien usa el PC remoto está de acuerdo con que se grabe la sesión.",
+ "Registra": "Grabar",
+ "Registrazione e privacy": "Grabación y privacidad",
+ "Il video riprende tutto quello che compare sullo schermo del PC remoto: documenti, messaggi, posta, dati personali e anche password se vengono mostrate.": "El vídeo graba todo lo que aparece en la pantalla del PC remoto: documentos, mensajes, correo, datos personales e incluso contraseñas si se muestran.",
+ "Registra solo con il consenso di chi usa quel PC e rispettando le leggi sulla privacy (in Europa il GDPR). La responsabilità dell'uso del video è tua.": "Graba solo con el consentimiento de quien usa ese PC y respetando las leyes de privacidad (en Europa, el RGPD). El uso del vídeo es responsabilidad tuya.",
+ "Chi è davanti al PC remoto vedrà un avviso che la sessione viene registrata. Il video resta solo su questo PC, nella cartella Video\\IP-DESK-CTRL, e non viene mandato da nessuna parte.": "Quien está delante del PC remoto verá un aviso de que la sesión se está grabando. El vídeo queda solo en este PC, en la carpeta Vídeos\\IP-DESK-CTRL, y no se envía a ningún sitio.",
+ "Attenzione: il PC remoto ha una versione che non mostra l'avviso di registrazione. Avvisa tu chi lo usa. Il video resta solo su questo PC, nella cartella Video\\IP-DESK-CTRL.": "Atención: el PC remoto tiene una versión que no muestra el aviso de grabación. Avisa tú a quien lo usa. El vídeo queda solo en este PC, en la carpeta Vídeos\\IP-DESK-CTRL.",
+ "IP-DESK-CTRL · Registrazione": "IP-DESK-CTRL · Grabación"
 }

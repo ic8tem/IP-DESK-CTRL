@@ -645,9 +645,38 @@ namespace IpDeskCtrl.UI
             if (_rec != null) { StopRecording(); return; }
             var s = _session;
             if (s == null) return;
+            AskRecordingConsent(s, () => StartRecording(s));
+        }
+
+        /// <summary>Avviso di privacy prima di registrare: si parte solo spuntando il consenso.</summary>
+        private void AskRecordingConsent(ViewerSession s, Action go)
+        {
+            var consent = new CheckBox { Content = new TextBlock { Text = L.T("Chi usa il PC remoto è d'accordo che la sessione venga registrata."), TextWrapping = TextWrapping.Wrap } };
+            var ok = Ui.Btn(L.T("Registra"), true);
+            ok.IsEnabled = false;
+            consent.IsCheckedChanged += (_, _) => ok.IsEnabled = consent.IsChecked == true;
+            var cancel = Ui.Btn(L.T("Annulla"));
+            var lines = Ui.Col(10,
+                Ui.H1("⏺ " + L.T("Registrazione e privacy")),
+                new TextBlock { TextWrapping = TextWrapping.Wrap, Text = L.T("Il video riprende tutto quello che compare sullo schermo del PC remoto: documenti, messaggi, posta, dati personali e anche password se vengono mostrate.") },
+                new TextBlock { TextWrapping = TextWrapping.Wrap, Text = L.T("Registra solo con il consenso di chi usa quel PC e rispettando le leggi sulla privacy (in Europa il GDPR). La responsabilità dell'uso del video è tua.") },
+                new TextBlock { TextWrapping = TextWrapping.Wrap, Text = s.PeerHas("rec")
+                    ? L.T("Chi è davanti al PC remoto vedrà un avviso che la sessione viene registrata. Il video resta solo su questo PC, nella cartella Video\\IP-DESK-CTRL, e non viene mandato da nessuna parte.")
+                    : L.T("Attenzione: il PC remoto ha una versione che non mostra l'avviso di registrazione. Avvisa tu chi lo usa. Il video resta solo su questo PC, nella cartella Video\\IP-DESK-CTRL.") },
+                consent,
+                Ui.Row(8, cancel, ok));
+            var dlg = Shell.Current.ShowDialog(L.T("IP-DESK-CTRL · Registrazione"), lines, 480, false);
+            cancel.Click += (_, _) => dlg.Close();
+            ok.Click += (_, _) => { dlg.Close(); if (s == _session && _rec == null) go(); };
+        }
+
+        private void StartRecording(ViewerSession s)
+        {
             var r = IpDeskCtrl.Screen.SessionRecorder.Start(s.Decoder, Identity.Format(_number), out string err);
             if (r == null) { ShowNote(L.T("Registrazione non avviata: ") + err + "."); return; }
             _rec = r;
+            s.SendRecording(true);
+            SessionLog.Write($"REGISTRAZIONE: consenso di chi usa {Identity.Format(_number)} confermato da chi registra");
             _recBtn.Content = "⏹ REC";
             _recBtn.Foreground = Brushes.Red;
             ShowNote(L.F("Registrazione in corso in {0}", IpDeskCtrl.Screen.SessionRecorder.Folder));
@@ -659,6 +688,7 @@ namespace IpDeskCtrl.UI
             if (r == null) return;
             _rec = null;
             r.Dispose();
+            _session?.SendRecording(false);
             _recBtn.Content = "⏺";
             _recBtn.ClearValue(Button.ForegroundProperty);
             ShowNote(L.T("Registrazione salvata: ") + r.File, true, IpDeskCtrl.Screen.SessionRecorder.Folder);

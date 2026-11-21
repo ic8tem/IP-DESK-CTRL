@@ -664,5 +664,16 @@
  "Nessuna strada diretta: provo a passare dal broker MQTT (relè, lento ma funziona quasi sempre)…": "Ingen direkte vej: prøver via MQTT-mægleren (relæ, langsomt, men virker næsten altid)…",
  "Lavagna: disegna sullo schermo del PC remoto per indicare qualcosa (tratti rossi). Clic destro per cancellare. Premi di nuovo per tornare a comandare.": "Tavle: tegn på fjern-pc'ens skærm for at vise noget (røde streger). Højreklik sletter. Tryk igen for at styre igen.",
  "La lavagna richiede IP-DESK-CTRL 0.5.22 o successivo sul PC remoto.": "Tavlen kræver IP-DESK-CTRL 0.5.22 eller nyere på fjern-pc'en.",
- "Lavagna attiva: disegna col tasto sinistro, clic destro cancella. Il mouse non arriva al PC remoto finché non la chiudi.": "Tavle til: tegn med venstre knap, højreklik sletter. Musen når ikke fjern-pc'en, før du lukker den."
+ "Lavagna attiva: disegna col tasto sinistro, clic destro cancella. Il mouse non arriva al PC remoto finché non la chiudi.": "Tavle til: tegn med venstre knap, højreklik sletter. Musen når ikke fjern-pc'en, før du lukker den.",
+ "{0} sta registrando questa sessione in un video: registra quello che compare sullo schermo.": "{0} optager denne session som video: alt, der vises på skærmen, optages.",
+ "Sessione registrata": "Sessionen optages",
+ "{0} sta registrando in un video quello che compare su questo schermo. Chiudi documenti e messaggi personali, oppure interrompi il collegamento.": "{0} optager det, der vises på denne skærm. Luk personlige dokumenter og beskeder, eller afslut forbindelsen.",
+ "Chi usa il PC remoto è d'accordo che la sessione venga registrata.": "Den, der bruger fjern-pc'en, accepterer, at sessionen optages.",
+ "Registra": "Optag",
+ "Registrazione e privacy": "Optagelse og privatliv",
+ "Il video riprende tutto quello che compare sullo schermo del PC remoto: documenti, messaggi, posta, dati personali e anche password se vengono mostrate.": "Videoen optager alt, der vises på fjern-pc'ens skærm: dokumenter, beskeder, e-mail, personoplysninger og endda adgangskoder, hvis de vises.",
+ "Registra solo con il consenso di chi usa quel PC e rispettando le leggi sulla privacy (in Europa il GDPR). La responsabilità dell'uso del video è tua.": "Optag kun med samtykke fra den, der bruger pc'en, og i overensstemmelse med databeskyttelseslovgivningen (i Europa GDPR). Du er ansvarlig for brugen af videoen.",
+ "Chi è davanti al PC remoto vedrà un avviso che la sessione viene registrata. Il video resta solo su questo PC, nella cartella Video\\IP-DESK-CTRL, e non viene mandato da nessuna parte.": "Den, der sidder ved fjern-pc'en, ser en meddelelse om, at sessionen optages. Videoen bliver kun på denne pc, i mappen Videoer\\IP-DESK-CTRL, og sendes ingen steder hen.",
+ "Attenzione: il PC remoto ha una versione che non mostra l'avviso di registrazione. Avvisa tu chi lo usa. Il video resta solo su questo PC, nella cartella Video\\IP-DESK-CTRL.": "Bemærk: fjern-pc'en har en version, der ikke viser optagelsesmeddelelsen. Fortæl det selv til den, der bruger den. Videoen bliver kun på denne pc, i mappen Videoer\\IP-DESK-CTRL.",
+ "IP-DESK-CTRL · Registrazione": "IP-DESK-CTRL · Optagelse"
 }

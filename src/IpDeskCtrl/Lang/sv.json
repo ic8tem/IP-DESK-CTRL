@@ -664,5 +664,16 @@
  "Nessuna strada diretta: provo a passare dal broker MQTT (relè, lento ma funziona quasi sempre)…": "Ingen direkt väg: försöker via MQTT-mäklaren (relä, långsamt men fungerar nästan alltid)…",
  "Lavagna: disegna sullo schermo del PC remoto per indicare qualcosa (tratti rossi). Clic destro per cancellare. Premi di nuovo per tornare a comandare.": "Whiteboard: rita på fjärrdatorns skärm för att visa något (röda streck). Högerklick rensar. Tryck igen för att styra igen.",
  "La lavagna richiede IP-DESK-CTRL 0.5.22 o successivo sul PC remoto.": "Whiteboarden kräver IP-DESK-CTRL 0.5.22 eller senare på fjärrdatorn.",
- "Lavagna attiva: disegna col tasto sinistro, clic destro cancella. Il mouse non arriva al PC remoto finché non la chiudi.": "Whiteboard på: rita med vänsterknappen, högerklick rensar. Musen når inte fjärrdatorn förrän du stänger den."
+ "Lavagna attiva: disegna col tasto sinistro, clic destro cancella. Il mouse non arriva al PC remoto finché non la chiudi.": "Whiteboard på: rita med vänsterknappen, högerklick rensar. Musen når inte fjärrdatorn förrän du stänger den.",
+ "{0} sta registrando questa sessione in un video: registra quello che compare sullo schermo.": "{0} spelar in den här sessionen som video: allt som visas på skärmen spelas in.",
+ "Sessione registrata": "Sessionen spelas in",
+ "{0} sta registrando in un video quello che compare su questo schermo. Chiudi documenti e messaggi personali, oppure interrompi il collegamento.": "{0} spelar in det som visas på den här skärmen. Stäng personliga dokument och meddelanden, eller avsluta anslutningen.",
+ "Chi usa il PC remoto è d'accordo che la sessione venga registrata.": "Den som använder fjärrdatorn godkänner att sessionen spelas in.",
+ "Registra": "Spela in",
+ "Registrazione e privacy": "Inspelning och integritet",
+ "Il video riprende tutto quello che compare sullo schermo del PC remoto: documenti, messaggi, posta, dati personali e anche password se vengono mostrate.": "Videon spelar in allt som visas på fjärrdatorns skärm: dokument, meddelanden, e-post, personuppgifter och till och med lösenord om de visas.",
+ "Registra solo con il consenso di chi usa quel PC e rispettando le leggi sulla privacy (in Europa il GDPR). La responsabilità dell'uso del video è tua.": "Spela bara in med samtycke från den som använder datorn och enligt dataskyddslagarna (i Europa GDPR). Du ansvarar för hur videon används.",
+ "Chi è davanti al PC remoto vedrà un avviso che la sessione viene registrata. Il video resta solo su questo PC, nella cartella Video\\IP-DESK-CTRL, e non viene mandato da nessuna parte.": "Den som sitter vid fjärrdatorn ser ett meddelande om att sessionen spelas in. Videon stannar bara på den här datorn, i mappen Videoklipp\\IP-DESK-CTRL, och skickas ingenstans.",
+ "Attenzione: il PC remoto ha una versione che non mostra l'avviso di registrazione. Avvisa tu chi lo usa. Il video resta solo su questo PC, nella cartella Video\\IP-DESK-CTRL.": "Obs: fjärrdatorn har en version som inte visar inspelningsmeddelandet. Informera själv den som använder den. Videon stannar bara på den här datorn, i mappen Videoklipp\\IP-DESK-CTRL.",
+ "IP-DESK-CTRL · Registrazione": "IP-DESK-CTRL · Inspelning"
 }

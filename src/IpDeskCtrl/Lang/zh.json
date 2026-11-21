@@ -664,5 +664,16 @@
  "Nessuna strada diretta: provo a passare dal broker MQTT (relè, lento ma funziona quasi sempre)…": "没有直接通路：尝试经由 MQTT 代理中转（较慢，但几乎总能连上）…",
  "Lavagna: disegna sullo schermo del PC remoto per indicare qualcosa (tratti rossi). Clic destro per cancellare. Premi di nuovo per tornare a comandare.": "白板：在远程电脑屏幕上画出标记（红色线条）。右键清除。再按一次返回控制。",
  "La lavagna richiede IP-DESK-CTRL 0.5.22 o successivo sul PC remoto.": "白板需要远程电脑安装 IP-DESK-CTRL 0.5.22 或更高版本。",
- "Lavagna attiva: disegna col tasto sinistro, clic destro cancella. Il mouse non arriva al PC remoto finché non la chiudi.": "白板已开启：用左键绘制，右键清除。关闭白板前鼠标不会传到远程电脑。"
+ "Lavagna attiva: disegna col tasto sinistro, clic destro cancella. Il mouse non arriva al PC remoto finché non la chiudi.": "白板已开启：用左键绘制，右键清除。关闭白板前鼠标不会传到远程电脑。",
+ "{0} sta registrando questa sessione in un video: registra quello che compare sullo schermo.": "{0} 正在将此会话录制为视频：屏幕上显示的所有内容都会被录下。",
+ "Sessione registrata": "会话正在录制",
+ "{0} sta registrando in un video quello che compare su questo schermo. Chiudi documenti e messaggi personali, oppure interrompi il collegamento.": "{0} 正在录制此屏幕上显示的内容。请关闭个人文档和消息，或断开连接。",
+ "Chi usa il PC remoto è d'accordo che la sessione venga registrata.": "远程电脑的使用者同意录制本次会话。",
+ "Registra": "录制",
+ "Registrazione e privacy": "录制与隐私",
+ "Il video riprende tutto quello che compare sullo schermo del PC remoto: documenti, messaggi, posta, dati personali e anche password se vengono mostrate.": "视频会录下远程电脑屏幕上显示的所有内容：文档、消息、邮件、个人数据，甚至显示出来的密码。",
+ "Registra solo con il consenso di chi usa quel PC e rispettando le leggi sulla privacy (in Europa il GDPR). La responsabilità dell'uso del video è tua.": "请仅在征得该电脑使用者同意并遵守隐私法规（欧洲为 GDPR）的情况下录制。视频的使用由你负责。",
+ "Chi è davanti al PC remoto vedrà un avviso che la sessione viene registrata. Il video resta solo su questo PC, nella cartella Video\\IP-DESK-CTRL, e non viene mandato da nessuna parte.": "远程电脑前的人会看到会话正在录制的提示。视频只保存在本机的“视频\\IP-DESK-CTRL”文件夹中，不会发送到任何地方。",
+ "Attenzione: il PC remoto ha una versione che non mostra l'avviso di registrazione. Avvisa tu chi lo usa. Il video resta solo su questo PC, nella cartella Video\\IP-DESK-CTRL.": "注意：远程电脑的版本不会显示录制提示，请你亲自告知其使用者。视频只保存在本机的“视频\\IP-DESK-CTRL”文件夹中。",
+ "IP-DESK-CTRL · Registrazione": "IP-DESK-CTRL · 录制"
 }

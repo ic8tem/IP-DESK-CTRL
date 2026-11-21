@@ -664,5 +664,16 @@
  "Nessuna strada diretta: provo a passare dal broker MQTT (relè, lento ma funziona quasi sempre)…": "직접 경로 없음: MQTT 브로커를 통해 시도합니다(릴레이, 느리지만 거의 항상 작동)…",
  "Lavagna: disegna sullo schermo del PC remoto per indicare qualcosa (tratti rossi). Clic destro per cancellare. Premi di nuovo per tornare a comandare.": "화이트보드: 원격 PC 화면에 그려 무언가를 가리킵니다(빨간 선). 오른쪽 클릭으로 지웁니다. 다시 누르면 제어로 돌아갑니다.",
  "La lavagna richiede IP-DESK-CTRL 0.5.22 o successivo sul PC remoto.": "화이트보드를 쓰려면 원격 PC에 IP-DESK-CTRL 0.5.22 이상이 필요합니다.",
- "Lavagna attiva: disegna col tasto sinistro, clic destro cancella. Il mouse non arriva al PC remoto finché non la chiudi.": "화이트보드 켜짐: 왼쪽 버튼으로 그리고 오른쪽 클릭으로 지웁니다. 닫을 때까지 마우스가 원격 PC에 전달되지 않습니다."
+ "Lavagna attiva: disegna col tasto sinistro, clic destro cancella. Il mouse non arriva al PC remoto finché non la chiudi.": "화이트보드 켜짐: 왼쪽 버튼으로 그리고 오른쪽 클릭으로 지웁니다. 닫을 때까지 마우스가 원격 PC에 전달되지 않습니다.",
+ "{0} sta registrando questa sessione in un video: registra quello che compare sullo schermo.": "{0}이(가) 이 세션을 동영상으로 녹화하고 있습니다. 화면에 표시되는 모든 내용이 기록됩니다.",
+ "Sessione registrata": "세션 녹화 중",
+ "{0} sta registrando in un video quello che compare su questo schermo. Chiudi documenti e messaggi personali, oppure interrompi il collegamento.": "{0}이(가) 이 화면에 표시되는 내용을 녹화하고 있습니다. 개인 문서와 메시지를 닫거나 연결을 끊으세요.",
+ "Chi usa il PC remoto è d'accordo che la sessione venga registrata.": "원격 PC 사용자가 세션 녹화에 동의합니다.",
+ "Registra": "녹화",
+ "Registrazione e privacy": "녹화와 개인정보",
+ "Il video riprende tutto quello che compare sullo schermo del PC remoto: documenti, messaggi, posta, dati personali e anche password se vengono mostrate.": "동영상에는 원격 PC 화면에 표시되는 모든 것(문서, 메시지, 메일, 개인 정보, 표시된 경우 비밀번호까지)이 기록됩니다.",
+ "Registra solo con il consenso di chi usa quel PC e rispettando le leggi sulla privacy (in Europa il GDPR). La responsabilità dell'uso del video è tua.": "해당 PC 사용자의 동의를 받고 개인정보 보호법(유럽은 GDPR)을 지켜 녹화하세요. 동영상 사용에 대한 책임은 본인에게 있습니다.",
+ "Chi è davanti al PC remoto vedrà un avviso che la sessione viene registrata. Il video resta solo su questo PC, nella cartella Video\\IP-DESK-CTRL, e non viene mandato da nessuna parte.": "원격 PC 앞에 있는 사람에게 세션이 녹화 중이라는 알림이 표시됩니다. 동영상은 이 PC의 비디오\\IP-DESK-CTRL 폴더에만 저장되며 어디로도 전송되지 않습니다.",
+ "Attenzione: il PC remoto ha una versione che non mostra l'avviso di registrazione. Avvisa tu chi lo usa. Il video resta solo su questo PC, nella cartella Video\\IP-DESK-CTRL.": "주의: 원격 PC의 버전은 녹화 알림을 표시하지 않습니다. 사용자에게 직접 알려 주세요. 동영상은 이 PC의 비디오\\IP-DESK-CTRL 폴더에만 저장됩니다.",
+ "IP-DESK-CTRL · Registrazione": "IP-DESK-CTRL · 녹화"
 }

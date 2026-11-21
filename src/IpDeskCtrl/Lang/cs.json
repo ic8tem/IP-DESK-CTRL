@@ -664,5 +664,16 @@
  "Nessuna strada diretta: provo a passare dal broker MQTT (relè, lento ma funziona quasi sempre)…": "Žádná přímá cesta: zkouším přes broker MQTT (relé, pomalé, ale funguje skoro vždy)…",
  "Lavagna: disegna sullo schermo del PC remoto per indicare qualcosa (tratti rossi). Clic destro per cancellare. Premi di nuovo per tornare a comandare.": "Tabule: kreslete na obrazovku vzdáleného počítače a něco ukažte (červené čáry). Pravé tlačítko maže. Dalším stisknutím se vrátíte k ovládání.",
  "La lavagna richiede IP-DESK-CTRL 0.5.22 o successivo sul PC remoto.": "Tabule vyžaduje na vzdáleném počítači IP-DESK-CTRL 0.5.22 nebo novější.",
- "Lavagna attiva: disegna col tasto sinistro, clic destro cancella. Il mouse non arriva al PC remoto finché non la chiudi.": "Tabule zapnuta: kreslete levým tlačítkem, pravé maže. Myš se ke vzdálenému počítači nedostane, dokud ji nezavřete."
+ "Lavagna attiva: disegna col tasto sinistro, clic destro cancella. Il mouse non arriva al PC remoto finché non la chiudi.": "Tabule zapnuta: kreslete levým tlačítkem, pravé maže. Myš se ke vzdálenému počítači nedostane, dokud ji nezavřete.",
+ "{0} sta registrando questa sessione in un video: registra quello che compare sullo schermo.": "{0} nahrává tuto relaci do videa: zaznamenává se vše, co je na obrazovce.",
+ "Sessione registrata": "Relace se nahrává",
+ "{0} sta registrando in un video quello che compare su questo schermo. Chiudi documenti e messaggi personali, oppure interrompi il collegamento.": "{0} nahrává do videa, co se zobrazuje na této obrazovce. Zavřete osobní dokumenty a zprávy, nebo ukončete spojení.",
+ "Chi usa il PC remoto è d'accordo che la sessione venga registrata.": "Ten, kdo používá vzdálený počítač, souhlasí s nahráváním relace.",
+ "Registra": "Nahrávat",
+ "Registrazione e privacy": "Nahrávání a soukromí",
+ "Il video riprende tutto quello che compare sullo schermo del PC remoto: documenti, messaggi, posta, dati personali e anche password se vengono mostrate.": "Video zachytí vše, co se zobrazí na obrazovce vzdáleného počítače: dokumenty, zprávy, e-maily, osobní údaje a dokonce i hesla, pokud jsou zobrazena.",
+ "Registra solo con il consenso di chi usa quel PC e rispettando le leggi sulla privacy (in Europa il GDPR). La responsabilità dell'uso del video è tua.": "Nahrávejte jen se souhlasem toho, kdo počítač používá, a v souladu se zákony o ochraně soukromí (v Evropě GDPR). Za použití videa odpovídáte vy.",
+ "Chi è davanti al PC remoto vedrà un avviso che la sessione viene registrata. Il video resta solo su questo PC, nella cartella Video\\IP-DESK-CTRL, e non viene mandato da nessuna parte.": "Ten, kdo sedí u vzdáleného počítače, uvidí upozornění, že se relace nahrává. Video zůstane jen na tomto počítači ve složce Videa\\IP-DESK-CTRL a nikam se neodesílá.",
+ "Attenzione: il PC remoto ha una versione che non mostra l'avviso di registrazione. Avvisa tu chi lo usa. Il video resta solo su questo PC, nella cartella Video\\IP-DESK-CTRL.": "Pozor: vzdálený počítač má verzi, která nezobrazuje upozornění na nahrávání. Upozorněte uživatele sami. Video zůstane jen na tomto počítači ve složce Videa\\IP-DESK-CTRL.",
+ "IP-DESK-CTRL · Registrazione": "IP-DESK-CTRL · Nahrávání"
 }

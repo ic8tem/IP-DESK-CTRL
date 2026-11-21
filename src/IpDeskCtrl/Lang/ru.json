@@ -664,5 +664,16 @@
  "Nessuna strada diretta: provo a passare dal broker MQTT (relè, lento ma funziona quasi sempre)…": "Прямого пути нет: пробую через MQTT-брокер (ретранслятор, медленно, но работает почти всегда)…",
  "Lavagna: disegna sullo schermo del PC remoto per indicare qualcosa (tratti rossi). Clic destro per cancellare. Premi di nuovo per tornare a comandare.": "Доска: рисуйте на экране удалённого ПК, чтобы что-то показать (красные линии). Правый щелчок стирает. Нажмите снова, чтобы вернуться к управлению.",
  "La lavagna richiede IP-DESK-CTRL 0.5.22 o successivo sul PC remoto.": "Для доски на удалённом ПК нужна IP-DESK-CTRL 0.5.22 или новее.",
- "Lavagna attiva: disegna col tasto sinistro, clic destro cancella. Il mouse non arriva al PC remoto finché non la chiudi.": "Доска включена: рисуйте левой кнопкой, правый щелчок стирает. Мышь не доходит до удалённого ПК, пока вы её не закроете."
+ "Lavagna attiva: disegna col tasto sinistro, clic destro cancella. Il mouse non arriva al PC remoto finché non la chiudi.": "Доска включена: рисуйте левой кнопкой, правый щелчок стирает. Мышь не доходит до удалённого ПК, пока вы её не закроете.",
+ "{0} sta registrando questa sessione in un video: registra quello che compare sullo schermo.": "{0} записывает этот сеанс на видео: записывается всё, что видно на экране.",
+ "Sessione registrata": "Сеанс записывается",
+ "{0} sta registrando in un video quello che compare su questo schermo. Chiudi documenti e messaggi personali, oppure interrompi il collegamento.": "{0} записывает на видео то, что видно на этом экране. Закройте личные документы и сообщения или прервите подключение.",
+ "Chi usa il PC remoto è d'accordo che la sessione venga registrata.": "Тот, кто пользуется удалённым ПК, согласен на запись сеанса.",
+ "Registra": "Записать",
+ "Registrazione e privacy": "Запись и конфиденциальность",
+ "Il video riprende tutto quello che compare sullo schermo del PC remoto: documenti, messaggi, posta, dati personali e anche password se vengono mostrate.": "Видео записывает всё, что видно на экране удалённого ПК: документы, сообщения, почту, личные данные и даже пароли, если они отображаются.",
+ "Registra solo con il consenso di chi usa quel PC e rispettando le leggi sulla privacy (in Europa il GDPR). La responsabilità dell'uso del video è tua.": "Записывайте только с согласия того, кто пользуется этим ПК, и с соблюдением законов о защите данных (в Европе — GDPR). За использование видео отвечаете вы.",
+ "Chi è davanti al PC remoto vedrà un avviso che la sessione viene registrata. Il video resta solo su questo PC, nella cartella Video\\IP-DESK-CTRL, e non viene mandato da nessuna parte.": "Тот, кто сидит за удалённым ПК, увидит уведомление о записи сеанса. Видео остаётся только на этом ПК, в папке Видео\\IP-DESK-CTRL, и никуда не отправляется.",
+ "Attenzione: il PC remoto ha una versione che non mostra l'avviso di registrazione. Avvisa tu chi lo usa. Il video resta solo su questo PC, nella cartella Video\\IP-DESK-CTRL.": "Внимание: на удалённом ПК версия, которая не показывает уведомление о записи. Предупредите пользователя сами. Видео остаётся только на этом ПК, в папке Видео\\IP-DESK-CTRL.",
+ "IP-DESK-CTRL · Registrazione": "IP-DESK-CTRL · Запись"
 }

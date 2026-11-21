@@ -664,5 +664,16 @@
  "Nessuna strada diretta: provo a passare dal broker MQTT (relè, lento ma funziona quasi sempre)…": "Engin bein leið: reyni í gegnum MQTT-miðlarann (endurvarpi, hægt en virkar nær alltaf)…",
  "Lavagna: disegna sullo schermo del PC remoto per indicare qualcosa (tratti rossi). Clic destro per cancellare. Premi di nuovo per tornare a comandare.": "Tafla: teiknaðu á skjá fjartölvunnar til að benda á eitthvað (rauð strik). Hægrismellur hreinsar. Ýttu aftur til að stjórna á ný.",
  "La lavagna richiede IP-DESK-CTRL 0.5.22 o successivo sul PC remoto.": "Taflan krefst IP-DESK-CTRL 0.5.22 eða nýrra á fjartölvunni.",
- "Lavagna attiva: disegna col tasto sinistro, clic destro cancella. Il mouse non arriva al PC remoto finché non la chiudi.": "Tafla virk: teiknaðu með vinstri hnappi, hægrismellur hreinsar. Músin nær ekki til fjartölvunnar fyrr en þú lokar henni."
+ "Lavagna attiva: disegna col tasto sinistro, clic destro cancella. Il mouse non arriva al PC remoto finché non la chiudi.": "Tafla virk: teiknaðu með vinstri hnappi, hægrismellur hreinsar. Músin nær ekki til fjartölvunnar fyrr en þú lokar henni.",
+ "{0} sta registrando questa sessione in un video: registra quello che compare sullo schermo.": "{0} tekur þessa lotu upp sem myndband: allt sem birtist á skjánum er tekið upp.",
+ "Sessione registrata": "Lota tekin upp",
+ "{0} sta registrando in un video quello che compare su questo schermo. Chiudi documenti e messaggi personali, oppure interrompi il collegamento.": "{0} tekur upp það sem birtist á þessum skjá. Lokaðu persónulegum skjölum og skilaboðum eða slíttu tengingunni.",
+ "Chi usa il PC remoto è d'accordo che la sessione venga registrata.": "Sá sem notar fjartölvuna samþykkir að lotan sé tekin upp.",
+ "Registra": "Taka upp",
+ "Registrazione e privacy": "Upptaka og persónuvernd",
+ "Il video riprende tutto quello che compare sullo schermo del PC remoto: documenti, messaggi, posta, dati personali e anche password se vengono mostrate.": "Myndbandið tekur upp allt sem birtist á skjá fjartölvunnar: skjöl, skilaboð, tölvupóst, persónuupplýsingar og jafnvel lykilorð ef þau birtast.",
+ "Registra solo con il consenso di chi usa quel PC e rispettando le leggi sulla privacy (in Europa il GDPR). La responsabilità dell'uso del video è tua.": "Taktu aðeins upp með samþykki þess sem notar tölvuna og í samræmi við persónuverndarlög (í Evrópu GDPR). Þú berð ábyrgð á notkun myndbandsins.",
+ "Chi è davanti al PC remoto vedrà un avviso che la sessione viene registrata. Il video resta solo su questo PC, nella cartella Video\\IP-DESK-CTRL, e non viene mandato da nessuna parte.": "Sá sem situr við fjartölvuna sér tilkynningu um að lotan sé tekin upp. Myndbandið er aðeins á þessari tölvu, í möppunni Myndbönd\\IP-DESK-CTRL, og er ekki sent neitt.",
+ "Attenzione: il PC remoto ha una versione che non mostra l'avviso di registrazione. Avvisa tu chi lo usa. Il video resta solo su questo PC, nella cartella Video\\IP-DESK-CTRL.": "Athugið: fjartölvan er með útgáfu sem sýnir ekki upptökutilkynninguna. Láttu notandann vita sjálf/ur. Myndbandið er aðeins á þessari tölvu, í möppunni Myndbönd\\IP-DESK-CTRL.",
+ "IP-DESK-CTRL · Registrazione": "IP-DESK-CTRL · Upptaka"
 }

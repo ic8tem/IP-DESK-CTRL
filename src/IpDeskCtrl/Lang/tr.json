@@ -664,5 +664,16 @@
  "Nessuna strada diretta: provo a passare dal broker MQTT (relè, lento ma funziona quasi sempre)…": "Doğrudan yol yok: MQTT aracısı üzerinden deneniyor (röle, yavaş ama neredeyse her zaman çalışır)…",
  "Lavagna: disegna sullo schermo del PC remoto per indicare qualcosa (tratti rossi). Clic destro per cancellare. Premi di nuovo per tornare a comandare.": "Yazı tahtası: bir şeyi göstermek için uzak bilgisayarın ekranına çizin (kırmızı çizgiler). Sağ tık temizler. Yeniden kontrole dönmek için tekrar basın.",
  "La lavagna richiede IP-DESK-CTRL 0.5.22 o successivo sul PC remoto.": "Yazı tahtası için uzak bilgisayarda IP-DESK-CTRL 0.5.22 veya üstü gerekir.",
- "Lavagna attiva: disegna col tasto sinistro, clic destro cancella. Il mouse non arriva al PC remoto finché non la chiudi.": "Yazı tahtası açık: sol tuşla çizin, sağ tık temizler. Kapatana kadar fare uzak bilgisayara ulaşmaz."
+ "Lavagna attiva: disegna col tasto sinistro, clic destro cancella. Il mouse non arriva al PC remoto finché non la chiudi.": "Yazı tahtası açık: sol tuşla çizin, sağ tık temizler. Kapatana kadar fare uzak bilgisayara ulaşmaz.",
+ "{0} sta registrando questa sessione in un video: registra quello che compare sullo schermo.": "{0} bu oturumu videoya kaydediyor: ekranda görünen her şey kaydedilir.",
+ "Sessione registrata": "Oturum kaydediliyor",
+ "{0} sta registrando in un video quello che compare su questo schermo. Chiudi documenti e messaggi personali, oppure interrompi il collegamento.": "{0} bu ekranda görünenleri videoya kaydediyor. Kişisel belgeleri ve mesajları kapatın ya da bağlantıyı sonlandırın.",
+ "Chi usa il PC remoto è d'accordo che la sessione venga registrata.": "Uzak bilgisayarı kullanan kişi oturumun kaydedilmesini kabul ediyor.",
+ "Registra": "Kaydet",
+ "Registrazione e privacy": "Kayıt ve gizlilik",
+ "Il video riprende tutto quello che compare sullo schermo del PC remoto: documenti, messaggi, posta, dati personali e anche password se vengono mostrate.": "Video, uzak bilgisayarın ekranında görünen her şeyi kaydeder: belgeler, mesajlar, e-postalar, kişisel veriler ve gösterilirse parolalar bile.",
+ "Registra solo con il consenso di chi usa quel PC e rispettando le leggi sulla privacy (in Europa il GDPR). La responsabilità dell'uso del video è tua.": "Yalnızca o bilgisayarı kullanan kişinin onayıyla ve gizlilik yasalarına uygun olarak kaydedin (Avrupa'da GDPR, Türkiye'de KVKK). Videonun kullanımından siz sorumlusunuz.",
+ "Chi è davanti al PC remoto vedrà un avviso che la sessione viene registrata. Il video resta solo su questo PC, nella cartella Video\\IP-DESK-CTRL, e non viene mandato da nessuna parte.": "Uzak bilgisayarın başındaki kişi, oturumun kaydedildiğine dair bir uyarı görür. Video yalnızca bu bilgisayarda, Videolar\\IP-DESK-CTRL klasöründe kalır ve hiçbir yere gönderilmez.",
+ "Attenzione: il PC remoto ha una versione che non mostra l'avviso di registrazione. Avvisa tu chi lo usa. Il video resta solo su questo PC, nella cartella Video\\IP-DESK-CTRL.": "Dikkat: uzak bilgisayardaki sürüm kayıt uyarısını göstermiyor. Kullanan kişiyi siz uyarın. Video yalnızca bu bilgisayarda, Videolar\\IP-DESK-CTRL klasöründe kalır.",
+ "IP-DESK-CTRL · Registrazione": "IP-DESK-CTRL · Kayıt"
 }

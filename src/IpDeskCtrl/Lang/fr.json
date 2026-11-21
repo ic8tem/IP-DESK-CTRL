@@ -664,5 +664,16 @@
  "Nessuna strada diretta: provo a passare dal broker MQTT (relè, lento ma funziona quasi sempre)…": "Aucune route directe : essai via le broker MQTT (relais, lent mais fonctionne presque toujours)…",
  "Lavagna: disegna sullo schermo del PC remoto per indicare qualcosa (tratti rossi). Clic destro per cancellare. Premi di nuovo per tornare a comandare.": "Tableau : dessinez sur l'écran du PC distant pour montrer quelque chose (traits rouges). Clic droit pour effacer. Appuyez à nouveau pour reprendre le contrôle.",
  "La lavagna richiede IP-DESK-CTRL 0.5.22 o successivo sul PC remoto.": "Le tableau nécessite IP-DESK-CTRL 0.5.22 ou ultérieur sur le PC distant.",
- "Lavagna attiva: disegna col tasto sinistro, clic destro cancella. Il mouse non arriva al PC remoto finché non la chiudi.": "Tableau actif : dessinez avec le bouton gauche, clic droit pour effacer. La souris n'atteint pas le PC distant tant que vous ne le fermez pas."
+ "Lavagna attiva: disegna col tasto sinistro, clic destro cancella. Il mouse non arriva al PC remoto finché non la chiudi.": "Tableau actif : dessinez avec le bouton gauche, clic droit pour effacer. La souris n'atteint pas le PC distant tant que vous ne le fermez pas.",
+ "{0} sta registrando questa sessione in un video: registra quello che compare sullo schermo.": "{0} enregistre cette session en vidéo : tout ce qui s'affiche à l'écran est capturé.",
+ "Sessione registrata": "Session enregistrée",
+ "{0} sta registrando in un video quello che compare su questo schermo. Chiudi documenti e messaggi personali, oppure interrompi il collegamento.": "{0} enregistre en vidéo ce qui apparaît sur cet écran. Fermez les documents et messages personnels, ou mettez fin à la connexion.",
+ "Chi usa il PC remoto è d'accordo che la sessione venga registrata.": "La personne qui utilise le PC distant accepte que la session soit enregistrée.",
+ "Registra": "Enregistrer",
+ "Registrazione e privacy": "Enregistrement et confidentialité",
+ "Il video riprende tutto quello che compare sullo schermo del PC remoto: documenti, messaggi, posta, dati personali e anche password se vengono mostrate.": "La vidéo capture tout ce qui s'affiche sur l'écran du PC distant : documents, messages, e-mails, données personnelles et même mots de passe s'ils sont affichés.",
+ "Registra solo con il consenso di chi usa quel PC e rispettando le leggi sulla privacy (in Europa il GDPR). La responsabilità dell'uso del video è tua.": "N'enregistrez qu'avec le consentement de la personne qui utilise ce PC et dans le respect des lois sur la vie privée (en Europe, le RGPD). L'utilisation de la vidéo relève de votre responsabilité.",
+ "Chi è davanti al PC remoto vedrà un avviso che la sessione viene registrata. Il video resta solo su questo PC, nella cartella Video\\IP-DESK-CTRL, e non viene mandato da nessuna parte.": "La personne devant le PC distant verra un avis indiquant que la session est enregistrée. La vidéo reste uniquement sur ce PC, dans le dossier Vidéos\\IP-DESK-CTRL, et n'est envoyée nulle part.",
+ "Attenzione: il PC remoto ha una versione che non mostra l'avviso di registrazione. Avvisa tu chi lo usa. Il video resta solo su questo PC, nella cartella Video\\IP-DESK-CTRL.": "Attention : le PC distant a une version qui n'affiche pas l'avis d'enregistrement. Prévenez vous-même la personne qui l'utilise. La vidéo reste uniquement sur ce PC, dans le dossier Vidéos\\IP-DESK-CTRL.",
+ "IP-DESK-CTRL · Registrazione": "IP-DESK-CTRL · Enregistrement"
 }

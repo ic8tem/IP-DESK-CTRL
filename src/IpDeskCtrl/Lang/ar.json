@@ -664,5 +664,16 @@
  "Nessuna strada diretta: provo a passare dal broker MQTT (relè, lento ma funziona quasi sempre)…": "لا يوجد طريق مباشر: أحاول عبر وسيط MQTT (ترحيل، بطيء لكنه يعمل غالبًا)…",
  "Lavagna: disegna sullo schermo del PC remoto per indicare qualcosa (tratti rossi). Clic destro per cancellare. Premi di nuovo per tornare a comandare.": "السبورة: ارسم على شاشة الحاسوب البعيد للإشارة إلى شيء ما (خطوط حمراء). النقر بالزر الأيمن يمسح. اضغط مجددًا للعودة إلى التحكم.",
  "La lavagna richiede IP-DESK-CTRL 0.5.22 o successivo sul PC remoto.": "السبورة تتطلب IP-DESK-CTRL 0.5.22 أو أحدث على الحاسوب البعيد.",
- "Lavagna attiva: disegna col tasto sinistro, clic destro cancella. Il mouse non arriva al PC remoto finché non la chiudi.": "السبورة مفعّلة: ارسم بالزر الأيسر، والنقر الأيمن يمسح. لا يصل الفأرة إلى الحاسوب البعيد حتى تغلقها."
+ "Lavagna attiva: disegna col tasto sinistro, clic destro cancella. Il mouse non arriva al PC remoto finché non la chiudi.": "السبورة مفعّلة: ارسم بالزر الأيسر، والنقر الأيمن يمسح. لا يصل الفأرة إلى الحاسوب البعيد حتى تغلقها.",
+ "{0} sta registrando questa sessione in un video: registra quello che compare sullo schermo.": "{0} يسجّل هذه الجلسة في فيديو: يُسجَّل كل ما يظهر على الشاشة.",
+ "Sessione registrata": "الجلسة قيد التسجيل",
+ "{0} sta registrando in un video quello che compare su questo schermo. Chiudi documenti e messaggi personali, oppure interrompi il collegamento.": "{0} يسجّل في فيديو ما يظهر على هذه الشاشة. أغلق المستندات والرسائل الشخصية أو أنهِ الاتصال.",
+ "Chi usa il PC remoto è d'accordo che la sessione venga registrata.": "من يستخدم الحاسوب البعيد يوافق على تسجيل الجلسة.",
+ "Registra": "تسجيل",
+ "Registrazione e privacy": "التسجيل والخصوصية",
+ "Il video riprende tutto quello che compare sullo schermo del PC remoto: documenti, messaggi, posta, dati personali e anche password se vengono mostrate.": "يسجّل الفيديو كل ما يظهر على شاشة الحاسوب البعيد: المستندات والرسائل والبريد والبيانات الشخصية وحتى كلمات المرور إن ظهرت.",
+ "Registra solo con il consenso di chi usa quel PC e rispettando le leggi sulla privacy (in Europa il GDPR). La responsabilità dell'uso del video è tua.": "سجّل فقط بموافقة من يستخدم ذلك الحاسوب ووفق قوانين الخصوصية (في أوروبا اللائحة العامة لحماية البيانات). أنت المسؤول عن استخدام الفيديو.",
+ "Chi è davanti al PC remoto vedrà un avviso che la sessione viene registrata. Il video resta solo su questo PC, nella cartella Video\\IP-DESK-CTRL, e non viene mandato da nessuna parte.": "سيرى من يجلس أمام الحاسوب البعيد تنبيهًا بأن الجلسة قيد التسجيل. يبقى الفيديو على هذا الحاسوب فقط، في مجلد مقاطع الفيديو\\IP-DESK-CTRL، ولا يُرسل إلى أي مكان.",
+ "Attenzione: il PC remoto ha una versione che non mostra l'avviso di registrazione. Avvisa tu chi lo usa. Il video resta solo su questo PC, nella cartella Video\\IP-DESK-CTRL.": "تنبيه: الحاسوب البعيد يعمل بإصدار لا يُظهر تنبيه التسجيل. أبلغ بنفسك من يستخدمه. يبقى الفيديو على هذا الحاسوب فقط، في مجلد مقاطع الفيديو\\IP-DESK-CTRL.",
+ "IP-DESK-CTRL · Registrazione": "IP-DESK-CTRL · التسجيل"
 }

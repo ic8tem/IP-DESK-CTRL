@@ -42,6 +42,11 @@ namespace IpDeskCtrl.UI
         private readonly TextBox _historyFilter = new() { Watermark = "🔍 " + L.T("Cerca per nome, numero o gruppo") };
         private readonly ComboBox _historySort = new() { MinWidth = 150 };
         private string _incomingNumber = "";
+        private readonly TextBlock _incomingRec = new()
+        {
+            IsVisible = false, TextWrapping = TextWrapping.Wrap, FontWeight = FontWeight.Bold,
+            Foreground = new SolidColorBrush(Color.FromRgb(230, 50, 50)),
+        };
         private readonly Border _incomingBanner = new() { IsVisible = false, CornerRadius = new CornerRadius(10), Padding = new Thickness(14) };
         private readonly TextBlock _incomingText = new() { TextWrapping = TextWrapping.Wrap, FontWeight = FontWeight.Bold };
         private readonly CheckBox _incomingInput = new() { Content = L.T("Mouse e tastiera") };
@@ -160,7 +165,7 @@ namespace IpDeskCtrl.UI
             var chat = Ui.Btn(L.T("Chat"));
             chat.IsVisible = !Platform.IsMobile;
             chat.Click += (_, _) => { if (_incomingNumber.Length > 0) OpenChat(_incomingNumber, null); };
-            _incomingBanner.Child = Ui.Col(8, _incomingText, Ui.Row(10, _incomingInput, chat, stop));
+            _incomingBanner.Child = Ui.Col(8, _incomingText, _incomingRec, Ui.Row(10, _incomingInput, chat, stop));
             col.Children.Add(Ui.Panel(Ui.Col(6,
                 Ui.H2(Platform.IsMobile ? L.T("IL NUMERO DI QUESTO DISPOSITIVO") : L.T("IL NUMERO DI QUESTO PC")),
                 numRow,
@@ -379,6 +384,7 @@ namespace IpDeskCtrl.UI
                 _peer.AskAccept = AskAcceptAsync;
                 _peer.HostStarted += hs => Dispatcher.UIThread.Post(() => OnHostStarted(hs));
                 _peer.HostEnded += (hs, why) => Dispatcher.UIThread.Post(() => OnHostEnded(hs, why));
+                _peer.HostRecording += (hs, on) => Dispatcher.UIThread.Post(() => OnRecording(hs.PeerNumber, on));
                 _peer.HostDraw += e => Dispatcher.UIThread.Post(() => DrawOverlay.Show(e));
                 _peer.HostChat += (hs, text) => Dispatcher.UIThread.Post(() => OpenChat(hs.PeerNumber, text));
                 _peer.UpdateRequested += n => _ = ForcedUpdateAsync(n);
@@ -407,6 +413,7 @@ namespace IpDeskCtrl.UI
             if (_svc == null) return;
             _svc.AskAccept = AskAcceptAsync;
             _svc.HostStarted += (n, input) => Dispatcher.UIThread.Post(() => { _svcHosts++; OnServiceHostStarted(n, input); });
+            _svc.RecordingChanged += (n, on) => Dispatcher.UIThread.Post(() => OnRecording(n, on));
             _svc.DrawReceived += e => Dispatcher.UIThread.Post(() => DrawOverlay.Show(e));
             _svc.ChatReceived += (n, text) => Dispatcher.UIThread.Post(() => OpenChat(n, text));
             _svc.HostEnded += (n, why) => Dispatcher.UIThread.Post(() => { DrawOverlay.EndedFor(n); _svcHosts = Math.Max(0, _svcHosts - 1); _incomingBanner.IsVisible = false; RebuildHistory(); });
@@ -1108,6 +1115,21 @@ namespace IpDeskCtrl.UI
             _controlled?.Close();
             _controlled = Shell.Current.ShowCorner(Dialogs.Controlled(hs, who));
             RebuildHistory();
+        }
+
+        /// <summary>Avviso di privacy: chi comanda questo PC sta registrando la sessione.</summary>
+        private void OnRecording(string number, bool on)
+        {
+            if (on)
+            {
+                _incomingRec.Text = "⏺ " + L.F("{0} sta registrando questa sessione in un video: registra quello che compare sullo schermo.", Identity.Format(number));
+                _incomingRec.IsVisible = true;
+                _incomingBanner.IsVisible = true;
+                if (!Platform.IsMobile) Shell.Current.ShowCorner(Ui.Col(6,
+                    new TextBlock { Text = "⏺ " + L.T("Sessione registrata"), FontWeight = FontWeight.Bold, Foreground = _incomingRec.Foreground },
+                    Ui.Sub(L.F("{0} sta registrando in un video quello che compare su questo schermo. Chiudi documenti e messaggi personali, oppure interrompi il collegamento.", Identity.Format(number)), 12)));
+            }
+            else _incomingRec.IsVisible = false;
         }
 
         /// <summary>Chat con chi comanda questo PC: si apre una finestra in primo piano (servizio o programma).</summary>

@@ -272,6 +272,15 @@ namespace IpDeskCtrl.Core
                     if (_accepted) _ = Task.Run(() => RequestResize(w, h));
                     break;
                 }
+                case Msg.Recording:
+                {
+                    bool on = r.U8() == 1;
+                    Recording = on;
+                    SessionLog.Write(on ? $"REGISTRAZIONE: {Identity.Format(PeerNumber)} sta registrando questa sessione in un video"
+                                        : $"REGISTRAZIONE: {Identity.Format(PeerNumber)} ha smesso di registrare");
+                    P.RaiseRecording(this, on);
+                    break;
+                }
                 case Msg.Draw:
                 {
                     if (!_accepted) break;
@@ -538,6 +547,8 @@ namespace IpDeskCtrl.Core
         }
 
         private bool _drawLogged;
+        /// <summary>Chi comanda sta registrando la sessione (avviso per chi è davanti al PC).</summary>
+        public bool Recording { get; private set; }
         private readonly Dictionary<string, long> _noteLogged = new();
 
         private void Note(string text)

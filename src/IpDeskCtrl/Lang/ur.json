@@ -664,5 +664,16 @@
  "Nessuna strada diretta: provo a passare dal broker MQTT (relè, lento ma funziona quasi sempre)…": "کوئی براہِ راست راستہ نہیں: MQTT بروکر کے ذریعے کوشش (ریلے، سست مگر تقریباً ہمیشہ کام کرتا ہے)…",
  "Lavagna: disegna sullo schermo del PC remoto per indicare qualcosa (tratti rossi). Clic destro per cancellare. Premi di nuovo per tornare a comandare.": "وائٹ بورڈ: کچھ دکھانے کے لیے ریموٹ پی سی کی اسکرین پر بنائیں (سرخ لکیریں)۔ دایاں کلک مٹاتا ہے۔ دوبارہ کنٹرول کے لیے پھر دبائیں۔",
  "La lavagna richiede IP-DESK-CTRL 0.5.22 o successivo sul PC remoto.": "وائٹ بورڈ کے لیے ریموٹ پی سی پر IP-DESK-CTRL 0.5.22 یا نیا درکار ہے۔",
- "Lavagna attiva: disegna col tasto sinistro, clic destro cancella. Il mouse non arriva al PC remoto finché non la chiudi.": "وائٹ بورڈ فعال: بائیں بٹن سے بنائیں، دایاں کلک مٹاتا ہے۔ بند کرنے تک ماؤس ریموٹ پی سی تک نہیں پہنچتا۔"
+ "Lavagna attiva: disegna col tasto sinistro, clic destro cancella. Il mouse non arriva al PC remoto finché non la chiudi.": "وائٹ بورڈ فعال: بائیں بٹن سے بنائیں، دایاں کلک مٹاتا ہے۔ بند کرنے تک ماؤس ریموٹ پی سی تک نہیں پہنچتا۔",
+ "{0} sta registrando questa sessione in un video: registra quello che compare sullo schermo.": "{0} اس سیشن کو ویڈیو میں ریکارڈ کر رہا ہے: اسکرین پر نظر آنے والی ہر چیز ریکارڈ ہوتی ہے۔",
+ "Sessione registrata": "سیشن ریکارڈ ہو رہا ہے",
+ "{0} sta registrando in un video quello che compare su questo schermo. Chiudi documenti e messaggi personali, oppure interrompi il collegamento.": "{0} اس اسکرین پر نظر آنے والی چیزیں ویڈیو میں ریکارڈ کر رہا ہے۔ ذاتی دستاویزات اور پیغامات بند کریں، یا کنکشن ختم کریں۔",
+ "Chi usa il PC remoto è d'accordo che la sessione venga registrata.": "ریموٹ پی سی استعمال کرنے والا سیشن کی ریکارڈنگ پر متفق ہے۔",
+ "Registra": "ریکارڈ کریں",
+ "Registrazione e privacy": "ریکارڈنگ اور رازداری",
+ "Il video riprende tutto quello che compare sullo schermo del PC remoto: documenti, messaggi, posta, dati personali e anche password se vengono mostrate.": "ویڈیو ریموٹ پی سی کی اسکرین پر نظر آنے والی ہر چیز ریکارڈ کرتی ہے: دستاویزات، پیغامات، ای میل، ذاتی معلومات اور اگر دکھائے جائیں تو پاس ورڈ بھی۔",
+ "Registra solo con il consenso di chi usa quel PC e rispettando le leggi sulla privacy (in Europa il GDPR). La responsabilità dell'uso del video è tua.": "صرف اس پی سی کے استعمال کنندہ کی رضامندی سے اور رازداری کے قوانین کے مطابق ریکارڈ کریں (یورپ میں GDPR)۔ ویڈیو کے استعمال کی ذمہ داری آپ کی ہے۔",
+ "Chi è davanti al PC remoto vedrà un avviso che la sessione viene registrata. Il video resta solo su questo PC, nella cartella Video\\IP-DESK-CTRL, e non viene mandato da nessuna parte.": "ریموٹ پی سی کے سامنے بیٹھے شخص کو اطلاع نظر آئے گی کہ سیشن ریکارڈ ہو رہا ہے۔ ویڈیو صرف اسی پی سی پر Videos\\IP-DESK-CTRL فولڈر میں رہتی ہے اور کہیں نہیں بھیجی جاتی۔",
+ "Attenzione: il PC remoto ha una versione che non mostra l'avviso di registrazione. Avvisa tu chi lo usa. Il video resta solo su questo PC, nella cartella Video\\IP-DESK-CTRL.": "توجہ: ریموٹ پی سی کا ورژن ریکارڈنگ کی اطلاع نہیں دکھاتا۔ استعمال کنندہ کو خود بتائیں۔ ویڈیو صرف اسی پی سی پر Videos\\IP-DESK-CTRL فولڈر میں رہتی ہے۔",
+ "IP-DESK-CTRL · Registrazione": "IP-DESK-CTRL · ریکارڈنگ"
 }

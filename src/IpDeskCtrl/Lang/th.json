@@ -664,5 +664,16 @@
  "Nessuna strada diretta: provo a passare dal broker MQTT (relè, lento ma funziona quasi sempre)…": "ไม่มีเส้นทางตรง: ลองผ่านโบรกเกอร์ MQTT (รีเลย์ ช้าแต่ใช้ได้เกือบทุกครั้ง)…",
  "Lavagna: disegna sullo schermo del PC remoto per indicare qualcosa (tratti rossi). Clic destro per cancellare. Premi di nuovo per tornare a comandare.": "กระดานวาด: วาดบนหน้าจอพีซีระยะไกลเพื่อชี้สิ่งต่าง ๆ (เส้นสีแดง) คลิกขวาเพื่อล้าง กดอีกครั้งเพื่อกลับไปควบคุม",
  "La lavagna richiede IP-DESK-CTRL 0.5.22 o successivo sul PC remoto.": "กระดานวาดต้องใช้ IP-DESK-CTRL 0.5.22 ขึ้นไปบนพีซีระยะไกล",
- "Lavagna attiva: disegna col tasto sinistro, clic destro cancella. Il mouse non arriva al PC remoto finché non la chiudi.": "เปิดกระดานวาดแล้ว: วาดด้วยปุ่มซ้าย คลิกขวาเพื่อล้าง เมาส์จะไม่ไปถึงพีซีระยะไกลจนกว่าจะปิด"
+ "Lavagna attiva: disegna col tasto sinistro, clic destro cancella. Il mouse non arriva al PC remoto finché non la chiudi.": "เปิดกระดานวาดแล้ว: วาดด้วยปุ่มซ้าย คลิกขวาเพื่อล้าง เมาส์จะไม่ไปถึงพีซีระยะไกลจนกว่าจะปิด",
+ "{0} sta registrando questa sessione in un video: registra quello che compare sullo schermo.": "{0} กำลังบันทึกเซสชันนี้เป็นวิดีโอ: ทุกอย่างที่แสดงบนหน้าจอจะถูกบันทึก",
+ "Sessione registrata": "เซสชันกำลังถูกบันทึก",
+ "{0} sta registrando in un video quello che compare su questo schermo. Chiudi documenti e messaggi personali, oppure interrompi il collegamento.": "{0} กำลังบันทึกสิ่งที่แสดงบนหน้าจอนี้เป็นวิดีโอ ปิดเอกสารและข้อความส่วนตัว หรือยุติการเชื่อมต่อ",
+ "Chi usa il PC remoto è d'accordo che la sessione venga registrata.": "ผู้ใช้พีซีระยะไกลยินยอมให้บันทึกเซสชัน",
+ "Registra": "บันทึก",
+ "Registrazione e privacy": "การบันทึกและความเป็นส่วนตัว",
+ "Il video riprende tutto quello che compare sullo schermo del PC remoto: documenti, messaggi, posta, dati personali e anche password se vengono mostrate.": "วิดีโอจะบันทึกทุกอย่างที่แสดงบนหน้าจอพีซีระยะไกล: เอกสาร ข้อความ อีเมล ข้อมูลส่วนบุคคล และแม้แต่รหัสผ่านหากแสดงอยู่",
+ "Registra solo con il consenso di chi usa quel PC e rispettando le leggi sulla privacy (in Europa il GDPR). La responsabilità dell'uso del video è tua.": "บันทึกเฉพาะเมื่อได้รับความยินยอมจากผู้ใช้พีซีเครื่องนั้นและปฏิบัติตามกฎหมายความเป็นส่วนตัว (ในยุโรปคือ GDPR, ในไทยคือ PDPA) คุณเป็นผู้รับผิดชอบการใช้วิดีโอ",
+ "Chi è davanti al PC remoto vedrà un avviso che la sessione viene registrata. Il video resta solo su questo PC, nella cartella Video\\IP-DESK-CTRL, e non viene mandato da nessuna parte.": "ผู้ที่อยู่หน้าพีซีระยะไกลจะเห็นการแจ้งเตือนว่าเซสชันกำลังถูกบันทึก วิดีโอจะอยู่เฉพาะในพีซีเครื่องนี้ ในโฟลเดอร์ Videos\\IP-DESK-CTRL และไม่ถูกส่งไปที่ใด",
+ "Attenzione: il PC remoto ha una versione che non mostra l'avviso di registrazione. Avvisa tu chi lo usa. Il video resta solo su questo PC, nella cartella Video\\IP-DESK-CTRL.": "โปรดทราบ: พีซีระยะไกลใช้เวอร์ชันที่ไม่แสดงการแจ้งเตือนการบันทึก โปรดแจ้งผู้ใช้ด้วยตัวเอง วิดีโอจะอยู่เฉพาะในพีซีเครื่องนี้ ในโฟลเดอร์ Videos\\IP-DESK-CTRL",
+ "IP-DESK-CTRL · Registrazione": "IP-DESK-CTRL · การบันทึก"
 }
