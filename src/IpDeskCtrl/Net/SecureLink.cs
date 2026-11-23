@@ -202,9 +202,13 @@ namespace IpDeskCtrl.Net
 
         public async Task SendAsync(byte[] plain, CancellationToken ct = default)
         {
+            // collegamento già chiuso (per esempio un invio di file ancora in corso quando si chiude la finestra):
+            // errore normale di rete, non «oggetto eliminato» che finiva nel registro come errore del programma
+            if (Volatile.Read(ref _disposed) == 1) throw new IOException("collegamento chiuso");
             await _writeLock.WaitAsync(ct);
             try
             {
+                if (Volatile.Read(ref _disposed) == 1) throw new IOException("collegamento chiuso");
                 ulong n = ++_txCounter;
                 byte[] packet = new byte[4 + 8 + Crypto.TagSize + plain.Length];
                 BinaryPrimitives.WriteInt32BigEndian(packet, 8 + Crypto.TagSize + plain.Length);

@@ -1170,13 +1170,12 @@ namespace IpDeskCtrl.Core
                 StopVideo();
                 int nMon = Math.Max(1, _monitors.Count);
                 var enc = Ffmpeg.Choose(encTask.Result, can, _codecWanted, nMon);
-                if (Ffmpeg.HwGuard.Suspended != null && !_hwNoted) { _hwNoted = true; Note(L.F("Sul PC remoto: {0}.", Ffmpeg.HwGuard.Suspended)); }
+                // solo nel registro (prima compariva come avviso a ogni collegamento: informazione, non c'è niente da fare)
+                if (Ffmpeg.HwGuard.Suspended != null && !_hwNoted) { _hwNoted = true; SessionLog.Write("VIDEO " + Ffmpeg.HwGuard.Suspended); }
                 else if (Ffmpeg.QuickSyncSkipped(encTask.Result, nMon) && !_hwNoted)
                 {
                     _hwNoted = true;
-                    string why = L.F("grafica integrata Intel ({0}) non usata con {1} monitor collegati: codifica software", "Quick Sync", nMon);
-                    SessionLog.Write("VIDEO " + why);
-                    Note(L.F("Sul PC remoto: {0}.", why));
+                    SessionLog.Write("VIDEO " + L.F("grafica integrata Intel ({0}) non usata con {1} monitor collegati: codifica software", "Quick Sync", nMon));
                 }
                 if (enc == null)
                 {

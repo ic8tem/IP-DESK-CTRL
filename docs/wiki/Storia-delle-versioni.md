@@ -3,6 +3,12 @@
 
 Le versioni con protocollo diverso non si collegano tra loro: aggiorna tutti i dispositivi alla stessa versione principale (la 0.4.1 si collega con la 0.4.0; la 0.5 si collega con la 0.4).
 
+## 0.5.34 — 23 novembre 2026
+- **Trascinamento dal PC remoto verso il tuo**: su Windows, mentre tieni premuto il tasto, il programma guarda dove sta davvero il puntatore sullo schermo; appena esce dalla finestra del visore chiede i file al PC remoto. Prima si basava solo sugli spostamenti visti dalla finestra e, uscendo di scatto, il trascinamento non partiva. Se l'altro PC ha una versione troppo vecchia, il registro lo dice.
+- **File ricevuti dal servizio di Windows**: non finiscono più in `C:\Windows\system32\config\systemprofile\Downloads`. Il servizio cerca la cartella dell'utente collegato in tre modi (profilo, registro, nome utente) e scrive nel registro quale non ha funzionato; se fallissero tutti usa `C:\Users\Public\Downloads\IP-DESK-CTRL`.
+- **Avviso Quick Sync solo nel registro**: «grafica integrata Intel non usata con 2 monitor» non compare più a ogni collegamento.
+- **Chiusura durante un invio di file**: nel registro resta un normale «collegamento chiuso», non più un errore del programma.
+
 ## 0.5.33 — 23 novembre 2026
 - **Cattura rallentata a schermo fermo**: se lo schermo del PC comandato non cambia e chi guarda non muove il mouse né preme tasti, la cattura scende a 5 volte al secondo dopo 3 secondi e a 2 volte al secondo dopo 30 secondi. Al primo movimento del mouse (anche sul PC comandato), tasto o cambio dello schermo torna subito alla velocità piena. Nelle sessioni di ore la scheda grafica lavora molto meno: il quinto blocco del PC IW2DNI (22/11) è avvenuto dopo 10 ore di sessione con la codifica software, quindi la sola esclusione di Quick Sync non bastava.
 

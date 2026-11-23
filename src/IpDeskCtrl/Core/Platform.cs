@@ -86,7 +86,11 @@ namespace IpDeskCtrl.Core
                     // che l'utente non vede: si usa Scaricati dell'utente collegato a Windows
                     string? home = null;
                     try { home = UserHome?.Invoke(); } catch { }
-                    f = Path.Combine(home ?? Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads", "IP-DESK-CTRL");
+                    string own = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+                    // mai nel profilo di sistema, che nessuno vede: piuttosto in C:\Users\Public\Downloads
+                    if (home == null && (own.Length == 0 || own.Contains("systemprofile", StringComparison.OrdinalIgnoreCase)))
+                        own = Environment.GetEnvironmentVariable("PUBLIC") ?? Path.Combine(Path.GetPathRoot(Environment.SystemDirectory) ?? "C:\\", "Users", "Public");
+                    f = Path.Combine(home ?? own, "Downloads", "IP-DESK-CTRL");
                     if (home != null) ReceiveFolder = f;
                 }
                 Directory.CreateDirectory(f);
