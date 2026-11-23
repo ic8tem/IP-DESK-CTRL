@@ -134,6 +134,9 @@ Nella cartella dei dati (Impostazioni › Apri cartella dati): `sessioni.log`, u
 
 Le versioni con protocollo diverso non si collegano tra loro: aggiorna tutti i dispositivi alla stessa versione principale (la 0.4.1 si collega con la 0.4.0; la 0.5 si collega con la 0.4).
 
+### 0.5.33 — 23 novembre 2026
+- **Cattura rallentata a schermo fermo**: se lo schermo del PC comandato non cambia e chi guarda non muove il mouse né preme tasti, la cattura scende a 5 volte al secondo dopo 3 secondi e a 2 volte al secondo dopo 30 secondi. Al primo movimento del mouse (anche sul PC comandato), tasto o cambio dello schermo torna subito alla velocità piena. Nelle sessioni di ore la scheda grafica lavora molto meno: il quinto blocco del PC IW2DNI (22/11) è avvenuto dopo 10 ore di sessione con la codifica software, quindi la sola esclusione di Quick Sync non bastava.
+
 ### 0.5.32 — 23 novembre 2026
 - **Immagine adattata alla finestra di chi guarda**: con lo zoom su «Adatta», il PC remoto non manda più pixel di quelli che la finestra può mostrare (uno schermo 4K visto in una finestra 1280×720 viaggia a 1280×720): meno banda e meno lavoro su entrambi i PC, stessa resa. Con uno zoom fisso o ingrandendo con le dita torna l'immagine intera. Non cambia la risoluzione del PC remoto, quindi funziona anche con la sola visione. Serve la 0.5.32 su entrambi i PC.
 - **Qualità «Rete locale (bassa latenza)»**: 60 fotogrammi al secondo e video a 20 Mbit/s. In «Automatica», con collegamento diretto e ping sotto i 12 ms, si passa da soli a 50 fotogrammi al secondo (video a 10 Mbit/s).
