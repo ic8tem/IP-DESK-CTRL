@@ -726,5 +726,10 @@
  "Sul PC remoto ci sono file copiati: {0} ({1}).": "Kaugarvutis on kopeeritud faile: {0} ({1}).",
  "Prendili qui": "Too siia",
  "Prendo i file copiati sul PC remoto…": "Toon kaugarvutis kopeeritud failid…",
- "grafica integrata Intel ({0}) non usata con {1} monitor collegati: codifica software": "Inteli integreeritud graafikat ({0}) ei kasutata, kui ühendatud on {1} monitori: tarkvaraline kodeerimine"
+ "grafica integrata Intel ({0}) non usata con {1} monitor collegati: codifica software": "Inteli integreeritud graafikat ({0}) ei kasutata, kui ühendatud on {1} monitori: tarkvaraline kodeerimine",
+ "Automatica": "Automaatne",
+ "Rete locale (bassa latenza)": "Kohtvõrk (väike latentsus)",
+ "Alta": "Kõrge",
+ "Media": "Keskmine",
+ "Bassa (connessioni lente)": "Madal (aeglased ühendused)"
 }

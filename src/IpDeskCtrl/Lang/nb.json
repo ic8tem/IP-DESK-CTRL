@@ -726,5 +726,10 @@
  "Sul PC remoto ci sono file copiati: {0} ({1}).": "Det er kopierte filer på den eksterne PC-en: {0} ({1}).",
  "Prendili qui": "Hent hit",
  "Prendo i file copiati sul PC remoto…": "Henter filene som er kopiert på den eksterne PC-en…",
- "grafica integrata Intel ({0}) non usata con {1} monitor collegati: codifica software": "Intel integrert grafikk ({0}) brukes ikke med {1} skjermer tilkoblet: programvarekoding"
+ "grafica integrata Intel ({0}) non usata con {1} monitor collegati: codifica software": "Intel integrert grafikk ({0}) brukes ikke med {1} skjermer tilkoblet: programvarekoding",
+ "Automatica": "Automatisk",
+ "Rete locale (bassa latenza)": "Lokalt nettverk (lav forsinkelse)",
+ "Alta": "Høy",
+ "Media": "Middels",
+ "Bassa (connessioni lente)": "Lav (trege forbindelser)"
 }

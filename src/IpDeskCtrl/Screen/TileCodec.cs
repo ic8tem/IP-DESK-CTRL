@@ -10,12 +10,13 @@ namespace IpDeskCtrl.Screen
     /// <summary>Livelli di qualità scelti dal visore.</summary>
     public static class Quality
     {
-        public static readonly string[] Keys = { "auto", "alta", "media", "bassa" };
-        public static readonly string[] Names = { "Automatica", "Alta", "Media", "Bassa (connessioni lente)" };
+        public static readonly string[] Keys = { "auto", "rapida", "alta", "media", "bassa" };
+        public static readonly string[] Names = { "Automatica", "Rete locale (bassa latenza)", "Alta", "Media", "Bassa (connessioni lente)" };
 
         /// <summary>(qualità JPEG del movimento, scala dell'immagine)</summary>
         public static (int q, double scale) Of(string key, int autoLevel) => key switch
         {
+            "rapida" => (80, 1.0),
             "alta" => (85, 1.0),
             "media" => (65, 1.0),
             "bassa" => (45, 0.5),
@@ -123,6 +124,23 @@ namespace IpDeskCtrl.Screen
                     SKJpegEncoderAlphaOption.Ignore);
                 using var data = pix.Encode(opt);
                 return data?.ToArray();
+            }
+        }
+
+        /// <summary>Ridimensiona l'immagine (filtro bilineare di Skia) alla finestra di chi guarda.</summary>
+        public static unsafe void Resize(Frame src, Frame dst, int w, int h)
+        {
+            dst.Ensure(w, h);
+            var si = new SKImageInfo(src.Width, src.Height, SKColorType.Bgra8888, SKAlphaType.Opaque);
+            var di = new SKImageInfo(w, h, SKColorType.Bgra8888, SKAlphaType.Opaque);
+            fixed (byte* sp = src.Data)
+            fixed (byte* dp = dst.Data)
+            {
+                using var sPix = new SKPixmap(si, (IntPtr)sp, src.Stride);
+                using var dPix = new SKPixmap(di, (IntPtr)dp, dst.Stride);
+#pragma warning disable CS0618
+                sPix.ScalePixels(dPix, SKFilterQuality.Low);
+#pragma warning restore CS0618
             }
         }
 

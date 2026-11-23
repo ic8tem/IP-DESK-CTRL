@@ -7,7 +7,7 @@ Nella finestra del PC remoto c'è una piccola plancia di comando: **in alto al c
 | **Finestra ⇄ Schermo intero** | Passa da finestra a schermo intero e viceversa. Scorciatoia: **Ctrl+Alt+Invio**. |
 | **Zoom** | *Adatta* (lo schermo remoto riempie la finestra) oppure una percentuale da 25 % a 200 %. |
 | **Monitor** | Se il PC remoto ha più schermi, scegli quale vedere oppure **tutti insieme**. |
-| **Qualità** | *Automatica* (si adatta alla velocità della connessione) oppure fissa. |
+| **Qualità** | *Automatica* (si adatta alla velocità della connessione; in rete locale passa a 50 fotogrammi al secondo), *Rete locale (bassa latenza)* a 60 fotogrammi al secondo, oppure fissa. |
 | **Video automatico** | H.264, H.265, AV1 o riquadri JPEG: vedi [Video compresso](Video). |
 | **Tunnel ▾** | Tunnel di porte verso il PC remoto: vedi [Tunnel di porte](Tunnel-di-porte). |
 | **Risoluzione adatta** | Il PC remoto passa alla risoluzione più adatta a questa finestra (vedi sotto). |

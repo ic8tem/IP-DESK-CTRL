@@ -726,5 +726,10 @@
  "Sul PC remoto ci sono file copiati: {0} ({1}).": "May mga kinopyang file sa remote na PC: {0} ({1}).",
  "Prendili qui": "Kunin dito",
  "Prendo i file copiati sul PC remoto…": "Kinukuha ang mga file na kinopya sa remote na PC…",
- "grafica integrata Intel ({0}) non usata con {1} monitor collegati: codifica software": "hindi ginagamit ang integrated graphics ng Intel ({0}) kapag may {1} monitor na nakakabit: software encoding"
+ "grafica integrata Intel ({0}) non usata con {1} monitor collegati: codifica software": "hindi ginagamit ang integrated graphics ng Intel ({0}) kapag may {1} monitor na nakakabit: software encoding",
+ "Automatica": "Awtomatiko",
+ "Rete locale (bassa latenza)": "Lokal na network (mababang latency)",
+ "Alta": "Mataas",
+ "Media": "Katamtaman",
+ "Bassa (connessioni lente)": "Mababa (mabagal na koneksyon)"
 }

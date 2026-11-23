@@ -726,5 +726,10 @@
  "Sul PC remoto ci sono file copiati: {0} ({1}).": "দূরবর্তী পিসিতে কপি করা ফাইল আছে: {0} ({1})।",
  "Prendili qui": "এখানে আনুন",
  "Prendo i file copiati sul PC remoto…": "দূরবর্তী পিসিতে কপি করা ফাইল আনছি…",
- "grafica integrata Intel ({0}) non usata con {1} monitor collegati: codifica software": "{1}টি মনিটর সংযুক্ত থাকায় Intel ইন্টিগ্রেটেড গ্রাফিক্স ({0}) ব্যবহার করা হচ্ছে না: সফটওয়্যার এনকোডিং"
+ "grafica integrata Intel ({0}) non usata con {1} monitor collegati: codifica software": "{1}টি মনিটর সংযুক্ত থাকায় Intel ইন্টিগ্রেটেড গ্রাফিক্স ({0}) ব্যবহার করা হচ্ছে না: সফটওয়্যার এনকোডিং",
+ "Automatica": "স্বয়ংক্রিয়",
+ "Rete locale (bassa latenza)": "স্থানীয় নেটওয়ার্ক (কম বিলম্ব)",
+ "Alta": "উচ্চ",
+ "Media": "মাঝারি",
+ "Bassa (connessioni lente)": "নিম্ন (ধীর সংযোগ)"
 }

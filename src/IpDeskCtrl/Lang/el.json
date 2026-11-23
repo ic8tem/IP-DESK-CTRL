@@ -726,5 +726,10 @@
  "Sul PC remoto ci sono file copiati: {0} ({1}).": "Υπάρχουν αντιγραμμένα αρχεία στον απομακρυσμένο υπολογιστή: {0} ({1}).",
  "Prendili qui": "Φέρ' τα εδώ",
  "Prendo i file copiati sul PC remoto…": "Φέρνω τα αρχεία που αντιγράφηκαν στον απομακρυσμένο υπολογιστή…",
- "grafica integrata Intel ({0}) non usata con {1} monitor collegati: codifica software": "τα ενσωματωμένα γραφικά Intel ({0}) δεν χρησιμοποιούνται με {1} συνδεδεμένες οθόνες: κωδικοποίηση λογισμικού"
+ "grafica integrata Intel ({0}) non usata con {1} monitor collegati: codifica software": "τα ενσωματωμένα γραφικά Intel ({0}) δεν χρησιμοποιούνται με {1} συνδεδεμένες οθόνες: κωδικοποίηση λογισμικού",
+ "Automatica": "Αυτόματη",
+ "Rete locale (bassa latenza)": "Τοπικό δίκτυο (χαμηλή καθυστέρηση)",
+ "Alta": "Υψηλή",
+ "Media": "Μεσαία",
+ "Bassa (connessioni lente)": "Χαμηλή (αργές συνδέσεις)"
 }

@@ -726,5 +726,10 @@
  "Sul PC remoto ci sono file copiati: {0} ({1}).": "Auf dem entfernten PC sind Dateien kopiert: {0} ({1}).",
  "Prendili qui": "Hierher holen",
  "Prendo i file copiati sul PC remoto…": "Ich hole die auf dem entfernten PC kopierten Dateien…",
- "grafica integrata Intel ({0}) non usata con {1} monitor collegati: codifica software": "Intel-integrierte Grafik ({0}) wird bei {1} angeschlossenen Monitoren nicht verwendet: Software-Kodierung"
+ "grafica integrata Intel ({0}) non usata con {1} monitor collegati: codifica software": "Intel-integrierte Grafik ({0}) wird bei {1} angeschlossenen Monitoren nicht verwendet: Software-Kodierung",
+ "Automatica": "Automatisch",
+ "Rete locale (bassa latenza)": "Lokales Netz (geringe Latenz)",
+ "Alta": "Hoch",
+ "Media": "Mittel",
+ "Bassa (connessioni lente)": "Niedrig (langsame Verbindungen)"
 }

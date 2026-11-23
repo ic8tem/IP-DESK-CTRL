@@ -726,5 +726,10 @@
  "Sul PC remoto ci sono file copiati: {0} ({1}).": "ریموٹ پی سی پر کاپی کی گئی فائلیں ہیں: {0} ({1})۔",
  "Prendili qui": "یہاں لے آئیں",
  "Prendo i file copiati sul PC remoto…": "ریموٹ پی سی پر کاپی کی گئی فائلیں لا رہا ہوں…",
- "grafica integrata Intel ({0}) non usata con {1} monitor collegati: codifica software": "{1} مانیٹر منسلک ہونے پر Intel انٹیگریٹڈ گرافکس ({0}) استعمال نہیں ہوتے: سافٹ ویئر انکوڈنگ"
+ "grafica integrata Intel ({0}) non usata con {1} monitor collegati: codifica software": "{1} مانیٹر منسلک ہونے پر Intel انٹیگریٹڈ گرافکس ({0}) استعمال نہیں ہوتے: سافٹ ویئر انکوڈنگ",
+ "Automatica": "خودکار",
+ "Rete locale (bassa latenza)": "مقامی نیٹ ورک (کم تاخیر)",
+ "Alta": "اعلیٰ",
+ "Media": "درمیانی",
+ "Bassa (connessioni lente)": "کم (سست کنکشن)"
 }

@@ -726,5 +726,10 @@
  "Sul PC remoto ci sono file copiati: {0} ({1}).": "원격 PC에 복사된 파일이 있습니다: {0} ({1}).",
  "Prendili qui": "여기로 가져오기",
  "Prendo i file copiati sul PC remoto…": "원격 PC에서 복사한 파일을 가져오는 중…",
- "grafica integrata Intel ({0}) non usata con {1} monitor collegati: codifica software": "모니터 {1}대 연결 시 Intel 내장 그래픽({0})을 사용하지 않음: 소프트웨어 인코딩"
+ "grafica integrata Intel ({0}) non usata con {1} monitor collegati: codifica software": "모니터 {1}대 연결 시 Intel 내장 그래픽({0})을 사용하지 않음: 소프트웨어 인코딩",
+ "Automatica": "자동",
+ "Rete locale (bassa latenza)": "로컬 네트워크(저지연)",
+ "Alta": "높음",
+ "Media": "보통",
+ "Bassa (connessioni lente)": "낮음(느린 연결)"
 }

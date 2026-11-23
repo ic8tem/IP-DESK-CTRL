@@ -65,6 +65,9 @@ namespace IpDeskCtrl.Core
         private volatile bool _videoRestart = true;
         private long _videoBlockedSince;
         private bool _videoOff;          // ffmpeg fallito: riquadri fino a nuova scelta
+        private volatile int _viewW, _viewH;     // spazio della finestra del visore in pixel veri (0 = immagine intera)
+        private bool _lanFast;                   // rete locale veloce: più fotogrammi al secondo
+        private string _fitLogged = "";
         private volatile bool _viewerHidden;     // finestra del visore ridotta a icona: un fotogramma al secondo, qualità ferma
         private long _lastHiddenFrame;
 
@@ -375,6 +378,7 @@ namespace IpDeskCtrl.Core
                     SendMonitors();
                     break;
                 case Msg.SetQuality: _quality = r.Str(); _fullNext = true; break;
+                case Msg.ViewSize: _viewW = Math.Clamp(r.I32(), 0, 16384); _viewH = Math.Clamp(r.I32(), 0, 16384); break;
                 case Msg.SetAudio: SetAudio(r.Bool()); break;
                 case Msg.Refresh: _fullNext = true; break;
                 case Msg.FileFetch: _ = Task.Run(SendClipboardFilesAsync); break;
@@ -771,8 +775,8 @@ namespace IpDeskCtrl.Core
                         else goodSince = 0;
                     }
                     var (q, scale) = Quality.Of(_quality, _autoLevel);
-                    Frame f = raw;
-                    if (scale < 0.75) { TileEncoder.Half(raw, half); f = half; }
+                    Frame f = ScaleForViewer(raw, half, scale);
+                    int interval = FrameInterval();
 
                     if (_fullNext && _video != null) _videoRestart = true;      // «Aggiorna»: nuovo fotogramma chiave
                     if (SendVideo(f, _quality))
@@ -780,7 +784,7 @@ namespace IpDeskCtrl.Core
                         _fullNext = false;
                         CursorUpdate(area, f, ref lastCx, ref lastCy);
                         long elv = sw.ElapsedMilliseconds - t0;
-                        Thread.Sleep((int)Math.Max(5, 40 - elv));
+                        Thread.Sleep((int)Math.Max(3, interval - elv));
                         continue;
                     }
                     bool full = _fullNext;
@@ -811,10 +815,47 @@ namespace IpDeskCtrl.Core
                     ErrorLog.Write("Cattura: " + ex);
                     Thread.Sleep(500);
                 }
-                // circa 25 fotogrammi al secondo al massimo (meno se cattura e codifica sono lente)
+                // 25 fotogrammi al secondo al massimo (50-60 in rete locale; meno se cattura e codifica sono lente)
                 long el = sw.ElapsedMilliseconds - t0;
-                Thread.Sleep((int)Math.Max(5, 40 - el));
+                Thread.Sleep((int)Math.Max(3, FrameInterval() - el));
             }
+        }
+
+        /// <summary>
+        /// Millisecondi tra un fotogramma e l'altro: 40 (25 al secondo) di solito; 16 (60) con «Rete locale»;
+        /// 20 (50) in automatico quando il collegamento è diretto e il ping sta sotto i 12 ms (fino a 30 ms resta).
+        /// </summary>
+        private int FrameInterval()
+        {
+            if (_quality == "rapida") return 16;
+            if (_quality != "auto" || Link.IsRelay || _viewerHidden) { _lanFast = false; return 40; }
+            double rtt = RttMs;
+            if (!double.IsNaN(rtt)) { if (rtt < 12) _lanFast = true; else if (rtt > 30) _lanFast = false; }
+            return _lanFast ? 20 : 40;
+        }
+
+        /// <summary>
+        /// Rimpicciolisce l'immagine quando la finestra del visore è più piccola dello schermo (meno banda e meno
+        /// lavoro per entrambi, stessa resa a video) o quando la qualità chiede metà risoluzione. Mai ingrandita;
+        /// sotto il 20 % di risparmio non si tocca, così il testo resta nitido.
+        /// </summary>
+        private Frame ScaleForViewer(Frame raw, Frame tmp, double qualityScale)
+        {
+            double s = qualityScale;
+            int vw = _viewW, vh = _viewH;
+            if (vw >= 160 && vh >= 120 && raw.Width > 0 && raw.Height > 0)
+                s = Math.Min(s, Math.Min((double)vw / raw.Width, (double)vh / raw.Height));
+            s = Math.Floor(s * 32) / 32;                     // a passi: ridimensionando la finestra non cambia a ogni pixel
+            string log = s < 0.8 ? $"{raw.Width}×{raw.Height} → {(int)(raw.Width * s)}×{(int)(raw.Height * s)}" : "";
+            if (log != _fitLogged)
+            {
+                _fitLogged = log;
+                SessionLog.Write(log.Length > 0 ? "SCHERMO adattato alla finestra di chi guarda: " + log : "SCHERMO a risoluzione piena");
+            }
+            if (s >= 0.8) return raw;
+            if (Math.Abs(s - 0.5) < 0.001) { TileEncoder.Half(raw, tmp); return tmp; }
+            TileEncoder.Resize(raw, tmp, Math.Max(2, (int)(raw.Width * s) & ~1), Math.Max(2, (int)(raw.Height * s) & ~1));
+            return tmp;
         }
 
         /// <summary>Puntatore del PC comandato, in coordinate dell'immagine.</summary>
@@ -1049,7 +1090,8 @@ namespace IpDeskCtrl.Core
             var encTask = Ffmpeg.EncodersAsync();
             if (!encTask.IsCompleted) return false;           // prova dei codificatori in corso: intanto riquadri
             int w = f.Width & ~1, h = f.Height & ~1;           // i codec vogliono misure pari
-            if (_video == null || _videoRestart || _video.Failed || _video.Width != w || _video.Height != h)
+            int fps = 1000 / FrameInterval();
+            if (_video == null || _videoRestart || _video.Failed || _video.Width != w || _video.Height != h || _video.Fps != fps)
             {
                 if (_video != null && _video.Failed && !_videoRestart)
                 {
@@ -1076,13 +1118,13 @@ namespace IpDeskCtrl.Core
                     _videoOff = true;
                     return false;
                 }
-                int kbps = quality switch { "alta" => 12000, "media" => 4000, "bassa" => 1500, _ => 6000 };
+                int kbps = quality switch { "rapida" => 20000, "alta" => 12000, "media" => 4000, "bassa" => 1500, _ => _lanFast ? 10000 : 6000 };
                 int gen = ++_videoGen;
                 _videoWritten = 0; _videoAcked = 0;
                 Link.SendAsync(new MsgWriter(Msg.VideoStart).I32(gen).Str(enc.Codec).I32(w).I32(h).Str(enc.Name).Build(), Cts.Token).Wait(Cts.Token);
                 try
                 {
-                    _video = new VideoEncoder(enc, w, h, kbps, data =>
+                    _video = new VideoEncoder(enc, w, h, kbps, fps, data =>
                     {
                         try { Link.SendAsync(new MsgWriter(Msg.VideoData).I32(gen).Bytes(data).Build(), Cts.Token).Wait(Cts.Token); } catch { }
                         Interlocked.Add(ref _statBytesVideo, data.Length);
@@ -1096,7 +1138,7 @@ namespace IpDeskCtrl.Core
                 }
                 _videoRestart = false;
                 _frameW = w; _frameH = h;
-                SessionLog.Write($"VIDEO {Ffmpeg.CodecNames[enc.Codec]} con {enc.Name} ({(enc.Hardware ? "hardware" : "software")}) {w}×{h} a {kbps} kbit/s");
+                SessionLog.Write($"VIDEO {Ffmpeg.CodecNames[enc.Codec]} con {enc.Name} ({(enc.Hardware ? "hardware" : "software")}) {w}×{h} a {kbps} kbit/s, {fps} fotogrammi/s");
             }
             // al massimo 4 fotogrammi in viaggio (codifica, rete, decodifica): niente ritardo che cresce
             if (_videoWritten - _videoAcked >= 4)

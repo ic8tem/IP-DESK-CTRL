@@ -28,9 +28,16 @@ Nella plancia, il menu **Video automatico** permette di forzare **H.264**, **H.2
 
 | Qualità | Velocità del video |
 |---|---|
+| Rete locale (bassa latenza) | 20 Mbit/s, 60 fotogrammi al secondo |
 | Alta | 12 Mbit/s |
-| Automatica | 6 Mbit/s |
+| Automatica | 6 Mbit/s (10 Mbit/s e 50 fotogrammi al secondo se il collegamento è diretto e il ping sta sotto i 12 ms) |
 | Media | 4 Mbit/s |
 | Bassa | 1,5 Mbit/s a metà risoluzione |
+
+Le altre qualità vanno a 25 fotogrammi al secondo.
+
+## Immagine adattata alla finestra
+
+Con lo zoom su **Adatta**, il PC remoto non manda più pixel di quelli che la finestra di chi guarda può mostrare: uno schermo 4K visto in una finestra da 1280×720 viaggia a 1280×720. Si risparmia banda e lavoro su entrambi i PC, senza perdere niente a video. Con uno zoom fisso (100 %, 150 %…) o ingrandendo con le dita sul telefono torna l'immagine a risoluzione piena. Funziona anche con chi ha solo la visione, perché non cambia la risoluzione del PC remoto (quella la cambia il pulsante **Risoluzione adatta**). Serve la versione 0.5.32 su entrambi i PC.
 
 Se ffmpeg si ferma, il programma torna da solo ai riquadri e lo dice.

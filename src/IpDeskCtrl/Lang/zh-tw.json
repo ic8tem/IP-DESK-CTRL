@@ -726,5 +726,10 @@
  "Sul PC remoto ci sono file copiati: {0} ({1}).": "遠端電腦上有已複製的檔案：{0}（{1}）。",
  "Prendili qui": "取到這裡",
  "Prendo i file copiati sul PC remoto…": "正在取得遠端電腦上複製的檔案…",
- "grafica integrata Intel ({0}) non usata con {1} monitor collegati: codifica software": "連接 {1} 台螢幕時不使用 Intel 內建顯示晶片 ({0})：軟體編碼"
+ "grafica integrata Intel ({0}) non usata con {1} monitor collegati: codifica software": "連接 {1} 台螢幕時不使用 Intel 內建顯示晶片 ({0})：軟體編碼",
+ "Automatica": "自動",
+ "Rete locale (bassa latenza)": "區域網路（低延遲）",
+ "Alta": "高",
+ "Media": "中",
+ "Bassa (connessioni lente)": "低（慢速連線）"
 }

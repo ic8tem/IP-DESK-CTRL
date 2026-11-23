@@ -726,5 +726,10 @@
  "Sul PC remoto ci sono file copiati: {0} ({1}).": "リモート PC にコピーされたファイルがあります: {0}（{1}）。",
  "Prendili qui": "ここに取り込む",
  "Prendo i file copiati sul PC remoto…": "リモート PC でコピーしたファイルを取り込んでいます…",
- "grafica integrata Intel ({0}) non usata con {1} monitor collegati: codifica software": "{1} 台のモニター接続中は Intel 内蔵グラフィックス ({0}) を使用しません: ソフトウェアエンコード"
+ "grafica integrata Intel ({0}) non usata con {1} monitor collegati: codifica software": "{1} 台のモニター接続中は Intel 内蔵グラフィックス ({0}) を使用しません: ソフトウェアエンコード",
+ "Automatica": "自動",
+ "Rete locale (bassa latenza)": "ローカルネットワーク（低遅延）",
+ "Alta": "高",
+ "Media": "中",
+ "Bassa (connessioni lente)": "低（低速回線）"
 }

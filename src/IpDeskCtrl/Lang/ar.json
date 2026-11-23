@@ -726,5 +726,10 @@
  "Sul PC remoto ci sono file copiati: {0} ({1}).": "توجد ملفات منسوخة على الحاسوب البعيد: {0} ({1}).",
  "Prendili qui": "اجلبها إلى هنا",
  "Prendo i file copiati sul PC remoto…": "أجلب الملفات المنسوخة على الحاسوب البعيد…",
- "grafica integrata Intel ({0}) non usata con {1} monitor collegati: codifica software": "لا تُستخدم رسوميات Intel المدمجة ({0}) مع توصيل {1} شاشات: ترميز برمجي"
+ "grafica integrata Intel ({0}) non usata con {1} monitor collegati: codifica software": "لا تُستخدم رسوميات Intel المدمجة ({0}) مع توصيل {1} شاشات: ترميز برمجي",
+ "Automatica": "تلقائية",
+ "Rete locale (bassa latenza)": "شبكة محلية (زمن انتقال منخفض)",
+ "Alta": "عالية",
+ "Media": "متوسطة",
+ "Bassa (connessioni lente)": "منخفضة (اتصالات بطيئة)"
 }

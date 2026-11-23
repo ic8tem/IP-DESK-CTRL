@@ -726,5 +726,10 @@
  "Sul PC remoto ci sono file copiati: {0} ({1}).": "มีไฟล์ที่คัดลอกไว้บนพีซีระยะไกล: {0} ({1})",
  "Prendili qui": "นำมาที่นี่",
  "Prendo i file copiati sul PC remoto…": "กำลังนำไฟล์ที่คัดลอกบนพีซีระยะไกลมา…",
- "grafica integrata Intel ({0}) non usata con {1} monitor collegati: codifica software": "ไม่ใช้กราฟิกในตัวของ Intel ({0}) เมื่อต่อจอ {1} จอ: เข้ารหัสด้วยซอฟต์แวร์"
+ "grafica integrata Intel ({0}) non usata con {1} monitor collegati: codifica software": "ไม่ใช้กราฟิกในตัวของ Intel ({0}) เมื่อต่อจอ {1} จอ: เข้ารหัสด้วยซอฟต์แวร์",
+ "Automatica": "อัตโนมัติ",
+ "Rete locale (bassa latenza)": "เครือข่ายท้องถิ่น (หน่วงต่ำ)",
+ "Alta": "สูง",
+ "Media": "ปานกลาง",
+ "Bassa (connessioni lente)": "ต่ำ (การเชื่อมต่อช้า)"
 }

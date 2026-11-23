@@ -458,6 +458,9 @@ namespace IpDeskCtrl.Core
             Send(new MsgWriter(Msg.DriveClose).Str("").Build());
         }
         public void SetQuality(string q) => Send(new MsgWriter(Msg.SetQuality).Str(q).Build());
+
+        /// <summary>Spazio disponibile per l'immagine (pixel veri): il PC remoto non manda più pixel di così. 0,0 = tutti.</summary>
+        public void SendViewSize(int w, int h) { if (PeerHas("fitview")) Send(new MsgWriter(Msg.ViewSize).I32(w).I32(h).Build()); }
         public void Refresh() => Send(new MsgWriter(Msg.Refresh).Build());
 
         // ------------------------------------------------------------------ ingresso

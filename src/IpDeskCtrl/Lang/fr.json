@@ -726,5 +726,10 @@
  "Sul PC remoto ci sono file copiati: {0} ({1}).": "Des fichiers sont copiés sur le PC distant : {0} ({1}).",
  "Prendili qui": "Les récupérer ici",
  "Prendo i file copiati sul PC remoto…": "Je récupère les fichiers copiés sur le PC distant…",
- "grafica integrata Intel ({0}) non usata con {1} monitor collegati: codifica software": "graphique intégré Intel ({0}) non utilisé avec {1} écrans connectés : encodage logiciel"
+ "grafica integrata Intel ({0}) non usata con {1} monitor collegati: codifica software": "graphique intégré Intel ({0}) non utilisé avec {1} écrans connectés : encodage logiciel",
+ "Automatica": "Automatique",
+ "Rete locale (bassa latenza)": "Réseau local (faible latence)",
+ "Alta": "Haute",
+ "Media": "Moyenne",
+ "Bassa (connessioni lente)": "Basse (connexions lentes)"
 }

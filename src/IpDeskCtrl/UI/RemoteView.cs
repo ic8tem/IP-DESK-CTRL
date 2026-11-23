@@ -57,6 +57,9 @@ namespace IpDeskCtrl.UI
 
         public bool ShowRemoteCursor { get; set; } = true;
 
+        /// <summary>Zoom fisso o pizzicato: serve l'immagine a risoluzione piena.</summary>
+        public bool Magnified => _zoom != 0 || _pinch > 1.05;
+
         /// <summary>Ctrl+Alt+Invio: passa da finestra a schermo intero (non va al PC remoto).</summary>
         public event Action? FullScreenToggleRequested;
         /// <summary>Ctrl+V (Cmd+V su Mac) premuto qui: true se l'incolla l'ha preso il visore (file da mandare).</summary>

@@ -341,13 +341,16 @@ namespace IpDeskCtrl.Screen
         public bool Failed { get; private set; }
         public string Error { get; private set; } = "";
 
-        public VideoEncoder(Ffmpeg.Encoder enc, int w, int h, int kbps, Action<byte[]> output)
+        public int Fps { get; }
+
+        public VideoEncoder(Ffmpeg.Encoder enc, int w, int h, int kbps, int fps, Action<byte[]> output)
         {
             Codec = enc.Codec; Width = w; Height = h;
+            Fps = fps = Math.Clamp(fps, 5, 60);
             _hw = enc.Hardware;
-            string args = $"-hide_banner -loglevel error -f rawvideo -pix_fmt bgra -s {w}x{h} -r 25 -i - -an " +
+            string args = $"-hide_banner -loglevel error -f rawvideo -pix_fmt bgra -s {w}x{h} -r {fps} -i - -an " +
                           $"-c:v {enc.Name} {Ffmpeg.Options(enc.Name)} -pix_fmt {(enc.Hardware ? "nv12" : "yuv420p")} " +
-                          $"-g 75 -bf 0 -b:v {kbps}k -maxrate {kbps}k -bufsize {Math.Max(200, kbps / 2)}k " +
+                          $"-g {fps * 3} -bf 0 -b:v {kbps}k -maxrate {kbps}k -bufsize {Math.Max(200, kbps / 2)}k " +
                           $"-flush_packets 1 -f {Ffmpeg.Format(enc.Codec)} -";
             _p = Ffmpeg.Start(Ffmpeg.Path!, args, true) ?? throw new IOException(L.T("ffmpeg non avviabile"));
             if (_hw) Ffmpeg.HwGuard.Begin(enc.Name);

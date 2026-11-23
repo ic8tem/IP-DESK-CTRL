@@ -726,5 +726,10 @@
  "Sul PC remoto ci sono file copiati: {0} ({1}).": "रिमोट पीसी पर कॉपी की गई फ़ाइलें हैं: {0} ({1})।",
  "Prendili qui": "यहाँ लाएँ",
  "Prendo i file copiati sul PC remoto…": "रिमोट पीसी पर कॉपी की गई फ़ाइलें ला रहा हूँ…",
- "grafica integrata Intel ({0}) non usata con {1} monitor collegati: codifica software": "{1} मॉनिटर जुड़े होने पर Intel इंटीग्रेटेड ग्राफ़िक्स ({0}) का उपयोग नहीं: सॉफ़्टवेयर एन्कोडिंग"
+ "grafica integrata Intel ({0}) non usata con {1} monitor collegati: codifica software": "{1} मॉनिटर जुड़े होने पर Intel इंटीग्रेटेड ग्राफ़िक्स ({0}) का उपयोग नहीं: सॉफ़्टवेयर एन्कोडिंग",
+ "Automatica": "स्वचालित",
+ "Rete locale (bassa latenza)": "स्थानीय नेटवर्क (कम विलंब)",
+ "Alta": "उच्च",
+ "Media": "मध्यम",
+ "Bassa (connessioni lente)": "निम्न (धीमे कनेक्शन)"
 }

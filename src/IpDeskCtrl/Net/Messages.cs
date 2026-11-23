@@ -94,6 +94,7 @@ namespace IpDeskCtrl.Net
         public const byte RunAdmin = 0x8D;       // visore -> host: str programma (cmd, powershell, taskmgr, regedit, services, compmgmt, devmgmt)
         public const byte DragOut = 0x8E;        // visore -> host: il puntatore è uscito dalla finestra col tasto premuto (trascinamento verso chi comanda)
         public const byte Recording = 0x8A;      // visore -> host: u8 1 = sta registrando la sessione, 0 = ha smesso
+        public const byte ViewSize = 0x8F;       // visore -> host: i32 w, i32 h spazio della finestra in pixel veri (0 = immagine intera, zoom)
         public const byte Draw = 0x89;           // visore -> host: u8 op (0 continua, 1 nuovo tratto, 2 cancella), u16 n, n × (u16 x, u16 y) in 0..65535
     }
 

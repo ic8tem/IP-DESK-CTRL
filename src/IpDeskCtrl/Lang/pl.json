@@ -726,5 +726,10 @@
  "Sul PC remoto ci sono file copiati: {0} ({1}).": "Na komputerze zdalnym są skopiowane pliki: {0} ({1}).",
  "Prendili qui": "Pobierz tutaj",
  "Prendo i file copiati sul PC remoto…": "Pobieram pliki skopiowane na komputerze zdalnym…",
- "grafica integrata Intel ({0}) non usata con {1} monitor collegati: codifica software": "zintegrowana grafika Intel ({0}) nieużywana przy {1} podłączonych monitorach: kodowanie programowe"
+ "grafica integrata Intel ({0}) non usata con {1} monitor collegati: codifica software": "zintegrowana grafika Intel ({0}) nieużywana przy {1} podłączonych monitorach: kodowanie programowe",
+ "Automatica": "Automatyczna",
+ "Rete locale (bassa latenza)": "Sieć lokalna (niskie opóźnienie)",
+ "Alta": "Wysoka",
+ "Media": "Średnia",
+ "Bassa (connessioni lente)": "Niska (wolne połączenia)"
 }

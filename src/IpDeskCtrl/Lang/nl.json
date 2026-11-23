@@ -726,5 +726,10 @@
  "Sul PC remoto ci sono file copiati: {0} ({1}).": "Er zijn bestanden gekopieerd op de externe pc: {0} ({1}).",
  "Prendili qui": "Hierheen halen",
  "Prendo i file copiati sul PC remoto…": "Ik haal de op de externe pc gekopieerde bestanden op…",
- "grafica integrata Intel ({0}) non usata con {1} monitor collegati: codifica software": "geïntegreerde Intel-graphics ({0}) niet gebruikt met {1} aangesloten monitoren: softwarecodering"
+ "grafica integrata Intel ({0}) non usata con {1} monitor collegati: codifica software": "geïntegreerde Intel-graphics ({0}) niet gebruikt met {1} aangesloten monitoren: softwarecodering",
+ "Automatica": "Automatisch",
+ "Rete locale (bassa latenza)": "Lokaal netwerk (lage latentie)",
+ "Alta": "Hoog",
+ "Media": "Gemiddeld",
+ "Bassa (connessioni lente)": "Laag (trage verbindingen)"
 }

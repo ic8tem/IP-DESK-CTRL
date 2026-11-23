@@ -726,5 +726,10 @@
  "Sul PC remoto ci sono file copiati: {0} ({1}).": "Það eru afritaðar skrár á fjartölvunni: {0} ({1}).",
  "Prendili qui": "Sækja hingað",
  "Prendo i file copiati sul PC remoto…": "Sæki skrárnar sem voru afritaðar á fjartölvunni…",
- "grafica integrata Intel ({0}) non usata con {1} monitor collegati: codifica software": "innbyggð Intel-grafík ({0}) ekki notuð með {1} skjái tengda: hugbúnaðarkóðun"
+ "grafica integrata Intel ({0}) non usata con {1} monitor collegati: codifica software": "innbyggð Intel-grafík ({0}) ekki notuð með {1} skjái tengda: hugbúnaðarkóðun",
+ "Automatica": "Sjálfvirkt",
+ "Rete locale (bassa latenza)": "Staðarnet (lítil töf)",
+ "Alta": "Há",
+ "Media": "Miðlungs",
+ "Bassa (connessioni lente)": "Lág (hægar tengingar)"
 }

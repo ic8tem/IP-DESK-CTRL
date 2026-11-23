@@ -726,5 +726,10 @@
  "Sul PC remoto ci sono file copiati: {0} ({1}).": "Attālajā datorā ir nokopēti faili: {0} ({1}).",
  "Prendili qui": "Paņemt šeit",
  "Prendo i file copiati sul PC remoto…": "Ņemu attālajā datorā nokopētos failus…",
- "grafica integrata Intel ({0}) non usata con {1} monitor collegati: codifica software": "Intel integrētā grafika ({0}) netiek izmantota ar {1} pievienotiem monitoriem: programmatūras kodēšana"
+ "grafica integrata Intel ({0}) non usata con {1} monitor collegati: codifica software": "Intel integrētā grafika ({0}) netiek izmantota ar {1} pievienotiem monitoriem: programmatūras kodēšana",
+ "Automatica": "Automātiska",
+ "Rete locale (bassa latenza)": "Lokālais tīkls (zems aizkavējums)",
+ "Alta": "Augsta",
+ "Media": "Vidēja",
+ "Bassa (connessioni lente)": "Zema (lēni savienojumi)"
 }

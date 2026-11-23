@@ -726,5 +726,10 @@
  "Sul PC remoto ci sono file copiati: {0} ({1}).": "На удалённом ПК есть скопированные файлы: {0} ({1}).",
  "Prendili qui": "Забрать сюда",
  "Prendo i file copiati sul PC remoto…": "Забираю файлы, скопированные на удалённом ПК…",
- "grafica integrata Intel ({0}) non usata con {1} monitor collegati: codifica software": "встроенная графика Intel ({0}) не используется при {1} подключённых мониторах: программное кодирование"
+ "grafica integrata Intel ({0}) non usata con {1} monitor collegati: codifica software": "встроенная графика Intel ({0}) не используется при {1} подключённых мониторах: программное кодирование",
+ "Automatica": "Автоматически",
+ "Rete locale (bassa latenza)": "Локальная сеть (низкая задержка)",
+ "Alta": "Высокое",
+ "Media": "Среднее",
+ "Bassa (connessioni lente)": "Низкое (медленные соединения)"
 }

@@ -726,5 +726,10 @@
  "Sul PC remoto ci sono file copiati: {0} ({1}).": "A távoli gépen másolt fájlok vannak: {0} ({1}).",
  "Prendili qui": "Áthozom ide",
  "Prendo i file copiati sul PC remoto…": "Áthozom a távoli gépen másolt fájlokat…",
- "grafica integrata Intel ({0}) non usata con {1} monitor collegati: codifica software": "az Intel integrált grafika ({0}) nincs használva {1} csatlakoztatott monitorral: szoftveres kódolás"
+ "grafica integrata Intel ({0}) non usata con {1} monitor collegati: codifica software": "az Intel integrált grafika ({0}) nincs használva {1} csatlakoztatott monitorral: szoftveres kódolás",
+ "Automatica": "Automatikus",
+ "Rete locale (bassa latenza)": "Helyi hálózat (alacsony késleltetés)",
+ "Alta": "Magas",
+ "Media": "Közepes",
+ "Bassa (connessioni lente)": "Alacsony (lassú kapcsolatok)"
 }

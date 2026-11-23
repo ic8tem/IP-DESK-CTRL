@@ -726,5 +726,10 @@
  "Sul PC remoto ci sono file copiati: {0} ({1}).": "There are copied files on the remote PC: {0} ({1}).",
  "Prendili qui": "Get them here",
  "Prendo i file copiati sul PC remoto…": "Getting the files copied on the remote PC…",
- "grafica integrata Intel ({0}) non usata con {1} monitor collegati: codifica software": "Intel integrated graphics ({0}) not used with {1} monitors connected: software encoding"
+ "grafica integrata Intel ({0}) non usata con {1} monitor collegati: codifica software": "Intel integrated graphics ({0}) not used with {1} monitors connected: software encoding",
+ "Automatica": "Automatic",
+ "Rete locale (bassa latenza)": "Local network (low latency)",
+ "Alta": "High",
+ "Media": "Medium",
+ "Bassa (connessioni lente)": "Low (slow connections)"
 }

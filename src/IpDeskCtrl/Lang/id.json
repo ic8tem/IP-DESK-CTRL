@@ -726,5 +726,10 @@
  "Sul PC remoto ci sono file copiati: {0} ({1}).": "Ada file yang disalin di PC jarak jauh: {0} ({1}).",
  "Prendili qui": "Ambil ke sini",
  "Prendo i file copiati sul PC remoto…": "Mengambil file yang disalin di PC jarak jauh…",
- "grafica integrata Intel ({0}) non usata con {1} monitor collegati: codifica software": "grafis terintegrasi Intel ({0}) tidak dipakai dengan {1} monitor terhubung: encoding perangkat lunak"
+ "grafica integrata Intel ({0}) non usata con {1} monitor collegati: codifica software": "grafis terintegrasi Intel ({0}) tidak dipakai dengan {1} monitor terhubung: encoding perangkat lunak",
+ "Automatica": "Otomatis",
+ "Rete locale (bassa latenza)": "Jaringan lokal (latensi rendah)",
+ "Alta": "Tinggi",
+ "Media": "Sedang",
+ "Bassa (connessioni lente)": "Rendah (koneksi lambat)"
 }

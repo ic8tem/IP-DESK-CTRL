@@ -726,5 +726,10 @@
  "Sul PC remoto ci sono file copiati: {0} ({1}).": "Pe PC-ul de la distanță sunt fișiere copiate: {0} ({1}).",
  "Prendili qui": "Adu-le aici",
  "Prendo i file copiati sul PC remoto…": "Aduc fișierele copiate pe PC-ul de la distanță…",
- "grafica integrata Intel ({0}) non usata con {1} monitor collegati: codifica software": "grafica integrată Intel ({0}) nu este folosită cu {1} monitoare conectate: codare software"
+ "grafica integrata Intel ({0}) non usata con {1} monitor collegati: codifica software": "grafica integrată Intel ({0}) nu este folosită cu {1} monitoare conectate: codare software",
+ "Automatica": "Automată",
+ "Rete locale (bassa latenza)": "Rețea locală (latență redusă)",
+ "Alta": "Înaltă",
+ "Media": "Medie",
+ "Bassa (connessioni lente)": "Scăzută (conexiuni lente)"
 }

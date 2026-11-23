@@ -152,7 +152,7 @@ namespace IpDeskCtrl.UI
             _viewHost.SizeChanged += (_, _) => { if (_fitRes.IsChecked == true) { _resizeTimer.Stop(); _resizeTimer.Start(); } };
             Content = Build();
             SetZoom(peer.S.ZoomPercent);
-            _timer.Tick += (_, _) => { Tick(); PollLocalClipFiles(); };
+            _timer.Tick += (_, _) => { Tick(); PollLocalClipFiles(); UpdateViewSize(); };
             _view.PasteFilter = PasteLocalFiles;
             PointerMoved += (_, e) =>
             {
@@ -251,7 +251,7 @@ namespace IpDeskCtrl.UI
             };
             ToolTip.SetTip(_monitor, L.T("Quale schermo del PC remoto vedere"));
 
-            _quality.ItemsSource = Quality.Names.ToList();
+            _quality.ItemsSource = Quality.Names.Select(n => L.T(n)).ToList();
             _quality.SelectedIndex = Math.Max(0, Array.IndexOf(Quality.Keys, _peer.S.Quality));
             _quality.SelectionChanged += (_, _) =>
             {
@@ -1171,6 +1171,28 @@ namespace IpDeskCtrl.UI
             string err = s.SetMic(on);
             if (err.Length > 0) { ShowNote(err); _mic.IsChecked = false; return; }
             if (_peer.S.SendMic != on) { _peer.S.SendMic = on; _peer.S.Save(); }
+        }
+
+        private (int, int) _viewSent = (-1, -1), _viewPending = (-1, -1);
+        private ViewerSession? _viewSession;
+
+        /// <summary>
+        /// Spazio per l'immagine in pixel veri → al PC remoto, che non manda più pixel di quelli che si vedono
+        /// (finestra piccola = meno banda). Con lo zoom si chiede l'immagine intera. Si manda quando la misura
+        /// resta uguale per due controlli di fila (mezzo secondo l'uno), non a ogni pixel di ridimensionamento.
+        /// </summary>
+        private void UpdateViewSize()
+        {
+            var s = _session;
+            if (s == null || s.State != AcceptState.Accepted) return;
+            if (!ReferenceEquals(s, _viewSession)) { _viewSession = s; _viewSent = (-1, -1); }
+            double sc = TopLevel.GetTopLevel(this)?.RenderScaling ?? 1;
+            var b = _viewHost.Bounds;
+            (int, int) want = _view.Magnified || b.Width < 80 || b.Height < 60 ? (0, 0) : ((int)Math.Round(b.Width * sc), (int)Math.Round(b.Height * sc));
+            if (want == _viewSent) { _viewPending = want; return; }
+            if (want != _viewPending) { _viewPending = want; return; }
+            _viewSent = want;
+            s.SendViewSize(want.Item1, want.Item2);
         }
 
         /// <summary>Dimensione della vista in pixel veri → al PC remoto (dopo un attimo di pausa nel ridimensionare).</summary>

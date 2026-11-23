@@ -726,5 +726,10 @@
  "Sul PC remoto ci sono file copiati: {0} ({1}).": "Na vzdáleném počítači jsou zkopírované soubory: {0} ({1}).",
  "Prendili qui": "Přenést sem",
  "Prendo i file copiati sul PC remoto…": "Přenáším soubory zkopírované na vzdáleném počítači…",
- "grafica integrata Intel ({0}) non usata con {1} monitor collegati: codifica software": "integrovaná grafika Intel ({0}) se při {1} připojených monitorech nepoužívá: softwarové kódování"
+ "grafica integrata Intel ({0}) non usata con {1} monitor collegati: codifica software": "integrovaná grafika Intel ({0}) se při {1} připojených monitorech nepoužívá: softwarové kódování",
+ "Automatica": "Automatická",
+ "Rete locale (bassa latenza)": "Místní síť (nízká latence)",
+ "Alta": "Vysoká",
+ "Media": "Střední",
+ "Bassa (connessioni lente)": "Nízká (pomalá připojení)"
 }

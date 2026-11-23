@@ -726,5 +726,10 @@
  "Sul PC remoto ci sono file copiati: {0} ({1}).": "Uzak bilgisayarda kopyalanmış dosyalar var: {0} ({1}).",
  "Prendili qui": "Buraya al",
  "Prendo i file copiati sul PC remoto…": "Uzak bilgisayarda kopyalanan dosyaları alıyorum…",
- "grafica integrata Intel ({0}) non usata con {1} monitor collegati: codifica software": "{1} monitör bağlıyken Intel tümleşik grafik ({0}) kullanılmıyor: yazılımla kodlama"
+ "grafica integrata Intel ({0}) non usata con {1} monitor collegati: codifica software": "{1} monitör bağlıyken Intel tümleşik grafik ({0}) kullanılmıyor: yazılımla kodlama",
+ "Automatica": "Otomatik",
+ "Rete locale (bassa latenza)": "Yerel ağ (düşük gecikme)",
+ "Alta": "Yüksek",
+ "Media": "Orta",
+ "Bassa (connessioni lente)": "Düşük (yavaş bağlantılar)"
 }

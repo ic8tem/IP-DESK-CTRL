@@ -726,5 +726,10 @@
  "Sul PC remoto ci sono file copiati: {0} ({1}).": "יש קבצים מועתקים במחשב המרוחק: {0} ({1}).",
  "Prendili qui": "הבא אותם לכאן",
  "Prendo i file copiati sul PC remoto…": "מביא את הקבצים שהועתקו במחשב המרוחק…",
- "grafica integrata Intel ({0}) non usata con {1} monitor collegati: codifica software": "הגרפיקה המשולבת של Intel ({0}) אינה בשימוש כאשר מחוברים {1} מסכים: קידוד בתוכנה"
+ "grafica integrata Intel ({0}) non usata con {1} monitor collegati: codifica software": "הגרפיקה המשולבת של Intel ({0}) אינה בשימוש כאשר מחוברים {1} מסכים: קידוד בתוכנה",
+ "Automatica": "אוטומטית",
+ "Rete locale (bassa latenza)": "רשת מקומית (השהיה נמוכה)",
+ "Alta": "גבוהה",
+ "Media": "בינונית",
+ "Bassa (connessioni lente)": "נמוכה (חיבורים איטיים)"
 }

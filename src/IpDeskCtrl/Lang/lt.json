@@ -726,5 +726,10 @@
  "Sul PC remoto ci sono file copiati: {0} ({1}).": "Nuotoliniame kompiuteryje yra nukopijuotų failų: {0} ({1}).",
  "Prendili qui": "Parsisiųsti čia",
  "Prendo i file copiati sul PC remoto…": "Parsisiunčiu nuotoliniame kompiuteryje nukopijuotus failus…",
- "grafica integrata Intel ({0}) non usata con {1} monitor collegati: codifica software": "Intel integruota grafika ({0}) nenaudojama, kai prijungti {1} monitoriai: programinis kodavimas"
+ "grafica integrata Intel ({0}) non usata con {1} monitor collegati: codifica software": "Intel integruota grafika ({0}) nenaudojama, kai prijungti {1} monitoriai: programinis kodavimas",
+ "Automatica": "Automatinė",
+ "Rete locale (bassa latenza)": "Vietinis tinklas (maža delsa)",
+ "Alta": "Aukšta",
+ "Media": "Vidutinė",
+ "Bassa (connessioni lente)": "Žema (lėti ryšiai)"
 }
