@@ -1,7 +1,8 @@
 IP-DESK-CTRL - NOTE DI TERZE PARTI
 ==================================
 
-IP-DESK-CTRL: Copyright (C) 2026 Costantino IC8TEM - GNU GPL 3.0 o successiva (file LICENSE).
+IP-DESK-CTRL: Copyright (C) 2026 Costantino IC8TEM - GNU GPL 3.0 o successiva
+(SPDX: GPL-3.0-or-later, file LICENSE).
 
 Questo programma include o usa i componenti di terze parti elencati qui sotto.
 Prima di distribuire gli eseguibili, verifica che titolari e testi corrispondano
@@ -90,3 +91,12 @@ BlackHole (macOS) - Existential Audio Inc. - open source
 https://github.com/ExistentialAudio/BlackHole
 Non incluso: si installa a parte (brew install blackhole-2ch) solo per mandare
 l'audio di un Mac all'altro PC.
+
+FFmpeg - The FFmpeg developers - GNU GPL 2.0 o successiva (build "gpl")
+https://ffmpeg.org  -  build per Windows: https://github.com/BtbN/FFmpeg-Builds
+Non incluso: ffmpeg.exe si scarica a parte, solo se l'utente lo chiede
+(registrazione della sessione e video H.264/HEVC), nella cartella dati del
+programma. Su Linux/macOS si usa quello del sistema. La build "gpl" contiene
+anche x264 e x265 (GNU GPL 2.0 o successiva): compatibili con la GPL 3.0 di
+IP-DESK-CTRL. IP-DESK-CTRL lo avvia come programma separato, senza collegarlo.
+Sorgenti: https://ffmpeg.org/download.html
