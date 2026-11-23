@@ -34,7 +34,7 @@ Nella plancia, il menu **Video automatico** permette di forzare **H.264**, **H.2
 | Media | 4 Mbit/s |
 | Bassa | 1,5 Mbit/s a metà risoluzione |
 
-Le altre qualità vanno a 25 fotogrammi al secondo.
+Le altre qualità vanno a 25 fotogrammi al secondo. Quando codifica la scheda video (Quick Sync, NVENC, AMF…) si resta comunque al massimo a 30 fotogrammi al secondo e 12 Mbit/s, per prudenza dopo i blocchi visti con `hevc_qsv`.
 
 ## Immagine adattata alla finestra
 

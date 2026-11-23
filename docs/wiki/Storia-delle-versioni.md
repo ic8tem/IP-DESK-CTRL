@@ -3,6 +3,13 @@
 
 Le versioni con protocollo diverso non si collegano tra loro: aggiorna tutti i dispositivi alla stessa versione principale (la 0.4.1 si collega con la 0.4.0; la 0.5 si collega con la 0.4).
 
+## 0.5.32 — 23 novembre 2026
+- **Immagine adattata alla finestra di chi guarda**: con lo zoom su «Adatta», il PC remoto non manda più pixel di quelli che la finestra può mostrare (uno schermo 4K visto in una finestra 1280×720 viaggia a 1280×720): meno banda e meno lavoro su entrambi i PC, stessa resa. Con uno zoom fisso o ingrandendo con le dita torna l'immagine intera. Non cambia la risoluzione del PC remoto, quindi funziona anche con la sola visione. Serve la 0.5.32 su entrambi i PC.
+- **Qualità «Rete locale (bassa latenza)»**: 60 fotogrammi al secondo e video a 20 Mbit/s. In «Automatica», con collegamento diretto e ping sotto i 12 ms, si passa da soli a 50 fotogrammi al secondo (video a 10 Mbit/s).
+- **Prudenza con la scheda video**: per i blocchi con `hevc_qsv` delle versioni precedenti, quando codifica la scheda video (Quick Sync, NVENC, AMF…) si resta al massimo a 30 fotogrammi al secondo e 12 Mbit/s, e il codificatore si riapre al massimo una volta ogni 5 secondi quando si ridimensiona la finestra. I 50-60 fotogrammi al secondo valgono per la codifica software (x264) e per i riquadri JPEG.
+- **Voci della qualità tradotte** in tutte le lingue (prima restavano in italiano).
+- **Note di terze parti**: aggiunto FFmpeg (licenza GPL, scaricato a parte) e la sigla SPDX GPL-3.0-or-later.
+
 ## 0.5.31 — 21 novembre 2026
 - **Grafica integrata Intel più prudente**: i blocchi completi del PC visti con Intel Quick Sync sono avvenuti tutti su un PC con tre monitor collegati alla grafica integrata, mentre codificava in H.265 (`hevc_qsv`). Ora, se al PC comandato sono collegati **due o più monitor**, la grafica integrata Intel non si usa per il video e la codifica la fa il processore (x264); a chi comanda compare un avviso. Con **un solo monitor**, in modalità automatica si usa Quick Sync solo per H.264 (`h264_qsv`) e non più per H.265 o AV1. Le schede NVIDIA e AMD non cambiano.
 - **Codifica software sempre pronta**: la prova dei codificatori all'avvio controlla sempre anche x264, x265 e SVT-AV1; prima, se c'era un codificatore hardware per lo stesso formato, quello software non veniva provato e non era disponibile come riserva.

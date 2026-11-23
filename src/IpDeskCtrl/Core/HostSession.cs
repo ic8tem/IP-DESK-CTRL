@@ -68,6 +68,8 @@ namespace IpDeskCtrl.Core
         private volatile int _viewW, _viewH;     // spazio della finestra del visore in pixel veri (0 = immagine intera)
         private bool _lanFast;                   // rete locale veloce: più fotogrammi al secondo
         private string _fitLogged = "";
+        private double _fitScale = 1;
+        private long _fitChangedAt;
         private volatile bool _viewerHidden;     // finestra del visore ridotta a icona: un fotogramma al secondo, qualità ferma
         private long _lastHiddenFrame;
 
@@ -825,13 +827,22 @@ namespace IpDeskCtrl.Core
         /// Millisecondi tra un fotogramma e l'altro: 40 (25 al secondo) di solito; 16 (60) con «Rete locale»;
         /// 20 (50) in automatico quando il collegamento è diretto e il ping sta sotto i 12 ms (fino a 30 ms resta).
         /// </summary>
+        private const int HwMinInterval = 33;
+        private const int HwMaxKbps = 12000;
+
         private int FrameInterval()
         {
-            if (_quality == "rapida") return 16;
-            if (_quality != "auto" || Link.IsRelay || _viewerHidden) { _lanFast = false; return 40; }
-            double rtt = RttMs;
-            if (!double.IsNaN(rtt)) { if (rtt < 12) _lanFast = true; else if (rtt > 30) _lanFast = false; }
-            return _lanFast ? 20 : 40;
+            int i;
+            if (_quality == "rapida") i = 16;
+            else if (_quality != "auto" || Link.IsRelay || _viewerHidden) { _lanFast = false; i = 40; }
+            else
+            {
+                double rtt = RttMs;
+                if (!double.IsNaN(rtt)) { if (rtt < 12) _lanFast = true; else if (rtt > 30) _lanFast = false; }
+                i = _lanFast ? 20 : 40;
+            }
+            // codifica con la scheda video: al massimo 30 al secondo (i blocchi totali con hevc_qsv delle 0.5.2x)
+            return _video is { Hardware: true } ? Math.Max(i, HwMinInterval) : i;
         }
 
         /// <summary>
@@ -846,6 +857,12 @@ namespace IpDeskCtrl.Core
             if (vw >= 160 && vh >= 120 && raw.Width > 0 && raw.Height > 0)
                 s = Math.Min(s, Math.Min((double)vw / raw.Width, (double)vh / raw.Height));
             s = Math.Floor(s * 32) / 32;                     // a passi: ridimensionando la finestra non cambia a ogni pixel
+            // ogni cambio di misura riavvia il codificatore video: al massimo uno ogni 5 s (la scheda video non
+            // va riaperta di continuo), salvo il ritorno all'immagine intera chiesto con lo zoom
+            long now = Environment.TickCount64;
+            if (s >= 0.8 && _fitScale >= 0.8) s = _fitScale;                                   // resta intera
+            else if (s != _fitScale && s < 0.8 && now - _fitChangedAt < 5000) s = _fitScale;   // aspetta
+            if (s != _fitScale) { _fitScale = s; _fitChangedAt = now; }
             string log = s < 0.8 ? $"{raw.Width}×{raw.Height} → {(int)(raw.Width * s)}×{(int)(raw.Height * s)}" : "";
             if (log != _fitLogged)
             {
@@ -1091,6 +1108,7 @@ namespace IpDeskCtrl.Core
             if (!encTask.IsCompleted) return false;           // prova dei codificatori in corso: intanto riquadri
             int w = f.Width & ~1, h = f.Height & ~1;           // i codec vogliono misure pari
             int fps = 1000 / FrameInterval();
+            if (_video != null && _video.Hardware) fps = Math.Min(fps, 1000 / HwMinInterval);
             if (_video == null || _videoRestart || _video.Failed || _video.Width != w || _video.Height != h || _video.Fps != fps)
             {
                 if (_video != null && _video.Failed && !_videoRestart)
@@ -1119,6 +1137,7 @@ namespace IpDeskCtrl.Core
                     return false;
                 }
                 int kbps = quality switch { "rapida" => 20000, "alta" => 12000, "media" => 4000, "bassa" => 1500, _ => _lanFast ? 10000 : 6000 };
+                if (enc.Hardware) { fps = Math.Min(fps, 1000 / HwMinInterval); kbps = Math.Min(kbps, HwMaxKbps); }
                 int gen = ++_videoGen;
                 _videoWritten = 0; _videoAcked = 0;
                 Link.SendAsync(new MsgWriter(Msg.VideoStart).I32(gen).Str(enc.Codec).I32(w).I32(h).Str(enc.Name).Build(), Cts.Token).Wait(Cts.Token);

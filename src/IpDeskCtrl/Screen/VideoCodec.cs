@@ -342,6 +342,7 @@ namespace IpDeskCtrl.Screen
         public string Error { get; private set; } = "";
 
         public int Fps { get; }
+        public bool Hardware => _hw;
 
         public VideoEncoder(Ffmpeg.Encoder enc, int w, int h, int kbps, int fps, Action<byte[]> output)
         {
