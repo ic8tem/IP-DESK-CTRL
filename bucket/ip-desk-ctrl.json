@@ -1,21 +1,21 @@
 {
-    "version": "0.5.32",
+    "version": "0.5.33",
     "description": "Desktop remoto cifrato con numero fisso di 10 cifre",
     "homepage": "https://github.com/ic8tem/IP-DESK-CTRL",
     "license": "GPL-3.0-or-later",
     "notes": "IP-DESK-CTRL si aggiorna da solo (usa scoop update). Le impostazioni stanno in %APPDATA%\\IP-DESK-CTRL.",
     "architecture": {
         "64bit": {
-            "url": "https://github.com/ic8tem/IP-DESK-CTRL/releases/download/v0.5.32/IP-DESK-CTRL-0.5.32-win-x64-portatile.zip",
-            "hash": "b41c7d2b447e899bbe510b6ccfd570cfd8c2fdb4a8ee9c43e19e3093e63203da"
+            "url": "https://github.com/ic8tem/IP-DESK-CTRL/releases/download/v0.5.33/IP-DESK-CTRL-0.5.33-win-x64-portatile.zip",
+            "hash": "c8c1098a33d21af5b3bc6a6be830748f986d0ec3034c2c6b0145be1b6bd14ac6"
         },
         "32bit": {
-            "url": "https://github.com/ic8tem/IP-DESK-CTRL/releases/download/v0.5.32/IP-DESK-CTRL-0.5.32-win-x86-portatile.zip",
-            "hash": "b93af6e53802704eb4d379e38db684e57cf9a2c66c34a84d92d34355b519b6b9"
+            "url": "https://github.com/ic8tem/IP-DESK-CTRL/releases/download/v0.5.33/IP-DESK-CTRL-0.5.33-win-x86-portatile.zip",
+            "hash": "bddebb64361d725782a2269b23cdac4a6de45219d8c9491b3bd1390ea6678812"
         },
         "arm64": {
-            "url": "https://github.com/ic8tem/IP-DESK-CTRL/releases/download/v0.5.32/IP-DESK-CTRL-0.5.32-win-arm64-portatile.zip",
-            "hash": "2618549f0193b52f51cb6d0b353bbf89b84928dc0ad1022d0df7c5923b183429"
+            "url": "https://github.com/ic8tem/IP-DESK-CTRL/releases/download/v0.5.33/IP-DESK-CTRL-0.5.33-win-arm64-portatile.zip",
+            "hash": "f48f117543a46b72d056043a059ad222f68aa59d830b8ec4cb2f3cbff6426f86"
         }
     },
     "bin": "IP-DESK-CTRL.exe",
