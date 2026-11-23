@@ -395,16 +395,60 @@ namespace IpDeskCtrl.Desktop
         public static string? ConsoleUserHome()
         {
             uint session = WTSGetActiveConsoleSessionId();
-            if (session == 0xFFFFFFFF || !WTSQueryUserToken(session, out IntPtr tok)) return null;
+            if (session == 0xFFFFFFFF) { HomeProblem("nessuna sessione della console"); return null; }
+            if (WTSQueryUserToken(session, out IntPtr tok))
+            {
+                try
+                {
+                    // 1) cartella del profilo dal token dell'utente
+                    int size = 260;
+                    var sb = new StringBuilder(size + 1);
+                    if (GetUserProfileDirectoryW(tok, sb, ref size) && sb.Length > 0) return sb.ToString();
+                    if (size > 260) { sb = new StringBuilder(size + 1); if (GetUserProfileDirectoryW(tok, sb, ref size) && sb.Length > 0) return sb.ToString(); }
+                    // 2) dal SID dell'utente, nel registro (ProfileList)
+                    using var id = new WindowsIdentity(tok);
+                    string? sid = id.User?.Value;
+                    if (sid != null)
+                    {
+                        using var k = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList\" + sid);
+                        if (k?.GetValue("ProfileImagePath") is string pi && pi.Length > 0) return Environment.ExpandEnvironmentVariables(pi);
+                    }
+                    HomeProblem("profilo dell'utente non trovato (errore " + Marshal.GetLastWin32Error() + ")");
+                }
+                catch (Exception ex) { HomeProblem(ex.Message); }
+                finally { CloseHandle(tok); }
+            }
+            else HomeProblem("utente della console non raggiungibile (WTSQueryUserToken, errore " + Marshal.GetLastWin32Error() + ")");
+            // 3) dal nome dell'utente della sessione: C:\Users\nome
             try
             {
-                int size = 0;
-                GetUserProfileDirectoryW(tok, null, ref size);
-                var sb = new StringBuilder(size + 1);
-                return GetUserProfileDirectoryW(tok, sb, ref size) ? sb.ToString() : null;
+                if (WTSQuerySessionInformationW(IntPtr.Zero, session, 5 /* WTSUserName */, out IntPtr buf, out _))
+                {
+                    string? name = Marshal.PtrToStringUni(buf);
+                    WTSFreeMemory(buf);
+                    if (!string.IsNullOrEmpty(name))
+                    {
+                        string users = Path.GetDirectoryName(Environment.GetEnvironmentVariable("PUBLIC") ?? @"C:\Users\Public") ?? @"C:\Users";
+                        string guess = Path.Combine(users, name);
+                        if (Directory.Exists(guess)) return guess;
+                    }
+                }
             }
-            finally { CloseHandle(tok); }
+            catch { }
+            return null;
         }
+
+        private static string _homeLogged = "";
+        private static void HomeProblem(string why)
+        {
+            if (why == _homeLogged) return;
+            _homeLogged = why;
+            SessionLog.Write("FILE cartella dell'utente collegato a Windows: " + why);
+        }
+
+        [DllImport("wtsapi32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+        private static extern bool WTSQuerySessionInformationW(IntPtr server, uint session, int infoClass, out IntPtr buffer, out int bytes);
+        [DllImport("wtsapi32.dll")] private static extern void WTSFreeMemory(IntPtr memory);
 
         [DllImport("advapi32.dll", SetLastError = true)]
         private static extern bool GetTokenInformation(IntPtr token, int cls, out IntPtr info, int length, out int returned);

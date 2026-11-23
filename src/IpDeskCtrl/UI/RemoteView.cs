@@ -177,7 +177,46 @@ namespace IpDeskCtrl.UI
 
         public (int x, int y)? ImagePoint(Point local) => ToImage(local);
 
-        private bool _leftDown, _dragOut;
+        private bool _leftDown, _dragOut, _dragOutLogged;
+        private DispatcherTimer? _dragPoll;
+
+        [StructLayout(LayoutKind.Sequential)] private struct CursorPoint { public int X, Y; }
+        [DllImport("user32.dll")] private static extern bool GetCursorPos(out CursorPoint p);
+        [DllImport("user32.dll")] private static extern short GetAsyncKeyState(int vk);
+        [DllImport("user32.dll")] private static extern int GetSystemMetrics(int index);
+
+        /// <summary>
+        /// Windows: mentre il tasto sinistro è premuto si guarda dove sta davvero il puntatore sullo schermo.
+        /// Gli spostamenti che arrivano alla finestra non bastavano: uscendo di scatto dalla finestra l'ultimo
+        /// punto visto restava dentro l'immagine e il trascinamento verso questo PC non partiva mai.
+        /// </summary>
+        private void StartDragPoll()
+        {
+            if (!OperatingSystem.IsWindows() || DragOutEnabled == null) return;
+            _dragPoll ??= new DispatcherTimer(TimeSpan.FromMilliseconds(30), DispatcherPriority.Input, (_, _) => DragPollTick());
+            _dragPoll.Start();
+        }
+
+        private void DragPollTick()
+        {
+            if (!_leftDown || _dragOut || !CanInput || !OperatingSystem.IsWindows()) { _dragPoll?.Stop(); return; }
+            if (!GetCursorPos(out var pt)) return;
+            var tl = this.PointToScreen(new Point(0, 0));
+            var br = this.PointToScreen(new Point(Bounds.Width, Bounds.Height));
+            bool inside = pt.X >= tl.X + 1 && pt.Y >= tl.Y + 1 && pt.X < br.X - 1 && pt.Y < br.Y - 1;
+            int vk = GetSystemMetrics(23 /* SM_SWAPBUTTON */) != 0 ? 0x02 : 0x01;
+            bool down = (GetAsyncKeyState(vk) & 0x8000) != 0;
+            if (inside) { if (!down) _dragPoll?.Stop(); return; }
+            _dragPoll?.Stop();
+            if (DragOutEnabled?.Invoke() != true)
+            {
+                if (!_dragOutLogged) { _dragOutLogged = true; SessionLog.Write("TRASCINAMENTO uscito dalla finestra del visore, ma l'altro PC non sa mandare i file trascinati (serve la 0.5.29 o successiva)"); }
+                return;
+            }
+            _dragOut = true;
+            SessionLog.Write("TRASCINAMENTO puntatore uscito dalla finestra del visore con il tasto " + (down ? "premuto" : "già rilasciato"));
+            DragOutRequested?.Invoke();
+        }
         /// <summary>Il PC remoto sa raccogliere un trascinamento portato fuori dalla finestra (0.5.29+).</summary>
         public Func<bool>? DragOutEnabled { get; set; }
         public event Action? DragOutRequested;
@@ -325,7 +364,7 @@ namespace IpDeskCtrl.UI
             if (!CanInput) return;
             e.Pointer.Capture(this);
             if (e.Pointer.Type == PointerType.Touch) { TouchPressed(e.Pointer.Id, e.GetPosition(this)); e.Handled = true; return; }
-            if (e.GetCurrentPoint(this).Properties.PointerUpdateKind == PointerUpdateKind.LeftButtonPressed) { _leftDown = true; _dragOut = false; }
+            if (e.GetCurrentPoint(this).Properties.PointerUpdateKind == PointerUpdateKind.LeftButtonPressed) { _leftDown = true; _dragOut = false; StartDragPoll(); }
             SendButton(e.GetCurrentPoint(this).Properties.PointerUpdateKind, e.GetPosition(this));
             e.Handled = true;
         }
