@@ -36,6 +36,10 @@ Nella plancia, il menu **Video automatico** permette di forzare **H.264**, **H.2
 
 Le altre qualità vanno a 25 fotogrammi al secondo. Quando codifica la scheda video (Quick Sync, NVENC, AMF…) si resta comunque al massimo a 30 fotogrammi al secondo e 12 Mbit/s, per prudenza dopo i blocchi visti con `hevc_qsv`.
 
+## Schermo fermo
+
+Se lo schermo del PC comandato non cambia e chi guarda non muove il mouse e non preme tasti, la cattura rallenta: dopo 3 secondi 5 volte al secondo, dopo 30 secondi 2 volte al secondo. Basta un movimento del mouse (anche sul PC comandato), un tasto o un cambio dello schermo per tornare subito alla velocità piena. Nelle sessioni lunghe la scheda grafica lavora molto meno; nel registro della sessione compare «SCHERMO fermo da 30 s».
+
 ## Immagine adattata alla finestra
 
 Con lo zoom su **Adatta**, il PC remoto non manda più pixel di quelli che la finestra di chi guarda può mostrare: uno schermo 4K visto in una finestra da 1280×720 viaggia a 1280×720. Si risparmia banda e lavoro su entrambi i PC, senza perdere niente a video. Con uno zoom fisso (100 %, 150 %…) o ingrandendo con le dita sul telefono torna l'immagine a risoluzione piena. Funziona anche con chi ha solo la visione, perché non cambia la risoluzione del PC remoto (quella la cambia il pulsante **Risoluzione adatta**). Serve la versione 0.5.32 su entrambi i PC.
