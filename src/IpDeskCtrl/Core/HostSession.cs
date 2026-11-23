@@ -72,6 +72,10 @@ namespace IpDeskCtrl.Core
         private long _fitChangedAt;
         private volatile bool _viewerHidden;     // finestra del visore ridotta a icona: un fotogramma al secondo, qualità ferma
         private long _lastHiddenFrame;
+        // schermo fermo: si cattura meno spesso (meno lavoro per la grafica nelle sessioni di ore)
+        private long _lastChangeAt = Environment.TickCount64, _lastInputAt, _lastCaptureAt;
+        private byte[] _prevRaw = Array.Empty<byte>();
+        private int _prevW, _prevH, _idleLevel;
 
         /// <summary>
         /// Questo PC sta per aggiornarsi: il visore lo sa e si ricollega da solo; il suo numero rientra senza conferma
@@ -408,6 +412,7 @@ namespace IpDeskCtrl.Core
 
         private void HandleInput(MsgReader r)
         {
+            _lastInputAt = Environment.TickCount64;      // chi comanda sta lavorando: cattura subito a piena velocità
             var sink = _input;
             if (sink == null || !_allowInput) return;
             try
@@ -755,6 +760,9 @@ namespace IpDeskCtrl.Core
 
                     var area = _area;
                     if (area == null || _screen == null) { Thread.Sleep(50); continue; }
+                    int idleWait = IdleInterval();
+                    if (idleWait > 0 && Environment.TickCount64 - _lastCaptureAt < idleWait && !_fullNext) { Thread.Sleep(10); continue; }
+                    _lastCaptureAt = Environment.TickCount64;
                     if (!_screen.Capture(area, raw))
                     {
                         _statFail++;
@@ -776,6 +784,7 @@ namespace IpDeskCtrl.Core
                         else if (_ackMs < 150) { if (goodSince == 0) goodSince = now; if (_autoLevel > 0 && now - goodSince > 4000 && now - lastAutoChange > 4000) { _autoLevel--; lastAutoChange = now; goodSince = now; } }
                         else goodSince = 0;
                     }
+                    if (FrameChanged(raw)) _lastChangeAt = Environment.TickCount64;
                     var (q, scale) = Quality.Of(_quality, _autoLevel);
                     Frame f = ScaleForViewer(raw, half, scale);
                     int interval = FrameInterval();
@@ -784,7 +793,7 @@ namespace IpDeskCtrl.Core
                     if (SendVideo(f, _quality))
                     {
                         _fullNext = false;
-                        CursorUpdate(area, f, ref lastCx, ref lastCy);
+                        CursorMoved(area, f, ref lastCx, ref lastCy);
                         long elv = sw.ElapsedMilliseconds - t0;
                         Thread.Sleep((int)Math.Max(3, interval - elv));
                         continue;
@@ -808,7 +817,7 @@ namespace IpDeskCtrl.Core
                         if (id == 1) SessionLog.Write($"SCHERMO primo fotogramma {f.Width}×{f.Height} ({area.Name} {area.W}×{area.H} a {area.X},{area.Y}) · {tiles.Count} riquadri · {encMs} ms");
                     }
 
-                    CursorUpdate(area, f, ref lastCx, ref lastCy);
+                    CursorMoved(area, f, ref lastCx, ref lastCy);
                 }
                 catch (OperationCanceledException) { break; }
                 catch (AggregateException) when (Cts.IsCancellationRequested) { break; }
@@ -821,6 +830,45 @@ namespace IpDeskCtrl.Core
                 long el = sw.ElapsedMilliseconds - t0;
                 Thread.Sleep((int)Math.Max(3, FrameInterval() - el));
             }
+        }
+
+        private void CursorMoved(MonitorInfo area, Frame f, ref int lastCx, ref int lastCy)
+        {
+            int cx = lastCx, cy = lastCy;
+            CursorUpdate(area, f, ref lastCx, ref lastCy);
+            if (cx != lastCx || cy != lastCy) _lastChangeAt = Environment.TickCount64;
+        }
+
+        /// <summary>
+        /// Schermo fermo e nessun comando da chi guarda: dopo 3 s si cattura 5 volte al secondo, dopo 30 s 2 volte.
+        /// Basta un movimento del mouse (di chi comanda o sul PC), un tasto o un cambio dello schermo per tornare
+        /// subito alla velocità piena. La cattura (BitBlt) fa lavorare la grafica anche con la codifica software:
+        /// in sessioni di ore a schermo fermo era lavoro inutile (blocco del PC IW2DNI del 22/11 con x264).
+        /// </summary>
+        private int IdleInterval()
+        {
+            long idle = Environment.TickCount64 - Math.Max(_lastChangeAt, _lastInputAt);
+            int level = idle > 30000 ? 2 : idle > 3000 ? 1 : 0;
+            if (level != _idleLevel)
+            {
+                if (level == 2) SessionLog.Write("SCHERMO fermo da 30 s: cattura rallentata a 2 volte al secondo");
+                else if (_idleLevel == 2 && level == 0) SessionLog.Write("SCHERMO di nuovo in movimento: cattura a piena velocità");
+                _idleLevel = level;
+            }
+            return level switch { 2 => 500, 1 => 200, _ => 0 };
+        }
+
+        /// <summary>Confronta la cattura con la precedente (memcmp: meno di 1 ms per uno schermo Full HD).</summary>
+        private bool FrameChanged(Frame raw)
+        {
+            int len = raw.Stride * raw.Height;
+            if (len <= 0 || len > raw.Data.Length) return true;
+            var cur = raw.Data.AsSpan(0, len);
+            if (raw.Width == _prevW && raw.Height == _prevH && _prevRaw.Length == len && cur.SequenceEqual(_prevRaw)) return false;
+            if (_prevRaw.Length != len) _prevRaw = new byte[len];
+            cur.CopyTo(_prevRaw);
+            _prevW = raw.Width; _prevH = raw.Height;
+            return true;
         }
 
         /// <summary>
