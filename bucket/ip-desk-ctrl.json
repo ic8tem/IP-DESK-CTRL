@@ -7,15 +7,15 @@
     "architecture": {
         "64bit": {
             "url": "https://github.com/ic8tem/IP-DESK-CTRL/releases/download/v0.5.35/IP-DESK-CTRL-0.5.35-win-x64-portatile.zip",
-            "hash": "f6c9c20e1832a6a9cc394aefd6e7c200d9ccee7cad828382486760aa5d2eb5ce"
+            "hash": "3eb1a14fb61e831172564cfba081cb3e39f6e0578e1403c007aee75e6a416ffa"
         },
         "32bit": {
             "url": "https://github.com/ic8tem/IP-DESK-CTRL/releases/download/v0.5.35/IP-DESK-CTRL-0.5.35-win-x86-portatile.zip",
-            "hash": "178c460293e6751eb3ccaa99ca1dcc9fdb291014a2393645ec02887095c627c4"
+            "hash": "25c273aa3e7a91f4cb79bb6a2d651e65c2ca47a36a6951f0923d402a03fca97e"
         },
         "arm64": {
             "url": "https://github.com/ic8tem/IP-DESK-CTRL/releases/download/v0.5.35/IP-DESK-CTRL-0.5.35-win-arm64-portatile.zip",
-            "hash": "ea3962851fc92faf425c5b3faa08075f0784a911385b35924fd8b99950a74748"
+            "hash": "0af30503609300ae5d35016104e2fa59d7a77795cc4ae054f8696f38330cb28d"
         }
     },
     "bin": "IP-DESK-CTRL.exe",
