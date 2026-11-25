@@ -80,6 +80,7 @@ namespace IpDeskCtrl.Core
             get
             {
                 string? f = ReceiveFolder;
+                if (f != null && f.Contains(@"\config\systemprofile", StringComparison.OrdinalIgnoreCase)) f = ReceiveFolder = null;
                 if (f == null)
                 {
                     // nel servizio il profilo «proprio» è quello di sistema (C:\Windows\system32\config\systemprofile),

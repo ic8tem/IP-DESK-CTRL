@@ -147,13 +147,19 @@ namespace IpDeskCtrl.Screen
                 Interlocked.Exchange(ref _nextRevive, 0);
                 StartWith(launchHelper);
                 // i file ricevuti vanno in Scaricati/IP-DESK-CTRL dell'utente (non nel profilo di sistema del servizio)
-                var hc = Current;
-                if (hc != null)
+                // (il processo di supporto gira come SYSTEM: la sua risposta era il profilo di sistema, invisibile all'utente)
+                string? home = null;
+                try { home = Platform.UserHome?.Invoke(); } catch { }
+                if (home != null) Platform.ReceiveFolder = Path.Combine(home, "Downloads", "IP-DESK-CTRL");
+                else
                 {
-                    var (st, data) = hc.Ask(CmdUserFolder);
-                    if (st == 0 && data.Length > 0) Platform.ReceiveFolder = Encoding.UTF8.GetString(data);
-                    else SessionLog.Write("FILE cartella Scaricati dell'utente non letta dal processo di sistema: uso il profilo dell'utente collegato");
+                    var hc = Current;
+                    string got = "";
+                    if (hc != null) { var (st, data) = hc.Ask(CmdUserFolder); if (st == 0) got = Encoding.UTF8.GetString(data); }
+                    if (got.Length > 0 && !got.Contains("systemprofile", StringComparison.OrdinalIgnoreCase)) Platform.ReceiveFolder = got;
+                    else { Platform.ReceiveFolder = null; SessionLog.Write("FILE cartella dell'utente collegato non trovata: i file ricevuti vanno in Pubblica\\Downloads\\IP-DESK-CTRL"); }
                 }
+                SessionLog.Write("FILE i file ricevuti vanno in " + Platform.Received);
                 return Current == null ? "Il processo di sistema non è partito: lo schermo del PC remoto potrebbe non essere visibile." : "";
             });
             Platform.HostEnded = Stop;
@@ -345,9 +351,11 @@ namespace IpDeskCtrl.Screen
                         case CmdClipSetFiles:
                         {
                             int n = r.ReadInt32();
+                            bool move = n < 0;               // numero negativo = da spostare all'incolla
+                            n = Math.Abs(n);
                             var list = new List<string>();
                             for (int i = 0; i < n; i++) list.Add(r.ReadString());
-                            Reply(bw, WinClip.SetFiles(list) ? (byte)0 : (byte)1, Array.Empty<byte>());
+                            Reply(bw, WinClip.SetFiles(list, move) ? (byte)0 : (byte)1, Array.Empty<byte>());
                             break;
                         }
                         case CmdUserFolder:
@@ -470,7 +478,7 @@ namespace IpDeskCtrl.Screen
             LastFilesProblem = "nessuna risposta dagli appunti entro 3 secondi (il programma che ha copiato non consegna i file)";
             return new List<string>();
         }
-        public static bool SetFiles(List<string> paths) => OnClipThread(() => SetFilesHere(paths));
+        public static bool SetFiles(List<string> paths, bool move = false) => OnClipThread(() => SetFilesHere(paths, move));
 
         private const uint CF_HDROP = 15;
         [DllImport("shell32.dll", CharSet = CharSet.Unicode)] private static extern uint DragQueryFileW(IntPtr drop, uint index, StringBuilder? file, uint size);
@@ -542,7 +550,7 @@ namespace IpDeskCtrl.Screen
         }
 
         /// <summary>File negli appunti come li mette Esplora file (CF_HDROP + «copia»): pronti per Ctrl+V.</summary>
-        private static bool SetFilesHere(List<string> paths)
+        private static bool SetFilesHere(List<string> paths, bool move)
         {
             if (paths.Count == 0 || !Open()) return false;
             try
@@ -563,7 +571,7 @@ namespace IpDeskCtrl.Screen
                 if (e != IntPtr.Zero)
                 {
                     IntPtr ep = GlobalLock(e);
-                    Marshal.WriteInt32(ep, 1);       // DROPEFFECT_COPY
+                    Marshal.WriteInt32(ep, move ? 2 : 1);   // DROPEFFECT_MOVE (file trascinati: vanno dove li lasci) o COPY
                     GlobalUnlock(e);
                     if (SetClipboardData(effect, e) == IntPtr.Zero) GlobalFree(e);
                 }
@@ -639,7 +647,8 @@ namespace IpDeskCtrl.Screen
         public Task<string?> GetTextAsync() => _text.GetTextAsync();
         public Task SetTextAsync(string text) => _text.SetTextAsync(text);
         public Task<List<string>> GetFilesAsync() => Task.Run(() => { try { return WinClip.GetFiles(); } catch { return new List<string>(); } });
-        public Task<bool> SetFilesAsync(List<string> paths) => Task.Run(() => { try { return paths.Count > 0 && WinClip.SetFiles(paths); } catch { return false; } });
+        public Task<bool> SetFilesAsync(List<string> paths) => SetFilesAsync(paths, false);
+        public Task<bool> SetFilesAsync(List<string> paths, bool move) => Task.Run(() => { try { return paths.Count > 0 && WinClip.SetFiles(paths, move); } catch { return false; } });
     }
 
     /// <summary>Servizio: appunti dell'utente attraverso il processo di supporto (testo e file).</summary>
@@ -669,11 +678,12 @@ namespace IpDeskCtrl.Screen
             return list;
         });
 
-        public Task<bool> SetFilesAsync(List<string> paths) => Task.Run(() =>
+        public Task<bool> SetFilesAsync(List<string> paths) => SetFilesAsync(paths, false);
+        public Task<bool> SetFilesAsync(List<string> paths, bool move) => Task.Run(() =>
         {
             var c = WinHelper.Current;
             if (c == null || paths.Count == 0) return false;
-            var (st, _) = c.Ask(WinHelper.CmdClipSetFiles, w => { w.Write(paths.Count); foreach (var p in paths) w.Write(p); });
+            var (st, _) = c.Ask(WinHelper.CmdClipSetFiles, w => { w.Write(move ? -paths.Count : paths.Count); foreach (var p in paths) w.Write(p); });
             return st == 0;
         });
     }

@@ -134,6 +134,10 @@ Nella cartella dei dati (Impostazioni › Apri cartella dati): `sessioni.log`, u
 
 Le versioni con protocollo diverso non si collegano tra loro: aggiorna tutti i dispositivi alla stessa versione principale (la 0.4.1 si collega con la 0.4.0; la 0.5 si collega con la 0.4).
 
+### 0.5.35 — 25 novembre 2026
+- **File trascinati sul PC remoto: vanno dove li lasci**: lasciati sulla Scrivania finiscono sulla Scrivania, lasciati in una cartella aperta finiscono in quella cartella (l'incolla ora li sposta invece di copiarli). Se lì non si può incollare restano in Scaricati\\IP-DESK-CTRL dell'utente.
+- **Cartella dei file ricevuti con il servizio di Windows**: il processo di supporto gira come utente di sistema e indicava il profilo di sistema (`C:\\Windows\\system32\\config\\systemprofile`), invisibile all'utente e illeggibile per Esplora file. Ora la cartella la trova il servizio partendo dall'utente collegato a Windows, e il profilo di sistema viene sempre scartato. All'inizio di ogni collegamento il registro dice dove andranno i file.
+
 ### 0.5.34 — 23 novembre 2026
 - **Trascinamento dal PC remoto verso il tuo**: su Windows, mentre tieni premuto il tasto, il programma guarda dove sta davvero il puntatore sullo schermo; appena esce dalla finestra del visore chiede i file al PC remoto. Prima si basava solo sugli spostamenti visti dalla finestra e, uscendo di scatto, il trascinamento non partiva. Se l'altro PC ha una versione troppo vecchia, il registro lo dice.
 - **File ricevuti dal servizio di Windows**: non finiscono più in `C:\Windows\system32\config\systemprofile\Downloads`. Il servizio cerca la cartella dell'utente collegato in tre modi (profilo, registro, nome utente) e scrive nel registro quale non ha funzionato; se fallissero tutti usa `C:\Users\Public\Downloads\IP-DESK-CTRL`.

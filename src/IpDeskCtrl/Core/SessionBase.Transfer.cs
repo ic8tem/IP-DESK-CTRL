@@ -306,7 +306,8 @@ namespace IpDeskCtrl.Core
             var clip = Platform.Clipboard;
             if (clip != null && top.Count > 0)
             {
-                try { onClip = await clip.SetFilesAsync(top); } catch { }
+                // trascinati sul PC remoto: all'incolla si spostano dove sono stati lasciati (Scrivania, cartella…)
+                try { onClip = await clip.SetFilesAsync(top, inc.Purpose == TransferPurpose.Drop); } catch { }
             }
             SessionLog.Write($"FILE ricevuti {inc.Files.Count} file in {inc.Folder}" + (onClip ? " (negli appunti)" : ""));
             Report(new TransferProgress(id, false, inc.Files.Count, inc.Total, inc.Total, true,
