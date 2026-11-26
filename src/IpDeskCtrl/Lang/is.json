@@ -731,5 +731,7 @@
  "Rete locale (bassa latenza)": "Staðarnet (lítil töf)",
  "Alta": "Há",
  "Media": "Miðlungs",
- "Bassa (connessioni lente)": "Lág (hægar tengingar)"
+ "Bassa (connessioni lente)": "Lág (hægar tengingar)",
+ "quel PC ha una chiave diversa dalle altre volte: potrebbe essere qualcuno che si spaccia per lui, collegamento interrotto": "þessi tölva er með annan lykil en áður: einhver gæti verið að þykjast vera hún, tengingu rofið",
+ "troppe richieste: riprova tra qualche minuto": "of margar beiðnir: reyndu aftur eftir nokkrar mínútur"
 }

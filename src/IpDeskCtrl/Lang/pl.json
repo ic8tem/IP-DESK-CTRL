@@ -731,5 +731,7 @@
  "Rete locale (bassa latenza)": "Sieć lokalna (niskie opóźnienie)",
  "Alta": "Wysoka",
  "Media": "Średnia",
- "Bassa (connessioni lente)": "Niska (wolne połączenia)"
+ "Bassa (connessioni lente)": "Niska (wolne połączenia)",
+ "quel PC ha una chiave diversa dalle altre volte: potrebbe essere qualcuno che si spaccia per lui, collegamento interrotto": "ten komputer ma inny klucz niż wcześniej: ktoś może się pod niego podszywać, połączenie przerwane",
+ "troppe richieste: riprova tra qualche minuto": "zbyt wiele żądań: spróbuj ponownie za kilka minut"
 }

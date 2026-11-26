@@ -731,5 +731,7 @@
  "Rete locale (bassa latenza)": "مقامی نیٹ ورک (کم تاخیر)",
  "Alta": "اعلیٰ",
  "Media": "درمیانی",
- "Bassa (connessioni lente)": "کم (سست کنکشن)"
+ "Bassa (connessioni lente)": "کم (سست کنکشن)",
+ "quel PC ha una chiave diversa dalle altre volte: potrebbe essere qualcuno che si spaccia per lui, collegamento interrotto": "اس پی سی کی کلید پچھلی بار سے مختلف ہے: ہو سکتا ہے کوئی اس کا روپ دھار رہا ہو، رابطہ منقطع",
+ "troppe richieste: riprova tra qualche minuto": "بہت زیادہ درخواستیں: چند منٹ بعد دوبارہ کوشش کریں"
 }

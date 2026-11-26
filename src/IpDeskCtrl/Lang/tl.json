@@ -731,5 +731,7 @@
  "Rete locale (bassa latenza)": "Lokal na network (mababang latency)",
  "Alta": "Mataas",
  "Media": "Katamtaman",
- "Bassa (connessioni lente)": "Mababa (mabagal na koneksyon)"
+ "Bassa (connessioni lente)": "Mababa (mabagal na koneksyon)",
+ "quel PC ha una chiave diversa dalle altre volte: potrebbe essere qualcuno che si spaccia per lui, collegamento interrotto": "iba ang susi ng PC na iyon kaysa dati: baka may nagpapanggap na siya, itinigil ang koneksyon",
+ "troppe richieste: riprova tra qualche minuto": "napakaraming kahilingan: subukan ulit pagkalipas ng ilang minuto"
 }

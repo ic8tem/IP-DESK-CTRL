@@ -731,5 +731,7 @@
  "Rete locale (bassa latenza)": "شبكة محلية (زمن انتقال منخفض)",
  "Alta": "عالية",
  "Media": "متوسطة",
- "Bassa (connessioni lente)": "منخفضة (اتصالات بطيئة)"
+ "Bassa (connessioni lente)": "منخفضة (اتصالات بطيئة)",
+ "quel PC ha una chiave diversa dalle altre volte: potrebbe essere qualcuno che si spaccia per lui, collegamento interrotto": "هذا الحاسوب لديه مفتاح مختلف عن المرات السابقة: قد يكون هناك من ينتحل صفته، تم قطع الاتصال",
+ "troppe richieste: riprova tra qualche minuto": "طلبات كثيرة جدًا: أعد المحاولة بعد بضع دقائق"
 }

@@ -134,6 +134,13 @@ Nella cartella dei dati (Impostazioni › Apri cartella dati): `sessioni.log`, u
 
 Le versioni con protocollo diverso non si collegano tra loro: aggiorna tutti i dispositivi alla stessa versione principale (la 0.4.1 si collega con la 0.4.0; la 0.5 si collega con la 0.4).
 
+### 0.5.36 — 26 novembre 2026
+- **Elenco protetto dei PC «senza conferma»**: con il servizio di Windows l'elenco dei numeri che entrano senza conferma sta nella cartella del servizio (solo sistema e amministratori), non più nello storico condiviso che ogni utente del PC può modificare. Prima un programma maligno, anche da un altro account senza privilegi, poteva aggiungersi da solo. I numeri già autorizzati passano da soli nell'elenco protetto e il registro li elenca con righe «SICUREZZA».
+- **Chiave del PC chiamato ricordata**: se lo stesso numero risponde con una chiave diversa dalle altre volte, il collegamento si ferma prima di mandare qualunque cosa (password ricordata compresa).
+- **Freno alle richieste**: un numero rifiutato non può richiedere per 2 minuti; oltre 5 richieste in un minuto da numeri sconosciuti, per 3 minuti quelli sconosciuti vengono respinti da soli. Chi è nella rubrica passa sempre.
+- **Wake-on-LAN**: la richiesta di accendere un PC della stessa rete è accettata solo dai PC dell'elenco protetto.
+- **GitHub**: analisi CodeQL a ogni modifica, avvisi e aggiornamenti di sicurezza Dependabot, segnalazioni private delle falle (`SECURITY.md`).
+
 ### 0.5.35 — 25 novembre 2026
 - **File trascinati sul PC remoto: vanno dove li lasci**: lasciati sulla Scrivania finiscono sulla Scrivania, lasciati in una cartella aperta finiscono in quella cartella (l'incolla ora li sposta invece di copiarli). Se lì non si può incollare restano in Scaricati\IP-DESK-CTRL dell'utente.
 - **Cartella dei file ricevuti con il servizio di Windows**: il processo di supporto gira come utente di sistema e indicava il profilo di sistema (`C:\Windows\system32\config\systemprofile`), invisibile all'utente e illeggibile per Esplora file. Ora la cartella la trova il servizio partendo dall'utente collegato a Windows, e il profilo di sistema viene sempre scartato. All'inizio di ogni collegamento il registro dice dove andranno i file.

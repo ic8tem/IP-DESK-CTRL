@@ -731,5 +731,7 @@
  "Rete locale (bassa latenza)": "로컬 네트워크(저지연)",
  "Alta": "높음",
  "Media": "보통",
- "Bassa (connessioni lente)": "낮음(느린 연결)"
+ "Bassa (connessioni lente)": "낮음(느린 연결)",
+ "quel PC ha una chiave diversa dalle altre volte: potrebbe essere qualcuno che si spaccia per lui, collegamento interrotto": "이 PC의 키가 이전과 다릅니다: 누군가 이 PC를 사칭하고 있을 수 있어 연결을 중단했습니다",
+ "troppe richieste: riprova tra qualche minuto": "요청이 너무 많습니다: 몇 분 후에 다시 시도하세요"
 }

@@ -731,5 +731,7 @@
  "Rete locale (bassa latenza)": "Lokalt netværk (lav forsinkelse)",
  "Alta": "Høj",
  "Media": "Middel",
- "Bassa (connessioni lente)": "Lav (langsomme forbindelser)"
+ "Bassa (connessioni lente)": "Lav (langsomme forbindelser)",
+ "quel PC ha una chiave diversa dalle altre volte: potrebbe essere qualcuno che si spaccia per lui, collegamento interrotto": "den pc har en anden nøgle end tidligere: nogen udgiver sig måske for at være den, forbindelsen afbrudt",
+ "troppe richieste: riprova tra qualche minuto": "for mange anmodninger: prøv igen om et par minutter"
 }

@@ -768,7 +768,7 @@ namespace IpDeskCtrl.Core
         {
             string from = note.SenderNumber;
             var h = S.Find(from);
-            if (h == null || !h.AllowUnattended || h.PeerKey != Convert.ToHexString(note.SenderKey))
+            if (h == null || !h.AllowUnattended || h.PeerKey != Convert.ToHexString(note.SenderKey) || !S.IsTrusted(from, h.PeerKey))
             {
                 Log($"WOL richiesta di {Identity.Format(from)} ignorata: non è autorizzato a entrare senza conferma");
                 return;

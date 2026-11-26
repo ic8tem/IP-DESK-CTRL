@@ -731,5 +731,7 @@
  "Rete locale (bassa latenza)": "Helyi hálózat (alacsony késleltetés)",
  "Alta": "Magas",
  "Media": "Közepes",
- "Bassa (connessioni lente)": "Alacsony (lassú kapcsolatok)"
+ "Bassa (connessioni lente)": "Alacsony (lassú kapcsolatok)",
+ "quel PC ha una chiave diversa dalle altre volte: potrebbe essere qualcuno che si spaccia per lui, collegamento interrotto": "ennek a gépnek más a kulcsa, mint korábban: lehet, hogy valaki kiadja magát érte, a kapcsolat megszakadt",
+ "troppe richieste: riprova tra qualche minuto": "túl sok kérés: próbálja újra néhány perc múlva"
 }

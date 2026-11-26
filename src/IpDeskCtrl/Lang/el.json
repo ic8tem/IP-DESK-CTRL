@@ -731,5 +731,7 @@
  "Rete locale (bassa latenza)": "Τοπικό δίκτυο (χαμηλή καθυστέρηση)",
  "Alta": "Υψηλή",
  "Media": "Μεσαία",
- "Bassa (connessioni lente)": "Χαμηλή (αργές συνδέσεις)"
+ "Bassa (connessioni lente)": "Χαμηλή (αργές συνδέσεις)",
+ "quel PC ha una chiave diversa dalle altre volte: potrebbe essere qualcuno che si spaccia per lui, collegamento interrotto": "αυτός ο υπολογιστής έχει διαφορετικό κλειδί από άλλες φορές: ίσως κάποιος προσποιείται ότι είναι αυτός, η σύνδεση διακόπηκε",
+ "troppe richieste: riprova tra qualche minuto": "πάρα πολλά αιτήματα: δοκιμάστε ξανά σε λίγα λεπτά"
 }

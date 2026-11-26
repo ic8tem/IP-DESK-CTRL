@@ -731,5 +731,7 @@
  "Rete locale (bassa latenza)": "Локальна мережа (низька затримка)",
  "Alta": "Висока",
  "Media": "Середня",
- "Bassa (connessioni lente)": "Низька (повільні з'єднання)"
+ "Bassa (connessioni lente)": "Низька (повільні з'єднання)",
+ "quel PC ha una chiave diversa dalle altre volte: potrebbe essere qualcuno che si spaccia per lui, collegamento interrotto": "цей ПК має інший ключ, ніж раніше: можливо, хтось видає себе за нього, з'єднання перервано",
+ "troppe richieste: riprova tra qualche minuto": "забагато запитів: спробуйте ще раз за кілька хвилин"
 }

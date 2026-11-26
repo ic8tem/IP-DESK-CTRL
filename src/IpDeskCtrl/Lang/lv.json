@@ -731,5 +731,7 @@
  "Rete locale (bassa latenza)": "Lokālais tīkls (zems aizkavējums)",
  "Alta": "Augsta",
  "Media": "Vidēja",
- "Bassa (connessioni lente)": "Zema (lēni savienojumi)"
+ "Bassa (connessioni lente)": "Zema (lēni savienojumi)",
+ "quel PC ha una chiave diversa dalle altre volte: potrebbe essere qualcuno che si spaccia per lui, collegamento interrotto": "šim datoram ir cita atslēga nekā iepriekš: kāds varētu uzdoties par to, savienojums pārtraukts",
+ "troppe richieste: riprova tra qualche minuto": "pārāk daudz pieprasījumu: mēģiniet vēlreiz pēc dažām minūtēm"
 }

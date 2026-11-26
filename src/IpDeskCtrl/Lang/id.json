@@ -731,5 +731,7 @@
  "Rete locale (bassa latenza)": "Jaringan lokal (latensi rendah)",
  "Alta": "Tinggi",
  "Media": "Sedang",
- "Bassa (connessioni lente)": "Rendah (koneksi lambat)"
+ "Bassa (connessioni lente)": "Rendah (koneksi lambat)",
+ "quel PC ha una chiave diversa dalle altre volte: potrebbe essere qualcuno che si spaccia per lui, collegamento interrotto": "PC itu punya kunci yang berbeda dari sebelumnya: mungkin ada yang menyamar sebagai PC itu, koneksi dihentikan",
+ "troppe richieste: riprova tra qualche minuto": "terlalu banyak permintaan: coba lagi beberapa menit lagi"
 }

@@ -731,5 +731,7 @@
  "Rete locale (bassa latenza)": "เครือข่ายท้องถิ่น (หน่วงต่ำ)",
  "Alta": "สูง",
  "Media": "ปานกลาง",
- "Bassa (connessioni lente)": "ต่ำ (การเชื่อมต่อช้า)"
+ "Bassa (connessioni lente)": "ต่ำ (การเชื่อมต่อช้า)",
+ "quel PC ha una chiave diversa dalle altre volte: potrebbe essere qualcuno che si spaccia per lui, collegamento interrotto": "พีซีเครื่องนั้นมีคีย์ต่างจากครั้งก่อน: อาจมีคนแอบอ้างเป็นเครื่องนั้น ยกเลิกการเชื่อมต่อแล้ว",
+ "troppe richieste: riprova tra qualche minuto": "คำขอมากเกินไป: ลองใหม่ในอีกไม่กี่นาที"
 }

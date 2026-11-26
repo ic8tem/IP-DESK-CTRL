@@ -731,5 +731,7 @@
  "Rete locale (bassa latenza)": "רשת מקומית (השהיה נמוכה)",
  "Alta": "גבוהה",
  "Media": "בינונית",
- "Bassa (connessioni lente)": "נמוכה (חיבורים איטיים)"
+ "Bassa (connessioni lente)": "נמוכה (חיבורים איטיים)",
+ "quel PC ha una chiave diversa dalle altre volte: potrebbe essere qualcuno che si spaccia per lui, collegamento interrotto": "למחשב הזה יש מפתח שונה מבפעמים הקודמות: ייתכן שמישהו מתחזה אליו, החיבור נותק",
+ "troppe richieste: riprova tra qualche minuto": "יותר מדי בקשות: נסה שוב בעוד כמה דקות"
 }

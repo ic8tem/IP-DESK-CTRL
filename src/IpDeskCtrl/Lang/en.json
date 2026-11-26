@@ -731,5 +731,7 @@
  "Rete locale (bassa latenza)": "Local network (low latency)",
  "Alta": "High",
  "Media": "Medium",
- "Bassa (connessioni lente)": "Low (slow connections)"
+ "Bassa (connessioni lente)": "Low (slow connections)",
+ "quel PC ha una chiave diversa dalle altre volte: potrebbe essere qualcuno che si spaccia per lui, collegamento interrotto": "that PC has a different key from previous times: it may be someone impersonating it, connection stopped",
+ "troppe richieste: riprova tra qualche minuto": "too many requests: try again in a few minutes"
 }
