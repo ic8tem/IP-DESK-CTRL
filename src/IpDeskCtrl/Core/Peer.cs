@@ -43,7 +43,8 @@ namespace IpDeskCtrl.Core
 
         private readonly CancellationTokenSource _life = new();
         private PortManager? _pm;
-        private TcpListener? _listener;
+        private TcpListener? _listener, _listener6;
+        private long _pcpAt;                 // ultima richiesta PCP per il varco IPv6
         private int _extPort, _localPort;
         private bool _reachable;
         private IPAddress? _publicIp;
@@ -281,7 +282,8 @@ namespace IpDeskCtrl.Core
                 if (p == 0) break;
                 if (!Listen(p)) { if (upnp) await _pm.ClosePortAsync(p); continue; }
                 if (upnp) await _pm.OpenUdpAsync(p, "IP-DESK-CTRL (UDP)");
-                if (!upnp) Log($"PORTE router senza UPnP: uso la porta locale {p} (va bene con DMZ, inoltro manuale o sulla rete locale)");
+                if (!upnp && i == 1 && await TryPcp4Async(p, ct)) { }
+                else if (!upnp) Log($"PORTE router senza UPnP: uso la porta locale {p} (va bene con DMZ, inoltro manuale o sulla rete locale)");
                 bool? reach = await ProbeOwnAsync(p, ct);
                 if (reach != false || i == tries)
                 {
@@ -300,6 +302,20 @@ namespace IpDeskCtrl.Core
             }
         }
 
+        /// <summary>Router senza UPnP né NAT-PMP: ultima prova con PCP (stessa porta fuori e dentro).</summary>
+        private async Task<bool> TryPcp4Async(int port, CancellationToken ct)
+        {
+            if (!IPAddress.TryParse(LanIp(), out var lan)) return false;
+            var gw = Net.Ipv6.Gateway4(lan);
+            if (gw == null) return false;
+            var r = await Net.Pcp.MapAsync(gw, lan, Net.Pcp.Tcp, port, port, 7200, ct);
+            if (r == null) { Log($"PORTE il router ({gw}) non risponde nemmeno a PCP"); return false; }
+            if (!r.Ok) { Log($"PORTE PCP: il router rifiuta la porta ({Net.Pcp.Describe(r.ResultCode)})"); return false; }
+            Log($"PORTE porta aperta dal router con PCP: esterna {r.ExternalIp}:{r.ExternalPort} → {port} di questo PC");
+            await Net.Pcp.MapAsync(gw, lan, Net.Pcp.Udp, port, port, 7200, ct);
+            return r.ExternalPort == port;
+        }
+
         private bool Listen(int port)
         {
             try
@@ -308,6 +324,20 @@ namespace IpDeskCtrl.Core
                 l.Start();
                 _listener = l;
                 _ = Task.Run(() => AcceptLoopAsync(l, _life.Token));
+                // anche in IPv6, sulla stessa porta (se il PC ha un indirizzo IPv6 globale)
+                if (Net.Ipv6.Global() != null)
+                {
+                    try
+                    {
+                        var l6 = new TcpListener(IPAddress.IPv6Any, port);
+                        l6.Server.SetSocketOption(SocketOptionLevel.IPv6, SocketOptionName.IPv6Only, true);
+                        l6.Start();
+                        _listener6 = l6;
+                        _ = Task.Run(() => AcceptLoopAsync(l6, _life.Token));
+                        _pcpAt = 0;
+                    }
+                    catch (Exception ex) { Log($"PORTE ascolto IPv6 sulla porta {port} non riuscito: {ex.Message}"); }
+                }
                 return true;
             }
             catch (Exception ex)
@@ -320,7 +350,8 @@ namespace IpDeskCtrl.Core
         private void StopListen()
         {
             try { _listener?.Stop(); } catch { }
-            _listener = null;
+            try { _listener6?.Stop(); } catch { }
+            _listener = null; _listener6 = null;
         }
 
         private async Task ClosePortAsync()
@@ -335,8 +366,30 @@ namespace IpDeskCtrl.Core
             if (_rdv == null) return;
             string lan = LanIp();
             var (mac, bc) = WakeOnLan.LocalInfo(lan);
+            var v6 = _listener6 != null ? Net.Ipv6.Global() : null;
             _rdv.SetAnnounce(new Net.Announce(AppVersion.Tag, Me.PublicKey, _publicIp?.ToString() ?? "", _extPort, lan, _localPort,
-                UpnpOk, _reachable, DateTime.UtcNow.Ticks, AppVersion.Os, mac, bc));
+                UpnpOk, _reachable, DateTime.UtcNow.Ticks, AppVersion.Os, mac, bc, v6?.ToString() ?? ""));
+            if (v6 != null && _localPort > 0 && Environment.TickCount64 - _pcpAt > 50 * 60_000)
+            {
+                _pcpAt = Environment.TickCount64;
+                int port = _localPort;
+                _ = Task.Run(() => OpenIpv6PinholeAsync(v6, port, _life.Token));
+            }
+        }
+
+        /// <summary>
+        /// IPv6: chiede al router (PCP) di lasciar entrare i collegamenti sulla porta del programma, per 2 ore
+        /// (rinnovato ogni 50 minuti). Molti router non lo sanno fare: allora restano la perforazione UDP e il resto.
+        /// </summary>
+        private async Task OpenIpv6PinholeAsync(IPAddress v6, int port, CancellationToken ct)
+        {
+            var gw = Net.Ipv6.Gateway(v6);
+            if (gw == null) { Log($"PORTE IPv6 {v6}: router IPv6 non trovato, niente varco PCP"); return; }
+            var r = await Net.Pcp.MapAsync(gw, v6, Net.Pcp.Tcp, port, port, 7200, ct);
+            if (r == null) Log($"PORTE IPv6 {v6}: il router ({gw}) non risponde a PCP; vale solo se il suo firewall lascia entrare");
+            else if (r.Ok) Log($"PORTE IPv6 varco aperto dal router con PCP: [{v6}]:{port} raggiungibile per {r.Lifetime / 60} minuti");
+            else Log($"PORTE IPv6 il router rifiuta il varco PCP ({Net.Pcp.Describe(r.ResultCode)})");
+            if (r is { Ok: true }) await Net.Pcp.MapAsync(gw, v6, Net.Pcp.Udp, port, port, 7200, ct);
         }
 
         /// <summary>IP di rete locale della scheda che porta a internet.</summary>
@@ -782,7 +835,7 @@ namespace IpDeskCtrl.Core
         // =================================================================== solo UDP
 
         /// <summary>Socket UDP nuovo (chiave ancora da stabilire), indirizzo pubblico da STUN e candidati.</summary>
-        private static async Task<(UdpLink link, string cands, int delta)> PrepareUdpAsync(CancellationToken ct)
+        private static async Task<(UdpLink link, string cands, int delta, string cands6)> PrepareUdpAsync(CancellationToken ct)
         {
             var link = new UdpLink(null, 0);
             try
@@ -793,8 +846,11 @@ namespace IpDeskCtrl.Core
                 if (nat.Public != null) cands.Add(nat.Public.ToString());
                 string lan = LanIp();
                 if (lan.Length > 0) cands.Add($"{lan}:{link.LocalPort}");
-                Log($"UDP NAT {nat.Type} · candidati {string.Join(" ", cands)}");
-                return (link, string.Join(";", cands.Distinct()), nat.PortDelta);
+                string c6 = "";
+                var g6 = Net.Ipv6.Global();
+                if (g6 != null && link.LocalPort6 > 0) c6 = new IPEndPoint(g6, link.LocalPort6).ToString();
+                Log($"UDP NAT {nat.Type} · candidati {string.Join(" ", cands)}" + (c6.Length > 0 ? " · IPv6 " + c6 : ""));
+                return (link, string.Join(";", cands.Distinct()), nat.PortDelta, c6);
             }
             catch
             {
@@ -822,15 +878,15 @@ namespace IpDeskCtrl.Core
             var rdv = _rdv;
             if (offer == null || rdv == null) return;
             if (!_seenRequests.TryAdd("udp:" + Convert.ToHexString(offer.Nonce), DateTime.UtcNow)) return;   // arriva da più broker
-            Log($"UDP {Identity.Format(viewer)} chiede il collegamento solo UDP · candidati {offer.Candidates} · passo NAT {offer.Delta}");
+            Log($"UDP {Identity.Format(viewer)} chiede il collegamento solo UDP · candidati {offer.Candidates}" + (offer.Candidates6.Length > 0 ? " · IPv6 " + offer.Candidates6 : "") + $" · passo NAT {offer.Delta}");
             UdpLink? link = null;
             try
             {
-                var (l, cands, delta) = await PrepareUdpAsync(ct);
+                var (l, cands, delta, c6) = await PrepareUdpAsync(ct);
                 link = l;
                 using var eph = ECDiffieHellman.Create(ECCurve.NamedCurves.nistP256);
                 link.SetKey(UdpKeyFrom(eph, offer.EphemeralKey, offer.Nonce));
-                var ans = new UdpCandidates(cands, delta, eph.ExportSubjectPublicKeyInfo(), offer.Nonce);
+                var ans = new UdpCandidates(cands, delta, eph.ExportSubjectPublicKeyInfo(), offer.Nonce, c6);
                 int sent = await rdv.SendNoteAsync(viewer, Note.UdpAnswer, ans.Encode(), ct);
                 Log($"UDP risposta consegnata a {sent} broker: busso verso il visore");
                 if (!await link.PunchAsync(offer.Endpoints(), offer.Delta, TimeSpan.FromSeconds(15), ct))
@@ -860,14 +916,14 @@ namespace IpDeskCtrl.Core
             string? key = null;
             try
             {
-                var (l, cands, delta) = await PrepareUdpAsync(ct);
+                var (l, cands, delta, c6) = await PrepareUdpAsync(ct);
                 link = l;
                 using var eph = ECDiffieHellman.Create(ECCurve.NamedCurves.nistP256);
                 byte[] nonce = RandomNumberGenerator.GetBytes(16);
                 key = Convert.ToHexString(nonce);
                 var tcs = new TaskCompletionSource<UdpCandidates>(TaskCreationOptions.RunContinuationsAsynchronously);
                 _waitUdp[key] = (number, tcs);
-                var offer = new UdpCandidates(cands, delta, eph.ExportSubjectPublicKeyInfo(), nonce);
+                var offer = new UdpCandidates(cands, delta, eph.ExportSubjectPublicKeyInfo(), nonce, c6);
                 int sent = await rdv.SendNoteAsync(number, Note.UdpOffer, offer.Encode(), ct);
                 Log($"UDP offerta consegnata a {sent} broker, attendo i candidati dell'altro PC");
                 if (await Task.WhenAny(tcs.Task, Task.Delay(TimeSpan.FromSeconds(15), ct)) != tcs.Task)
@@ -877,7 +933,7 @@ namespace IpDeskCtrl.Core
                     return null;
                 }
                 var ans = tcs.Task.Result;
-                Log($"UDP candidati dell'altro PC: {ans.Candidates} · passo NAT {ans.Delta}");
+                Log($"UDP candidati dell'altro PC: {ans.Candidates}" + (ans.Candidates6.Length > 0 ? " · IPv6 " + ans.Candidates6 : "") + $" · passo NAT {ans.Delta}");
                 link.SetKey(UdpKeyFrom(eph, ans.EphemeralKey, nonce));
                 progress(L.T("Perforazione UDP in corso…"));
                 if (!await link.PunchAsync(ans.Endpoints(), ans.Delta, TimeSpan.FromSeconds(12), ct))
@@ -1121,6 +1177,9 @@ namespace IpDeskCtrl.Core
         private async Task<SecureLink?> TryDirectAsync(Net.Announce a, string number, Action<string> progress, CancellationToken ct)
         {
             var targets = new List<(IPEndPoint ep, string what)>();
+            // IPv6 per primo: niente NAT, se il firewall dell'altro router lascia passare è la strada migliore
+            if (IPAddress.TryParse(a.Ipv6, out var v6) && Net.Ipv6.IsGlobal(v6) && a.LanPort > 0 && Net.Ipv6.Global() != null)
+                targets.Add((new IPEndPoint(v6, a.LanPort), "IPv6"));
             if (IPAddress.TryParse(a.PublicIp, out var pip) && a.Port > 0) targets.Add((new IPEndPoint(pip, a.Port), "internet"));
             if (IPAddress.TryParse(a.LanIp, out var lip) && a.LanPort > 0)
             {
@@ -1132,12 +1191,12 @@ namespace IpDeskCtrl.Core
             {
                 ct.ThrowIfCancellationRequested();
                 progress(L.F("Mi collego a {0} via {1} ({2})…", Identity.Format(number), what, ep));
-                var tcp = new TcpClient(AddressFamily.InterNetwork);
+                var tcp = new TcpClient(ep.AddressFamily);
                 try
                 {
                     using (var t = CancellationTokenSource.CreateLinkedTokenSource(ct))
                     {
-                        t.CancelAfter(6000);
+                        t.CancelAfter(ep.AddressFamily == AddressFamily.InterNetworkV6 ? 3000 : 6000);
                         await tcp.ConnectAsync(ep.Address, ep.Port, t.Token);
                     }
                     var link = await SecureLink.HandshakeAsync(tcp, Me, LinkRole.Viewer, number, ct);
