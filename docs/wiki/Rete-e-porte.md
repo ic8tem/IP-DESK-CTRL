@@ -12,6 +12,14 @@ IP-DESK-CTRL usa lo stesso sistema di **IP-TRX-CTRL**: di norma non devi aprire 
 6. Se non passa niente, ultima strada: il **relè sul broker MQTT**. I dati del collegamento (sempre cifrati da un capo all'altro: il broker non li può leggere) passano dal broker su due argomenti usa e getta. È lento e l'immagine si alleggerisce, ma ci si collega anche con l'IP condiviso dell'operatore su entrambi i lati. Serve la 0.5.22 su tutti e due i PC.
 7. Con un collegamento TCP riuscito i due PC provano comunque **UDP**: audio e mouse passano lì, lo schermo resta su TCP.
 
+### IPv6 e PCP (dalla 0.5.38)
+
+- Se il PC ha un indirizzo **IPv6** globale (molti operatori lo danno insieme a quello IPv4), il programma ascolta anche in IPv6 sulla stessa porta e lo annuncia sui broker. In IPv6 non c'è NAT: ogni PC ha un indirizzo pubblico suo e il router ha solo un firewall.
+- Il visore prova **per primo l'IPv6** (3 secondi), poi le strade IPv4 di sempre.
+- La **perforazione UDP** scambia anche i candidati IPv6: il firewall IPv6 di solito lascia passare i pacchetti che partono contemporaneamente dai due lati, anche quando in IPv4 si è dietro l'IP condiviso dell'operatore (CGNAT). Così molti collegamenti che prima finivano sul relè lento passano in diretta.
+- Con **PCP** (Port Control Protocol, il successore di NAT-PMP) il programma chiede al router di aprire un varco nel firewall IPv6 per la sua porta (rinnovato ogni 50 minuti), e in IPv4 di aprire la porta quando UPnP e NAT-PMP non rispondono. Se il router non conosce PCP non succede niente.
+- Serve la 0.5.38 su tutti e due i PC; con le versioni vecchie tutto funziona come prima, solo in IPv4.
+
 La plancia mostra la strada usata: **TCP**, **UDP + TCP**, **solo UDP** o **relè MQTT**.
 
 ## Casi tipici

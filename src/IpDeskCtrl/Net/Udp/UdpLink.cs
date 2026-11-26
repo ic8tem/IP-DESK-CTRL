@@ -32,6 +32,7 @@ namespace IpDeskCtrl.Net.Udp
             StreamData = 0x50, StreamAck = 0x51, StreamFin = 0x52;
 
         private readonly UdpClient _udp;
+        private readonly UdpClient? _udp6;      // IPv6, solo se il PC ha un indirizzo IPv6 globale
         private volatile AesGcm? _aes;
         private int _disposed;
         private readonly byte[] _id = RandomNumberGenerator.GetBytes(8);
@@ -48,6 +49,7 @@ namespace IpDeskCtrl.Net.Udp
 
         public IPEndPoint? Remote { get; private set; }
         public int LocalPort => ((IPEndPoint)_udp.Client.LocalEndPoint!).Port;
+        public int LocalPort6 => _udp6?.Client.LocalEndPoint is IPEndPoint e ? e.Port : 0;
         public long Retransmits;
         public event Action<string>? Log;
         public event Action<uint, byte[]>? AudioReceived;     // seq, audio
@@ -66,8 +68,21 @@ namespace IpDeskCtrl.Net.Udp
                 const int SIO_UDP_CONNRESET = -1744830452;
                 try { _udp.Client.IOControl(SIO_UDP_CONNRESET, new byte[] { 0 }, null); } catch { }
             }
+            if (Ipv6.Global() != null)
+            {
+                try
+                {
+                    var u6 = new UdpClient(AddressFamily.InterNetworkV6);
+                    u6.Client.SetSocketOption(SocketOptionLevel.IPv6, SocketOptionName.IPv6Only, true);
+                    u6.Client.Bind(new IPEndPoint(IPAddress.IPv6Any, 0));
+                    if (OperatingSystem.IsWindows()) try { u6.Client.IOControl(-1744830452, new byte[] { 0 }, null); } catch { }
+                    _udp6 = u6;
+                }
+                catch { _udp6 = null; }
+            }
             if (key != null) _aes = Compat.Gcm(key, 16);
-            _ = Task.Run(ReceiveLoopAsync);
+            _ = Task.Run(() => ReceiveLoopAsync(_udp));
+            if (_udp6 != null) _ = Task.Run(() => ReceiveLoopAsync(_udp6));
             _ = Task.Run(MaintainLoopAsync);
         }
 
@@ -114,17 +129,19 @@ namespace IpDeskCtrl.Net.Udp
         {
             to ??= Remote;
             if (to == null || _aes == null) return;
+            var sock = to.AddressFamily == AddressFamily.InterNetworkV6 ? _udp6 : _udp;
+            if (sock == null) return;
             byte[] d = Seal(type, payload);
-            try { _udp.Send(d, d.Length, to); } catch { }
+            try { sock.Send(d, d.Length, to); } catch { }
         }
 
         // ------------------------------------------------------------------ ricezione
-        private async Task ReceiveLoopAsync()
+        private async Task ReceiveLoopAsync(UdpClient sock)
         {
             while (!_cts.IsCancellationRequested)
             {
                 UdpReceiveResult r;
-                try { r = await _udp.ReceiveAsync(_cts.Token); }
+                try { r = await sock.ReceiveAsync(_cts.Token); }
                 catch (OperationCanceledException) { break; }
                 catch (SocketException) { continue; }
                 byte[] d = r.Buffer;
@@ -329,6 +346,7 @@ namespace IpDeskCtrl.Net.Udp
             if (Interlocked.Exchange(ref _disposed, 1) == 1) return;
             _cts.Cancel();
             try { _udp.Dispose(); } catch { }
+            try { _udp6?.Dispose(); } catch { }
             _aes?.Dispose();
         }
     }

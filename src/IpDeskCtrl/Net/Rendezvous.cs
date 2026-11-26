@@ -135,7 +135,7 @@ namespace IpDeskCtrl.Net
     /// <summary>Indirizzo che ogni PC lascia sui broker (messaggio «retained»), firmato con la sua chiave.</summary>
     /// <remarks>Mac e Broadcast: scheda di rete locale, per accendere il PC con Wake-on-LAN quando è spento.</remarks>
     public sealed record Announce(string Version, byte[] PublicKey, string PublicIp, int Port, string LanIp, int LanPort, bool Upnp,
-                                  bool Reachable, long Ticks, string Os, string Mac = "", string Broadcast = "")
+                                  bool Reachable, long Ticks, string Os, string Mac = "", string Broadcast = "", string Ipv6 = "")
     {
         public string Number => Identity.NumberOf(PublicKey);
         public TimeSpan Age => DateTime.UtcNow - new DateTime(Math.Clamp(Ticks, DateTime.MinValue.Ticks, DateTime.MaxValue.Ticks), DateTimeKind.Utc);
@@ -143,7 +143,7 @@ namespace IpDeskCtrl.Net
         public byte[] Encode(Identity me)
         {
             byte[] body = new MsgWriter(1).Str(Version).I32(PublicKey.Length).Bytes(PublicKey).Str(PublicIp).I32(Port).Str(LanIp).I32(LanPort)
-                .Bool(Upnp).Bool(Reachable).I64(Ticks).Str(Os).Str(Mac).Str(Broadcast).Build();
+                .Bool(Upnp).Bool(Reachable).I64(Ticks).Str(Os).Str(Mac).Str(Broadcast).Str(Ipv6).Build();   // Ipv6 in coda: le versioni vecchie lo ignorano
             return Signed.Wrap(me, body);
         }
 
@@ -157,7 +157,12 @@ namespace IpDeskCtrl.Net
                 var r = new MsgReader(body);
                 if (r.Type != 1) return null;
                 var a = new Announce(r.Str(), r.Bytes(Math.Clamp(r.I32(), 0, 512)), r.Str(), r.I32(), r.Str(), r.I32(), r.Bool(), r.Bool(), r.I64(), r.Str());
-                if (!r.AtEnd) a = a with { Mac = r.Str(), Broadcast = r.AtEnd ? "" : r.Str() };
+                if (!r.AtEnd)
+                {
+                    a = a with { Mac = r.Str() };
+                    if (!r.AtEnd) a = a with { Broadcast = r.Str() };
+                    if (!r.AtEnd) a = a with { Ipv6 = r.Str() };
+                }
                 if (!Identity.Verify(a.PublicKey, body, sig)) return null;
                 if (a.Number != expectedNumber) return null;
                 return a;
@@ -248,9 +253,10 @@ namespace IpDeskCtrl.Net
     /// non passa: candidati (IP:porta), passo del NAT simmetrico, chiave effimera ECDH P-256 per la chiave
     /// AES dei datagrammi, nonce che lega la risposta all'offerta.
     /// </summary>
-    public sealed record UdpCandidates(string Candidates, int Delta, byte[] EphemeralKey, byte[] Nonce)
+    public sealed record UdpCandidates(string Candidates, int Delta, byte[] EphemeralKey, byte[] Nonce, string Candidates6 = "")
     {
-        public byte[] Encode() => new MsgWriter(0).Str(Candidates).I32(Delta).I32(EphemeralKey.Length).Bytes(EphemeralKey).I32(Nonce.Length).Bytes(Nonce).Build();
+        // Candidates6 (IPv6, dalla 0.5.38) in coda: le versioni vecchie non lo leggono e non provano a usarlo
+        public byte[] Encode() => new MsgWriter(0).Str(Candidates).I32(Delta).I32(EphemeralKey.Length).Bytes(EphemeralKey).I32(Nonce.Length).Bytes(Nonce).Str(Candidates6).Build();
 
         public static UdpCandidates? Decode(byte[] data)
         {
@@ -260,7 +266,8 @@ namespace IpDeskCtrl.Net
                 string c = r.Str(); int d = r.I32();
                 byte[] eph = r.Bytes(Math.Clamp(r.I32(), 0, 512));
                 byte[] nonce = r.Bytes(Math.Clamp(r.I32(), 0, 64));
-                return nonce.Length == 16 ? new UdpCandidates(c, d, eph, nonce) : null;
+                string c6 = r.AtEnd ? "" : r.Str();
+                return nonce.Length == 16 ? new UdpCandidates(c, d, eph, nonce, c6) : null;
             }
             catch { return null; }
         }
@@ -268,7 +275,8 @@ namespace IpDeskCtrl.Net
         public List<System.Net.IPEndPoint> Endpoints()
         {
             var list = new List<System.Net.IPEndPoint>();
-            foreach (var c in Candidates.Split(';', StringSplitOptions.RemoveEmptyEntries))
+            // prima gli IPv4 (la previsione delle porte del NAT simmetrico parte dal primo), poi gli IPv6
+            foreach (var c in (Candidates + ";" + Candidates6).Split(';', StringSplitOptions.RemoveEmptyEntries))
                 if (System.Net.IPEndPoint.TryParse(c, out var ep) && ep.Port > 0) list.Add(ep);
             return list;
         }
