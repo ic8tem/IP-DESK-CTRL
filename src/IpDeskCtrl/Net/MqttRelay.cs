@@ -61,7 +61,7 @@ namespace IpDeskCtrl.Net
                     c.DisconnectedAsync += _ => { s.Fail(); return Task.CompletedTask; };
                     using var t = CancellationTokenSource.CreateLinkedTokenSource(ct);
                     t.CancelAfter(TimeSpan.FromSeconds(10));
-                    await c.ConnectAsync(Mqtt.Options(b, Mqtt.NewClientId(), 20), t.Token);
+                    await Mqtt.ConnectAsync(c, b, Mqtt.NewClientId(), t.Token, 20);
                     await c.SubscribeAsync(Mqtt.Subscribe(new[] { inTopic }), t.Token);
                     return s;
                 }
