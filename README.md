@@ -134,6 +134,11 @@ Nella cartella dei dati (Impostazioni › Apri cartella dati): `sessioni.log`, u
 
 Le versioni con protocollo diverso non si collegano tra loro: aggiorna tutti i dispositivi alla stessa versione principale (la 0.4.1 si collega con la 0.4.0; la 0.5 si collega con la 0.4).
 
+### 0.5.38 — 26 novembre 2026
+- **IPv6**: se il PC ha un indirizzo IPv6 globale, il programma ascolta anche in IPv6 sulla stessa porta e lo annuncia sui broker; il visore prova per primo il collegamento diretto IPv6 (3 secondi), poi le strade IPv4 di sempre. La perforazione UDP scambia anche i candidati IPv6: in IPv6 non c'è NAT e il firewall del router di solito lascia passare i pacchetti che partono dai due lati insieme, anche quando in IPv4 si è dietro l'IP condiviso dell'operatore. Molti collegamenti che finivano sul relè MQTT lento passano così in diretta.
+- **PCP verso il router** (Port Control Protocol, il successore di NAT-PMP): apre il varco nel firewall IPv6 per la porta del programma (rinnovato ogni 50 minuti) e, in IPv4, la porta quando UPnP e NAT-PMP non rispondono. Se il router non lo conosce non succede niente; il registro dice com'è andata.
+- Compatibile con le versioni vecchie: i dati IPv6 viaggiano in coda ai messaggi e chi non li conosce li ignora. Per l'IPv6 servono la 0.5.38 su tutti e due i PC.
+
 ### 0.5.37 — 26 novembre 2026
 - **Broker MQTT cifrati con TLS di serie**: hivemq ed emqx sulla 8883, test.mosquitto.org sulla 8886 (la sua 8883 usa un certificato fatto in casa). Chi non aveva cambiato l'elenco passa da solo a quello cifrato. Le versioni vecchie (in chiaro) e nuove (cifrate) si parlano lo stesso sugli stessi broker. Se la porta cifrata non risponde entro 5 secondi (reti che la bloccano, certificati vecchi su Windows 7) si ripiega sulla 1883 per 30 minuti e il registro lo dice; i messaggi restano comunque firmati e cifrati da un PC all'altro.
 
