@@ -15,7 +15,7 @@
 
 ## Broker MQTT
 
-Sui broker pubblici passano solo indirizzo e porta (e, per il collegamento solo UDP e il Wake-on-LAN, candidati UDP, MAC e richieste), **firmati e cifrati**. I nomi dei canali derivano dal numero ma non lo mostrano.
+Sui broker pubblici passano solo indirizzo e porta (e, per il collegamento solo UDP e il Wake-on-LAN, candidati UDP, MAC e richieste), **firmati e cifrati**. I nomi dei canali derivano dal numero ma non lo mostrano. Dalla 0.5.37 il collegamento ai broker è anche **cifrato con TLS** (hivemq ed emqx sulla 8883, mosquitto sulla 8886), così chi osserva la rete non vede nemmeno i nomi dei canali; dove la porta cifrata è bloccata si ripiega sulla 1883, e i messaggi restano comunque firmati e cifrati da un PC all'altro. Le versioni vecchie (in chiaro) e quelle nuove (cifrate) si parlano lo stesso sugli stessi broker.
 
 ## Consenso e password
 

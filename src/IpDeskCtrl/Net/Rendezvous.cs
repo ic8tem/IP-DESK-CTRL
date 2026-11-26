@@ -47,6 +47,39 @@ namespace IpDeskCtrl.Net
             return b.Build();
         }
 
+        // host → fino a quando usare la porta in chiaro, perché quella cifrata non ha risposto (rete che la blocca,
+        // certificati di sistema vecchi come su Windows 7…)
+        private static readonly ConcurrentDictionary<string, DateTime> PlainUntil = new();
+
+        /// <summary>
+        /// Collegamento al broker: cifrato con TLS quando l'indirizzo lo chiede; se la porta cifrata non risponde
+        /// entro 5 secondi si ripiega sulla 1883 in chiaro dello stesso broker (per 30 minuti). I messaggi di
+        /// IP-DESK-CTRL restano comunque firmati e cifrati da un PC all'altro: il TLS nasconde in più gli argomenti
+        /// e gli indirizzi a chi osserva la rete. Chi è in chiaro e chi è cifrato si parlano lo stesso, sugli stessi argomenti.
+        /// </summary>
+        public static async Task ConnectAsync(IMqttClient c, string broker, string clientId, CancellationToken ct, int keepAliveSeconds = 30)
+        {
+            var (host, port, tls) = Split(broker);
+            if (tls && !(PlainUntil.TryGetValue(host, out var until) && until > DateTime.UtcNow))
+            {
+                try
+                {
+                    using var t = CancellationTokenSource.CreateLinkedTokenSource(ct);
+                    t.CancelAfter(TimeSpan.FromSeconds(5));
+                    await c.ConnectAsync(Options(broker, clientId, keepAliveSeconds), t.Token);
+                    return;
+                }
+                catch when (!ct.IsCancellationRequested)
+                {
+                    PlainUntil[host] = DateTime.UtcNow.AddMinutes(30);
+                    SessionLog.Write($"MQTT {host}:{port} cifrato non raggiungibile: uso la 1883 in chiaro per 30 minuti (i messaggi restano firmati e cifrati)");
+                    try { await c.DisconnectAsync(); } catch { }
+                }
+            }
+            if (tls) broker = host + ":1883";
+            await c.ConnectAsync(Options(broker, clientId, keepAliveSeconds), ct);
+        }
+
         public static string NewClientId() => "ipdk-" + Guid.NewGuid().ToString("N")[..12];
 
         public static MqttApplicationMessage Message(string topic, byte[] payload, bool retain) =>
@@ -322,7 +355,7 @@ namespace IpDeskCtrl.Net
                     using (var t = CancellationTokenSource.CreateLinkedTokenSource(ct))
                     {
                         t.CancelAfter(TimeSpan.FromSeconds(10));
-                        await c.ConnectAsync(Mqtt.Options(broker, Mqtt.NewClientId()), t.Token);
+                        await Mqtt.ConnectAsync(c, broker, Mqtt.NewClientId(), t.Token);
                         await c.SubscribeAsync(Mqtt.Subscribe(new[] { _base + "/r" }), t.Token);
                     }
                     _clients[broker] = c;
@@ -434,7 +467,7 @@ namespace IpDeskCtrl.Net
                 {
                     using var t = CancellationTokenSource.CreateLinkedTokenSource(ct);
                     t.CancelAfter(TimeSpan.FromSeconds(10));
-                    await c.ConnectAsync(Mqtt.Options(broker, Mqtt.NewClientId()), t.Token);
+                    await Mqtt.ConnectAsync(c, broker, Mqtt.NewClientId(), t.Token);
                     await c.SubscribeAsync(Mqtt.Subscribe(new[] { topic }), t.Token);
                     var done = await Task.WhenAny(got.Task, Task.Delay(4000, t.Token));
                     if (done != got.Task) { log?.Invoke($"MQTT {broker}: nessun indirizzo per {Identity.Format(number)}"); return null; }
@@ -471,7 +504,7 @@ namespace IpDeskCtrl.Net
                 {
                     using var t = CancellationTokenSource.CreateLinkedTokenSource(ct);
                     t.CancelAfter(TimeSpan.FromSeconds(10));
-                    await c.ConnectAsync(Mqtt.Options(broker, Mqtt.NewClientId()), t.Token);
+                    await Mqtt.ConnectAsync(c, broker, Mqtt.NewClientId(), t.Token);
                     await c.PublishAsync(Mqtt.Message(topic, payload, false), t.Token);
                     return 1;
                 }
@@ -512,7 +545,7 @@ namespace IpDeskCtrl.Net
                 {
                     using var t = CancellationTokenSource.CreateLinkedTokenSource(ct);
                     t.CancelAfter(TimeSpan.FromSeconds(10));
-                    await c.ConnectAsync(Mqtt.Options(broker, Mqtt.NewClientId()), t.Token);
+                    await Mqtt.ConnectAsync(c, broker, Mqtt.NewClientId(), t.Token);
                     await c.SubscribeAsync(Mqtt.Subscribe(topics.Keys), t.Token);
                     await Task.Delay(2500, t.Token);
                     foreach (var kv in seen) result[kv.Key] = kv.Value;

@@ -78,7 +78,10 @@ namespace IpDeskCtrl.Core
         public TouchSettings TouchInput { get; set; } = new();   // telefono e tablet: gesti, velocità, barra dei tasti
 
         // ---------------- rete (gestita in automatico)
-        public static readonly string[] DefaultBrokers = { "broker.hivemq.com:1883", "test.mosquitto.org:1883", "broker.emqx.io:1883" };
+        // broker pubblici, cifrati con TLS (dalla 0.5.37; test.mosquitto.org usa la 8886, perché la sua 8883 ha un
+        // certificato fatto in casa). Se la porta cifrata non passa si ripiega sulla 1883 (vedi Mqtt.ConnectAsync).
+        public static readonly string[] DefaultBrokers = { "mqtts://broker.hivemq.com:8883", "mqtts://test.mosquitto.org:8886", "mqtts://broker.emqx.io:8883" };
+        private static readonly string[] OldDefaultBrokers = { "broker.hivemq.com:1883", "test.mosquitto.org:1883", "broker.emqx.io:1883" };
         public List<string> MqttBrokers { get; set; } = new(DefaultBrokers);
 
         /// <summary>
@@ -119,6 +122,12 @@ namespace IpDeskCtrl.Core
             s.History = s.History.Where(h => Identity.IsValidNumber(h.Number)).ToList();
             s.ReloadShared();
             s.MigrateTrusted();
+            // elenco dei broker mai cambiato a mano: passa a quello cifrato
+            if (s.MqttBrokers.Count == OldDefaultBrokers.Length && !s.MqttBrokers.Except(OldDefaultBrokers, StringComparer.OrdinalIgnoreCase).Any())
+            {
+                s.MqttBrokers = DefaultBrokers.ToList();
+                s.Save();
+            }
             L.Current = s.Language;            // lingua scelta, o quella del sistema
             return s;
         }
