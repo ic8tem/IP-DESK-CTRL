@@ -3,6 +3,9 @@
 
 Le versioni con protocollo diverso non si collegano tra loro: aggiorna tutti i dispositivi alla stessa versione principale (la 0.4.1 si collega con la 0.4.0; la 0.5 si collega con la 0.4).
 
+## 0.5.37 — 26 novembre 2026
+- **Broker MQTT cifrati con TLS di serie**: hivemq ed emqx sulla 8883, test.mosquitto.org sulla 8886 (la sua 8883 usa un certificato fatto in casa). Chi non aveva cambiato l'elenco passa da solo a quello cifrato. Le versioni vecchie (in chiaro) e nuove (cifrate) si parlano lo stesso sugli stessi broker. Se la porta cifrata non risponde entro 5 secondi (reti che la bloccano, certificati vecchi su Windows 7) si ripiega sulla 1883 per 30 minuti e il registro lo dice; i messaggi restano comunque firmati e cifrati da un PC all'altro.
+
 ## 0.5.36 — 26 novembre 2026
 - **Elenco protetto dei PC «senza conferma»**: con il servizio di Windows l'elenco dei numeri che entrano senza conferma sta nella cartella del servizio (solo sistema e amministratori), non più nello storico condiviso che ogni utente del PC può modificare. Prima un programma maligno, anche da un altro account senza privilegi, poteva aggiungersi da solo. I numeri già autorizzati passano da soli nell'elenco protetto e il registro li elenca con righe «SICUREZZA».
 - **Chiave del PC chiamato ricordata**: se lo stesso numero risponde con una chiave diversa dalle altre volte, il collegamento si ferma prima di mandare qualunque cosa (password ricordata compresa).
