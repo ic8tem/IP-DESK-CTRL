@@ -51,6 +51,17 @@ namespace IpDeskCtrl.Core
         public void Run(CancellationToken life)
         {
             life.Register(() => Close(L.T("programma chiuso")));
+            // chiave del PC chiamato diversa da quella delle volte precedenti: lo stesso numero con un'altra chiave
+            // non capita mai per caso (il numero nasce dalla chiave), quindi è qualcuno che si spaccia per quel PC.
+            // Ci si ferma prima di mandare qualunque cosa, password ricordata compresa.
+            var seen = P.S.Find(PeerNumber);
+            string keyHex = Convert.ToHexString(Link.PeerKey);
+            if (seen != null && seen.PeerKey.Length > 0 && !seen.PeerKey.Equals(keyHex, StringComparison.OrdinalIgnoreCase))
+            {
+                SessionLog.Write($"SICUREZZA {Identity.Format(PeerNumber)} ha risposto con una chiave diversa da quella delle altre volte (impronta {Crypto.Fingerprint(Link.PeerKey)}): collegamento interrotto, nessun dato mandato");
+                Close(L.T("quel PC ha una chiave diversa dalle altre volte: potrebbe essere qualcuno che si spaccia per lui, collegamento interrotto"));
+                return;
+            }
             _ = Task.Run(ReceiveLoopAsync);
             _ = Task.Run(async () =>
             {

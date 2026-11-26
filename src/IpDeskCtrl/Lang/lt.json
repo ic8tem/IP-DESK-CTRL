@@ -731,5 +731,7 @@
  "Rete locale (bassa latenza)": "Vietinis tinklas (maža delsa)",
  "Alta": "Aukšta",
  "Media": "Vidutinė",
- "Bassa (connessioni lente)": "Žema (lėti ryšiai)"
+ "Bassa (connessioni lente)": "Žema (lėti ryšiai)",
+ "quel PC ha una chiave diversa dalle altre volte: potrebbe essere qualcuno che si spaccia per lui, collegamento interrotto": "šio kompiuterio raktas kitoks nei anksčiau: gali būti, kad kažkas apsimeta juo, ryšys nutrauktas",
+ "troppe richieste: riprova tra qualche minuto": "per daug užklausų: bandykite po kelių minučių"
 }

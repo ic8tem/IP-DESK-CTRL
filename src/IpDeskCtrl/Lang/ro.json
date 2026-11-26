@@ -731,5 +731,7 @@
  "Rete locale (bassa latenza)": "Rețea locală (latență redusă)",
  "Alta": "Înaltă",
  "Media": "Medie",
- "Bassa (connessioni lente)": "Scăzută (conexiuni lente)"
+ "Bassa (connessioni lente)": "Scăzută (conexiuni lente)",
+ "quel PC ha una chiave diversa dalle altre volte: potrebbe essere qualcuno che si spaccia per lui, collegamento interrotto": "acel PC are o cheie diferită față de alte dăți: poate fi cineva care se dă drept el, conexiune întreruptă",
+ "troppe richieste: riprova tra qualche minuto": "prea multe cereri: reîncercați peste câteva minute"
 }

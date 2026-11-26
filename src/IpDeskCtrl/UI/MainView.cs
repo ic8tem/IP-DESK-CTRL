@@ -632,7 +632,14 @@ namespace IpDeskCtrl.UI
             ToolTip.SetTip(alias, L.T("Dai un nome a questo numero"));
             var more = Ui.Btn("···");
             var unattended = new MenuItem { Header = h.AllowUnattended ? L.T("✓ Può entrare in questo PC senza conferma") : L.T("Consenti di entrare in questo PC senza conferma") };
-            unattended.Click += (_, _) => { h.AllowUnattended = !h.AllowUnattended; _s.Save(); RebuildHistory(); };
+            unattended.Click += (_, _) =>
+            {
+                h.AllowUnattended = !h.AllowUnattended;
+                _s.Save();
+                if (_svc != null) _svc.Send($"TRUST {h.Number} {(h.AllowUnattended ? 1 : 0)}");
+                else _s.SetTrusted(h.Number, h.PeerKey, h.AllowUnattended);
+                RebuildHistory();
+            };
             var wake = new MenuItem { Header = L.T("Accendi (Wake-on-LAN)"), IsEnabled = h.Mac.Length == 12 };
             wake.Click += async (_, _) =>
             {

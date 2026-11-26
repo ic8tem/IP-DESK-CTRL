@@ -731,5 +731,7 @@
  "Rete locale (bassa latenza)": "স্থানীয় নেটওয়ার্ক (কম বিলম্ব)",
  "Alta": "উচ্চ",
  "Media": "মাঝারি",
- "Bassa (connessioni lente)": "নিম্ন (ধীর সংযোগ)"
+ "Bassa (connessioni lente)": "নিম্ন (ধীর সংযোগ)",
+ "quel PC ha una chiave diversa dalle altre volte: potrebbe essere qualcuno che si spaccia per lui, collegamento interrotto": "ওই পিসির কী আগের থেকে আলাদা: কেউ হয়তো এর ছদ্মবেশ ধরছে, সংযোগ বন্ধ করা হয়েছে",
+ "troppe richieste: riprova tra qualche minuto": "অনেক বেশি অনুরোধ: কয়েক মিনিট পরে আবার চেষ্টা করুন"
 }

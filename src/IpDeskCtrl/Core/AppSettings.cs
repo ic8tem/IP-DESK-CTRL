@@ -57,6 +57,11 @@ namespace IpDeskCtrl.Core
         public bool AllowObservers { get; set; } = true;   // mentre uno comanda, altri possono chiedere di guardare (solo visione)
         public List<string> ResumeGrants { get; set; } = new();   // numero|input|scadenza: rientrano senza conferma dopo un aggiornamento
         public List<string> ResumeViewers { get; set; } = new();  // collegamenti da riaprire dopo l'aggiornamento di questo PC
+        // PC che possono entrare senza conferma: numero|chiave pubblica. Sta qui (con il servizio: nella sua cartella,
+        // solo SYSTEM e amministratori) e non nello storico condiviso, che ogni utente del PC può modificare:
+        // scrivere «AllowUnattended» in quel file non basta più per aprire una porta di servizio.
+        public List<string> Trusted { get; set; } = new();
+        public bool TrustedMigrated { get; set; }
         public long ResumeUntil { get; set; }                      // fino a quando (ticks UTC)      // chi si collega può aprire tunnel di porte attraverso questo PC
 
         // ---------------- visore
@@ -113,6 +118,7 @@ namespace IpDeskCtrl.Core
             catch { s = new AppSettings(); }
             s.History = s.History.Where(h => Identity.IsValidNumber(h.Number)).ToList();
             s.ReloadShared();
+            s.MigrateTrusted();
             L.Current = s.Language;            // lingua scelta, o quella del sistema
             return s;
         }
@@ -186,6 +192,37 @@ namespace IpDeskCtrl.Core
                     catch { }
                 }
             }
+        }
+
+        /// <summary>Il numero, con quella chiave, può entrare senza conferma (elenco protetto)?</summary>
+        public bool IsTrusted(string number, string keyHex)
+        {
+            lock (_saveLock) return keyHex.Length > 0 && Trusted.Contains(number + "|" + keyHex.ToUpperInvariant());
+        }
+
+        public void SetTrusted(string number, string keyHex, bool on)
+        {
+            lock (_saveLock)
+            {
+                Trusted.RemoveAll(t => t.StartsWith(number + "|", StringComparison.Ordinal));
+                if (on && keyHex.Length > 0) Trusted.Add(number + "|" + keyHex.ToUpperInvariant());
+            }
+            Save();
+        }
+
+        /// <summary>Una volta sola: i «senza conferma» dello storico passano nell'elenco protetto (scritti nel registro).</summary>
+        private void MigrateTrusted()
+        {
+            if (TrustedMigrated) return;
+            List<HistoryEntry> list;
+            lock (_saveLock) list = History.Where(h => h.AllowUnattended && h.PeerKey.Length > 0).ToList();
+            foreach (var h in list)
+            {
+                lock (_saveLock) if (!Trusted.Any(t => t.StartsWith(h.Number + "|", StringComparison.Ordinal))) Trusted.Add(h.Number + "|" + h.PeerKey.ToUpperInvariant());
+                SessionLog.Write($"SICUREZZA {Identity.Format(h.Number)} resta tra i PC che entrano senza conferma (elenco protetto)");
+            }
+            TrustedMigrated = true;
+            Save();
         }
 
         public HistoryEntry? Find(string number)

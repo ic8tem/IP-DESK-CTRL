@@ -731,5 +731,7 @@
  "Rete locale (bassa latenza)": "Red local (baja latencia)",
  "Alta": "Alta",
  "Media": "Media",
- "Bassa (connessioni lente)": "Baja (conexiones lentas)"
+ "Bassa (connessioni lente)": "Baja (conexiones lentas)",
+ "quel PC ha una chiave diversa dalle altre volte: potrebbe essere qualcuno che si spaccia per lui, collegamento interrotto": "ese PC tiene una clave distinta a la de otras veces: podría ser alguien que se hace pasar por él, conexión interrumpida",
+ "troppe richieste: riprova tra qualche minuto": "demasiadas solicitudes: vuelve a intentarlo en unos minutos"
 }

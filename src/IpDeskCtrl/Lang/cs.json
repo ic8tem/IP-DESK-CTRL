@@ -731,5 +731,7 @@
  "Rete locale (bassa latenza)": "Místní síť (nízká latence)",
  "Alta": "Vysoká",
  "Media": "Střední",
- "Bassa (connessioni lente)": "Nízká (pomalá připojení)"
+ "Bassa (connessioni lente)": "Nízká (pomalá připojení)",
+ "quel PC ha una chiave diversa dalle altre volte: potrebbe essere qualcuno che si spaccia per lui, collegamento interrotto": "tento počítač má jiný klíč než dříve: někdo se za něj možná vydává, spojení přerušeno",
+ "troppe richieste: riprova tra qualche minuto": "příliš mnoho požadavků: zkuste to znovu za několik minut"
 }

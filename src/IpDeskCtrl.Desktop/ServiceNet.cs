@@ -277,6 +277,16 @@ namespace IpDeskCtrl.Desktop
                             _peer.FindIncoming(p[1])?.SendChat(text);
                             break;
                         }
+                        case "TRUST" when p.Length >= 3 && _s != null:
+                        {
+                            // «entra senza conferma» scelto nella rubrica: l'elenco protetto lo tiene il servizio
+                            var h = _s.Find(p[1]);
+                            bool on = p[2] == "1";
+                            if (h == null || (on && h.PeerKey.Length == 0)) break;
+                            _s.SetTrusted(p[1], h.PeerKey, on);
+                            SessionLog.Write($"SICUREZZA {Identity.Format(p[1])} " + (on ? "può entrare senza conferma (scelto nella rubrica)" : "non entra più senza conferma"));
+                            break;
+                        }
                         case "KICK":
                             _peer?.CloseIncoming("chiuso dall'utente dell'altro PC");
                             break;

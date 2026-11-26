@@ -731,5 +731,7 @@
  "Rete locale (bassa latenza)": "स्थानीय नेटवर्क (कम विलंब)",
  "Alta": "उच्च",
  "Media": "मध्यम",
- "Bassa (connessioni lente)": "निम्न (धीमे कनेक्शन)"
+ "Bassa (connessioni lente)": "निम्न (धीमे कनेक्शन)",
+ "quel PC ha una chiave diversa dalle altre volte: potrebbe essere qualcuno che si spaccia per lui, collegamento interrotto": "उस पीसी की कुंजी पिछली बार से अलग है: हो सकता है कोई उसका रूप धारण कर रहा हो, कनेक्शन रोका गया",
+ "troppe richieste: riprova tra qualche minuto": "बहुत अधिक अनुरोध: कुछ मिनट बाद फिर कोशिश करें"
 }

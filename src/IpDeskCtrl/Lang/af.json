@@ -731,5 +731,7 @@
  "Rete locale (bassa latenza)": "Plaaslike netwerk (lae vertraging)",
  "Alta": "Hoog",
  "Media": "Medium",
- "Bassa (connessioni lente)": "Laag (stadige verbindings)"
+ "Bassa (connessioni lente)": "Laag (stadige verbindings)",
+ "quel PC ha una chiave diversa dalle altre volte: potrebbe essere qualcuno che si spaccia per lui, collegamento interrotto": "daardie rekenaar het 'n ander sleutel as voorheen: dalk gee iemand voor dat hy dit is, verbinding gestaak",
+ "troppe richieste: riprova tra qualche minuto": "te veel versoeke: probeer oor 'n paar minute weer"
 }

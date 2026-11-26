@@ -1,0 +1,25 @@
+# Dependabot: avvisi e aggiornamenti delle librerie (NuGet) e delle azioni di GitHub.
+# Le richieste vanno sul ramo «lavoro», dove passano dalla compilazione di prova prima di arrivare a main.
+version: 2
+updates:
+  - package-ecosystem: nuget
+    directories: ["/src/*"]
+    target-branch: lavoro
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    groups:
+      avalonia:
+        patterns: ["Avalonia*"]
+      naudio:
+        patterns: ["NAudio*"]
+    ignore:
+      # i salti di versione maggiore (Avalonia 12, MQTTnet 5…) cambiano le interfacce: si fanno a mano
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+  - package-ecosystem: github-actions
+    directory: "/"
+    target-branch: lavoro
+    schedule:
+      interval: monthly

@@ -731,5 +731,7 @@
  "Rete locale (bassa latenza)": "區域網路（低延遲）",
  "Alta": "高",
  "Media": "中",
- "Bassa (connessioni lente)": "低（慢速連線）"
+ "Bassa (connessioni lente)": "低（慢速連線）",
+ "quel PC ha una chiave diversa dalle altre volte: potrebbe essere qualcuno che si spaccia per lui, collegamento interrotto": "該電腦的金鑰與以往不同：可能有人冒充它，連線已中斷",
+ "troppe richieste: riprova tra qualche minuto": "要求過多：請幾分鐘後再試"
 }

@@ -731,5 +731,7 @@
  "Rete locale (bassa latenza)": "ローカルネットワーク（低遅延）",
  "Alta": "高",
  "Media": "中",
- "Bassa (connessioni lente)": "低（低速回線）"
+ "Bassa (connessioni lente)": "低（低速回線）",
+ "quel PC ha una chiave diversa dalle altre volte: potrebbe essere qualcuno che si spaccia per lui, collegamento interrotto": "このPCの鍵が前回までと異なります。なりすましの可能性があるため、接続を中止しました",
+ "troppe richieste: riprova tra qualche minuto": "リクエストが多すぎます。数分後にもう一度お試しください"
 }

@@ -731,5 +731,7 @@
  "Rete locale (bassa latenza)": "Yerel ağ (düşük gecikme)",
  "Alta": "Yüksek",
  "Media": "Orta",
- "Bassa (connessioni lente)": "Düşük (yavaş bağlantılar)"
+ "Bassa (connessioni lente)": "Düşük (yavaş bağlantılar)",
+ "quel PC ha una chiave diversa dalle altre volte: potrebbe essere qualcuno che si spaccia per lui, collegamento interrotto": "bu bilgisayarın anahtarı önceki seferlerden farklı: biri onun kılığına girmiş olabilir, bağlantı kesildi",
+ "troppe richieste: riprova tra qualche minuto": "çok fazla istek: birkaç dakika sonra yeniden deneyin"
 }

@@ -132,6 +132,8 @@ namespace IpDeskCtrl.Core
                     d = new IncomingDecision(true, resumeInput, false);
                     SessionLog.Write($"SESSIONE {Identity.Format(PeerNumber)} rientra senza conferma dopo un aggiornamento");
                 }
+                else if (known && h!.AllowUnattended && !P.S.IsTrusted(PeerNumber, keyHex))
+                    SessionLog.Write($"SICUREZZA {Identity.Format(PeerNumber)} risulta «senza conferma» nello storico condiviso ma non nell'elenco protetto: chiedo a chi è al PC");
                 else if (known && h!.AllowUnattended)
                 {
                     var pw = P.S.PasswordHash.Length > 0 ? await CheckPasswordAsync() : PwResult.Ok;
@@ -151,6 +153,10 @@ namespace IpDeskCtrl.Core
                 }
                 if (d == null)
                 {
+                    // troppe richieste (lo stesso numero appena rifiutato, o tanti numeri sconosciuti di fila):
+                    // niente finestra di conferma, che a forza di comparire si finisce per accettare
+                    string? flood = RequestGuard.Check(PeerNumber, known);
+                    if (flood != null) { await Refuse(AcceptState.Rejected, flood); return; }
                     await SendAsync(new MsgWriter(Msg.Accept).U8((byte)AcceptState.Waiting).Str("").Build());
                     using var t = CancellationTokenSource.CreateLinkedTokenSource(Cts.Token);
                     t.CancelAfter(TimeSpan.FromSeconds(60));
@@ -162,12 +168,14 @@ namespace IpDeskCtrl.Core
                     catch (OperationCanceledException) { d = new IncomingDecision(false, false, false); }
                 }
                 if (IsClosed || d == null) return;
+                if (!d.Accept) RequestGuard.Rejected(PeerNumber);
                 if (!d.Accept) { await Refuse(AcceptState.Rejected, d.Why.Length > 0 ? d.Why : L.T("richiesta rifiutata")); return; }
 
                 _allowInput = d.AllowInput;
                 var entry = P.S.Touch(PeerNumber, false, keyHex, PeerOs);
                 entry.Version = PeerVersion;
                 if (d.AlwaysAllow && !entry.AllowUnattended) { entry.AllowUnattended = true; P.S.Save(); }
+                if (d.AlwaysAllow) P.S.SetTrusted(PeerNumber, keyHex, true);
                 _accepted = true;
                 await SendAsync(new MsgWriter(Msg.Accept).U8((byte)AcceptState.Accepted).Str(_allowInput ? "" : L.T("solo visione")).Build());
                 Activated?.Invoke();

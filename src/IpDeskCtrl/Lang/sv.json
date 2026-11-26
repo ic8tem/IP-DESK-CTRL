@@ -731,5 +731,7 @@
  "Rete locale (bassa latenza)": "Lokalt nätverk (låg latens)",
  "Alta": "Hög",
  "Media": "Medel",
- "Bassa (connessioni lente)": "Låg (långsamma anslutningar)"
+ "Bassa (connessioni lente)": "Låg (långsamma anslutningar)",
+ "quel PC ha una chiave diversa dalle altre volte: potrebbe essere qualcuno che si spaccia per lui, collegamento interrotto": "den datorn har en annan nyckel än tidigare: någon kan utge sig för att vara den, anslutningen avbröts",
+ "troppe richieste: riprova tra qualche minuto": "för många förfrågningar: försök igen om några minuter"
 }
