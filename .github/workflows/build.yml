@@ -34,7 +34,7 @@ jobs:
           - { os: macos-latest,   rid: osx-x64 }
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: actions/setup-dotnet@v4
         with:
@@ -134,7 +134,7 @@ jobs:
       KS_B64: ${{ secrets.ANDROID_KEYSTORE_B64 }}
       KS_PASS: ${{ secrets.ANDROID_KEYSTORE_PASS }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: actions/setup-dotnet@v4
         with:
@@ -201,7 +201,7 @@ jobs:
           - { os: ubuntu-latest,    rid: linux-musl-x64 }
           - { os: ubuntu-24.04-arm, rid: linux-musl-arm64 }
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
@@ -236,7 +236,7 @@ jobs:
     if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
@@ -299,7 +299,7 @@ jobs:
     needs: [build, android, alpine]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Versione
         shell: bash
         run: |
@@ -392,7 +392,7 @@ jobs:
     runs-on: windows-latest
     continue-on-error: true
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Pacchetto Chocolatey
         shell: pwsh
         env:
@@ -416,7 +416,7 @@ jobs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Aggiorna la wiki
         shell: bash
         env:
