@@ -31,7 +31,7 @@ Ogni PC ha un **numero fisso di 10 cifre** (es. `482 913 0675`) che non cambia m
 - **Tunnel di porte** (plancia › *Tunnel ▾*): un programma di qui si collega a 127.0.0.1:porta e arriva a un indirizzo visto dal PC remoto, per esempio **rigctld** (4532), **rotctld** (4533), **flrig** (12345), **fldigi** (7362) o l'**interfaccia web della radio**. Si salvano per ogni PC e si possono avviare da soli.
 - **Controllo preliminare delle versioni**: nello storico compare la versione di ogni PC (⚠ se diversa) e prima di collegarsi il programma avvisa; con protocollo diverso non si collega e dice cosa aggiornare.
 - **Avviso di nuova versione** nella schermata principale (controllo su GitHub all'avvio e ogni 12 ore).
-- **36 lingue**, scelte in Impostazioni › «Lingua» o prese dal sistema; arabo, ebraico e urdu da destra a sinistra.
+- **37 lingue**, scelte in Impostazioni › «Lingua» o prese dal sistema; arabo, ebraico e urdu da destra a sinistra.
 - **Sempre attivo**: la **X** della finestra la nasconde soltanto; IP-DESK-CTRL resta attivo con l'icona vicino all'orologio (barra dei menu su macOS), il PC resta raggiungibile e i collegamenti aperti continuano. Clic sull'icona per riaprirlo; per uscire davvero: clic destro sull'icona › **Esci da IP-DESK-CTRL**, oppure Impostazioni › **Esci dal programma**. Riavviarlo mentre è nascosto riapre la finestra di quello già attivo.
 
 ## Android
@@ -134,9 +134,12 @@ Nella cartella dei dati (Impostazioni › Apri cartella dati): `sessioni.log`, u
 
 Le versioni con protocollo diverso non si collegano tra loro: aggiorna tutti i dispositivi alla stessa versione principale (la 0.4.1 si collega con la 0.4.0; la 0.5 si collega con la 0.4).
 
-### 0.5.39 — 28 novembre 2026
+### 0.5.40 — 28 novembre 2026
 - **Meno lavoro per processore e memoria, stessa qualità**: il visore in modo video usa sempre lo stesso spazio per ogni fotogramma decodificato (prima ne creava uno nuovo da 8 MB a fotogramma Full HD, circa 200 MB al secondo da far ripulire); in modo riquadri i blocchi temporanei vengono presi in prestito e restituiti; a schermo fermo il PC comandato non copia più l'immagine di riferimento e non la rimpicciolisce di nuovo.
 - **Processore e memoria nel registro**: ogni minuto la riga «SCHERMO ultimo minuto» riporta anche il processore usato dal programma (in % del PC), la memoria occupata e quella di ffmpeg.
+
+### 0.5.39 — 27 novembre 2026
+- **Slovacco**: l'interfaccia passa da 36 a 37 lingue, le stesse degli altri programmi IC8TEM (YA-NEC, YA-MS, YAEC, E-LAYER ANALYZER, LIVETROPOVHF, YA-GT). Nessun cambiamento nel collegamento: la 0.5.39 si collega con la 0.5.38 come prima.
 
 ### 0.5.38 — 26 novembre 2026
 - **IPv6**: se il PC ha un indirizzo IPv6 globale, il programma ascolta anche in IPv6 sulla stessa porta e lo annuncia sui broker; il visore prova per primo il collegamento diretto IPv6 (3 secondi), poi le strade IPv4 di sempre. La perforazione UDP scambia anche i candidati IPv6: in IPv6 non c'è NAT e il firewall del router di solito lascia passare i pacchetti che partono dai due lati insieme, anche quando in IPv4 si è dietro l'IP condiviso dell'operatore. Molti collegamenti che finivano sul relè MQTT lento passano così in diretta.
