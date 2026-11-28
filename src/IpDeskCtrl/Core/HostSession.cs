@@ -792,9 +792,10 @@ namespace IpDeskCtrl.Core
                         else if (_ackMs < 150) { if (goodSince == 0) goodSince = now; if (_autoLevel > 0 && now - goodSince > 4000 && now - lastAutoChange > 4000) { _autoLevel--; lastAutoChange = now; goodSince = now; } }
                         else goodSince = 0;
                     }
-                    if (FrameChanged(raw)) _lastChangeAt = Environment.TickCount64;
+                    bool changedNow = FrameChanged(raw);
+                    if (changedNow) _lastChangeAt = Environment.TickCount64;
                     var (q, scale) = Quality.Of(_quality, _autoLevel);
-                    Frame f = ScaleForViewer(raw, half, scale);
+                    Frame f = ScaleForViewer(raw, half, scale, changedNow);
                     int interval = FrameInterval();
 
                     if (_fullNext && _video != null) _videoRestart = true;      // «Aggiorna»: nuovo fotogramma chiave
@@ -906,7 +907,9 @@ namespace IpDeskCtrl.Core
         /// lavoro per entrambi, stessa resa a video) o quando la qualità chiede metà risoluzione. Mai ingrandita;
         /// sotto il 20 % di risparmio non si tocca, così il testo resta nitido.
         /// </summary>
-        private Frame ScaleForViewer(Frame raw, Frame tmp, double qualityScale)
+        private int _scaledW, _scaledH;
+
+        private Frame ScaleForViewer(Frame raw, Frame tmp, double qualityScale, bool changed = true)
         {
             double s = qualityScale;
             int vw = _viewW, vh = _viewH;
@@ -925,9 +928,14 @@ namespace IpDeskCtrl.Core
                 _fitLogged = log;
                 SessionLog.Write(log.Length > 0 ? "SCHERMO adattato alla finestra di chi guarda: " + log : "SCHERMO a risoluzione piena");
             }
-            if (s >= 0.8) return raw;
-            if (Math.Abs(s - 0.5) < 0.001) { TileEncoder.Half(raw, tmp); return tmp; }
-            TileEncoder.Resize(raw, tmp, Math.Max(2, (int)(raw.Width * s) & ~1), Math.Max(2, (int)(raw.Height * s) & ~1));
+            if (s >= 0.8) { _scaledW = 0; return raw; }
+            int tw = Math.Abs(s - 0.5) < 0.001 ? raw.Width / 2 : Math.Max(2, (int)(raw.Width * s) & ~1);
+            int th = Math.Abs(s - 0.5) < 0.001 ? raw.Height / 2 : Math.Max(2, (int)(raw.Height * s) & ~1);
+            // schermo fermo e stessa misura: l'immagine rimpicciolita del giro prima è ancora quella giusta
+            if (!changed && tmp.Width == tw && tmp.Height == th && _scaledW == tw && _scaledH == th) return tmp;
+            if (Math.Abs(s - 0.5) < 0.001) TileEncoder.Half(raw, tmp);
+            else TileEncoder.Resize(raw, tmp, tw, th);
+            _scaledW = tmp.Width; _scaledH = tmp.Height;
             return tmp;
         }
 
@@ -956,7 +964,7 @@ namespace IpDeskCtrl.Core
                     _statAt = Environment.TickCount64;
                     long vb = Interlocked.Exchange(ref _statBytesVideo, 0);
                     SessionLog.Write($"SCHERMO ultimo minuto: {_statFrames} fotogrammi, " + (_video != null ? $"video {Ffmpeg.CodecNames[_video.Codec]} {vb / 1024} kB" : $"{_statTiles} riquadri, {_statBytes / 1024} kB") +
-                                     L.F(", {0} catture non riuscite · ritardo {1:F0} ms · {2}", _statFail, _ackMs, Route));
+                                     L.F(", {0} catture non riuscite · ritardo {1:F0} ms · {2}", _statFail, _ackMs, Route) + " · " + ResourceUse.Sample());
                     _statFrames = 0; _statTiles = 0; _statBytes = 0; _statFail = 0;
                 }
                 // monitor collegati o staccati

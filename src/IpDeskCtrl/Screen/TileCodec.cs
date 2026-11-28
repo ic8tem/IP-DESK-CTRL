@@ -77,7 +77,8 @@ namespace IpDeskCtrl.Screen
             }
             Emit(f, changed, quality, false, outp);
             Emit(f, refine, RefineQuality, true, outp);
-            Buffer.BlockCopy(f.Data, 0, _prev, 0, f.Data.Length);
+            // copia dell'immagine di riferimento solo se qualcosa è cambiato (a schermo fermo era 8 MB a ogni giro)
+            if (Array.IndexOf(changed, true) >= 0) Buffer.BlockCopy(f.Data, 0, _prev, 0, f.Data.Length);
             return outp;
         }
 
@@ -201,21 +202,26 @@ namespace IpDeskCtrl.Screen
             using var codec = SKCodec.Create(new SKMemoryStream(data));
             if (codec == null) return false;
             var info = new SKImageInfo(codec.Info.Width, codec.Info.Height, SKColorType.Bgra8888, SKAlphaType.Premul);
-            var tmp = new byte[info.Width * info.Height * 4];
-            fixed (byte* t = tmp)
+            // buffer preso in prestito e restituito (le strisce larghe superano gli 85 kB e finivano tra gli oggetti grandi)
+            var tmp = System.Buffers.ArrayPool<byte>.Shared.Rent(info.Width * info.Height * 4);
+            try
             {
-                var res = codec.GetPixels(info, (IntPtr)t);
-                if (res != SKCodecResult.Success && res != SKCodecResult.IncompleteInput) return false;
+                fixed (byte* t = tmp)
+                {
+                    var res = codec.GetPixels(info, (IntPtr)t);
+                    if (res != SKCodecResult.Success && res != SKCodecResult.IncompleteInput) return false;
+                }
+                lock (Lock)
+                {
+                    int cw = Math.Min(Math.Min(w, info.Width), Image.Width - x);
+                    int ch = Math.Min(Math.Min(h, info.Height), Image.Height - y);
+                    if (cw <= 0 || ch <= 0 || x < 0 || y < 0) return false;
+                    for (int r = 0; r < ch; r++)
+                        Buffer.BlockCopy(tmp, r * info.Width * 4, Image.Data, (y + r) * Image.Stride + x * 4, cw * 4);
+                }
+                return true;
             }
-            lock (Lock)
-            {
-                int cw = Math.Min(Math.Min(w, info.Width), Image.Width - x);
-                int ch = Math.Min(Math.Min(h, info.Height), Image.Height - y);
-                if (cw <= 0 || ch <= 0 || x < 0 || y < 0) return false;
-                for (int r = 0; r < ch; r++)
-                    Buffer.BlockCopy(tmp, r * info.Width * 4, Image.Data, (y + r) * Image.Stride + x * 4, cw * 4);
-            }
-            return true;
+            finally { System.Buffers.ArrayPool<byte>.Shared.Return(tmp); }
         }
     }
 }

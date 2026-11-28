@@ -446,11 +446,13 @@ namespace IpDeskCtrl.Screen
             new Thread(() =>
             {
                 int size = w * h * 4;
+                // un solo buffer per tutta la decodifica: il fotogramma viene copiato subito nell'immagine del visore
+                // (prima: 8 MB nuovi a ogni fotogramma Full HD, 200 MB al secondo da far raccogliere alla memoria)
+                var b = new byte[size];
                 try
                 {
                     while (true)
                     {
-                        var b = new byte[size];
                         int got = 0;
                         while (got < size)
                         {
